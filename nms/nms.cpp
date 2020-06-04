@@ -12,7 +12,7 @@
 #pragma comment (lib, "OpenGL32.lib")
 
 
-//JFW
+
 // https://about-prog.com/opengl/hello-world-opengl-first-program
 // https://learnopengl.com/Introduction
 
