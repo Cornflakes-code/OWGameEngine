@@ -1,8 +1,12 @@
-#include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include "GLApplication.h"
+
+#include <iostream>
+#include <fstream>
+
+#include <glad/glad.h>
+#include <json/single_include/nlohmann/json.hpp>
+using json = nlohmann::json;
+
 
 void MyGlWindow::makeWindow(GLFWwindow* glfwWindow) 
 {
@@ -67,165 +71,150 @@ void MyGlWindow::framebufferSizeCallback(GLFWwindow* window, int width, int heig
 	glViewport(0, 0, width, height);
 }
 
-//#define USE_EBO 1
-struct MyInfo
-{
-	int shaderProgram;
-	unsigned int VBO, VAO;
-#ifdef USE_EBO
-	unsigned int EBO;
-#endif
-};
-
-void* MyGlWindow::createTriangle(GLFWwindow* glfwWindow)
+void MyGlWindow::create(GLFWwindow* glfwWindow, OpenInfo& info)
 {
 	// https://learnopengl.com/Getting-started/Hello-Triangle
-	MyInfo* myInfo = new MyInfo();
+
 	const char *vertexShaderSource = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
+		"layout(location = 1) in vec3 aColor;\n"
+//		"out vec4 vertexColor;\n"
+		"out vec3 ourColor;\n"
 		"void main()\n"
 		"{\n"
 		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+//		"	vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
+		" ourColor = aColor;\n"
 		"}\0";
-	const char *fragmentShaderSource = "#version 330 core\n"
-		"out vec4 FragColor;\n"
-		"void main()\n"
-		"{\n"
-		"   FragColor = vec4(1.0f, 0.5f, 0.8f, 1.0f);\n"
-		"}\n\0";
-
-	// build and compile our shader program
-	// ------------------------------------
-	// vertex shader
-	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	// check for shader compile errors
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
+	std::ifstream ifs("./../nms/vao.json");
+	//std::ifstream ifs("E:/Apps/NMS/nms/nms/vao.json");
+	nlohmann::json jf = nlohmann::json::parse(ifs);
 	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		OpenInfoObject* elm = new OpenInfoObject();
+		elm->shader.linkShaders(jf, "vao_texture");
+		elm->texture.addTexture("./../nms/container.jpg", false, false);
+		elm->texture.addTexture("./../nms/awesomeface.png", true, true);
+		std::vector<float>vertices = {
+			// positions          // colors           // texture coords
+			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+		};
+		std::vector<unsigned int> indices = {
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
+		std::function<void(int)> pos1 =
+			[](int x)-> void { glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); };
+		elm->attrPointers.push_back(pos1);
+		std::function<void(int)> pos2 =
+			[](int x)-> void { glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); };
+		elm->attrPointers.push_back(pos2);
+		std::function<void(int)> pos3 =
+			[](int x)-> void { glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); };
+		elm->attrPointers.push_back(pos3);
+		elm->triangles.push_back(vertices);
+		elm->indices = indices;
+		info.objects.emplace_back(elm);
 	}
-	// fragment shader
-	int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	// check for shader compile errors
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-	if (!success)
+	if (false)
 	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		const char *fragmentShaderSource = "#version 330 core\n"
+			"out vec4 FragColor;\n"
+//			"in vec4 vertexColor;\n"
+			"in vec3 ourColor;\n"
+			"void main()\n"
+			"{\n"
+//			"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+			"	FragColor = vec4(ourColor, 1.0);\n"
+			"}\n\0";
+		OpenInfoObject* elm = new OpenInfoObject();
+		Shader shader;
+		elm->shader.linkShaders(jf, "vao1");
+//		elm->shader.linkShaders(elm.shader.addFragmentShader(fragmentShaderSource),
+//			elm->shader.addVertexShader(vertexShaderSource));
+		std::vector<float> tri = {
+			-0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+			 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+		};
+		std::function<void(int)> pos =
+			[](int x)-> void { glVertexAttribPointer(x, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); };
+		elm->attrPointers.push_back(pos);
+		pos = [](int x)-> void { glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); };
+		elm->attrPointers.push_back(pos);
+		elm->triangles.push_back(tri);
+		info.objects.emplace_back(elm);
 	}
-	// link shaders
-	myInfo->shaderProgram = glCreateProgram();
-	glAttachShader(myInfo->shaderProgram, vertexShader);
-	glAttachShader(myInfo->shaderProgram, fragmentShader);
-	glLinkProgram(myInfo->shaderProgram);
-	// check for linking errors
-	glGetProgramiv(myInfo->shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(myInfo->shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	if (false)
+	{
+		const char *fragmentShaderSource = "#version 330 core\n"
+			"out vec4 FragColor;\n"
+			"void main()\n"
+			"{\n"
+			"   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+			"}\n\0";
+		OpenInfoObject* elm = new OpenInfoObject();
+		elm->shader.linkShaders(elm->shader.addFragmentShader(fragmentShaderSource),
+			elm->shader.addVertexShader(vertexShaderSource));
+		std::vector<float> tri = {
+			-0.2f, -0.2f, 0.0f,
+			 0.2f, -0.2f, 0.0f,
+			 0.0f,  0.2f, 0.0f
+		};
+		elm->triangles.push_back(tri);
+		std::function<void(int)> pos =
+			[](int x)-> void { glVertexAttribPointer(x, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); };
+		elm->attrPointers.push_back(pos);
+
+		info.objects.emplace_back(elm);
 	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	if (false)
+	{
+		const char *fragmentShaderSource = "#version 330 core\n"
+			"out vec4 FragColor;\n"
+			"void main()\n"
+			"{\n"
+			"   FragColor = vec4(0.5f, 1.0f, 0.5f, 1.0f);\n"
+			"}\n\0";
+		OpenInfoObject* elm = new OpenInfoObject();
+		elm->shader.linkShaders(elm->shader.addFragmentShader(fragmentShaderSource),
+			elm->shader.addVertexShader(vertexShaderSource));
+		std::vector<float> tri = {
+			-0.1f, -0.1f, 0.0f,
+			 0.1f, -0.1f, 0.0f,
+			 0.0f,  0.1f, 0.0f
+		};
+		elm->triangles.push_back(tri);
+		std::function<void(int)> pos =
+			[](int x)-> void { glVertexAttribPointer(x, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); };
+		elm->attrPointers.push_back(pos);
+		info.objects.emplace_back(elm);
+	}
 
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	// ------------------------------------------------------------------
-#ifdef USE_EBO
-	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 
-	};
-	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};
-#else
-	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
-	};
-#endif
-
-	glGenVertexArrays(1, &(myInfo->VAO));
-	glGenBuffers(1, &(myInfo->VBO));
-#ifdef USE_EBO
-	glGenBuffers(1, &(myInfo->EBO));
-#endif
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(myInfo->VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, myInfo->VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-#ifdef USE_EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myInfo->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-#endif
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex 
-	// attribute's bound vertex buffer object so afterwards we can safely unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-#ifdef USE_EBO
-	// remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-#endif
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, 
-	// but this rarely happens. Modifying other VAOs requires a call to glBindVertexArray anyways 
-	// so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-	glBindVertexArray(0);
-
+	for (auto& elm : info.objects)
+	{
+		elm->configure();
+	}
 
 	// uncomment this call to draw in wireframe polygons.
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	return myInfo;
+	//info.polygonDrawMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void MyGlWindow::drawTriangle(GLFWwindow* glfwWindow, void* state)
+void MyGlWindow::draw(GLFWwindow* glfwWindow, OpenInfo& info)
 {
-	MyInfo* myInfo = reinterpret_cast<MyInfo*>(state);
 	// render
 	// ------
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// draw our first triangle
-	glUseProgram(myInfo->shaderProgram);
-	// seeing as we only have a single VAO there's no need to bind it 
-	// every time, but we'll do so to keep things a bit more organized
-	glBindVertexArray(myInfo->VAO); 
-#ifdef USE_EBO
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-#else
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-#endif
-	// glBindVertexArray(0); // no need to unbind it every time 
+	info.clearColour(GL_COLOR_BUFFER_BIT, 0.2f, 0.3f, 0.3f, 1.0f);
+	info.use();
+	//glBindVertexArray(0); // no need to unbind it every time 
 
 	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	// 
 }
 
-void MyGlWindow::cleanUpTriangle(void* state)
+void MyGlWindow::cleanUp(OpenInfo& info)
 {
-	MyInfo* myInfo = reinterpret_cast<MyInfo*>(state);
-	glDeleteVertexArrays(1, &(myInfo->VAO));
-	glDeleteBuffers(1, &(myInfo->VBO));
-#ifdef USE_EBO
-	glDeleteBuffers(1, &(myInfo->EBO));
-#endif	
-	glDeleteProgram(myInfo->shaderProgram);
-	delete myInfo;
+	info.cleanup();
 }

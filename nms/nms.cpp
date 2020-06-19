@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
 
 		GLFWwindow* window = glfwCreateWindow(width, height, s.c_str(), nullptr, nullptr);
 		MyGlWindow wrapper;
+		OpenInfo info;
 		if (window)
 		{
 			wrapper.makeWindow(window);
@@ -58,7 +59,17 @@ int main(int argc, char* argv[])
 
 			if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			{
-				void* userData = wrapper.createTriangle(window);
+				try
+				{
+					wrapper.create(window, info);
+				}
+				catch (const std::exception& ex)
+				{
+					std::cout << ex.what() << " press any key\n";
+					int ch;
+					std::cin >> ch;
+					exit(-1);
+				}
 				//glfwGetFramebufferSize(window, &width, &height);
 				//glViewport(0, 0, width, height);
 				//glfwSwapInterval(1);
@@ -66,7 +77,7 @@ int main(int argc, char* argv[])
 				{
 					if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 						glfwSetWindowShouldClose(window, GL_TRUE);
-					wrapper.drawTriangle(window, userData);
+					wrapper.draw(window, info);
 					//s = getString();
 					//glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 					//glClear(GL_COLOR_BUFFER_BIT);
@@ -74,7 +85,7 @@ int main(int argc, char* argv[])
 					glfwSwapBuffers(window);
 					glfwPollEvents();
 				}
-				wrapper.cleanUpTriangle(userData);
+				wrapper.cleanUp(info);
 			}
 			glfwTerminate();
 			glfwDestroyWindow(window);

@@ -1,0 +1,82 @@
+{
+  "vao1": {
+    "vertexShader": [
+      "#version 330 core",
+      "layout (location = 0) in vec3 aPos;",
+      "layout(location = 1) in vec3 aColor;",
+      "out vec3 ourColor;",
+      "uniform float horOffset;",
+      "void main()",
+      "{",
+      "  gl_Position = vec4(aPos.x + horOffset, aPos.y, aPos.z, 1.0);",
+      "  ourColor = aColor;",
+      "}"
+    ],
+    "fragmentShader": [
+      "#version 330 core",
+      "out vec4 FragColor;",
+      "in vec3 ourColor;",
+      "void main()",
+      "{",
+      "  FragColor = vec4(ourColor, 1.0);",
+      "}"
+    ],
+    "uniforms": [
+      {
+        "name": "horOffset",
+        "type": "number",
+        "value": 0.5
+      },
+      {
+        "name": "verOffset",
+        "type": "number",
+        "value": 0.5
+      },
+      {
+        "name": "fragColour",
+        "type": "vec4",
+        "value": "0.2, 0.3, 0.3, 1.0"
+      }
+    ]
+  },
+  "vao_texture": {
+    "vertexShader": [
+      "#version 330 core",
+      "layout (location = 0) in vec3 aPos;",
+      "layout (location = 1) in vec3 aColor;",
+      "layout (location = 2) in vec2 aTexCoord;",
+      "out vec3 ourColor;",
+      "out vec2 TexCoord;",
+      "void main()",
+      "{",
+      "  gl_Position = vec4(aPos, 1.0);",
+      "  ourColor = aColor;",
+      "  TexCoord = vec2(aTexCoord.x, aTexCoord.y);",
+      "}"
+    ],
+    "fragmentShader": [
+      "#version 330 core",
+      "out vec4 FragColor;",
+      "in vec3 ourColor;",
+      "in vec2 TexCoord;",
+      "uniform sampler2D texture1;",
+      "uniform sampler2D texture2;",
+      "void main()",
+      "{",
+      "  FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);",
+      "}"
+    ],
+    "uniforms": [
+      {
+        "name": "texture1",
+        "type": "int",
+        "value": 0
+      },
+      {
+        "name": "texture2",
+        "type": "int",
+        "value": 1
+      }
+    ]
+  }
+}

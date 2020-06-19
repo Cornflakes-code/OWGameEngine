@@ -1,16 +1,18 @@
 #pragma once
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <functional>
 #include <iostream>
-
+#include "OpenInfo.h"
 
 class MyGlWindow
 {
 public:
 	void makeWindow(GLFWwindow* glfwWindow);
-	void* createTriangle(GLFWwindow* glfwWindow);
-	void drawTriangle(GLFWwindow* glfwWindow, void* state);
-	void cleanUpTriangle(void* state);
+
+	void create(GLFWwindow* glfwWindow, OpenInfo& info);
+	void draw(GLFWwindow* glfwWindow, OpenInfo& info);
+	void cleanUp(OpenInfo& elm);
 private:
 	std::function<void(GLFWwindow*)> onClose;
 	std::function<void(GLFWwindow* window, int button, int action, int mods)> onMouseClick;
