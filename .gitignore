@@ -1,11 +1,15 @@
 # Prerequisites
 *.d
-
+*.log
+X64/
+nms/X64/
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+*.idb
+*.pdb
 
 # Precompiled Headers
 *.gch
