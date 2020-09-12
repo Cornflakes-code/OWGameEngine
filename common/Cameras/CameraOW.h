@@ -6,6 +6,9 @@
 
 #include "OW_Camera.h"
 
+/*
+	Implements the Camera interface with class OW_Camera providing the functionality.
+*/
 class CameraOW : public Camera
 {
 	OW_Camera mTempRenderTarget;

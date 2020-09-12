@@ -18,7 +18,9 @@
 	https://community.khronos.org/t/switching-between-arcball-and-fps-style-camera-rotation/76279/4
 
 */
-
+/*
+	Experimentation of Camera functionality. Will not survive future iterations
+*/
 class MazharCamera
 {
 //	const int GLUT_DOWN = 1;

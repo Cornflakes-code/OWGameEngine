@@ -13,7 +13,9 @@
 
 class GLApplication;
 extern GLApplication* theApp;
-
+/*
+	Usefull functionality that needs a place to live. BNit of a mess atm
+*/
 class ListenerHelper
 {
 	/* There does not appear to be an '==' operator for std::function, 

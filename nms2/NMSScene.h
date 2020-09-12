@@ -9,7 +9,8 @@ struct NMSWorldPhysicsState: public ScenePhysicsState
 };
 
 /*
-	Note that "quit" and "previous" are already used for scene names.
+	Intermediate Base class for implementation of a Scene for the NMS game. 
+	Will be moved out of the engine to a different repo
 */
 class NMSScene: public Scene
 {

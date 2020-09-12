@@ -6,7 +6,15 @@
 
 class Scene;
 class Camera;
-
+/*
+	My implementation of a Fixed timestep physics/Variable timestep Render Game 
+	Loop requires the separation of static and dynamic information. Class Scene 
+	provides the base class for the static information and class ScenePhysicsState 
+	provides the base class for the dynamic information. Inspection of the Game Loop
+	in Movie.cpp will show that ScenePhysicsState is cloned and discarded
+	many times per Render Loop. Children of Class ScenePhysicsState will be heavy on 
+	functionality (lots of code) but low on state information.
+*/
 class ScenePhysicsState
 {
 public:

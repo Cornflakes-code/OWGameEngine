@@ -2,6 +2,10 @@
 
 #include "../Helpers/TextBillboard.h"
 
+/*
+	Resizable Billboard Text
+*/
+
 class TextBillboardDynamic : public TextBillboard
 {
 public:

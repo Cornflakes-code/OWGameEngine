@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../Helpers/TextBillboard.h"
-
+/*
+	Fixed sized Billboard Text
+*/
 class TextBillboardFixed: public TextBillboard
 {
 public:

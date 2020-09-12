@@ -8,6 +8,10 @@
 
 #include "NMSScene.h"
 
+/*
+	An implementation of a Scene for the NMS game.
+	Will be moved out of the engine to a different repo
+*/
 struct NMSMainScenePhysics : public NMSWorldPhysicsState
 {
 	NMSMainScenePhysics(const Scene* owner)

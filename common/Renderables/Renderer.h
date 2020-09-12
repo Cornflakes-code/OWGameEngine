@@ -6,7 +6,9 @@
 #include <glm/glm.hpp>
 
 class Shader;
-
+/*
+	A work in progress. May be removed in later iterations
+*/
 class Renderer
 {
 public:

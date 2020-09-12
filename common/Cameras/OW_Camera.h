@@ -7,6 +7,9 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
+/*
+	A first pass at a Camera. Wrapped by CameraOW. Needs to be replaced
+*/
 class OW_Camera
 {
 	glm::vec3 mPosition = glm::vec3(0, 0, 0);

@@ -8,6 +8,25 @@
 #include "Movie.h"
 #include "UserInput.h"
 
+/*
+	My implementation of a Fixed timestep physics/Variable timestep Render Game
+	loop requires the separation of static and dynamic physics. Class Scene
+	provides the base class for the static information and class ScenePhysicsState
+	provides the base class for the dynamic information.
+	Class Scene is the base class for the invariant state information. Think of Scene
+	it as providing the DOM in a Web Page while class ScenePhysicsState provides the
+	cookies. Class Scene (and children) will be heavy on immutable objects, low on
+	functionality. It provides access to Render.
+
+	A scene is a gross level of division in a game. For example a scene could be:
+		1. The Welcome screen
+		2. An Options Screens
+		3. A Map keystrokes screen
+		4. The main screen of the game. Almost all gameplay may exist inside this scene.
+		5. A gross change in map location
+	A scene change will involve a gross change in functionality and is often considered 
+	an "out of game" experience.	
+*/
 class Scene
 {
 public:

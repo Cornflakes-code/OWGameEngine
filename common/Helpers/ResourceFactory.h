@@ -12,7 +12,9 @@
 #include "FreeTypeFontAtlas.h"
 
 using json = nlohmann::json;
-
+/*
+	Caching of paths and resources. A singleton class.
+*/
 class ResourceFactory
 {
 public:

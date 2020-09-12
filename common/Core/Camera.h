@@ -3,6 +3,10 @@
 #include <glm/glm.hpp>
 #include "UserInput.h"
 
+/*
+	Abstract interface for a Camera. It is intended that this class provides 
+	the interface for 3D POV as well as a traditional fixed view of a scene
+*/
 class Camera
 {
 public:

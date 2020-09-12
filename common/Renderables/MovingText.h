@@ -3,7 +3,10 @@
 #include "BoundingBox.h"
 class TextBillboard;
 class Triangle;
-
+/*
+	A development class wrapping very simple collision functionality. Will be removed
+	in later iterations
+*/
 class MovingText
 {
 	TextBillboard* mText;

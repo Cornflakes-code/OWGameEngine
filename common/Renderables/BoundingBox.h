@@ -5,7 +5,10 @@
 #include "../Helpers/CommonUtils.h"
 
 // https://en.wikibooks.org/wiki/OpenGL_Programming/Bounding_box
-
+/*
+	Mainly provides a AABB box for early functionality. Will morph into a more 
+	sophisticated implementation
+*/
 class Plane
 {
 	glm::vec4 mPoint1;

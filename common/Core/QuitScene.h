@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Scene.h"
-
+/*
+	A core Scene required as a placeholder for the Game Loop implementation in Movie.cpp
+*/
 struct QuitScenePhysics: public ScenePhysicsState
 {
 	QuitScenePhysics(const Scene* owner)

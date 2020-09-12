@@ -10,7 +10,10 @@
 
 class Shader;
 class TextBillboard;
-
+/*
+	The NMS game is a simple fly through of Solar Systems visited while
+	playing the No Man's Sky game. Will be moved to a different repo in due course.
+*/
 class NoMansSky
 {
 	std::vector<glm::vec4> mStarPositions;

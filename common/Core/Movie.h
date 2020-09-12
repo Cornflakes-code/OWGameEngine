@@ -19,7 +19,10 @@ struct GLFWwindow;
 class UserInput;
 class GLApplication;
 class MacroRecorder;
-
+/*
+	Core class providing the main Game loop. Tightly bound to the Scene and
+	ScenePhysicsState classes
+*/
 class Movie
 {
 public:

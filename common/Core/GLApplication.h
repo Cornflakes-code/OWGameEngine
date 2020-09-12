@@ -8,9 +8,12 @@
 
 #include "Camera.h"
 #include "Movie.h"
-
+/*
+	Provides access to GLFW callback functionality.
+*/
 struct GLFWwindow;
 class Movie;
+
 class Logger;
 class ResourceFactory;
 class MacroRecorder;

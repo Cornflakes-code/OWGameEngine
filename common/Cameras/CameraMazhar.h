@@ -6,6 +6,9 @@
 
 #include "Mazhar_Camera.h"
 
+/*
+	Implements the Camera interface with class MazharCamera providing the functionality.
+*/
 class CameraMazhar : public Camera
 {
 	MazharCamera mTempRenderTarget;

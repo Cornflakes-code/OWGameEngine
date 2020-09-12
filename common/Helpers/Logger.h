@@ -7,7 +7,9 @@
 #include <glm/glm.hpp>
 
 struct GLFWwindow;
-
+/*
+	OpenGL logging functionality
+*/
 class Logger
 {
 public:

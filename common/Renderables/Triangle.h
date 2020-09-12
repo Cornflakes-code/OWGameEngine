@@ -3,7 +3,9 @@
 #include <glm/glm.hpp>
 
 #include "../Renderables/Renderer.h"
-
+/*
+	Simple class wrapping creation and Rendering of a Triangle. Will be removed.
+*/
 class Shader;
 
 class Triangle: public Renderer

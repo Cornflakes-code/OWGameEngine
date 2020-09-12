@@ -1,7 +1,9 @@
 #pragma once
 
 class ResourceFactory;
-
+/*
+	A work in progress. May be removed in future iterations.
+*/
 class ResourceSource
 {
 public:

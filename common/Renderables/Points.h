@@ -5,7 +5,10 @@
 #include "../Renderables/Renderer.h"
 
 class Shader;
-
+/*
+	Hack class exploring OpenGL GL_POINTS functionality. Unlikely to survive 
+	future development
+*/
 class Points: public Renderer
 {
 	glm::vec3 mPosition = glm::vec3(0);

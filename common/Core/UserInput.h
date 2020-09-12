@@ -11,8 +11,12 @@
 
 #define ANY_KEY (GLFW_KEY_LAST+1)
 
-class GLApplication;
+/*
+	Converts raw Keyboard and Pointing Device (PD) actions into logical commands.
+	Listener callbacks can be added by subscribers.
+*/
 
+class GLApplication;
 class UserInput
 {
 public:

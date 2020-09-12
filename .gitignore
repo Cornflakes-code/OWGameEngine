@@ -3,6 +3,7 @@
 *.log
 x64/*
 .vs/*
+*.vcxproj.user
 # Compiled Object files
 *.slo
 *.lo

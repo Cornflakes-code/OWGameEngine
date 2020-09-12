@@ -1,12 +1,20 @@
 # nms
 # Yet another Opengl Game Engine.
+OWGameEngine began as a project to learn OpenGL and it is still performing that role. At it's heart it is a simple and understandable set of classes which can be inherited off to leverage core functionality. It:
+ - Uses a Movie Based paradigm (Movie/Scenes/Actors/Scenery)
+ - Is based on modern C++/OpenGL 3.3/Windows (Visual Studio 2017)/GLFW/GLM
+ - Is a work in progress
 
-1. Originally started as a project to learn OpenGL.
-2. Uses a Movie Based paradigm (Movie/Scenes/Actors)
-3. Based on modern C++/OpenGL 3.3/Windows (Visual Studio 2017)/GLFW
-4. Is a work in progress
-
-
+## The functionality currently existing or 'will be done soon' includes:
+ - ResourceManager. Singleton resource cache
+ - UserInput. Wraps physical implementation of Keyboard and pointing device and emits logical commands via callbacks
+ - Scene. The static implementation of a screen in a game. Examples of a scene include Main (where all the gameplay is), Welcome screen or Key mapping screen. Provides access to the Render functionality. Heavy on objects but contains no state information. Apart from setup code is pretty empty. Closely bound to ScenePhysicsState.
+ - ScenePhysicsState. Contains the mutable aspects of a scene. Heavy on code but light on state data. Think of it as the Cookies of a Webpage. Closely tied to a Scene.
+ - Movie. Provides a fixed timestep physics step and a variable time step render step inside a Game Loop. Swaps Scenes in and out
+ - SafeAndRestore. Like the name says. Also used by MacroRecorder.
+ - MacroRecorder. Provides the ability to replay game events. Only possible with fixed physics timesteps
+ - Camera
+ 
 ## Third party libs:
  - GLFW
  - glad
@@ -23,9 +31,9 @@
   - Decentralised Scene Switching Logic
   - Mouse/Keyboard callback Messaging
   - User Input Abstraction
-  - Base classes are used to hide many of the above details.
 
-## This is still a learning activity and there are many things to do. This includes (but not limited to):
+
+## This is still a learning activity and there are many things to do. The design of some things is wrong and will be rewritten. If you want to join me (it is still at an early stage) , then awesome. Design and code quality takes priority over ego. Many things to do including (but not limited to):
  - Quaternian based Camera.
  - Transparent Safe and Restore
  - Transparent Macro Recording and Playback
@@ -33,11 +41,15 @@
  - Boilerplate Key mapping User Interface
  - Linux Port
  - Many implementation details of efficient OpenGL
+ - Separation of Core functionality and Learning game into different repos.
+ - CMake functionality
+ - separation of core functionality and game into different repos.
+ - Addition os third party libraries as git submodules
  
  ## Stretch Goals
- Note that implementation details of the stretch goals may change).
-  - Scalable Multi-Threading design.  This paper by Michael Silverman [Scalable Multithreaded Game Engine Using Transactional Memory](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiKhIyAqOLrAhVfwTgGHToxBn4QFjAAegQIBRAB&url=https%3A%2F%2Furresearch.rochester.edu%2FfileDownloadForInstitutionalItem.action%3FitemId%3D5752%26itemFileId%3D8929&usg=AOvVaw3gbYfh3JPgmmlN55aJSodX) looks promising
-  - Scalable Collision Detection. [Collision Detection using Ellipsoids](http://www.peroxide.dk/papers/collision/collision.pdf)
+  - Scalable Multi-Threading design.  This paper by Michael Silverman [Scalable Multithreaded Game Engine Using Transactional Memory](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiKhIyAqOLrAhVfwTgGHToxBn4QFjAAegQIBRAB&url=https%3A%2F%2Furresearch.rochester.edu%2FfileDownloadForInstitutionalItem.action%3FitemId%3D5752%26itemFileId%3D8929&usg=AOvVaw3gbYfh3JPgmmlN55aJSodX) looks promising.
+  - Scalable Collision Detection. This looks good [Collision Detection using Ellipsoids](http://www.peroxide.dk/papers/collision/collision.pdf)
+ - Steam Virtual Reality
 
 
 

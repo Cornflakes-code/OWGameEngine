@@ -12,7 +12,10 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
+/*
+	Caches loaded FreeType FontAtlas textures. class FreeTypeFontAtlas::FontDetails is
+	returned to objects that implement rendered text
+*/
 class FreeTypeFontAtlas
 {
 public:

@@ -7,7 +7,9 @@
 #include "ResourceSource.h"
 
 using json = nlohmann::json;
-
+/*
+	A wrapper for Shaders. Based on the Shader class at https://learnopengl.com/
+*/
 class Shader: public ResourceSource
 {
 public:

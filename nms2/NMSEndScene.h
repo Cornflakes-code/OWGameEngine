@@ -5,6 +5,10 @@
 class Shader;
 class TextBillboard;
 
+/*
+	An implementation of a Scene for the NMS game.
+	Will be moved out of the engine to a different repo
+*/
 struct NMSEndScenePhysics : public ScenePhysicsState
 {
 	NMSEndScenePhysics(const Scene* owner)

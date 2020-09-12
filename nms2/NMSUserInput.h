@@ -1,7 +1,10 @@
 #pragma once
 #include <Core/UserInput.h>
 
-
+/*
+	Wraps specifics of the NMS user Inputs. May be removed in later iterations.
+	If not removed, it will be moved to the NMS game repo.
+*/
 class NMSUserInput : public UserInput
 {
 public:

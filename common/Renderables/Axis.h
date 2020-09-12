@@ -11,7 +11,9 @@ class TextBillboard;
 class Points;
 class Shader;
 class Camera;
-
+/*
+	Wraps the rendering of an XYZ set of labelled axis. Useful for early development
+*/
 class Axis: public Renderer
 {
 public:

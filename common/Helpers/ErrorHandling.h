@@ -7,6 +7,10 @@
 enum class NMSErrorLevel
 { NMSInfo, NMSWarning, NMSCritical};
 
+/*
+	Errors in the Game Engine are handled by exceptions. All of these should
+	be caught during development.
+*/
 class NMSException : public std::exception
 {
 public:

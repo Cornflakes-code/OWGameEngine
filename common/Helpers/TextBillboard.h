@@ -16,7 +16,11 @@
 #include <Core/GLApplication.h>
 #include "../Helpers/CommonUtils.h"
 #include "ResourceFactory.h"
-
+/*
+	Base class for fixed and dynamic Billboard Text. Font texture loading is cached
+	by FreeTypeFontAtlas via ResourceManager. Future enhancement could include 
+	caching of Vertices.
+*/
 class Shader;
 
 class TextBillboard : public ResourceSource, public ListenerHelper
