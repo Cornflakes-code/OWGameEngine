@@ -66,8 +66,8 @@ int main()
 {
 	ResourceFactory* rf = ResourceFactory::getResourceFactory();
 	ResourceSource::factory(rf);
-	rf->addPath("E:/Apps/NMS/nms/common/Resources/shaders", ResourceFactory::ResourceType::Shader);
-	rf->addPath("E:/Apps/NMS/nms/common/Resources/fonts", ResourceFactory::ResourceType::Font);
+	rf->addPath("../common/Resources/shaders", ResourceFactory::ResourceType::Shader);
+	rf->addPath("../common/Resources/fonts", ResourceFactory::ResourceType::Font);
 	NMSUserInput ui;
 	//ui.addKeyMapping(GLFW_KEY_W, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Forward);
 	//ui.addKeyMapping(GLFW_KEY_A, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::YawLeft);

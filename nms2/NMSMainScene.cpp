@@ -80,7 +80,7 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	sp->mLookAt = { 0,0,0 };
 
 	mStarMap = new NoMansSky();
-	mStarMap->setUp("E:/Apps/NMS/nms/x64/Debug/NMSMap.txt", world());
+	mStarMap->setUp("../nms2/NMSMap.txt", world());
 	mAxis = new Axis();
 	
 	mAxis->setUp(world(), movie()->camera());

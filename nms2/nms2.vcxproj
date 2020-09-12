@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\glad\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype-2.10.2\include;E:\Apps\NMS\nms\common;$(IncludePath)</IncludePath>
+    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\glad\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype-2.10.2\include;E:\Apps\NMS\OWGameEngine\common;$(IncludePath)</IncludePath>
     <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;E:\Apps\OpenGL\freetype-2.10.2\objs\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -164,7 +164,6 @@
     <None Include="..\common\vao.json" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\OpenGL\glad\src\glad.c" />
     <ClCompile Include="..\common\Cameras\CameraMazhar.cpp" />
     <ClCompile Include="..\common\Cameras\CameraOW.cpp" />
     <ClCompile Include="..\common\Cameras\Mazhar_Camera.cpp" />
@@ -177,6 +176,7 @@
     <ClCompile Include="..\common\Core\Scene.cpp" />
     <ClCompile Include="..\common\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\common\Core\UserInput.cpp" />
+    <ClCompile Include="..\common\glad.c" />
     <ClCompile Include="..\common\Helpers\CommonUtils.cpp" />
     <ClCompile Include="..\common\Helpers\ErrorHandling.cpp" />
     <ClCompile Include="..\common\Helpers\TextBillboard.cpp" />
@@ -199,7 +199,6 @@
     <ClCompile Include="..\common\Renderables\TextBillboardDynamic.cpp" />
     <ClCompile Include="..\common\Renderables\TextBillboardFixed.cpp" />
     <ClCompile Include="..\common\Renderables\Triangle.cpp" />
-    <ClCompile Include="..\TextureAtlas\DummyObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NMSEndScene.cpp" />
     <ClCompile Include="NMSMainScene.cpp" />
@@ -244,7 +243,6 @@
     <ClInclude Include="..\common\Renderables\TextBillboardDynamic.h" />
     <ClInclude Include="..\common\Renderables\TextBillboardFixed.h" />
     <ClInclude Include="..\common\Renderables\Triangle.h" />
-    <ClInclude Include="..\TextureAtlas\DummyObject.h" />
     <ClInclude Include="NMSEndScene.h" />
     <ClInclude Include="NMSMainScene.h" />
     <ClInclude Include="NMSMovie.h" />
