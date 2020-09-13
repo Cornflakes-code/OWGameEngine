@@ -16,7 +16,8 @@
 	Class Scene is the base class for the invariant state information. Think of Scene
 	it as providing the DOM in a Web Page while class ScenePhysicsState provides the
 	cookies. Class Scene (and children) will be heavy on immutable objects, low on
-	functionality. It provides access to Render.
+	functionality. When rendering, class Scene reads the state info in class 
+	ScenePhysicsState.
 
 	A scene is a gross level of division in a game. For example a scene could be:
 		1. The Welcome screen

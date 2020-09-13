@@ -19,7 +19,7 @@
 /*
 	Base class for fixed and dynamic Billboard Text. Font texture loading is cached
 	by FreeTypeFontAtlas via ResourceManager. Future enhancement could include 
-	caching of Vertices.
+	caching of Vertices. Currently this is an inefficient use of vertices.
 */
 class Shader;
 

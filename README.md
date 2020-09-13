@@ -33,7 +33,7 @@ OWGameEngine began as a project to learn OpenGL and it is still performing that 
   - User Input Abstraction
 
 
-## This is still a learning activity and there are many things to do. The design of some things is wrong and will be rewritten. If you want to join me (it is still at an early stage) , then awesome. Design and code quality takes priority over ego. Many things to do including (but not limited to):
+## This is still a learning activity and there are many things to do including (but not limited to):
  - Quaternian based Camera.
  - Transparent Safe and Restore
  - Transparent Macro Recording and Playback

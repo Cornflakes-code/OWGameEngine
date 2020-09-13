@@ -13,7 +13,7 @@
 
 /*
 	Converts raw Keyboard and Pointing Device (PD) actions into logical commands.
-	Listener callbacks can be added by subscribers.
+	Listener callbacks are accessed by subscribers.
 */
 
 class GLApplication;

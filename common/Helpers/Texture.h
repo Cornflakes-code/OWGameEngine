@@ -2,7 +2,9 @@
 
 #include <string>
 #include <vector>
-
+/*
+	Possibly not needed.
+*/
 class Texture
 {
 	struct TextureProps
