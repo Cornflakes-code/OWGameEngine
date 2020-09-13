@@ -5,11 +5,11 @@ OWGameEngine began as a project to learn OpenGL and it is still performing that 
  - Is based on modern C++/OpenGL 3.3/Windows (Visual Studio 2017)/GLFW/GLM
  - Is a work in progress
 
-## The functionality currently existing or 'will be done soon' includes:
+## The functionality currently existing or 'will be completed soon' includes:
  - ResourceManager. Singleton resource cache
  - UserInput. Wraps physical implementation of Keyboard and pointing device and emits logical commands via callbacks
  - Scene. The static implementation of a screen in a game. Examples of a scene include Main (where all the gameplay is), Welcome screen or Key mapping screen. Provides access to the Render functionality. Heavy on objects but contains no state information. Apart from setup code is pretty empty. Closely bound to ScenePhysicsState.
- - ScenePhysicsState. Contains the mutable aspects of a scene. Heavy on code but light on state data. Think of it as the Cookies of a Webpage. Closely tied to a Scene.
+ - ScenePhysicsState. Contains the mutable aspects of a scene. Heavy on code but light on state data. Think of it as the Cookies of a Webpage. Closely coupled to a Scene.
  - Movie. Provides a fixed timestep physics step and a variable time step render step inside a Game Loop. Swaps Scenes in and out
  - SafeAndRestore. Like the name says. Also used by MacroRecorder.
  - MacroRecorder. Provides the ability to replay game events. Only possible with fixed physics timesteps
@@ -26,7 +26,7 @@ OWGameEngine began as a project to learn OpenGL and it is still performing that 
   - String Billboards (fixed and variable sized)
   - Font Atlas Strings
   - Run Loop (fixed timestep updates/variable time step Render) based on [Fix Your Timestep](https://gafferongames.com/post/fix_your_timestep/) article by Glen Fiedler
-  - Resource Factory Caching
+  - Resource Caching
   - Inheritance Based Scene Heirachy
   - Decentralised Scene Switching Logic
   - Mouse/Keyboard callback Messaging
@@ -38,12 +38,11 @@ OWGameEngine began as a project to learn OpenGL and it is still performing that 
  - Transparent Safe and Restore
  - Transparent Macro Recording and Playback
  - Efficient Rendering mechanism
- - Boilerplate Key mapping User Interface
+ - Boilerplate Key Mapping Scene
  - Linux Port
  - Many implementation details of efficient OpenGL
- - Separation of Core functionality and Learning game into different repos.
  - CMake functionality
- - separation of core functionality and game into different repos.
+ - Separation of core functionality and learning game into different repos.
  - Addition os third party libraries as git submodules
  
  ## Stretch Goals
