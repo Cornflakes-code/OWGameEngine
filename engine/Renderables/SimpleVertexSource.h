@@ -9,7 +9,9 @@
 #endif
 
 class Shader;
-
+/*
+	class containing basic vertex info info that gets passed to SimpleVertexRender
+*/
 class SimpleVertexSource
 {
 public:
@@ -19,6 +21,6 @@ public:
 		const glm::mat4& model) const = 0;
 	virtual GLuint texture() const = 0;
 	virtual const Shader* shader() const = 0;
-	virtual std::string verticeLocation() const = 0;
-	virtual const std::vector<glm::vec4>& vertices() const = 0;
+	virtual std::vector<glm::vec4> vertices(std::string& vertexLocation) const = 0;
+	virtual std::vector<unsigned int> indices(unsigned int& type) const = 0;
 };

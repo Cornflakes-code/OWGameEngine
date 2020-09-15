@@ -13,7 +13,8 @@ class SimpleVertexRender
 {
 	const SimpleVertexSource* mSource = nullptr;
 	GLuint mVao = 0;
-	GLuint vbo = 0;
+	GLuint mVbo = 0;
+	GLuint mEbo = 0;
 public:
 	SimpleVertexRender() {}
 	void setUp(SimpleVertexSource* _source);

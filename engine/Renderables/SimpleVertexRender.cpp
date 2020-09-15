@@ -11,25 +11,40 @@ void SimpleVertexRender::setUp(SimpleVertexSource* _source)
 	glGenVertexArrays(1, &mVao);
 	glBindVertexArray(mVao);
 
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glGenBuffers(1, &mVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 
 	mSource->shader()->use();
-	GLuint location = mSource->shader()->getAttributeLocation(mSource->verticeLocation());
+	std::string vertLoc;
+	unsigned int indexType;
+	const std::vector<glm::vec4>& vertices = mSource->vertices(vertLoc);
+	const std::vector<unsigned int >& indices = mSource->indices(indexType);
+	if (!indices.empty())
+	{
+		glGenBuffers(1, &mEbo);
+	}
+	GLuint location = mSource->shader()->getAttributeLocation(vertLoc);
 	glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0);
 
 	glEnableVertexAttribArray(location);
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		sizeof(glm::vec4) * mSource->vertices().size(),
-		mSource->vertices().data(), GL_STATIC_DRAW);
+		sizeof(glm::vec4) * vertices.size(),
+		vertices.data(), GL_STATIC_DRAW);
+	if (!indices.empty())
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(unsigned int) * indices.size(),
+			indices.data(), GL_STATIC_DRAW);
+	}
 	checkGLError();
 	glBindVertexArray(0);
 }
 
 void SimpleVertexRender::render(const glm::mat4& proj,
-	const glm::mat4& view,
-	const glm::mat4& model) const
+								const glm::mat4& view,
+								const glm::mat4& model) const
 {
 	/*
 	Links to Texture Bindings
@@ -42,8 +57,12 @@ void SimpleVertexRender::render(const glm::mat4& proj,
 	// E:\Apps\OpenGL\ogl-master\tutorial18_billboards_and_particles
 	*/
 	glBindVertexArray(mVao);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mSource->texture());
+	GLuint texture = mSource->texture();
+	if (texture)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+	}
 
 	mSource->doRender(proj, view, model);
 	/*
@@ -53,8 +72,23 @@ void SimpleVertexRender::render(const glm::mat4& proj,
 		and https://www.khronos.org/opengl/wiki/Example_Code
 	*/
 	checkGLError();
-	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mSource->vertices().size());
+	std::string vertLoc;
+	unsigned int indexType;
+	const std::vector<unsigned int>& indices = mSource->indices(indexType);
+
+	if (!indices.empty())
+	{
+		glDrawElements(indexType, static_cast<GLsizei>(indices.size()), 
+						GL_UNSIGNED_INT, 0);
+	}
+	else
+	{
+		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mSource->vertices(vertLoc).size());
+	}
 	checkGLError();
 	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	if (texture)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }

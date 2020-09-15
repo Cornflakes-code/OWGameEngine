@@ -24,15 +24,16 @@
 #include "ResourceFactory.h"
 #include "ResizeHelper.h"
 
-/*
-	Base class for fixed and dynamic Billboard Text. Font texture loading is cached
-	by FreeTypeFontAtlas via ResourceManager. Future enhancement could include 
-	caching of Vertices. Currently this is an inefficient use of vertices.
-*/
 class Shader;
 
-class TextBillboard : public ResourceSource, 
-		public ResizeHelper, public SimpleVertexSource
+/*
+	Base class for fixed and dynamic Billboard Text. Font texture loading is cached
+	by FreeTypeFontAtlas via ResourceManager. Rendering is done in SimpleVCertexRender
+*/
+class TextBillboard :
+		public ResourceSource, 
+		public ResizeHelper, 
+		public SimpleVertexSource
 {
 protected:
 	TextBillboard(Shader* shader, const std::string& fontFileName, int fontHeight);
@@ -45,8 +46,16 @@ public:
 
 	GLuint texture() const override { return mFontData->texture(); }
 	const Shader* shader() const override { return mShader; }
-	std::string verticeLocation() const override { return "coord"; }
-	const std::vector<glm::vec4>& vertices() const override { return mVertices; }
+	std::vector<glm::vec4> vertices(std::string& verticeLocation) const override 
+	{ 
+		verticeLocation = "coord";
+		return mVertices; 
+	}
+	std::vector<unsigned int> indices(unsigned int& type) const override
+	{
+		return std::vector<unsigned int>();
+	}
+
 protected:
 	AABB mBounds;
 	glm::vec4 mColor;

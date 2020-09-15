@@ -57,7 +57,8 @@ void Axis::setUp(const AABB& world, const Camera* camera)
 	prepareOpenGL(mLines, indices, glm::vec4(1.0,1.0,1.0,1.0));
 }
 
-void Axis::render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model) const
+void Axis::render(const glm::mat4& proj, const glm::mat4& view, 
+				  const glm::mat4& model) const
 {
 	{
 		OWUtils::PolygonModeRIAA poly;

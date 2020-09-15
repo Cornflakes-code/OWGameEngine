@@ -9,22 +9,25 @@
 
 #include "../Helpers/Shader.h"
 #include "../Helpers/CommonUtils.h"
+#include "../Helpers/ResourceFactory.h"
 
-Triangle::Triangle(Shader* _shader)
-	:Renderer(_shader)
+Triangle::Triangle()
+: mShader(new Shader())
 {
+	mShader->loadShaders(ResourceFactory::boilerPlateVertexShader(),
+		ResourceFactory::boilerPlateFragmentShader(),
+		ResourceFactory::boilerPlateGeometryShader());
 }
 
 void Triangle::setUp()
 {
-	std::vector<glm::vec3> vertices;
-	vertices.push_back({ 0.0, 0.0, 0.0 });
-	vertices.push_back({ 1.0, 0.0, 1.0 });
-	vertices.push_back({ 0.0, 1.0, 1.0 });
-	vertices.push_back({-1.0, 0.0, 1.0 });
-	vertices.push_back({ 0.0,-1.0, 1.0 });
+	mVertices.push_back({ 0.0, 0.0, 0.0, 1.0 });
+	mVertices.push_back({ 1.0, 0.0, 1.0, 1.0 });
+	mVertices.push_back({ 0.0, 1.0, 1.0, 1.0 });
+	mVertices.push_back({-1.0, 0.0, 1.0, 1.0 });
+	mVertices.push_back({ 0.0,-1.0, 1.0, 1.0 });
 
-	std::vector<unsigned int> indices = {
+	mIndices = {
 		0,1,2,
 		0,2,3,
 		0,3,4,
@@ -32,7 +35,6 @@ void Triangle::setUp()
 		1,2,3, // Base
 		3,4,1 // Base
 	};
-	prepareOpenGL(vertices, indices, glm::vec4(0.0, 0.0, 1.0, 1.0));
 }
 
 void Triangle::setPosition(const glm::vec3& newValue)
@@ -49,12 +51,13 @@ void Triangle::move(const glm::vec3& newValue)
 	mPosition.z += newValue.x;
 }
 
-void Triangle::render(const glm::mat4& proj, 
-					  const glm::mat4& view,
-					  const glm::mat4& model) const
+void Triangle::doRender(const glm::mat4& proj,
+						const glm::mat4& view,
+						const glm::mat4& model) const
 {
-	OWUtils::PolygonModeRIAA poly;
-	renderOpenGL(proj, view, model, GL_TRIANGLES, []() {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	});
+	//OWUtils::PolygonModeRIAA poly;
+	mShader->use();
+	glm::mat4 pvm = proj * view * model;
+	mShader->setMatrix4("pvm", pvm);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

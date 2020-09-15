@@ -13,6 +13,7 @@ class MovingText
 {
 	SimpleVertexRender mText;
 	Triangle* mTriangle;
+	SimpleVertexRender mTriRender;
 	AABB mBounds;
 	glm::vec3 mVelocity;
 	static OWUtils::Float mSpeed;

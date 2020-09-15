@@ -10,8 +10,9 @@
 
 MovingText::MovingText()
 {
-	mTriangle = new Triangle(nullptr);
+	mTriangle = new Triangle();
 	mTriangle->setUp();
+	mTriRender.setUp(mTriangle);
 }
 
 void MovingText::fixedTimeStep(float seconds)
@@ -98,5 +99,5 @@ void MovingText::render(const glm::mat4& proj,
 													 mBounds.minPoint().z));
 	
 	mText.render(proj, view, temp);
-	mTriangle->render(proj, view, model);
+	mTriRender.render(proj, view, model);
 }
