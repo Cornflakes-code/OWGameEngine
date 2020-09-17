@@ -1,7 +1,10 @@
 #pragma once
 #include <set>
 
-#include "../Core/Camera.h"
+#include <Core/Camera.h>
+#include <Core/GLApplication.h>
+#include <Core/ListenerHelper.h>
+
 #include "../Helpers/ErrorHandling.h"
 
 #include "OW_Camera.h"
@@ -9,7 +12,7 @@
 /*
 	Implements the Camera interface with class OW_Camera providing the functionality.
 */
-class CameraOW : public Camera
+class CameraOW : public Camera, public ListenerHelper
 {
 	OW_Camera mTempRenderTarget;
 	OW_Camera mCurrentTarget;
@@ -117,6 +120,15 @@ public:
 		return mCurrent->aspectRatio();
 	}
 private:
+	void resizeCallback(
+		GLApplication::WindowResizeType resizeType, glm::ivec2 dimensions)
+	{
+		// There is a lot of interaction here between:
+		// 1. mAspectRatio.
+		// 2. call to setViewport in Movie.cpp
+		// 3. camera projection call passed to render.
+		mCurrent->aspectRatio(dimensions.x / (dimensions.y * 1.0f));
+	}
 	bool processKeyboardInput(
 		UserInput::UserCommandCallbackData keyInput, float seconds);
 
@@ -126,5 +138,4 @@ private:
 	int mRoll = 0;
 	int mPitch = 0;
 	int mYaw = 0;
-
 };

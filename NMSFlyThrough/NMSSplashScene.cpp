@@ -15,6 +15,7 @@
 #include <Renderables/TextBillboardFixed.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/Axis.h>
+#include <Renderables/Circle.h>
 
 #include "NMSUserInput.h"
 
@@ -66,7 +67,6 @@ ScenePhysicsState* NMSSplashScenePhysics::clone()
 
 bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userInput,
 					std::string& nextScene, 
-					const glm::uvec2& screenSize, 
 					Camera* camera)
 {
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
@@ -135,6 +135,10 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	}
 	mAxis = new Axis();
 	mAxis->setUp(_world, movie()->camera());
+	Circle* circle = new Circle();
+	circle->setUp();
+	mCircle.setUp(circle);
+
 }
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
@@ -146,6 +150,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	glm::mat4 model(1.0);
 	mAxis->render(proj, view, model);
 	sps->mEnjoy.render(proj, view, model);
+	mCircle.render(proj, view, model);
 #ifdef INCLUDE_WELCOME
 	sps->mWelcome.render(proj, view, model);
 #endif

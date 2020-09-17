@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <Core/GLApplication.h>
+#include <Core/SaveAndRestore.h>
 
 #include <Core/Camera.h>
 #include <Helpers/ErrorHandling.h>
@@ -13,7 +14,7 @@
 #include <Helpers/FreeTypeFontAtlas.h>
 
 NMSMovie::NMSMovie(Camera* _camera)
-	: Movie("NMS", glm::uvec2(800, 600), _camera)
+	: Movie("NMS", _camera)
 {
 }
 
@@ -30,18 +31,18 @@ void NMSMovie::preRun()
 	// Maybe could be in a config file loaded at start up?
 	FreeTypeFontAtlas::FontDetails::pleasingSpacing(24, 0.00625f, 0.00625f * 2);
 	FreeTypeFontAtlas::FontDetails::pleasingSpacing(12, 0.00625f, 0.00625f * 2);
-
+	std::string activeScene = theApp->saveAndRestore()->activeScene();
 	NMSScene* s = new NMSSplashScene(this);
 
-	this->add(s, new NMSSplashScenePhysics(s), true);
+	this->add(s, new NMSSplashScenePhysics(s), s->name() == activeScene);
 
 	s = new NMSMainScene(this);
 
-	this->add(s, new NMSMainScenePhysics(s), false);
+	this->add(s, new NMSMainScenePhysics(s), s->name() == activeScene);
 
 	s = new NMSEndScene(this);
 
-	this->add(s, new NMSEndScenePhysics(s), false);
+	this->add(s, new NMSEndScenePhysics(s), s->name() == activeScene);
 
 	// Here we set up for our star display
 	/*
@@ -53,12 +54,13 @@ void NMSMovie::preRun()
 	create camera at current star looking a center of galaxy
 	*/
 	Camera* _camera = camera();
-	_camera->aspectRatio(this->physicalWindowSize().x / 
-						(1.0f * this->physicalWindowSize().y));
+	_camera->aspectRatio(theApp->physicalWindowSize().x / 
+						(1.0f * theApp->physicalWindowSize().y));
 	_camera->moveScale(NMSScene::world().size().x / 1.0f);
 	
 	const glm::vec3& wmax = NMSScene::world().maxPoint();
-	_camera->position(glm::vec3(0.01f, -wmax.y*2.2, 0));
+	_camera->position({ 0.0f, 0.0f, wmax.z });
+	//_camera->position(glm::vec3(0.01f, -wmax.y*2.2, 0));
 	//_camera->position({ 0.001f, NMSScene::world().maxPoint().y * 0.01f, 0.001f });
 	_camera->lookAt(NMSScene::world().center());
 	//_camera->roll(3.141592653/4); // PI

@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include <Core/GLApplication.h>
+#include <Core/SaveAndRestore.h>
 
 #include <Helpers/ResourceFactory.h>
 #include <Cameras/CameraMazhar.h>
@@ -68,6 +69,8 @@ int main()
 	ResourceSource::factory(rf);
 	rf->addPath("../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
 	rf->addPath("../engine/Resources/fonts", ResourceFactory::ResourceType::Font);
+	rf->addPath("../../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
+	rf->addPath("../../engine/Resources/fonts", ResourceFactory::ResourceType::Font);
 	NMSUserInput ui;
 	//ui.addKeyMapping(GLFW_KEY_W, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Forward);
 	//ui.addKeyMapping(GLFW_KEY_A, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::YawLeft);
@@ -86,15 +89,15 @@ int main()
 
 	//	nms.addKeyMapping(ANY_KEY, KeyMods::NoMod, NMSUserCommands::AnyKey);
 	//CameraMazhar camera;
-	CameraOW camera;
-
-	MacroRecorder recorder;
-	NMSMovie nms(&camera);
 
 	try
 	{
+		MacroRecorder recorder;
 		GLApplication* app = GLApplication::getApplication(rf, &ui);
-		app->init(&nms, &ui, &recorder);
+		CameraOW camera;
+		NMSMovie nms(&camera);
+		SaveAndRestore sr;
+		app->init(&nms, &ui, &recorder, &sr);
 		app->run(&nms);
 	}
 	catch (const std::exception& e)

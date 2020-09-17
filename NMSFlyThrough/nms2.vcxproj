@@ -24,6 +24,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>nms2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <ProjectName>NMSFlyThough</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -173,7 +174,7 @@
     <ClCompile Include="..\engine\Core\ListenerHelper.cpp" />
     <ClCompile Include="..\engine\Core\Movie.cpp" />
     <ClCompile Include="..\engine\Core\QuitScene.cpp" />
-    <ClCompile Include="..\engine\Core\SafeAndRestore.cpp" />
+    <ClCompile Include="..\engine\Core\SaveAndRestore.cpp" />
     <ClCompile Include="..\engine\Core\Scene.cpp" />
     <ClCompile Include="..\engine\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\engine\Core\UserInput.cpp" />
@@ -195,6 +196,7 @@
     <ClCompile Include="..\engine\Renderables\Actor.cpp" />
     <ClCompile Include="..\engine\Renderables\Axis.cpp" />
     <ClCompile Include="..\engine\Renderables\BoundingBox.cpp" />
+    <ClCompile Include="..\engine\Renderables\Circle.cpp" />
     <ClCompile Include="..\engine\Renderables\FullScreen.cpp" />
     <ClCompile Include="..\engine\Renderables\MovingText.cpp" />
     <ClCompile Include="..\engine\Renderables\Points.cpp" />
@@ -225,7 +227,7 @@
     <ClInclude Include="..\engine\Core\ListenerHelper.h" />
     <ClInclude Include="..\engine\Core\Movie.h" />
     <ClInclude Include="..\engine\Core\QuitScene.h" />
-    <ClInclude Include="..\engine\Core\SafeAndRestore.h" />
+    <ClInclude Include="..\engine\Core\SaveAndRestore.h" />
     <ClInclude Include="..\engine\Core\Scene.h" />
     <ClInclude Include="..\engine\Core\ScenePhysicsState.h" />
     <ClInclude Include="..\engine\Core\UserInput.h" />
@@ -245,6 +247,7 @@
     <ClInclude Include="..\engine\Renderables\Actor.h" />
     <ClInclude Include="..\engine\Renderables\Axis.h" />
     <ClInclude Include="..\engine\Renderables\BoundingBox.h" />
+    <ClInclude Include="..\engine\Renderables\Circle.h" />
     <ClInclude Include="..\engine\Renderables\FullScreen.h" />
     <ClInclude Include="..\engine\Renderables\MovingText.h" />
     <ClInclude Include="..\engine\Renderables\Points.h" />

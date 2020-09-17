@@ -5,33 +5,34 @@
 #include "../Renderables/Renderer.h"
 #include "../Renderables/SimpleVertexSource.h"
 
+class Shader;
 /*
 	Simple class wrapping creation and Rendering of a Triangle. Will be removed.
 */
-class Shader;
-
-class Triangle: public SimpleVertexSource
+class Circle : public SimpleVertexSource
 {
 	glm::vec3 mPosition = glm::vec3(0);
 	std::vector<glm::vec4> mVertices;
 	std::vector<unsigned int> mIndices;
 	Shader* mShader;
 public:
-	Triangle();
+	Circle();
 	void setUp();
 	void setPosition(const glm::vec3& newValue);
 	void move(const glm::vec3& newValue);
 
 	GLuint texture() const override { return 0; }
 	const Shader* shader() const override { return mShader; }
-	std::vector<glm::vec4> vertices(std::string& verticeLocation) const override
+	std::vector<glm::vec4> vertices(std::string& verticeLocation,
+									unsigned int& type) const override
 	{
+		type = GL_LINE_LOOP;
 		verticeLocation = "aPos";
 		return mVertices;
 	}
 	std::vector<unsigned int> indices(unsigned int& type) const override
 	{
-		type = GL_TRIANGLES;
+		type = 0;// GL_LINE_STRIP;
 		return mIndices;
 	}
 

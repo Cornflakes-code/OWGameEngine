@@ -18,8 +18,9 @@ struct NMSEndScenePhysics : public ScenePhysicsState
 	void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) override;
 	void interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
 		const ScenePhysicsState* currentState, double multCurr) override;
-	bool processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, 
-		const glm::uvec2& screenSize, Camera* camera) override;
+	bool processUserCommands(const UserInput::AnyInput& userInput, 
+							 std::string& nextScene, 
+							 Camera* camera) override;
 
 	void copy(ScenePhysicsState* source) override;
 	ScenePhysicsState* clone() override;

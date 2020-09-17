@@ -5,7 +5,9 @@
 
 CameraOW::CameraOW()
 {
-	//mCurrent->Update();
+	auto cb = std::bind(&CameraOW::resizeCallback, this,
+		std::placeholders::_1, std::placeholders::_2);
+	theApp->addWindowResizeListener(cb, this);
 }
 
 

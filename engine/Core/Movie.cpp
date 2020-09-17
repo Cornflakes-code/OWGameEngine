@@ -13,11 +13,9 @@
 #include "Scene.h"
 
 Movie::Movie(const std::string& _windowTitle, 
-			 const glm::uvec2& _windowSize, 
 			 Camera* _camera)
 : mLogger(new Logger())
 , mWindowTitle(_windowTitle)
-, mPhysicalWindowSize(_windowSize)
 , mCamera(_camera)
 {
 }
@@ -38,7 +36,6 @@ void Movie::init(GLApplication* app, UserInput* ui, MacroRecorder* recorder)
 		if (resizeType == GLApplication::WindowResizeType::FrameBuffer)
 		{
 			glViewport(0, 0, newSize.x, newSize.y);
-			mPhysicalWindowSize = newSize;
 			mCamera->aspectRatio(newSize.y / (1.0f*newSize.x));
 		}
 		else if (resizeType == GLApplication::WindowResizeType::WindowResize)
@@ -74,7 +71,7 @@ void Movie::init(GLApplication* app, UserInput* ui, MacroRecorder* recorder)
 	mLogger->log_gl_params(std::cout);
 }
 
-void Movie::run(UserInput* ui)
+void Movie::run(UserInput* ui, GLFWwindow* glfwWindow)
 {
 	if (!mScenes.size())
 	{
@@ -113,9 +110,9 @@ void Movie::run(UserInput* ui)
 
 	//processTimeStep(lcs, currentScene()->logic()->current, t, std::chrono::milliseconds(0));
 	std::string nextSceneName;
-	while (!glfwWindowShouldClose(mWindow))
+	while (!glfwWindowShouldClose(glfwWindow))
 	{
-		mLogger->update_fps_counter(mWindow);
+		mLogger->update_fps_counter(glfwWindow);
 
 		OWUtils::Time::time_point newTime = OWUtils::Time::now();
 		OWUtils::Time::duration frameTime = newTime - currentTime;
@@ -165,8 +162,12 @@ void Movie::run(UserInput* ui)
 			// 0: do not wait for vsync(may be overridden by driver / driver settings)
 			// 1 : wait for 1st vsync(may be overridden by driver / driver settings)
 		glfwSwapInterval(1);
-		glfwSwapBuffers(mWindow);
+		glfwSwapBuffers(glfwWindow);
 		glfwPollEvents();
+		if (!mIsRunning)
+		{ 
+			glfwSetWindowShouldClose(glfwWindow, true);
+		}
 	}
 }
 
@@ -187,7 +188,7 @@ void Movie::makeCurrent(const std::string& newSceneName)
 	auto it = mScenes.find(safeSceneName);
 	if (it == mScenes.end())
 	{
-		glfwSetWindowShouldClose(mWindow, true);
+		mIsRunning = false;
 		safeSceneName = Scene::quitSceneName();
 		dumpMessage(std::stringstream()
 			<< "Unknown Scene Name [" << newSceneName
@@ -265,8 +266,7 @@ void Movie::processUserInput(std::string& nextScene, OWUtils::Time::duration dt)
 		dumpMessage(std::stringstream() << "User Input [" 
 				<< input.keyInput.userCommand
 				<< "]\n", NMSErrorLevel::NMSInfo);
-		if (!mCurrent->logic.current->processUserCommands(input, nextScene, 
-				this->mPhysicalWindowSize, mCamera))
+		if (!mCurrent->logic.current->processUserCommands(input, nextScene, mCamera))
 		{
 			mCamera->processInput(input, timeStep);
 		}
@@ -278,9 +278,4 @@ void Movie::processUserInput(std::string& nextScene, OWUtils::Time::duration dt)
 		}
 		mUserInput.pop();
 	}
-}
-
-void Movie::physicalWindowSize(const glm::uvec2& newSize)
-{
-
 }

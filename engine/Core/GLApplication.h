@@ -18,18 +18,23 @@ class Movie;
 class Logger;
 class ResourceFactory;
 class MacroRecorder;
+class SaveAndRestore;
 class UserInput;
 
 class GLApplication
 {
 public:
-	void init(Movie* movie, UserInput* ui, MacroRecorder* recorder);
-	void run(Movie* movie);
+	void init(Movie* movie, UserInput* ui, 
+			  MacroRecorder* recorder, SaveAndRestore* saveRestore);
+	void run(Movie* movieSaveAndRestore);
 	static GLApplication* getApplication(ResourceFactory* mr, UserInput* ui);
 
 	// convenience methods
 	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
 	static float secondsSinceLoad();
+	const glm::uvec2& physicalWindowSize() const { return mPhysicalWindowSize; }
+	void physicalWindowSize(const glm::uvec2& newValue) { mPhysicalWindowSize = newValue; }
+	SaveAndRestore* saveAndRestore() { return mSaveAndRestore;  }
 	const Movie* movie() const { return mMovie; }
 	enum class WindowResizeType
 	{
@@ -70,6 +75,8 @@ private:
 	GLApplication(ResourceFactory* _factory, UserInput* ui);
 	~GLApplication();
 
+	SaveAndRestore* mSaveAndRestore = nullptr;
+	glm::uvec2 mPhysicalWindowSize;
 	GLFWwindow* mWindow;
 	Logger* mLogger;
 	glm::vec2 mPointingDevicePosition;

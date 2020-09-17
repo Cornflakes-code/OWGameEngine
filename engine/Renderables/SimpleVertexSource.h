@@ -17,10 +17,22 @@ class SimpleVertexSource
 public:
 	SimpleVertexSource();
 	virtual void doRender(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model) const = 0;
+						const glm::mat4& view,
+						const glm::mat4& model) const = 0;
 	virtual GLuint texture() const = 0;
 	virtual const Shader* shader() const = 0;
-	virtual std::vector<glm::vec4> vertices(std::string& vertexLocation) const = 0;
+	virtual std::vector<glm::vec4> vertices(std::string& vertexLocation,
+											unsigned int& type) const = 0;
 	virtual std::vector<unsigned int> indices(unsigned int& type) const = 0;
 };
+
+/*
+template <class T>
+struct Area
+{
+	T width;
+	T height;
+	T theArea(); { return width * height; }
+	void anotherFunction();
+};
+*/

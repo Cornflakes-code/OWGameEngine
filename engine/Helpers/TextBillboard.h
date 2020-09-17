@@ -46,13 +46,16 @@ public:
 
 	GLuint texture() const override { return mFontData->texture(); }
 	const Shader* shader() const override { return mShader; }
-	std::vector<glm::vec4> vertices(std::string& verticeLocation) const override 
-	{ 
+	std::vector<glm::vec4> vertices(std::string& verticeLocation,
+									unsigned int& type) const override
+	{
+		type = GL_TRIANGLES;
 		verticeLocation = "coord";
 		return mVertices; 
 	}
 	std::vector<unsigned int> indices(unsigned int& type) const override
 	{
+		type = 0;
 		return std::vector<unsigned int>();
 	}
 

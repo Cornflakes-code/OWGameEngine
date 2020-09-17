@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext/matrix_projection.hpp>
 
-#include <Core/Movie.h>
+#include <Core/GLApplication.h>
 
 #include <Helpers/ErrorHandling.h>
 #include <Core/Camera.h>
@@ -34,8 +34,7 @@ ScenePhysicsState* NMSMainScenePhysics::clone()
 }
 
 bool NMSMainScenePhysics::processUserCommands(const UserInput::AnyInput& userInput, 
-				std::string& nextScene, const glm::uvec2& screenSize, 
-				Camera* camera)
+				std::string& nextScene, Camera* camera)
 {
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
 	{
@@ -44,7 +43,8 @@ bool NMSMainScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 			https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates
 		// https://stackoverflow.com/questions/9901453/using-glms-unproject
 		*/
-		glm::vec4 viewportdata = glm::vec4(0.0f, 0.0f, screenSize.x, screenSize.y);
+		glm::vec4 viewportdata = glm::vec4(0.0f, 0.0f, 
+			theApp->physicalWindowSize().x, theApp->physicalWindowSize().y);
 		glm::mat4 projection = camera->projection();
 		glm::mat4 view = camera->view();
 		glm::mat4 model = glm::mat4(1.0);

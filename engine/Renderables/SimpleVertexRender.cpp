@@ -1,5 +1,6 @@
 #include "SimpleVertexRender.h"
 
+#include <cassert>
 #include "../Helpers/Shader.h"
 
 #include "SimpleVertexSource.h"
@@ -15,10 +16,14 @@ void SimpleVertexRender::setUp(SimpleVertexSource* _source)
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 
 	mSource->shader()->use();
+
 	std::string vertLoc;
-	unsigned int indexType;
-	const std::vector<glm::vec4>& vertices = mSource->vertices(vertLoc);
+	unsigned int vertType = -1;
+	const std::vector<glm::vec4>& vertices = mSource->vertices(vertLoc, vertType);
+	assert(vertType != -1);
+	unsigned int indexType = -1;
 	const std::vector<unsigned int >& indices = mSource->indices(indexType);
+	assert(indexType != -1);
 	if (!indices.empty())
 	{
 		glGenBuffers(1, &mEbo);
@@ -72,9 +77,9 @@ void SimpleVertexRender::render(const glm::mat4& proj,
 		and https://www.khronos.org/opengl/wiki/Example_Code
 	*/
 	checkGLError();
-	std::string vertLoc;
 	unsigned int indexType;
 	const std::vector<unsigned int>& indices = mSource->indices(indexType);
+	assert(indexType != -1);
 
 	if (!indices.empty())
 	{
@@ -83,7 +88,11 @@ void SimpleVertexRender::render(const glm::mat4& proj,
 	}
 	else
 	{
-		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mSource->vertices(vertLoc).size());
+		std::string vertLoc;
+		unsigned int vertType = -1;
+		const std::vector<glm::vec4>& vertices = mSource->vertices(vertLoc, vertType);
+		assert(vertType != -1);
+		glDrawArrays(vertType, 0, static_cast<GLsizei>(vertices.size()));
 	}
 	checkGLError();
 	glBindVertexArray(0);

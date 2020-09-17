@@ -24,7 +24,7 @@ struct NMSMainScenePhysics : public NMSWorldPhysicsState
 	virtual void interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
 								  const ScenePhysicsState* currentState, double multCurr) override;
 	bool processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, 
-							 const glm::uvec2& screenSize, Camera* camera) override;
+							 Camera* camera) override;
 
 
 	void copy(ScenePhysicsState* source) override;

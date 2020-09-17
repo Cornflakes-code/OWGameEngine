@@ -5,6 +5,7 @@
 #include "../Helpers/ErrorHandling.h"
 #include "../Helpers/Logger.h"
 #include "../Helpers/ResourceSource.h"
+#include <Core/SaveAndRestore.h>
 
 #pragma comment( lib, "glfw3.lib" )
 #pragma comment (lib, "OpenGL32.lib")
@@ -26,8 +27,10 @@ GLApplication::~GLApplication()
 		hackForErrorCallback = nullptr;
 }
 
-void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder)
+void GLApplication::init(Movie* movie, UserInput* ui, 
+						 MacroRecorder* recorder, SaveAndRestore* saveRestore)
 {
+	mPhysicalWindowSize = saveRestore->physicalWindowSize();
 	mMovie = movie;
 	if (glfwInit())
 	{
@@ -44,9 +47,6 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder)
 
 		glfwWindowHint(GLFW_SAMPLES, 4); // anti- aliasing. 16 for really high
 
-		unsigned int SCR_WIDTH = movie->physicalWindowSize().x;
-		unsigned int SCR_HEIGHT = movie->physicalWindowSize().y;
-
 #ifdef SECOND_MONITOR_WINDOW
 		int count;
 		GLFWmonitor** mons = glfwGetMonitors(&count);
@@ -56,13 +56,14 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder)
 		mWindow = glfwCreateWindow(mScrWidth, mScrHeight, windowTitle, mon, NULL);
 		glfwSetWindowMonitor(window, NULL, -1000, 200, mScrWidth, mScrHeight, mode->refreshRate);
 #else
-		mWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT,
+		mWindow = glfwCreateWindow(mPhysicalWindowSize.x, mPhysicalWindowSize.y,
 						movie->windowTitle().c_str(), NULL, NULL);
 		if (!mWindow)
 		{
 			throw NMSException("Could not create OpenGL window.");
 		}
-		glfwSetWindowMonitor(mWindow, NULL, 2000, 200, SCR_WIDTH, SCR_HEIGHT, GLFW_DONT_CARE);
+		glfwSetWindowMonitor(mWindow, NULL, 2000, 200, 
+			mPhysicalWindowSize.x, mPhysicalWindowSize.y, GLFW_DONT_CARE);
 #endif
 		glfwMakeContextCurrent(mWindow);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -81,14 +82,13 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder)
 
 		mLogger->log_gl_params(std::cout);
 		enableCallbacks();
-		movie->window(mWindow);
 		try
 		{
 			movie->init(this, ui, recorder);
 			mUserInput->init(this);
 			// We set the window size before the callbacks were hooked up.
-			onFrameBufferResizeCallback(mWindow, movie->physicalWindowSize().x, movie->physicalWindowSize().y);
-			onSetWindowSizeCallback(mWindow, movie->physicalWindowSize().x, movie->physicalWindowSize().y);
+			onFrameBufferResizeCallback(mWindow, mPhysicalWindowSize.x, mPhysicalWindowSize.y);
+			onSetWindowSizeCallback(mWindow, mPhysicalWindowSize.x, mPhysicalWindowSize.y);
 		}
 
 		catch (const std::exception& ex)
@@ -109,7 +109,7 @@ void GLApplication::run(Movie* movie)
 {
 	//display.print_all(shader.program(), std::cout);
 	movie->preRun();
-	movie->run(mUserInput);
+	movie->run(mUserInput, mWindow);
 	glfwDestroyWindow(mWindow);
 	glfwTerminate();
 }

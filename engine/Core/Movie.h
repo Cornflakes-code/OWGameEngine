@@ -28,19 +28,13 @@ class Movie
 public:
 	virtual void init(GLApplication* app, UserInput* ui, MacroRecorder* recorder);
 	virtual void preRun();
-	void run(UserInput* ui);
-
-	const glm::uvec2& physicalWindowSize() const { return mPhysicalWindowSize; }
-	void physicalWindowSize(const glm::uvec2& newSize);
+	void run(UserInput* ui, GLFWwindow* glfw);
 	virtual std::string windowTitle() const { return mWindowTitle; }
-	void window(GLFWwindow* glfw) { mWindow = glfw; }
-	GLFWwindow* window() const { return mWindow; }
 	const Camera* camera() const { return mCamera; }
 	Camera* camera() { return mCamera; }
+	void close() const { mIsRunning = false; }
 protected:
-	Movie(const std::string& _windowTitle, 
-		  const glm::uvec2& _windowSize, 
-		  Camera* _camera);
+	Movie(const std::string& _windowTitle, Camera* _camera);
 
 	void add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent = false);
 	virtual void render(const ScenePhysicsState* state);
@@ -49,7 +43,7 @@ private:
 	std::queue<UserInput::AnyInput> mUserInput;
 	Logger* mLogger;
 	std::string mWindowTitle;
-	glm::uvec2 mPhysicalWindowSize;
+	mutable bool mIsRunning = true;
 	Camera* mCamera = nullptr;
 
 	struct LoopControlStruct
@@ -63,8 +57,7 @@ private:
 	std::map<std::string, LoopControlStruct> mScenes;
 	LoopControlStruct* mCurrent = nullptr;
 	LoopControlStruct* mPrevious = nullptr;
-	GLFWwindow* mWindow = nullptr;
-
+	
 	void makeCurrent(LoopControlStruct* lcs);
 	void makeCurrent(const std::string& newSceneName);
 

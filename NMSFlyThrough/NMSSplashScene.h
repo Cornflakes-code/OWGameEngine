@@ -22,7 +22,7 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 	virtual void interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
 		const ScenePhysicsState* currentState, double multCurr) override;
 	bool processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, 
-							 const glm::uvec2& screenSize, Camera* camera) override;
+							 Camera* camera) override;
 
 	ScenePhysicsState* clone() override;
 	void copy(ScenePhysicsState* source) override;
@@ -40,6 +40,7 @@ class Axis;
 class NMSSplashScene : public NMSScene
 {
 	Axis* mAxis;
+	SimpleVertexRender mCircle;
 public:
 	NMSSplashScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::splashSceneName(); }

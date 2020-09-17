@@ -11,6 +11,7 @@
 Renderer::Renderer(Shader* _shader)
 	:mShader(_shader)
 {
+	//assert(false);
 	if (mShader == nullptr)
 	{
 		mShader = new Shader();

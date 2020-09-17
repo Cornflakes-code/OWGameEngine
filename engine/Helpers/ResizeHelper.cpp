@@ -3,8 +3,7 @@
 
 ResizeHelper::ResizeHelper()
 {
-	mAspectRatio = theApp->movie()->physicalWindowSize().x /
-		(theApp->movie()->physicalWindowSize().y * 1.0f);
+	mAspectRatio = 1.0f;// theApp->physicalWindowSize().x / (theApp->physicalWindowSize().y * 1.0f);
 
 	auto cb = std::bind(&ResizeHelper::resizeCallback, this,
 		std::placeholders::_1, std::placeholders::_2);
@@ -18,22 +17,22 @@ void ResizeHelper::resizeCallback(
 	// 1. mAspectRatio.
 	// 2. call to setViewport in Movie.cpp
 	// 3. camera projection call passed to render.
-	mAspectRatio = 1.0f;// dimensions.y / (dimensions.x * 1.0f);
+	mAspectRatio = dimensions.x / (dimensions.y * 1.0f);
 	mAspectRatioModified = true;
 }
 
 glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale) const
 {
 	glm::vec2 retval = toScale;
-	if (mAspectRatio > 1)
+	if (mAspectRatio < 1)
 	{
-		retval.x /= mAspectRatio;
-		retval.y *= mAspectRatio;
+		//retval.x *= mAspectRatio;
+		//retval.y *= mAspectRatio;
 	}
 	else
 	{
-		retval.x *= mAspectRatio;
-		retval.y /= mAspectRatio;
+		//retval.x /= mAspectRatio;
+		//retval.y /= mAspectRatio;
 	}
 	return retval;
 }

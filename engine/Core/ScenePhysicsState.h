@@ -23,8 +23,9 @@ public:
 	{}
 	virtual void copy(ScenePhysicsState* source) = 0;
 	virtual void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) = 0;
-	virtual bool processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, 
-									 const glm::uvec2& screenSize, Camera* camera) = 0;
+	virtual bool processUserCommands(const UserInput::AnyInput& userInput, 
+									 std::string& nextScene, 
+									 Camera* camera) = 0;
 	virtual void variableTimeStep(OWUtils::Time::duration dt) {}
 
 	// Good site for advanced interpolation (inclkuding eueler and RK4)
@@ -85,9 +86,9 @@ public:
 		}
 	}
 	bool processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, 
-							 const glm::uvec2& screenSize, Camera* camera)
+							 Camera* camera)
 	{
-		return current->processUserCommands(userInput, nextScene, screenSize, camera);
+		return current->processUserCommands(userInput, nextScene, camera);
 	}
 	ScenePhysicsState* current;
 	ScenePhysicsState* previous;

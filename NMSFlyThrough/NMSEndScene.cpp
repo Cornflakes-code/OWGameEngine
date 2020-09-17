@@ -29,8 +29,7 @@ ScenePhysicsState* NMSEndScenePhysics::clone()
 }
 
 bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInput, 
-					std::string& nextScene,  const glm::uvec2& screenSize, 
-					Camera* camera)
+					std::string& nextScene, Camera* camera)
 {
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
 	{
@@ -58,13 +57,13 @@ bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInpu
 NMSEndScene::NMSEndScene(const Movie* _movie)
 	: NMSScene(_movie)
 {
-	const glm::uvec2& screen = movie()->physicalWindowSize();
+	const glm::uvec2& screen = theApp->physicalWindowSize();
 }
 
 void NMSEndScene::doSetup(ScenePhysicsState* state)
 {
-	const float sx = 2.0f / movie()->physicalWindowSize().x;
-	const float sy = 2.0f / movie()->physicalWindowSize().y;
+	const float sx = 2.0f / theApp->physicalWindowSize().x;
+	const float sy = 2.0f / theApp->physicalWindowSize().y;
 	TextBillboard* txt = new TextBillboardDynamic("Arial.ttf", 24);
 
 	glm::vec4 color(0.5, 0.8f, 0.2f, 0);

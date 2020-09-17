@@ -103,9 +103,6 @@
     <ClCompile Include="..\engine\Core\QuitScene.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\Core\SafeAndRestore.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\engine\Core\ScenePhysicsState.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -199,6 +196,12 @@
     <ClCompile Include="..\engine\Core\Scene.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\engine\Core\SaveAndRestore.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Renderables\Circle.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h">
@@ -250,9 +253,6 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\Core\QuitScene.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\SafeAndRestore.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\Core\Scene.h">
@@ -340,6 +340,12 @@
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\Renderables\Triangle.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Core\SaveAndRestore.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Renderables\Circle.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,7 +12,6 @@ ScenePhysicsState* QuitScenePhysics::clone()
 
 bool QuitScenePhysics::processUserCommands(const UserInput::AnyInput& userInput,
 				std::string& nextScene, 
-				const glm::uvec2& screenSize, 
 				Camera* camera)
 {
 	return false;
@@ -37,7 +36,7 @@ void QuitScene::render(const ScenePhysicsState* state,
 void QuitScene::activate(const std::string& previousScene, ScenePhysicsState* state,
 					Camera* camera, unsigned int callCount)
 {
-	glfwSetWindowShouldClose(movie()->window(), true);
+	movie()->close();
 }
 
 void QuitScene::deActivate(const std::string& previousScene, const Camera* camera, ScenePhysicsState* state)

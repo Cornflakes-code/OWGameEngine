@@ -27,6 +27,7 @@ private:
 	SimpleVertexRender mX;
 	SimpleVertexRender mY;
 	SimpleVertexRender mZ;
+	SimpleVertexRender mCircle;
 	Points* mPoints;
 	std::vector<glm::vec3> mLines;
 };
