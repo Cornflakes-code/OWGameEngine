@@ -32,7 +32,7 @@ void TextBillboardDynamic::doRender(const glm::mat4& proj,
 	{
 		float ratio = aspectRatioAndInvalidate();
 		glm::vec2 scale = scaleByAspectRatio(mScale);
-		glm::vec2 bbSize({ mBounds.size().x / scale.x, mBounds.size().y / scale.y });
+		glm::vec2 bbSize({ mBounds.size().x * mScale.x, mBounds.size().y * mScale.y });
 		mShader->setVector2f("BillboardSize", bbSize);
 	}
 	mShader->setVector4f("textcolor", mColor);

@@ -44,9 +44,9 @@ void Points::render(const glm::mat4& proj,
 	glm::mat4 scaledModel = glm::scale(model, glm::vec3(v2, 0.0f));
 	OWUtils::PolygonModeRIAA poly;
 	renderOpenGL(proj, view, scaledModel, GL_POINTS, [this]() {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		mShader->setVector2f("u_resolution", theApp->physicalWindowSize());
 		mShader->setVector2f("u_mouse", theApp->pointingDevicePosition());
 		mShader->setFloat("u_time", theApp->secondsSinceLoad());
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	});
 }

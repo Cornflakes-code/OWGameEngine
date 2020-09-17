@@ -3,25 +3,27 @@
 #pragma comment (lib, "OpenGL32.lib")
 
 #include <vector>
-#include <maths/glm/glm/glm.hpp>
-#include <maths/glm/glm/gtc/constants.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+unsigned int SCR_WIDTH = 800;
+unsigned int SCR_HEIGHT = 600;
 
 const char *vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"uniform mat4 pvm; \n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = pvm * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
@@ -158,7 +160,13 @@ int main()
 	// uncomment this call to draw in wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition - cameraTarget);
+	glm::vec3 cameraUp = glm::vec3(0, 1, 0);
+	float cameraNearClip = 0.01f;
+	float cameraFarClip = 100.0;
+	float cameraFieldOfView = glm::radians<float>(45.0);
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -166,14 +174,23 @@ int main()
 		// input
 		// -----
 		processInput(window);
+		float cameraAspect = SCR_WIDTH / (SCR_HEIGHT * 1.0f);
 
 		// render
 		// ------
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		glm::mat4 view = glm::lookAt(cameraPosition, 
+								cameraPosition - cameraDirection, cameraUp);
+		glm::mat4 projection = glm::perspective(
+			cameraFieldOfView, cameraAspect, cameraNearClip, cameraFarClip);
+		glm::mat4 model(1.0);
+		glm::mat4 pvm = projection * view * model;
 		// draw our first triangle
 		glUseProgram(shaderProgram);
+		glUniformMatrix4fv(
+				glGetUniformLocation(shaderProgram, "pvm"), 1, false, glm::value_ptr(pvm));
+
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 #ifdef CIRCLES
 		glDrawArrays(GL_LINE_LOOP, 0, vertices.size()/3);
@@ -215,5 +232,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
+	SCR_WIDTH = width;
+	SCR_HEIGHT = height;
 }
 

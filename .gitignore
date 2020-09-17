@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 *.log
+*.tlog
 x64/*
 .vs/*
 *.vcxproj.user

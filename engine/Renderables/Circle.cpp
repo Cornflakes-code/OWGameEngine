@@ -26,7 +26,9 @@ void Circle::setUp()
 	float delta = glm::two_pi<float>() / 16;
 	for (float i = 0.0f; i < glm::two_pi<float>(); i += delta)
 	{
-		mVertices.push_back(glm::vec4(radius * glm::cos(i), radius * glm::sin(i), 0.0, 1.0));
+		mVertices.push_back(glm::vec4(radius * glm::cos(i), 
+									  radius * glm::sin(i),		
+									  0.0, 1.0));
 	}
 }
 

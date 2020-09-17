@@ -6,13 +6,13 @@
 #include "../Helpers/TextBillboard.h"
 #include "../Helpers/Shader.h"
 
-#include "../Renderables/Triangle.h"
+#include "../Renderables/Pyramid.h"
 
 MovingText::MovingText()
 {
-	mTriangle = new Triangle();
-	mTriangle->setUp();
-	mTriRender.setUp(mTriangle);
+	mPyramid = new Pyramid();
+	mPyramid->setUp();
+	mPyramidRender.setUp(mPyramid);
 }
 
 void MovingText::fixedTimeStep(float seconds)
@@ -73,7 +73,7 @@ void MovingText::bounceIfCollide(const AABB& scenery)
 			break;
 		}
 		mBounds.move(rebound);
-		mTriangle->move(rebound);
+		mPyramid->move(rebound);
 	}
 }
 
@@ -81,13 +81,13 @@ void MovingText::setPosition(const glm::vec3& newValue)
 {
 	// move to origin and then position
 	mBounds = mBounds - mBounds.minPoint() + newValue;
-	mTriangle->setPosition(newValue);
+	mPyramid->setPosition(newValue);
 }
 
 void MovingText::move(const glm::vec4& velocity)
 {
 	mBounds.move(mDirection * velocity);
-	mTriangle->move(mDirection * velocity);
+	mPyramid->move(mDirection * velocity);
 }
 
 void MovingText::render(const glm::mat4& proj, 
@@ -97,7 +97,6 @@ void MovingText::render(const glm::mat4& proj,
 	glm::mat4 temp = glm::translate(model, glm::vec3(mBounds.minPoint().x, 
 													 mBounds.minPoint().y, 
 													 mBounds.minPoint().z));
-	
 	mText.render(proj, view, temp);
-	mTriRender.render(proj, view, model);
+//	mPyramidRender.render(proj, view, model);
 }

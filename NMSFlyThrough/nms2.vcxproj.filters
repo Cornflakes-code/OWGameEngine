@@ -169,9 +169,6 @@
     <ClCompile Include="..\engine\Renderables\Points.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\Renderables\RenderableText.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="..\engine\Renderables\Renderer.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
@@ -187,9 +184,6 @@
     <ClCompile Include="..\engine\Renderables\TextBillboardFixed.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\Renderables\Triangle.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
@@ -200,6 +194,9 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\Renderables\Circle.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Renderables\Pyramid.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
   </ItemGroup>
@@ -321,9 +318,6 @@
     <ClInclude Include="..\engine\Renderables\Points.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\Renderables\RenderableText.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
     <ClInclude Include="..\engine\Renderables\Renderer.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
@@ -339,13 +333,13 @@
     <ClInclude Include="..\engine\Renderables\TextBillboardFixed.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\Renderables\Triangle.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
     <ClInclude Include="..\engine\Core\SaveAndRestore.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\Renderables\Circle.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Renderables\Pyramid.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
   </ItemGroup>

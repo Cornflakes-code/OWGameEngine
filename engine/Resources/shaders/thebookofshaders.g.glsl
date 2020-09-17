@@ -1,26 +1,3 @@
-/*
-#version 330 core
-layout(points) in;
-layout(triangle_strip, max_vertices = 4) out;
-
-void doCircle(vec4 position, float sz)
-{
-    gl_Position = position + vec4(-sz, -sz, 0.0, 0.0);    // 1:bottom-left
-    EmitVertex();   
-    gl_Position = position + vec4( sz, -sz, 0.0, 0.0);    // 2:bottom-right
-    EmitVertex();
-    gl_Position = position + vec4(-sz,  sz, 0.0, 0.0);    // 3:top-left
-    EmitVertex();
-    gl_Position = position + vec4( sz,  sz, 0.0, 0.0);    // 4:top-right
-    EmitVertex();
-    EndPrimitive();
-}
-
-void main()
-{
-	doCircle(gl_in[0].gl_Position, 1.2);
-}
-*/
 #version 330 core
 layout(points) in;
 //layout(line_strip, max_vertices = 200) out;
@@ -30,7 +7,7 @@ layout(triangle_strip, max_vertices = 200) out;
 #define M2_PI 6.28318530718
 #define M_PI_4 0.78539816339
 #define M_PI_8 0.39269908169
-
+#define X_SCALE 0.75
 void doCircle(vec4 pos, float scale)
 {
 	//generate vertices at positions on the circumference from 0 to 2*pi
@@ -40,9 +17,9 @@ void doCircle(vec4 pos, float scale)
 	    //circle parametric equation
         gl_Position = pos;
 		EmitVertex();      
-        gl_Position = pos + vec4(scale * cos(i), scale * sin(i), 0.0, 0.0);
+        gl_Position = pos + vec4(scale * cos(i) * X_SCALE, scale * sin(i), 0.0, 0.0);
 		EmitVertex();      
-        gl_Position = pos + vec4(scale * cos(i+delta/2), scale * sin(i+delta/2), 0.0, 0.0);
+        gl_Position = pos + vec4(scale * cos(i+delta/2) * X_SCALE, scale * sin(i+delta/2), 0.0, 0.0);
 		EmitVertex();      
 	}
 }

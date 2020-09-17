@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "Pyramid.h"
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include "../Helpers/CommonUtils.h"
 #include "../Helpers/ResourceFactory.h"
 
-Triangle::Triangle()
+Pyramid::Pyramid()
 : mShader(new Shader())
 {
 	mShader->loadShaders(ResourceFactory::boilerPlateVertexShader(),
@@ -19,7 +19,7 @@ Triangle::Triangle()
 		ResourceFactory::boilerPlateGeometryShader());
 }
 
-void Triangle::setUp()
+void Pyramid::setUp()
 {
 	mVertices.push_back({ 0.0, 0.0, 0.0, 1.0 });
 	mVertices.push_back({ 1.0, 0.0, 1.0, 1.0 });
@@ -37,21 +37,21 @@ void Triangle::setUp()
 	};
 }
 
-void Triangle::setPosition(const glm::vec3& newValue)
+void Pyramid::setPosition(const glm::vec3& newValue)
 {
 	mPosition.x = newValue.x;
 	mPosition.y = newValue.y;
 	mPosition.z = newValue.x;
 }
 
-void Triangle::move(const glm::vec3& newValue)
+void Pyramid::move(const glm::vec3& newValue)
 { 
 	mPosition.x += newValue.x;
 	mPosition.y += newValue.y;
 	mPosition.z += newValue.x;
 }
 
-void Triangle::doRender(const glm::mat4& proj,
+void Pyramid::doRender(const glm::mat4& proj,
 						const glm::mat4& view,
 						const glm::mat4& model) const
 {

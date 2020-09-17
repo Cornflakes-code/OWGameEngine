@@ -16,6 +16,7 @@
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/Axis.h>
 #include <Renderables/Circle.h>
+#include <Core/GLApplication.h>
 
 #include "NMSUserInput.h"
 
@@ -116,11 +117,13 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	{
 		TextBillboard* welcomeText = new TextBillboardDynamic("arial.ttf", fontHeight);
 
-		welcomeText->createText("Welcome to reality.", nice.x, nice.y);
+		welcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
 		welcomeText->color({ 0.0, 0.0, 0.0, 1.0f });
 		sps->mWelcome.text(welcomeText);
-		welcomeText->scale({ 6.0f / _world.size().x, 6.0f / _world.size().y });
-		sps->mWelcome.direction(Compass::Rose[Compass::North] + Compass::Rose[Compass::East] 
+		glm::vec2 scale = { 1.2f * _world.size().x / theApp->physicalWindowSize().x,
+							1.2f * _world.size().y / theApp->physicalWindowSize().y };
+		welcomeText->scale(scale);
+		sps->mWelcome.direction(Compass::Rose[Compass::North] + Compass::Rose[Compass::East]
 									+ Compass::Rose[Compass::In]);
 		sps->mWelcome.setPosition(NMSScene::world().center());
 	}

@@ -3,7 +3,7 @@
 #include "BoundingBox.h"
 #include "SimpleVertexRender.h"
 
-class Triangle;
+class Pyramid;
 class TextBillboard;
 /*
 	A development class wrapping very simple collision functionality. Will be removed
@@ -12,8 +12,8 @@ class TextBillboard;
 class MovingText
 {
 	SimpleVertexRender mText;
-	Triangle* mTriangle;
-	SimpleVertexRender mTriRender;
+	Pyramid* mPyramid;
+	SimpleVertexRender mPyramidRender;
 	AABB mBounds;
 	glm::vec3 mVelocity;
 	static OWUtils::Float mSpeed;

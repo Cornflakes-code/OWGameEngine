@@ -13,26 +13,40 @@ ResizeHelper::ResizeHelper()
 void ResizeHelper::resizeCallback(
 	GLApplication::WindowResizeType resizeType, glm::ivec2 dimensions)
 {
-	// There is a lot of interaction here between:
-	// 1. mAspectRatio.
-	// 2. call to setViewport in Movie.cpp
-	// 3. camera projection call passed to render.
-	mAspectRatio = dimensions.x / (dimensions.y * 1.0f);
-	mAspectRatioModified = true;
+	if (resizeType == GLApplication::WindowResizeType::FrameBuffer)
+	{
+		// There is a lot more to do this correctly
+		// https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates
+
+		// There is a lot of interaction here between:
+		// 1. mAspectRatio.ss
+		// 2. call to setViewport in Movie.cpp
+		// 3. camera projection call passed to render.
+		mAspectRatio = dimensions.x / (dimensions.y * 1.0f);
+		mAspectRatioModified = true;
+	}
+	else if (resizeType == GLApplication::WindowResizeType::WindowResize)
+	{
+		// Do not pass the window size to glViewport or other pixel-based OpenGL calls.
+		// The window size is in screen coordinates, not pixels. Use the framebuffer 
+		// size, which is in pixels, for pixel - based calls.
+		// https://www.glfw.org/docs/latest/window_guide.html#window_size
+	}
 }
 
 glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale) const
 {
+	// This seems to work best (trial and error) when resizing the window.
 	glm::vec2 retval = toScale;
 	if (mAspectRatio < 1)
 	{
-		//retval.x *= mAspectRatio;
-		//retval.y *= mAspectRatio;
+		retval.x /= mAspectRatio;
+		retval.y *= mAspectRatio;
 	}
 	else
 	{
-		//retval.x /= mAspectRatio;
-		//retval.y /= mAspectRatio;
+		retval.x /= mAspectRatio;
+		//retval.y *= mAspectRatio;
 	}
 	return retval;
 }

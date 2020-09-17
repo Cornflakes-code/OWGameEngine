@@ -200,11 +200,10 @@
     <ClCompile Include="..\engine\Renderables\FullScreen.cpp" />
     <ClCompile Include="..\engine\Renderables\MovingText.cpp" />
     <ClCompile Include="..\engine\Renderables\Points.cpp" />
-    <ClCompile Include="..\engine\Renderables\RenderableText.cpp" />
+    <ClCompile Include="..\engine\Renderables\Pyramid.cpp" />
     <ClCompile Include="..\engine\Renderables\Renderer.cpp" />
     <ClCompile Include="..\engine\Renderables\TextBillboardDynamic.cpp" />
     <ClCompile Include="..\engine\Renderables\TextBillboardFixed.cpp" />
-    <ClCompile Include="..\engine\Renderables\Triangle.cpp" />
     <ClCompile Include="..\engine\Renderables\SimpleVertexRender.cpp" />
     <ClCompile Include="..\engine\Renderables\SimpleVertexSource.cpp" />
     <ClCompile Include="main.cpp" />
@@ -251,11 +250,10 @@
     <ClInclude Include="..\engine\Renderables\FullScreen.h" />
     <ClInclude Include="..\engine\Renderables\MovingText.h" />
     <ClInclude Include="..\engine\Renderables\Points.h" />
-    <ClInclude Include="..\engine\Renderables\RenderableText.h" />
+    <ClInclude Include="..\engine\Renderables\Pyramid.h" />
     <ClInclude Include="..\engine\Renderables\Renderer.h" />
     <ClInclude Include="..\engine\Renderables\TextBillboardDynamic.h" />
     <ClInclude Include="..\engine\Renderables\TextBillboardFixed.h" />
-    <ClInclude Include="..\engine\Renderables\Triangle.h" />
     <ClInclude Include="..\engine\Renderables\SimpleVertexRender.h" />
     <ClInclude Include="..\engine\Renderables\SimpleVertexSource.h" />
     <ClInclude Include="NMSEndScene.h" />

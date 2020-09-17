@@ -221,6 +221,8 @@ void GLApplication::enableCallbacks()
 
 void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
+	glViewport(0, 0, width, height);
+
 	for (auto& cb : mWindowResizeCallbacks)
 		cb.first(WindowResizeType::FrameBuffer, glm::ivec2(width, height));
 }

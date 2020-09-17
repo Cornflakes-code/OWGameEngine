@@ -38,9 +38,9 @@ void Axis::setUp(const AABB& world, const Camera* camera)
 	//nice.first /= 2.0f;
 	//nice.second /= 2.0f;
 
-	TextBillboard* textX = new TextBillboardDynamic("arial.ttf", fontHeight);
+	TextBillboard* textX = new TextBillboardFixed("arial.ttf", fontHeight);
 	TextBillboard* textY = new TextBillboardFixed("arial.ttf", fontHeight);
-	TextBillboard* textZ = new TextBillboardFixed("arial.ttf", fontHeight);
+	TextBillboard* textZ = new TextBillboardDynamic("arial.ttf", fontHeight);
 	Circle* circle = new Circle();
 	circle->setUp();
 	mCircle.setUp(circle);
@@ -74,5 +74,5 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 	mY.render(proj, view, glm::translate(model, mLines[2]));
 	mZ.render(proj, view, glm::translate(model, mLines[3]));
 	mPoints->render(proj, view, model);
-	mCircle.render(proj, view, model);
+//	mCircle.render(proj, view, model);
 }

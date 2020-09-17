@@ -28,24 +28,6 @@ void Movie::preRun()
 
 void Movie::init(GLApplication* app, UserInput* ui, MacroRecorder* recorder)
 {
-	app->addWindowResizeListener([this](GLApplication::WindowResizeType resizeType, glm::ivec2 newSize)
-	{
-		// There is a lot more to do this correctly
-		// https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates
-
-		if (resizeType == GLApplication::WindowResizeType::FrameBuffer)
-		{
-			glViewport(0, 0, newSize.x, newSize.y);
-			mCamera->aspectRatio(newSize.y / (1.0f*newSize.x));
-		}
-		else if (resizeType == GLApplication::WindowResizeType::WindowResize)
-		{
-			// Do not pass the window size to glViewport or other pixel-based OpenGL calls.
-			// The window size is in screen coordinates, not pixels.Use the framebuffer 
-			// size, which is in pixels, for pixel - based calls.
-			// https://www.glfw.org/docs/latest/window_guide.html#window_size
-		}
-	});
 	ui->addUserCommandListener([this](const UserInput::UserCommandCallbackData& data)
 	{
 		UserInput::AnyInput ai;

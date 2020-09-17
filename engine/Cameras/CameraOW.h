@@ -123,11 +123,14 @@ private:
 	void resizeCallback(
 		GLApplication::WindowResizeType resizeType, glm::ivec2 dimensions)
 	{
-		// There is a lot of interaction here between:
-		// 1. mAspectRatio.
-		// 2. call to setViewport in Movie.cpp
-		// 3. camera projection call passed to render.
-		mCurrent->aspectRatio(dimensions.x / (dimensions.y * 1.0f));
+		if (resizeType == GLApplication::WindowResizeType::FrameBuffer)
+		{
+			// There is a lot of interaction here between:
+			// 1. mAspectRatio.
+			// 2. call to setViewport in Movie.cpp
+			// 3. camera projection call passed to render.
+			mCurrent->aspectRatio(dimensions.x / (dimensions.y * 1.0f));
+		}
 	}
 	bool processKeyboardInput(
 		UserInput::UserCommandCallbackData keyInput, float seconds);

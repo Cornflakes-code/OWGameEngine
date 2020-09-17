@@ -7,16 +7,17 @@
 
 class Shader;
 /*
-	Simple class wrapping creation and Rendering of a Triangle. Will be removed.
+	Simple class wrapping creation and Rendering of a Pyramid. 
+	Used for initial testing. Will be removed.
 */
-class Triangle: public SimpleVertexSource
+class Pyramid: public SimpleVertexSource
 {
 	glm::vec3 mPosition = glm::vec3(0);
 	std::vector<glm::vec4> mVertices;
 	std::vector<unsigned int> mIndices;
 	Shader* mShader;
 public:
-	Triangle();
+	Pyramid();
 	void setUp();
 	void setPosition(const glm::vec3& newValue);
 	void move(const glm::vec3& newValue);
