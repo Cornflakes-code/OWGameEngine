@@ -1,12 +1,14 @@
 #pragma once
 
+#include "../OWEngine/OWEngine.h"
+
 #include "../Helpers/TextBillboard.h"
 
 /*
 	Resizable Billboard Text
 */
 
-class TextBillboardDynamic : public TextBillboard
+class OWENGINE_API TextBillboardDynamic : public TextBillboard
 {
 public:
 	TextBillboardDynamic(const std::string& fontFileName, int fontHeight);

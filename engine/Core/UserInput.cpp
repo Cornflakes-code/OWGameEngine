@@ -108,7 +108,7 @@ void UserInput::doMouseClick(GLFWwindow* window, int button, int action, int mod
 }
 
 void UserInput::doKeyPressCallback(unsigned int codepoint, 
-					int key, int scancode, int action, int mods)
+					int key, int /*scancode*/, int action, int mods)
 {
 	UserCommandCallbackData data;
 	if (codepoint)

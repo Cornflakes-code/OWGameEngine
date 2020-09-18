@@ -9,6 +9,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "../OWEngine/OWEngine.h"
+
 #define ANY_KEY (GLFW_KEY_LAST+1)
 
 /*
@@ -17,7 +19,7 @@
 */
 
 class GLApplication;
-class UserInput
+class OWENGINE_API UserInput
 {
 public:
 	static int AnyKey;

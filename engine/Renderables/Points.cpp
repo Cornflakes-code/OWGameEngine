@@ -40,12 +40,16 @@ void Points::render(const glm::mat4& proj,
 					const glm::mat4& view, 
 					const glm::mat4& model) const
 {
-	glm::vec2 v2 = scaleByAspectRatio({ 1.0f, 1.0f });
-	glm::mat4 scaledModel = glm::scale(model, glm::vec3(v2, 0.0f));
 	OWUtils::PolygonModeRIAA poly;
-	renderOpenGL(proj, view, scaledModel, GL_POINTS, [this]() {
+	renderOpenGL(proj, view, model, GL_POINTS, [this, model]() {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		mShader->setVector2f("u_resolution", theApp->physicalWindowSize());
+		if (aspectRatioModified())
+		{
+			glm::vec2 vv = theApp->physicalWindowSize();
+			glm::vec2 v2 = scaleByAspectRatio({ vv });
+			glm::mat4 scaledModel = glm::scale(model, glm::vec3(v2, 0.0f));
+			mShader->setVector2f("u_resolution", v2);
+		}
 		mShader->setVector2f("u_mouse", theApp->pointingDevicePosition());
 		mShader->setFloat("u_time", theApp->secondsSinceLoad());
 	});

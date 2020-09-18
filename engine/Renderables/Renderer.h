@@ -5,11 +5,13 @@
 
 #include <glm/glm.hpp>
 
+#include "../OWEngine/OWEngine.h"
+
 class Shader;
 /*
 	A work in progress. May be removed in later iterations
 */
-class Renderer
+class OWENGINE_API Renderer
 {
 public:
 	virtual void render(const glm::mat4& proj,	

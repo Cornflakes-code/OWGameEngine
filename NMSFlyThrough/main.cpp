@@ -50,9 +50,7 @@ https://github.com/hdonk/lwjgl_vr_framework/tree/OpenGL
 */
 class MacroRecorder;
 
-// Named in homage to MFC. Also gives you compiler errors 
-// if you include the heap of shit that is MFC :)
-GLApplication* theApp = nullptr;
+extern GLApplication* theApp;
 
 GLApplication* GLApplication::getApplication(ResourceFactory* rf, UserInput* ui)
 {

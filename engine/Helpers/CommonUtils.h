@@ -10,6 +10,8 @@
 #include <glad/glad.h>
 #endif
 
+#include "../OWEngine/OWEngine.h"
+
 
 /*
 	Usefull functionality that needs a place to live. BNit of a mess atm
@@ -18,7 +20,7 @@
 class GLApplication;
 extern GLApplication* theApp;
 
-struct OWUtils
+struct OWENGINE_API OWUtils
 {
 	typedef glm::f32 Float;
 	typedef std::chrono::steady_clock Time;

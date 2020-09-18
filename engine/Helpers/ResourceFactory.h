@@ -5,17 +5,17 @@
 #include <set>
 #include <experimental/filesystem>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 #include <json/single_include/nlohmann/json.hpp>
+
+#include "../OWEngine/OWEngine.h"
+
 #include "FreeTypeFontAtlas.h"
 
 using json = nlohmann::json;
 /*
 	Caching of paths and resources. A singleton class.
 */
-class ResourceFactory
+class OWENGINE_API ResourceFactory
 {
 public:
 	enum class ResourceType

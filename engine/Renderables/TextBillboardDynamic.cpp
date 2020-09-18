@@ -30,7 +30,7 @@ void TextBillboardDynamic::doRender(const glm::mat4& proj,
 	mShader->setVector3f("BillboardPos", newModel[3]);
 	if (aspectRatioModified())
 	{
-		float ratio = aspectRatioAndInvalidate();
+//		float ratio = aspectRatio();
 		glm::vec2 scale = scaleByAspectRatio(mScale);
 		glm::vec2 bbSize({ mBounds.size().x * mScale.x, mBounds.size().y * mScale.y });
 		mShader->setVector2f("BillboardSize", bbSize);

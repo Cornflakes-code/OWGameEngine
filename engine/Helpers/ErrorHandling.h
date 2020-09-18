@@ -4,14 +4,16 @@
 #include <sstream>
 #include <string>
 
+#include "../OWEngine/OWEngine.h"
+
 enum class NMSErrorLevel
-{ NMSInfo, NMSWarning, NMSCritical};
+{ NMSInfo, NMSWarning, NMSCritical };
 
 /*
 	Errors in the Game Engine are handled by exceptions. All of these should
 	be caught during development.
 */
-class NMSException : public std::exception
+class OWENGINE_API NMSException : public std::exception
 {
 public:
 	NMSException(std::stringstream ss): NMSException(ss.str())
@@ -21,14 +23,14 @@ public:
 	{}
 };
 
-class NMSOpenGlException : public NMSException
+class OWENGINE_API NMSOpenGlException : public NMSException
 {
 public:
 	NMSOpenGlException(const std::string& msg): NMSException(msg)
 	{}
 };
 
-class NMSLogicException : public NMSException
+class OWENGINE_API NMSLogicException : public NMSException
 {
 public:
 	NMSLogicException(std::stringstream ss) : NMSException(ss.str())
@@ -38,7 +40,7 @@ public:
 	{}
 };
 
-class NMSNotYetImplementedException : public NMSException
+class OWENGINE_API NMSNotYetImplementedException : public NMSException
 {
 public:
 	NMSNotYetImplementedException(std::stringstream ss) : NMSException(ss.str())
@@ -48,13 +50,13 @@ public:
 	{}
 };
 
-void dumpMessage(const std::string& msg, NMSErrorLevel err);
-void dumpMessage(const std::stringstream& ss, NMSErrorLevel err);
+void OWENGINE_API dumpMessage(const std::string& msg, NMSErrorLevel err);
+void OWENGINE_API dumpMessage(const std::stringstream& ss, NMSErrorLevel err);
 
 #define DEBUG_OPENGL
 
 #ifdef DEBUG_OPENGL
-void debugCheckGLError(const char *file, int line);
+void OWENGINE_API debugCheckGLError(const char *file, int line);
 
 #define checkGLError() debugCheckGLError(__FILE__, __LINE__)
 #else

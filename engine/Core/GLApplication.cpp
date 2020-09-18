@@ -1,11 +1,15 @@
 #include "GLApplication.h"
 
+// Named in homage to MFC. Also gives you compiler errors 
+// if you include the heap of shit that is MFC :)
+GLApplication* theApp = nullptr;
+
 #include <algorithm>
 
 #include "../Helpers/ErrorHandling.h"
 #include "../Helpers/Logger.h"
 #include "../Helpers/ResourceSource.h"
-#include <Core/SaveAndRestore.h>
+#include "SaveAndRestore.h"
 
 #pragma comment( lib, "glfw3.lib" )
 #pragma comment (lib, "OpenGL32.lib")
@@ -15,7 +19,7 @@ static GLApplication* hackForErrorCallback = nullptr;
 OWUtils::Time::time_point GLApplication::mLoadTime;
 void error_callback(int error, const char* description);
 
-GLApplication::GLApplication(ResourceFactory* _factory, UserInput* ui)
+GLApplication::GLApplication(UserInput* ui)
 	:mUserInput(ui)
 {
 	mLoadTime = OWUtils::Time::now();
@@ -157,9 +161,9 @@ void GLApplication::removeCursorPositionCallback(const ListenerHelper* helper)
 	}
 }
 
-void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
-	GLsizei length, const char *message, const void *userParam)
-{}
+//void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
+//	GLsizei length, const char *message, const void *userParam)
+//{}
 
 void GLApplication::enableCallbacks()
 {
@@ -219,7 +223,7 @@ void GLApplication::enableCallbacks()
 
 }
 
-void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window, int width, int height)
+void GLApplication::onFrameBufferResizeCallback(GLFWwindow* /*window*/, int width, int height)
 {
 	glViewport(0, 0, width, height);
 
@@ -227,7 +231,7 @@ void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window, int width, i
 		cb.first(WindowResizeType::FrameBuffer, glm::ivec2(width, height));
 }
 
-void GLApplication::onSetWindowSizeCallback(GLFWwindow* window, int width, int height)
+void GLApplication::onSetWindowSizeCallback(GLFWwindow* /*window*/, int width, int height)
 {
 	for (auto& cb : mWindowResizeCallbacks)
 		cb.first(WindowResizeType::WindowResize, glm::vec2(width, height));
@@ -248,13 +252,13 @@ void GLApplication::onPointingDevicePositionCallback(GLFWwindow* window, double 
 		cb.first(window, x, y);
 }
 
-void GLApplication::onCharCallback(GLFWwindow* window, unsigned int codepoint)
+void GLApplication::onCharCallback(GLFWwindow* /*window*/, unsigned int codepoint)
 {
 	for (auto& cb : mKeyboardCallbacks)
 		cb(codepoint, 0, 0, 0, 0);
 }
 
-void GLApplication::onKeyPressCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void GLApplication::onKeyPressCallback(GLFWwindow* /*window*/, int key, int scancode, int action, int mods)
 {
 	for (auto& cb : mKeyboardCallbacks)
 		cb(0, key, scancode, action, mods);

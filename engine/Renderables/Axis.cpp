@@ -40,7 +40,7 @@ void Axis::setUp(const AABB& world, const Camera* camera)
 
 	TextBillboard* textX = new TextBillboardFixed("arial.ttf", fontHeight);
 	TextBillboard* textY = new TextBillboardFixed("arial.ttf", fontHeight);
-	TextBillboard* textZ = new TextBillboardDynamic("arial.ttf", fontHeight);
+	TextBillboard* textZ = new TextBillboardFixed("arial.ttf", fontHeight);
 	Circle* circle = new Circle();
 	circle->setUp();
 	mCircle.setUp(circle);

@@ -8,11 +8,13 @@
 #include <glad/glad.h>
 #endif
 
+#include "../OWEngine/OWEngine.h"
+
 class Shader;
 /*
 	class containing basic vertex info info that gets passed to SimpleVertexRender
 */
-class SimpleVertexSource
+class OWENGINE_API SimpleVertexSource
 {
 public:
 	SimpleVertexSource();

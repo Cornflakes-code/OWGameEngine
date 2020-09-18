@@ -18,12 +18,12 @@ void SimpleVertexRender::setUp(SimpleVertexSource* _source)
 	mSource->shader()->use();
 
 	std::string vertLoc;
-	unsigned int vertType = -1;
+	unsigned int vertType = GL_INVALID_INDEX;
 	const std::vector<glm::vec4>& vertices = mSource->vertices(vertLoc, vertType);
-	assert(vertType != -1);
-	unsigned int indexType = -1;
+	assert(vertType != GL_INVALID_INDEX);
+	unsigned int indexType = GL_INVALID_INDEX;
 	const std::vector<unsigned int >& indices = mSource->indices(indexType);
-	assert(indexType != -1);
+	assert(indexType != GL_INVALID_INDEX);
 	if (!indices.empty())
 	{
 		glGenBuffers(1, &mEbo);
@@ -89,9 +89,9 @@ void SimpleVertexRender::render(const glm::mat4& proj,
 	else
 	{
 		std::string vertLoc;
-		unsigned int vertType = -1;
+		unsigned int vertType = GL_INVALID_INDEX;
 		const std::vector<glm::vec4>& vertices = mSource->vertices(vertLoc, vertType);
-		assert(vertType != -1);
+		assert(vertType != GL_INVALID_INDEX);
 		glDrawArrays(vertType, 0, static_cast<GLsizei>(vertices.size()));
 	}
 	checkGLError();

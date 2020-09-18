@@ -24,7 +24,6 @@ void TextBillboardFixed::doRender(const glm::mat4& proj,
 	mShader->setVector3f("BillboardPos", newModel[3]);
 	if (aspectRatioModified())
 	{
-		float aspectRatio = aspectRatioAndInvalidate();
 		glm::vec2 scale = scaleByAspectRatio(mScale);
 		mShader->setVector2f("BillboardSize", scale);
 	}

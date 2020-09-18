@@ -10,7 +10,7 @@ class Shader;
 	Hack class exploring OpenGL GL_POINTS functionality. Unlikely to survive 
 	future development
 */
-class Points: public Renderer, public ResizeHelper
+class OWENGINE_API Points: public Renderer, public ResizeHelper
 {
 	glm::vec3 mPosition = glm::vec3(0);
 public:

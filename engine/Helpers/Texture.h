@@ -2,10 +2,12 @@
 
 #include <string>
 #include <vector>
+
+#include "../OWEngine/OWEngine.h"
 /*
 	Possibly not needed.
 */
-class Texture
+class OWENGINE_API Texture
 {
 	struct TextureProps
 	{

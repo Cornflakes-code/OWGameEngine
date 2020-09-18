@@ -6,6 +6,8 @@
 #include <string>
 #include <queue>
 
+#include "../OWEngine/OWEngine.h"
+
 #include "../Renderables/BoundingBox.h"
 
 #include "ScenePhysicsState.h"
@@ -23,7 +25,7 @@ class MacroRecorder;
 	Core class providing the main Game loop. Tightly bound to the Scene and
 	ScenePhysicsState classes
 */
-class Movie
+class OWENGINE_API Movie
 {
 public:
 	virtual void init(GLApplication* app, UserInput* ui, MacroRecorder* recorder);

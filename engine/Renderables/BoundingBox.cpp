@@ -15,11 +15,18 @@ glm::vec4 Plane::ClosestPointOnPlane(const glm::vec4& p)
 	return glm::vec4(0.0);
 }
 
-AABB::AABB(const glm::vec4& _bottomLeft, const glm::vec4& _maxPoint)
-	: mMinPoint(_bottomLeft), mMaxPoint(_maxPoint)
+//__cdecl AABB::AABB(struct glm::vec<4,float,0> const &,struct glm::vec<4,float,0> const &)" (? ? 0AABB@@QEAA@AEBU?$vec@$03M$0A@@glm@@0@Z) referenced in function "private: class AABB __cdecl TextBillboard::findBounds(void)const " (? findBounds@TextBillboard@@AEBA?AVAABB@@XZ)
+AABB::AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint)
+	: mMinPoint(_minPoint), mMaxPoint(_maxPoint)
 {
 	isValid();
 }
+AABB::AABB()
+: mMinPoint(glm::vec4(0.0, 0.0, 0.0, 1.0)), mMaxPoint(glm::vec4(0.0, 0.0, 0.0, 1.0))
+{
+	isValid();
+}
+
 
 void AABB::isValid() const
 {

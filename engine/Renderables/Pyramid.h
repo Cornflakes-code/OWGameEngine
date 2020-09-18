@@ -10,7 +10,7 @@ class Shader;
 	Simple class wrapping creation and Rendering of a Pyramid. 
 	Used for initial testing. Will be removed.
 */
-class Pyramid: public SimpleVertexSource
+class OWENGINE_API Pyramid: public SimpleVertexSource
 {
 	glm::vec3 mPosition = glm::vec3(0);
 	std::vector<glm::vec4> mVertices;

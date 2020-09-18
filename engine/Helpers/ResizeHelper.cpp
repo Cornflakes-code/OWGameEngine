@@ -23,7 +23,7 @@ void ResizeHelper::resizeCallback(
 		// 2. call to setViewport in Movie.cpp
 		// 3. camera projection call passed to render.
 		mAspectRatio = dimensions.x / (dimensions.y * 1.0f);
-		mAspectRatioModified = true;
+		mAspectRatioChangedSinceLastRead = true;
 	}
 	else if (resizeType == GLApplication::WindowResizeType::WindowResize)
 	{
@@ -34,7 +34,7 @@ void ResizeHelper::resizeCallback(
 	}
 }
 
-glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale) const
+glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale, bool clearFlag) const
 {
 	// This seems to work best (trial and error) when resizing the window.
 	glm::vec2 retval = toScale;
@@ -48,5 +48,7 @@ glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale) const
 		retval.x /= mAspectRatio;
 		//retval.y *= mAspectRatio;
 	}
+	if (clearFlag)
+		mAspectRatioChangedSinceLastRead = false;
 	return retval;
 }

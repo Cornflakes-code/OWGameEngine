@@ -6,11 +6,13 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include "../OWEngine/OWEngine.h"
+
 struct GLFWwindow;
 /*
 	OpenGL logging functionality
 */
-class Logger
+class OWENGINE_API Logger
 {
 public:
 	Logger();

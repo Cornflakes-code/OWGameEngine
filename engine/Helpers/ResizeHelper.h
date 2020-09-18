@@ -3,23 +3,24 @@
 #include "../Core/ListenerHelper.h"
 #include "../Core/GLApplication.h"
 
-class ResizeHelper : public ListenerHelper
+class OWENGINE_API ResizeHelper : public ListenerHelper
 {
 public:
 	ResizeHelper();
 protected:
 	void resizeCallback(GLApplication::WindowResizeType resizeType,
 		glm::ivec2 dimensions);
-	float aspectRatio() const { return mAspectRatio; }
-	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
-	float aspectRatioAndInvalidate() const 
+	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale, 
+					bool clearFlag = true) const;
+	float aspectRatio(bool clearFlag = true) const
 	{ 
-		mAspectRatioModified = false;
+		if (clearFlag)
+			mAspectRatioChangedSinceLastRead = false;
 		return mAspectRatio;
 	}
-	bool aspectRatioModified() const { return mAspectRatioModified;  }
+	bool aspectRatioModified() const { return mAspectRatioChangedSinceLastRead;  }
 private:
 	float mAspectRatio = 1.0f;
-	mutable bool mAspectRatioModified = true;
+	mutable bool mAspectRatioChangedSinceLastRead = true;
 };
 

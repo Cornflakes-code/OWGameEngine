@@ -1,6 +1,8 @@
 #pragma once
 
-class ListenerHelper
+#include "../OWEngine/OWEngine.h"
+
+class OWENGINE_API ListenerHelper
 {
 	/* There does not appear to be an '==' operator for std::function,
 	 hence there is no way to remove listeners frome event generators.

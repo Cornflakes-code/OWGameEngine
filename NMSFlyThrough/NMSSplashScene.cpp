@@ -45,8 +45,8 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& nextSceneName, OWUtils::T
 	// Find the translation magnitudes
 	glm::vec4 velocity = glm::vec4(timeStep * mSpeed, timeStep * mSpeed, timeStep * mSpeed, 1.0);
 #ifdef INCLUDE_WELCOME
-	mWelcome.move(velocity);
-	mWelcome.bounceIfCollide(mWindowBounds);
+	//mWelcome.move(velocity);
+	//mWelcome.bounceIfCollide(mWindowBounds);
 #endif
 	mEnjoy.move(velocity);
 	mEnjoy.bounceIfCollide(mWindowBounds);
@@ -104,9 +104,6 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	const AABB& _world = world();
 	NMSSplashScenePhysics::mWindowBounds = _world;
 	NMSSplashScenePhysics::mSpeed = _world.size().x / 10.0f;
-	//= AABB(glm::vec4(-1.0, -1.0, -1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
-	// = AABB(glm::vec4(-2.0, -2.0, -2.0, 1.0), glm::vec4(2.0, 2.0, 2.0, 1.0));
-	// = AABB(glm::vec4(-0xFFF, -0xFF, -0xFFF, 1.0), glm::vec4(0xFFF, 0xFF, 0xFFF, 1.0));
 
 	NMSSplashScenePhysics* sps = dynamic_cast<NMSSplashScenePhysics*>(state);
 	
@@ -147,15 +144,19 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 void NMSSplashScene::render(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view)
 {
+	const AABB& _world = world();
 	const NMSSplashScenePhysics* sps = dynamic_cast<const NMSSplashScenePhysics*>(state);
 	glm::mat4 translation(1.0);
 	glm::mat4 rotation(1.0);
 	glm::mat4 model(1.0);
+	glm::vec2 scale = { 20.2f * _world.size().x / theApp->physicalWindowSize().x,
+						20.2f * _world.size().y / theApp->physicalWindowSize().y };
 	mAxis->render(proj, view, model);
 	sps->mEnjoy.render(proj, view, model);
 	mCircle.render(proj, view, model);
 #ifdef INCLUDE_WELCOME
-	sps->mWelcome.render(proj, view, model);
+	glm::mat4 m = glm::scale(model, glm::vec3(scale, 0.0));
+	sps->mWelcome.render(proj, view, m);
 #endif
 }
 

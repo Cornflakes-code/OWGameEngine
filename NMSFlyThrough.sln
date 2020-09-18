@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NMSFlyThough", "NMSFlyThrou
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nms", "Test1\nms.vcxproj", "{5E599DDB-62B3-4EB3-B7C8-3F4E18CA5ECA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWEngine", "engine\OWEngine\OWEngine.vcxproj", "{29989FC3-099A-4EB5-8455-DD116AF78E11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{5E599DDB-62B3-4EB3-B7C8-3F4E18CA5ECA}.Release|x64.Build.0 = Release|x64
 		{5E599DDB-62B3-4EB3-B7C8-3F4E18CA5ECA}.Release|x86.ActiveCfg = Release|Win32
 		{5E599DDB-62B3-4EB3-B7C8-3F4E18CA5ECA}.Release|x86.Build.0 = Release|Win32
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Debug|x64.ActiveCfg = Debug|x64
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Debug|x64.Build.0 = Debug|x64
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Debug|x86.ActiveCfg = Debug|Win32
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Debug|x86.Build.0 = Debug|Win32
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Release|x64.ActiveCfg = Release|x64
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Release|x64.Build.0 = Release|x64
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Release|x86.ActiveCfg = Release|Win32
+		{29989FC3-099A-4EB5-8455-DD116AF78E11}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

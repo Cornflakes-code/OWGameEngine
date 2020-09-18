@@ -53,5 +53,5 @@ AABB TextBillboard::findBounds() const
 		else if (point.y > maxPoint.y)
 			maxPoint.y = point.y;
 	}
-	return AABB(minPoint, maxPoint);
+	return mBounds;// AABB(minPoint, maxPoint);
 }

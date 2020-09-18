@@ -13,11 +13,11 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <Core/GLApplication.h>
-#include <Core/ListenerHelper.h>
+#include "../Core/GLApplication.h"
+#include "../Core/ListenerHelper.h"
 
 #include "../Helpers/CommonUtils.h"
-#include "./Renderables/BoundingBox.h"
+#include "../Renderables/BoundingBox.h"
 
 #include "../Renderables/SimpleVertexSource.h"
 #include "ResourceSource.h"

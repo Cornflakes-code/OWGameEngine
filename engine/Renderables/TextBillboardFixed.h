@@ -1,10 +1,12 @@
 #pragma once
 
+#include "../OWEngine/OWEngine.h"
+
 #include "../Helpers/TextBillboard.h"
 /*
 	Fixed sized Billboard Text
 */
-class TextBillboardFixed: public TextBillboard
+class OWENGINE_API TextBillboardFixed: public TextBillboard
 {
 public:
 	TextBillboardFixed(const std::string& fileName, int fontHeight);

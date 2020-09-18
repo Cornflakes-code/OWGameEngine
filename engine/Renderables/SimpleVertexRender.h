@@ -7,9 +7,11 @@
 #include <glad/glad.h>
 #endif
 
+#include "../OWEngine/OWEngine.h"
+
 class SimpleVertexSource;
 
-class SimpleVertexRender
+class OWENGINE_API SimpleVertexRender
 {
 	const SimpleVertexSource* mSource = nullptr;
 	GLuint mVao = 0;

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <algorithm>
+#include "../OWEngine/OWEngine.h"
+
+#include "../OWEngine/OWEngine.h"
 
 #include "../Helpers/CommonUtils.h"
 
@@ -9,7 +12,7 @@
 	Mainly provides a AABB box for early functionality. Will morph into a more 
 	sophisticated implementation
 */
-class Plane
+class OWENGINE_API Plane
 {
 	glm::vec4 mPoint1;
 	glm::vec4 mPoint2;
@@ -19,7 +22,7 @@ public:
 	glm::vec4 ClosestPointOnPlane(const glm::vec4& p);
 };
 
-class AABB
+class OWENGINE_API AABB
 {
 	glm::vec4 mMinPoint;
 	glm::vec4 mMaxPoint;
@@ -38,9 +41,8 @@ class AABB
 	}
 	void isValid() const;
 public:
-	AABB()
-		:AABB(glm::vec4(0.0, 0.0, 0.0, 1.0), glm::vec4(0.0, 0.0, 0.0, 1.0)) {}
 	AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint);
+	AABB();
 	bool overlap(const AABB& other) const;
 	Compass::Direction wallIntersection(const AABB& other) const;
 	glm::vec4 size() const { return mMaxPoint - mMinPoint; }
@@ -90,7 +92,7 @@ public:
 //AABB operator-(const AABB& left, const AABB& right);
 //AABB operator+(const AABB& left, const AABB& right);
 
-class Ball
+class OWENGINE_API Ball
 {
 	OWUtils::Float mRadius;
 	// Center is topLeft of a box around the ball

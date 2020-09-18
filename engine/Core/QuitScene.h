@@ -4,18 +4,22 @@
 /*
 	A core Scene required as a placeholder for the Game Loop implementation in Movie.cpp
 */
-struct QuitScenePhysics: public ScenePhysicsState
+struct OWENGINE_API QuitScenePhysics: public ScenePhysicsState
 {
 	QuitScenePhysics(const Scene* owner)
 		: ScenePhysicsState(owner) {}
-	void variableTimeStep(OWUtils::Time::duration dt) override {}
-	void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) override {}
-	void interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
-		const ScenePhysicsState* currentState, double multCurr) override {}
-	bool processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, 
-							 Camera* camera) override;
+	void variableTimeStep(OWUtils::Time::duration /*dt*/) override {}
+	void fixedTimeStep(std::string& /*nextSceneName*/, 
+					   OWUtils::Time::duration /*dt*/) override {}
+	void interpolateRatio(const ScenePhysicsState* /*previousState*/, 
+						  double /*multPrev*/,
+						  const ScenePhysicsState* /*currentState*/, 
+						  double /*multCurr*/) override {}
+	bool processUserCommands(const UserInput::AnyInput& /*userInput*/, 
+							 std::string& /*nextScene*/, 
+							 Camera* /*camera*/) override;
 
-	void copy(ScenePhysicsState* source) override;
+	void copy(ScenePhysicsState* /*source*/) override;
 	ScenePhysicsState* clone() override;
 };
 

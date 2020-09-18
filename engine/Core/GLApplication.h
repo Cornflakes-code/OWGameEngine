@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "../OWEngine/OWEngine.h"
+
 #include "Camera.h"
 #include "Movie.h"
 #include "ListenerHelper.h"
@@ -21,7 +23,7 @@ class MacroRecorder;
 class SaveAndRestore;
 class UserInput;
 
-class GLApplication
+class OWENGINE_API GLApplication
 {
 public:
 	void init(Movie* movie, UserInput* ui, 
@@ -72,7 +74,7 @@ public:
 	}
 	void removeWindowResizeListener(const ListenerHelper* helper);
 private:
-	GLApplication(ResourceFactory* _factory, UserInput* ui);
+	GLApplication(UserInput* ui);
 	~GLApplication();
 
 	SaveAndRestore* mSaveAndRestore = nullptr;

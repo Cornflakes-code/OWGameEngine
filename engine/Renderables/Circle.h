@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "../OWEngine/OWEngine.h"
+
 #include "../Renderables/Renderer.h"
 #include "../Renderables/SimpleVertexSource.h"
 

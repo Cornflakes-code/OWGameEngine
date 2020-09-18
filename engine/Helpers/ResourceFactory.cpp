@@ -43,9 +43,9 @@ ResourceFactory::ResourceFactory()
 void ResourceFactory::addPath(const std::experimental::filesystem::path& path, ResourceType key)
 {
 	std::pair<std::map<ResourceFactory::ResourceType,
-			std::set<std::experimental::filesystem::path>>::iterator, bool> it;
-	it.first = mResourcePaths.find(key);
-	if (it.first == mResourcePaths.end())
+			std::set<std::experimental::filesystem::path>>::iterator, bool> iter;
+	iter.first = mResourcePaths.find(key);
+	if (iter.first == mResourcePaths.end())
 	{
 		std::pair<std::map<
 			std::string, 
@@ -57,7 +57,7 @@ void ResourceFactory::addPath(const std::experimental::filesystem::path& path, R
 	else
 	{
 		// found map[key]. Add the path to the key
-		it.first->second.insert(path);
+		iter.first->second.insert(path);
 	}
 }
 

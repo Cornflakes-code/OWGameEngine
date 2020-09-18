@@ -7,6 +7,9 @@
 #include <glad/glad.h>
 #endif
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "ErrorHandling.h"
 #include "ResourceFactory.h"
 
@@ -216,7 +219,7 @@ GLuint FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned
 		if ((xOffset + g->bitmap.width) > static_cast<unsigned int>(width()) ||
 			(yOffset + g->bitmap.rows) > static_cast<unsigned int>(height()))
 		{
-			GLenum err = glGetError();
+			err = glGetError();
 			if (err != GL_NO_ERROR)
 			{
 				dumpMessage(std::stringstream() << "glTexSubImage2D Error: [" << std::hex << err

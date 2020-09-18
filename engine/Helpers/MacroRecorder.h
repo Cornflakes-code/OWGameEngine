@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../OWEngine/OWEngine.h"
+
 /*
 	Class to capture UserInput, persist them and play them back.
 	Adds itself to UserInput as a listener to record Macroes.
@@ -9,7 +11,7 @@
 	Can be started from UserCommand line?
 	Works in conjunction with class SaveAndRestore to provide the same state on playback
 */
-class MacroRecorder
+class OWENGINE_API MacroRecorder
 {
 public:
 	MacroRecorder() {}

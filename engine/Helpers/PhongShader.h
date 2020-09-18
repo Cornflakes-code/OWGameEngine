@@ -5,6 +5,8 @@
 	This would have been copied from elsewhere
 */
 
+#include "../OWEngine/OWEngine.h"
+
 #include "shader.h"
 //#include "directional_light.h"
 /*

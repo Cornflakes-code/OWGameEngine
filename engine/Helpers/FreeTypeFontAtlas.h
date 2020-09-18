@@ -10,12 +10,13 @@
 #include <glad/glad.h>
 #endif
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
 /*
 	Caches loaded FreeType FontAtlas textures. class FreeTypeFontAtlas::FontDetails is
 	returned to objects that implement rendered text
 */
+struct FT_FaceRec_;
+typedef struct FT_FaceRec_*  FT_Face;
+
 class FreeTypeFontAtlas
 {
 public:
@@ -63,7 +64,7 @@ private:
 	{
 		LoadedFace(const std::experimental::filesystem::path& path, int fontHeight);
 		LoadedFace() {}
-		FT_Face face;
+		FT_FaceRec_* face;
 		unsigned int maxRowWidth;
 		std::map<int, FontDetails> fontDimensions;
 	};

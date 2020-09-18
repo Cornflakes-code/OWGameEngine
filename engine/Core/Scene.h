@@ -4,6 +4,8 @@
 #include <string>
 #include <chrono>
 
+#include "../OWEngine/OWEngine.h"
+
 #include "ScenePhysicsState.h"
 #include "Movie.h"
 #include "UserInput.h"
@@ -28,7 +30,7 @@
 	A scene change will involve a gross change in functionality and is often considered 
 	an "out of game" experience.	
 */
-class Scene
+class OWENGINE_API Scene
 {
 public:
 	static std::string quitSceneName() { return "Options"; }

@@ -59,15 +59,19 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\engine\OWEngine\OWEngine.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\engine\OWEngine\OWEngine.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\engine\OWEngine\OWEngine.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\engine\OWEngine\OWEngine.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -76,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\maths\glm;E:\Apps\OpenGL\glad\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\Apps\NMS\OWGameEngine\engine;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -85,8 +89,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\linmath;E:\Apps\OpenGL\glad\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\Apps\NMS\OWGameEngine\engine;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -165,28 +169,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GLApplication.h" />
-    <ClInclude Include="OpenGLObject.h" />
-    <ClInclude Include="OpenInfo.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Texture.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\OpenGL\glad\src\glad.c" />
-    <ClCompile Include="GLApplication.cpp" />
     <ClCompile Include="nms.cpp" />
-    <ClCompile Include="OpenGLObject.cpp" />
-    <ClCompile Include="OpenInfo.cpp" />
-    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="vao.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="vao.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\engine\Helpers\Logger.h" />
+    <ClInclude Include="..\engine\Helpers\ResourceFactory.h" />
+    <ClInclude Include="..\engine\Helpers\ResourceSource.h" />
+    <ClInclude Include="..\engine\Helpers\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\engine\OWEngine\OWEngine.vcxproj">
+      <Project>{29989fc3-099a-4eb5-8455-dd116af78e11}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,10 @@
 #pragma once
 
+#include "../OWEngine/OWEngine.h"
+
 #include "BoundingBox.h"
 #include "SimpleVertexRender.h"
+
 
 class Pyramid;
 class TextBillboard;
@@ -9,7 +12,7 @@ class TextBillboard;
 	A development class wrapping very simple collision functionality. Will be removed
 	in later iterations
 */
-class MovingText
+class OWENGINE_API MovingText
 {
 	SimpleVertexRender mText;
 	Pyramid* mPyramid;

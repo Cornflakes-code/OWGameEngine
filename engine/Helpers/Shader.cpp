@@ -5,7 +5,10 @@
 #include <sstream>
 
 #include <glad/glad.h>
+#pragma warning( push )
+#pragma warning( disable : 4201 )
 #include <glm/gtc/type_ptr.hpp>
+#pragma warning( pop )
 
 #include "Logger.h"
 #include "ErrorHandling.h"
@@ -189,7 +192,7 @@ void Shader::linkShaders(int vertexShader, int fragmentShader, int geomShader,
 	attachShader(fragmentShader);
 	attachShader(geomShader);
 	err = glGetError();
-	for (const auto& x : feedbacks)
+	if (feedbacks.size())
 	{
 		// https://open.gl/feedback
 		throw NMSNotYetImplementedException("Transform feedbacks");
