@@ -13,6 +13,8 @@ enum class NMSErrorLevel
 	Errors in the Game Engine are handled by exceptions. All of these should
 	be caught during development.
 */
+#pragma warning( push )
+#pragma warning( disable : 4275 )
 class OWENGINE_API NMSException : public std::exception
 {
 public:
@@ -22,6 +24,7 @@ public:
 	NMSException(const std::string& msg): std::exception(msg.c_str())
 	{}
 };
+#pragma warning( pop )
 
 class OWENGINE_API NMSOpenGlException : public NMSException
 {

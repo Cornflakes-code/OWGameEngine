@@ -49,7 +49,6 @@ bool NMSMainScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 		glm::mat4 view = camera->view();
 		glm::mat4 model = glm::mat4(1.0);
 
-		const Scene* ow = owner();
 		glm::vec3 un 
 			= glm::unProject(userInput.mouseInput.pos, 
 					view * model, projection, viewportdata);

@@ -10,6 +10,8 @@
 #include <glad/glad.h>
 #endif
 
+#include "../OWEngine/OWEngine.h"
+
 /*
 	Caches loaded FreeType FontAtlas textures. class FreeTypeFontAtlas::FontDetails is
 	returned to objects that implement rendered text
@@ -17,10 +19,10 @@
 struct FT_FaceRec_;
 typedef struct FT_FaceRec_*  FT_Face;
 
-class FreeTypeFontAtlas
+class OWENGINE_API FreeTypeFontAtlas
 {
 public:
-	class FontDetails
+	class OWENGINE_API FontDetails
 	{
 	public:
 		FontDetails() {}
@@ -34,6 +36,8 @@ public:
 		static glm::vec2 pleasingSpacing(int fontHeight, float aspectRatio = 1.0f);
 		static void pleasingSpacing(int fontHeight, float x, float y);
 	private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 		void calcTextureSize(FT_Face& face, unsigned int maxRowWidth, int fontHeight);
 
 		static std::map<int, glm::vec2> mNiceFontSpacings;
@@ -58,8 +62,10 @@ public:
 	};
 	const FontDetails* loadFont(const std::experimental::filesystem::path& path,
 							int fontHeight);
+#pragma warning( pop )
 private:
-
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	struct LoadedFace
 	{
 		LoadedFace(const std::experimental::filesystem::path& path, int fontHeight);
@@ -69,4 +75,5 @@ private:
 		std::map<int, FontDetails> fontDimensions;
 	};
 	std::map<std::experimental::filesystem::path, LoadedFace> mFonts;
+#pragma warning( pop )
 };

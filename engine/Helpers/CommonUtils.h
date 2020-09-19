@@ -18,7 +18,7 @@
 */
 
 class GLApplication;
-extern GLApplication* theApp;
+extern OWENGINE_API GLApplication* theApp;
 
 struct OWENGINE_API OWUtils
 {
@@ -54,7 +54,7 @@ struct OWENGINE_API OWUtils
 		return nearlyEqual(f1, f2, 1.e-6f);
 	}
 
-	class PolygonModeRIAA
+	class OWENGINE_API PolygonModeRIAA
 	{
 		GLint polygonMode;
 	public:
@@ -83,6 +83,6 @@ namespace Compass
 		NoDirection,
 		NumDirections
 	};
-	std::string asString(Direction dir);
-	extern glm::vec4 Rose[NumDirections];
+	std::string OWENGINE_API asString(Direction dir);
+	extern glm::vec4 OWENGINE_API Rose[NumDirections];
 };

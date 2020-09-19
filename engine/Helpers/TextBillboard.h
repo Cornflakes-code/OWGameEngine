@@ -30,7 +30,7 @@ class Shader;
 	Base class for fixed and dynamic Billboard Text. Font texture loading is cached
 	by FreeTypeFontAtlas via ResourceManager. Rendering is done in SimpleVCertexRender
 */
-class TextBillboard :
+class OWENGINE_API TextBillboard:
 		public ResourceSource, 
 		public ResizeHelper, 
 		public SimpleVertexSource
@@ -60,12 +60,15 @@ public:
 	}
 
 protected:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	AABB mBounds;
 	glm::vec4 mColor;
 	glm::vec2 mScale = { 0.5f, 0.5f };
 	Shader* mShader;
 	std::vector<glm::vec4> mVertices;
 	const FreeTypeFontAtlas::FontDetails* mFontData;
+#pragma warning( pop )
 private:
 	AABB findBounds() const;
 };

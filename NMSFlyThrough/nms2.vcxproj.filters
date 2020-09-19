@@ -22,20 +22,11 @@
     <Filter Include="Header Files\Core">
       <UniqueIdentifier>{75ba3ede-034a-4f23-9b17-19a4619d9cac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{e1bdd170-c92c-4f44-a20b-5adeb9385f23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Helpers">
-      <UniqueIdentifier>{b05e44ed-e8f0-4f83-9bc1-5829a59aaf84}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Helpers">
       <UniqueIdentifier>{433c28e1-6e9c-4516-b3da-082158e72c6b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Renderables">
       <UniqueIdentifier>{ffd2750d-faab-425d-b131-f886aa74bd0a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Renderables">
-      <UniqueIdentifier>{8571a534-fd31-45ea-ae56-482d36aed2a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -56,9 +47,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\Cameras\CameraOW.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NMSEndScene.cpp">
@@ -85,119 +73,8 @@
     <ClCompile Include="..\engine\Cameras\Mazhar_Camera.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\Core\Camera.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\GLApplication.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\GlobalSystem.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\ListenerHelper.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\Movie.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\QuitScene.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\ScenePhysicsState.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\UserInput.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\CommonUtils.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\ErrorHandling.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\FreeTypeFontAtlas.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\Logger.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\MacroRecorder.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\PhongShader.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\ResizeHelper.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\ResourceFactory.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\ResourceSource.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\Shader.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\stb_image.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\TextBillboard.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\Texture.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Helpers\utils.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\Actor.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\Axis.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\BoundingBox.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\FullScreen.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\MovingText.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\Points.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\Renderer.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\SimpleVertexRender.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\SimpleVertexSource.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\TextBillboardDynamic.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\TextBillboardFixed.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\Scene.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Core\SaveAndRestore.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\Circle.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Renderables\Pyramid.cpp">
-      <Filter>Source Files\Renderables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

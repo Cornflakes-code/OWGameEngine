@@ -3,9 +3,11 @@
 #include <iostream>
 #include <sstream>
 
-#include <glad/glad.h>
 #include "stb/stb_image.h"
 
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
 
 void Texture::addTexture(const std::string& texturePath, bool transparent, bool flip)
 {

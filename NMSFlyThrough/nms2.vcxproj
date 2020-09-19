@@ -66,15 +66,15 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\engine\OWEngine\OWEngine.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\engine\OWEngine\OWEngine.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\glad\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype-2.10.2\include;E:\Apps\NMS\OWGameEngine\engine;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;E:\Apps\OpenGL\freetype-2.10.2\objs\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,14 +84,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\glad\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;E:\Apps\OpenGL\freetype\win64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -100,7 +97,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -168,44 +164,6 @@
     <ClCompile Include="..\engine\Cameras\CameraMazhar.cpp" />
     <ClCompile Include="..\engine\Cameras\CameraOW.cpp" />
     <ClCompile Include="..\engine\Cameras\Mazhar_Camera.cpp" />
-    <ClCompile Include="..\engine\Core\Camera.cpp" />
-    <ClCompile Include="..\engine\Core\GLApplication.cpp" />
-    <ClCompile Include="..\engine\Core\GlobalSystem.cpp" />
-    <ClCompile Include="..\engine\Core\ListenerHelper.cpp" />
-    <ClCompile Include="..\engine\Core\Movie.cpp" />
-    <ClCompile Include="..\engine\Core\QuitScene.cpp" />
-    <ClCompile Include="..\engine\Core\SaveAndRestore.cpp" />
-    <ClCompile Include="..\engine\Core\Scene.cpp" />
-    <ClCompile Include="..\engine\Core\ScenePhysicsState.cpp" />
-    <ClCompile Include="..\engine\Core\UserInput.cpp" />
-    <ClCompile Include="..\engine\glad.c" />
-    <ClCompile Include="..\engine\Helpers\CommonUtils.cpp" />
-    <ClCompile Include="..\engine\Helpers\ErrorHandling.cpp" />
-    <ClCompile Include="..\engine\Helpers\ResizeHelper.cpp" />
-    <ClCompile Include="..\engine\Helpers\TextBillboard.cpp" />
-    <ClCompile Include="..\engine\Helpers\FreeTypeFontAtlas.cpp" />
-    <ClCompile Include="..\engine\Helpers\Logger.cpp" />
-    <ClCompile Include="..\engine\Helpers\MacroRecorder.cpp" />
-    <ClCompile Include="..\engine\Helpers\PhongShader.cpp" />
-    <ClCompile Include="..\engine\Helpers\ResourceFactory.cpp" />
-    <ClCompile Include="..\engine\Helpers\ResourceSource.cpp" />
-    <ClCompile Include="..\engine\Helpers\Shader.cpp" />
-    <ClCompile Include="..\engine\Helpers\stb_image.cpp" />
-    <ClCompile Include="..\engine\Helpers\Texture.cpp" />
-    <ClCompile Include="..\engine\Helpers\utils.cpp" />
-    <ClCompile Include="..\engine\Renderables\Actor.cpp" />
-    <ClCompile Include="..\engine\Renderables\Axis.cpp" />
-    <ClCompile Include="..\engine\Renderables\BoundingBox.cpp" />
-    <ClCompile Include="..\engine\Renderables\Circle.cpp" />
-    <ClCompile Include="..\engine\Renderables\FullScreen.cpp" />
-    <ClCompile Include="..\engine\Renderables\MovingText.cpp" />
-    <ClCompile Include="..\engine\Renderables\Points.cpp" />
-    <ClCompile Include="..\engine\Renderables\Pyramid.cpp" />
-    <ClCompile Include="..\engine\Renderables\Renderer.cpp" />
-    <ClCompile Include="..\engine\Renderables\TextBillboardDynamic.cpp" />
-    <ClCompile Include="..\engine\Renderables\TextBillboardFixed.cpp" />
-    <ClCompile Include="..\engine\Renderables\SimpleVertexRender.cpp" />
-    <ClCompile Include="..\engine\Renderables\SimpleVertexSource.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NMSEndScene.cpp" />
     <ClCompile Include="NMSMainScene.cpp" />
@@ -263,6 +221,11 @@
     <ClInclude Include="NMSSplashScene.h" />
     <ClInclude Include="NMSUserInput.h" />
     <ClInclude Include="NoMansSkyStarMap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\engine\OWEngine\OWEngine.vcxproj">
+      <Project>{29989fc3-099a-4eb5-8455-dd116af78e11}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

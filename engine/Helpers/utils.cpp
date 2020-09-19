@@ -1,21 +1,30 @@
 #include "utils.h"
 #include <algorithm>
 #include <cctype>
-// trim from start (in place)
 
-//std::vector<std::string> split(const std::string& str, std::string& delims)
-//{
-//	std::regex reg("\\s+");
-//
-//	// Get an iterator after filtering through the regex
-//	std::sregex_token_iterator iter(str.begin(), str.end(), reg, -1);
-//
-//	// Keep a dummy end iterator - Needed to construct a vector
-//	// using (start, end) iterators.
-//	std::sregex_token_iterator end;
-//
-//	return std::vector<std::string>(iter, end);
-//}
+void OWENGINE_API ltrim(std::string &s)
+{
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch)
+	{
+		return !std::isspace(ch);
+	}));
+}
+
+// trim from end (in place)
+inline void rtrim(std::string &s)
+{
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+		return !std::isspace(ch);
+	}).base(), s.end());
+}
+
+inline void trim(std::string &s)
+{
+	// https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+	ltrim(s);
+	rtrim(s);
+}
+
 
 template <typename OutputIterator>
 void extractWords(std::string const& s, char delim, OutputIterator out)

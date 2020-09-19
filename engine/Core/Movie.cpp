@@ -1,12 +1,14 @@
 #include "Movie.h"
 
 #include <iostream>
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "../Helpers/ErrorHandling.h"
 #include "../Helpers/Logger.h"
 #include "Camera.h"
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
 
 #include "GLApplication.h"
 #include "QuitScene.h"
@@ -143,7 +145,7 @@ void Movie::run(UserInput* /*ui*/, GLFWwindow* glfwWindow)
 		// Best practice is to default glfwSwapInterval to '1'
 			// 0: do not wait for vsync(may be overridden by driver / driver settings)
 			// 1 : wait for 1st vsync(may be overridden by driver / driver settings)
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 		glfwSwapBuffers(glfwWindow);
 		glfwPollEvents();
 		if (!mIsRunning)

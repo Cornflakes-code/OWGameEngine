@@ -56,7 +56,10 @@ protected:
 
 	virtual void doSetup(ScenePhysicsState* state) = 0;
 private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	bool mGetStateCalled = false;
 	const Movie* mMovie = nullptr;
 	OWUtils::Time::duration mCumulativeTime = std::chrono::milliseconds(0);
+#pragma warning( pop )
 };

@@ -4,11 +4,14 @@
 #include <iostream>
 #include <sstream>
 
-#include <glad/glad.h>
 #pragma warning( push )
 #pragma warning( disable : 4201 )
 #include <glm/gtc/type_ptr.hpp>
 #pragma warning( pop )
+
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
 
 #include "Logger.h"
 #include "ErrorHandling.h"

@@ -40,6 +40,8 @@ public:
 	void setVector4f(const std::string& name, const glm::vec4 &value, bool useShader = false);
 	void setMatrix4(const std::string& name, const glm::mat4 &matrix, bool useShader = false);
 private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	int mShaderProgram = 0;
 	std::vector<json> uniforms;
 
@@ -59,4 +61,5 @@ private:
 	static int addVertexShader(const std::string& shader);
 	static int addFragmentShader(const std::string& shader);
 	static int addGeometryShader(const std::string& shader);
+#pragma warning( pop )
 };

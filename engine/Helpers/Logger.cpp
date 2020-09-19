@@ -3,8 +3,10 @@
 #include <sstream>
 #include <iostream>
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
 
 double Logger::previous_seconds = 0.0;
 int Logger::frame_count = 0;

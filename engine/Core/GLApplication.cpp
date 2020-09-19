@@ -2,7 +2,7 @@
 
 // Named in homage to MFC. Also gives you compiler errors 
 // if you include the heap of shit that is MFC :)
-GLApplication* theApp = nullptr;
+OWENGINE_API GLApplication* theApp = nullptr;
 
 #include <algorithm>
 

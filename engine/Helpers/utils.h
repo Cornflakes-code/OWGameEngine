@@ -4,27 +4,11 @@
 #include <algorithm>
 #include <cctype>
 
-static inline void ltrim(std::string &s)
-{
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch)
-	{
-		return !std::isspace(ch);
-	}));
-}
+#include "../OWEngine/OWEngine.h"
 
-// trim from end (in place)
-static inline void rtrim(std::string &s) 
-{
-	s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
-		return !std::isspace(ch);
-	}).base(), s.end());
-}
+// trim (in place)
+void OWENGINE_API ltrim(std::string &s);
+void OWENGINE_API rtrim(std::string &s);
+void OWENGINE_API trim(std::string &s);
 
-static inline void trim(std::string &s) 
-{
-	// https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-	ltrim(s);
-	rtrim(s);
-}
-
-std::vector<std::string>split(const std::string& s, char delim);
+std::vector<std::string> OWENGINE_API split(const std::string& s, char delim);

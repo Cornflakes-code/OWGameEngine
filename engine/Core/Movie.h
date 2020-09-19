@@ -42,6 +42,8 @@ protected:
 	virtual void render(const ScenePhysicsState* state);
 	void pushUserInput(const UserInput::AnyInput& anyInput);
 private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	std::queue<UserInput::AnyInput> mUserInput;
 	Logger* mLogger;
 	std::string mWindowTitle;
@@ -68,4 +70,5 @@ private:
 	virtual bool canResize() const { return true; }
 
 	void camera(Camera* newValue) { mCamera = newValue; }
+#pragma warning( pop )
 };

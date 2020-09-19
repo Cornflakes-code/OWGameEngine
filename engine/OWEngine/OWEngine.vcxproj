@@ -76,8 +76,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\glad\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype-2.10.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;E:\Apps\OpenGL\freetype-2.10.2\objs\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -87,25 +85,20 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\glad\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype-2.10.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;E:\Apps\OpenGL\freetype-2.10.2\objs\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;OWENGINE_EXPORTS;_WINDOWS;OWENGINE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;OWENGINE_EXPORTS;_WINDOWS;OWENGINE_DLL;GLAD_GLAPI_EXPORT_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4251;4100;4275</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>4100;4275</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -146,17 +139,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;OWENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;OWENGINE_EXPORTS;_WINDOWS;_USRDLL;GLAD_GLAPI_EXPORT_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4251;4100;4275</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>4100;4275</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -177,6 +166,7 @@
     <ClInclude Include="..\Core\Scene.h" />
     <ClInclude Include="..\Core\ScenePhysicsState.h" />
     <ClInclude Include="..\Core\UserInput.h" />
+    <ClInclude Include="..\glad\include\glad\glad.h" />
     <ClInclude Include="..\Helpers\CommonUtils.h" />
     <ClInclude Include="..\Helpers\ErrorHandling.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
@@ -217,7 +207,7 @@
     <ClCompile Include="..\Core\Scene.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
-    <ClCompile Include="..\glad.c" />
+    <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="..\Helpers\CommonUtils.cpp" />
     <ClCompile Include="..\Helpers\ErrorHandling.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />

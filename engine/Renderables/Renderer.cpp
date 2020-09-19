@@ -1,9 +1,10 @@
 #include "Renderer.h"
 
+#include <glm/gtx/transform.hpp>
+
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
-#include <glm/gtx/transform.hpp>
 
 #include "../Helpers/Shader.h"
 #include "../Helpers//ResourceFactory.h"

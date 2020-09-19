@@ -3,9 +3,15 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\glad\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype-2.10.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\include;E:\Apps\OpenGL\maths\glm;E:\Apps\json;E:\Apps\Graphics;E:\Apps\OpenGL\freetype-2.10.2\include;E:\Apps\NMS\OWGameEngine\engine;E:\Apps\NMS\OWGameEngine\engine\glad\include;$(IncludePath)</IncludePath>
     <LibraryPath>E:\Apps\OpenGL\glfw-3.3.2.bin.WIN64\lib-vc2017;E:\Apps\OpenGL\freetype-2.10.2\objs\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>GLAD_GLAPI_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

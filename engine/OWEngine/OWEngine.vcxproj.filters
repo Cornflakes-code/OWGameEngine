@@ -147,6 +147,9 @@
     <ClInclude Include="OWEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\glad\include\glad\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -260,11 +263,11 @@
     <ClCompile Include="..\Renderables\TextBillboardDynamic.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\BoundingBox.cpp">
       <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glad\src\glad.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

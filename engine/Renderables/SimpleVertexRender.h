@@ -3,11 +3,11 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#include "../OWEngine/OWEngine.h"
+
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
-
-#include "../OWEngine/OWEngine.h"
 
 class SimpleVertexSource;
 

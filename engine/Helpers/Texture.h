@@ -9,6 +9,8 @@
 */
 class OWENGINE_API Texture
 {
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	struct TextureProps
 	{
 		unsigned int texture;
@@ -16,6 +18,7 @@ class OWENGINE_API Texture
 		bool flip;
 	};
 	std::vector<TextureProps> mTextures;
+#pragma warning( pop )
 public:
 	void addTexture(const std::string& texturePath, bool transparent, bool flip);
 	void use();

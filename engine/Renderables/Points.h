@@ -12,7 +12,10 @@ class Shader;
 */
 class OWENGINE_API Points: public Renderer, public ResizeHelper
 {
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	glm::vec3 mPosition = glm::vec3(0);
+#pragma warning( pop )
 public:
 	Points(Shader* _shader = nullptr);
 	void setUp(const std::vector<glm::vec3>& vertices);

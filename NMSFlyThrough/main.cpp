@@ -50,13 +50,13 @@ https://github.com/hdonk/lwjgl_vr_framework/tree/OpenGL
 */
 class MacroRecorder;
 
-extern GLApplication* theApp;
+extern OWENGINE_API GLApplication* theApp;
 
-GLApplication* GLApplication::getApplication(ResourceFactory* rf, UserInput* ui)
+GLApplication* GLApplication::getApplication(UserInput* ui)
 {
 	if (!theApp)
 	{
-		theApp = new GLApplication(rf, ui);
+		theApp = new GLApplication(ui);
 	}
 	return theApp;
 }
@@ -91,7 +91,7 @@ int main()
 	try
 	{
 		MacroRecorder recorder;
-		GLApplication* app = GLApplication::getApplication(rf, &ui);
+		GLApplication* app = GLApplication::getApplication(&ui);
 		CameraOW camera;
 		NMSMovie nms(&camera);
 		SaveAndRestore sr;

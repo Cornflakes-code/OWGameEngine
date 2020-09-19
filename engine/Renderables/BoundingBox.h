@@ -14,16 +14,21 @@
 */
 class OWENGINE_API Plane
 {
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	glm::vec4 mPoint1;
 	glm::vec4 mPoint2;
 	glm::vec4 mPoint3;
 	glm::vec4 mNormal;
+#pragma warning( pop )
 public:
 	glm::vec4 ClosestPointOnPlane(const glm::vec4& p);
 };
 
 class OWENGINE_API AABB
 {
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	glm::vec4 mMinPoint;
 	glm::vec4 mMaxPoint;
 	
@@ -40,6 +45,7 @@ class OWENGINE_API AABB
 		return glm::vec4(x, y, z, 1.0);
 	}
 	void isValid() const;
+#pragma warning( pop )
 public:
 	AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint);
 	AABB();
@@ -94,9 +100,12 @@ public:
 
 class OWENGINE_API Ball
 {
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	OWUtils::Float mRadius;
 	// Center is topLeft of a box around the ball
 	glm::vec4 mPosition;
+#pragma warning( pop )
 public:
 	Ball(const OWUtils::Float& _radius, const glm::vec4& _pos)
 	: mRadius(_radius), mPosition(_pos)

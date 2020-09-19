@@ -1,6 +1,8 @@
 #include "CameraMazhar.h"
-#include "../Helpers/Logger.h"
+
 #include <glm/gtx/string_cast.hpp>
+
+#include "../Helpers/Logger.h"
 
 CameraMazhar::CameraMazhar()
 {

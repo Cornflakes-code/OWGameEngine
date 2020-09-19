@@ -3,7 +3,9 @@
 #include <iostream>
 
 
+#ifndef __gl_h_
 #include <glad/glad.h>
+#endif
 #include <GLFW/glfw3.h>
 
 #include "../OWEngine/OWEngine.h"
@@ -29,7 +31,7 @@ public:
 	void init(Movie* movie, UserInput* ui, 
 			  MacroRecorder* recorder, SaveAndRestore* saveRestore);
 	void run(Movie* movieSaveAndRestore);
-	static GLApplication* getApplication(ResourceFactory* mr, UserInput* ui);
+	static GLApplication* getApplication(UserInput* ui);
 
 	// convenience methods
 	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
@@ -77,6 +79,8 @@ private:
 	GLApplication(UserInput* ui);
 	~GLApplication();
 
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	SaveAndRestore* mSaveAndRestore = nullptr;
 	glm::uvec2 mPhysicalWindowSize;
 	GLFWwindow* mWindow;
@@ -107,6 +111,7 @@ private:
 
 	// Other Callbacks
 	virtual void onCloseCallback(GLFWwindow* window);
+#pragma warning( pop )
 };
 
 /*

@@ -2,7 +2,9 @@
 
 #include <iostream>
 
+#ifndef __gl_h_
 #include <glad/glad.h>
+#endif
 
 static std::string toString(NMSErrorLevel err)
 {

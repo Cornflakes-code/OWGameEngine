@@ -1,5 +1,5 @@
 #include "NMSMovie.h"
-#include <glad/glad.h>
+
 #include <GLFW/glfw3.h>
 
 #include <Core/GLApplication.h>
@@ -7,11 +7,15 @@
 
 #include <Core/Camera.h>
 #include <Helpers/ErrorHandling.h>
+#include <Helpers/FreeTypeFontAtlas.h>
+
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
 
 #include "NMSSplashScene.h"
 #include "NMSEndScene.h"
 #include "NMSMainScene.h"
-#include <Helpers/FreeTypeFontAtlas.h>
 
 NMSMovie::NMSMovie(Camera* _camera)
 	: Movie("NMS", _camera)

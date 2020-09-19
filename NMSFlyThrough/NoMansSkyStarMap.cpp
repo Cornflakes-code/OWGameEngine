@@ -26,11 +26,13 @@ NoMansSky::NoMansSky()
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 {
-	glGenVertexArrays(2, &mVao[0]);
-	GLuint location = 0;
-	AABB NMSSize(glm::vec4(-0x7FF, -0x7F, -0x7FF, 1), 
-				 glm::vec4(0x7FF, 0x7F, 0x7FF, 1));
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
+
+	glGenVertexArrays(2, &mVao[0]);
+	
+
+	AABB NMSSize(glm::vec4(-0x7FF, -0x7F, -0x7FF, 1),
+				 glm::vec4(0x7FF, 0x7F, 0x7FF, 1));
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
@@ -40,7 +42,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	glGenBuffers(1, &vboGrid);
 	glBindBuffer(GL_ARRAY_BUFFER, vboGrid);
 	mGridShader->use();
-	location = mGridShader->getAttributeLocation("vPos");
+	GLuint location = mGridShader->getAttributeLocation("vPos");
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * mGrid.size(), 
 					mGrid.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, 0);

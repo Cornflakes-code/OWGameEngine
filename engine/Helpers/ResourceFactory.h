@@ -38,6 +38,8 @@ public:
 protected:
 	ResourceFactory();
 private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	FreeTypeFontAtlas mFreeType;
 	struct FreeTypeFont
 	{
@@ -54,4 +56,5 @@ private:
 	// can exist for multiple ResourceType.
 	std::map<ResourceType, std::set<std::experimental::filesystem::path>> mResourcePaths;
 	std::istream* readFile(const std::string& path);
+#pragma warning( pop )
 };

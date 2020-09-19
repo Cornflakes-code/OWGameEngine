@@ -3,8 +3,13 @@
 #include <string>
 #include <iostream>
 
+#ifndef __gl_h_
 #include <glad/glad.h>
+#endif
+#pragma warning( push )
+#pragma warning( disable : 4201 )
 #include <glm/glm.hpp>
+#pragma warning( pop )
 
 #include "../OWEngine/OWEngine.h"
 

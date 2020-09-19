@@ -6,7 +6,9 @@
 
 #include <glm/glm.hpp>
 
+#ifndef __gl_h_
 #include <glad/glad.h>
+#endif
 #include <GLFW/glfw3.h>
 
 #include "../OWEngine/OWEngine.h"
@@ -126,6 +128,8 @@ public:
 protected:
 	virtual int userCommand(const UserCommandCallbackData& data);
 private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	glm::ivec2 mFrameBuffer = glm::ivec2(0);
 	glm::ivec2 mWindowSize = glm::ivec2(0);
 	void doMouseClick(GLFWwindow* window, int button, int action, int mods);
@@ -135,6 +139,7 @@ private:
 	std::vector<UserCommandCallbackType> mUserCommandCallbacks;
 	std::vector<PointingDeviceCallbackType> mPointingDeviceCallbacks;
 	virtual std::string userInputToString(int value) = 0;
+#pragma warning( pop )
 };
 
 /*
