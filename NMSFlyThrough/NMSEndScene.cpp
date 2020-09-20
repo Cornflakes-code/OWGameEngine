@@ -8,14 +8,17 @@
 
 #include "NMSUserInput.h"
 
-void NMSEndScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
+void NMSEndScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
 {}
 
-void NMSEndScenePhysics::fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt)
+void NMSEndScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName), 
+										OWUtils::Time::duration OW_UNUSED(dt))
 {}
 
-void NMSEndScenePhysics::interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
-	const ScenePhysicsState* currentState, double multCurr)
+void NMSEndScenePhysics::interpolateRatio(const ScenePhysicsState* OW_UNUSED(previousState),
+								double OW_UNUSED(multPrev), 
+								const ScenePhysicsState* OW_UNUSED(currentState),
+								double OW_UNUSED(multCurr))
 {}
 
 void NMSEndScenePhysics::copy(ScenePhysicsState* source)
@@ -29,7 +32,7 @@ ScenePhysicsState* NMSEndScenePhysics::clone()
 }
 
 bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInput, 
-					std::string& nextScene, Camera* camera)
+					std::string& nextScene, Camera* OW_UNUSED(camera))
 {
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
 	{
@@ -60,7 +63,7 @@ NMSEndScene::NMSEndScene(const Movie* _movie)
 	const glm::uvec2& screen = theApp->physicalWindowSize();
 }
 
-void NMSEndScene::doSetup(ScenePhysicsState* state)
+void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 {
 	const float sx = 2.0f / theApp->physicalWindowSize().x;
 	const float sy = 2.0f / theApp->physicalWindowSize().y;
@@ -73,19 +76,22 @@ void NMSEndScene::doSetup(ScenePhysicsState* state)
 }
 
 
-void NMSEndScene::render(const ScenePhysicsState* state,
+void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
 	const glm::mat4& proj, const glm::mat4& view)
 {
 	glm::mat4 model(1.0f);
 	mText.render(proj, view, model);
 }
 
-void NMSEndScene::activate(const std::string& previousScene, ScenePhysicsState* state,
-					Camera* camera, unsigned int callCount)
+void NMSEndScene::activate(const std::string& OW_UNUSED(previousScene),
+					ScenePhysicsState* OW_UNUSED(state),
+					Camera* OW_UNUSED(camera), unsigned int OW_UNUSED(callCount))
 {
 //	glBindVertexArray(text.VAO);
 }
 
-void NMSEndScene::deActivate(const std::string& previousScene, const Camera* camera, ScenePhysicsState* state)
+void NMSEndScene::deActivate(const std::string& OW_UNUSED(previousScene), 
+							 const Camera* OW_UNUSED(camera), 
+							 ScenePhysicsState* OW_UNUSED(state))
 {
 }

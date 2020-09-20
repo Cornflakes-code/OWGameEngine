@@ -89,7 +89,7 @@ public:
 	{
 		return mCurrent->moveScale();
 	}
-	void mouseScale(float newValue) override
+	void mouseScale(float OW_UNUSED(newValue)) override
 	{
 		throw NMSException("Not implemented");
 		//mCurrent->cameraScale(newValue);

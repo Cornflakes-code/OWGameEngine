@@ -28,7 +28,8 @@ void Movie::preRun()
 	this->add(s, new QuitScenePhysics(s), false);
 }
 
-void Movie::init(GLApplication* /*app*/, UserInput* ui, MacroRecorder* /*recorder*/)
+void Movie::init(GLApplication* OW_UNUSED(app), UserInput* ui, 
+							MacroRecorder* OW_UNUSED(recorder))
 {
 	ui->addUserCommandListener([this](const UserInput::UserCommandCallbackData& data)
 	{
@@ -55,7 +56,7 @@ void Movie::init(GLApplication* /*app*/, UserInput* ui, MacroRecorder* /*recorde
 	mLogger->log_gl_params(std::cout);
 }
 
-void Movie::run(UserInput* /*ui*/, GLFWwindow* glfwWindow)
+void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 {
 	if (!mScenes.size())
 	{

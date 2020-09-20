@@ -223,7 +223,8 @@ void GLApplication::enableCallbacks()
 
 }
 
-void GLApplication::onFrameBufferResizeCallback(GLFWwindow* /*window*/, int width, int height)
+void GLApplication::onFrameBufferResizeCallback(GLFWwindow* OW_UNUSED(window), 
+								int width, int height)
 {
 	glViewport(0, 0, width, height);
 
@@ -231,13 +232,15 @@ void GLApplication::onFrameBufferResizeCallback(GLFWwindow* /*window*/, int widt
 		cb.first(WindowResizeType::FrameBuffer, glm::ivec2(width, height));
 }
 
-void GLApplication::onSetWindowSizeCallback(GLFWwindow* /*window*/, int width, int height)
+void GLApplication::onSetWindowSizeCallback(GLFWwindow* OW_UNUSED(window), 
+								int width, int height)
 {
 	for (auto& cb : mWindowResizeCallbacks)
 		cb.first(WindowResizeType::WindowResize, glm::vec2(width, height));
 }
 
-void GLApplication::onPointingDeviceCallback(GLFWwindow* window, int button, int action, int mods)
+void GLApplication::onPointingDeviceCallback(GLFWwindow* window, 
+										int button, int action, int mods)
 {
 	for (auto& cb : mPointingDeviceCallbacks)
 		cb(window, button, action, mods);
@@ -252,13 +255,14 @@ void GLApplication::onPointingDevicePositionCallback(GLFWwindow* window, double 
 		cb.first(window, x, y);
 }
 
-void GLApplication::onCharCallback(GLFWwindow* /*window*/, unsigned int codepoint)
+void GLApplication::onCharCallback(GLFWwindow* OW_UNUSED(window), unsigned int codepoint)
 {
 	for (auto& cb : mKeyboardCallbacks)
 		cb(codepoint, 0, 0, 0, 0);
 }
 
-void GLApplication::onKeyPressCallback(GLFWwindow* /*window*/, int key, int scancode, int action, int mods)
+void GLApplication::onKeyPressCallback(GLFWwindow* OW_UNUSED(window), 
+								int key, int scancode, int action, int mods)
 {
 	for (auto& cb : mKeyboardCallbacks)
 		cb(0, key, scancode, action, mods);

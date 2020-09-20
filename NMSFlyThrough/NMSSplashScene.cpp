@@ -38,7 +38,8 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	fixedTimeStep(dummy, dt);
 }
 
-void NMSSplashScenePhysics::fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt)
+void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName), 
+									OWUtils::Time::duration dt)
 {
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
 	
@@ -52,8 +53,11 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& nextSceneName, OWUtils::T
 	mEnjoy.bounceIfCollide(mWindowBounds);
 }
 
-void NMSSplashScenePhysics::interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
-	const ScenePhysicsState* currentState, double multCurr)
+void NMSSplashScenePhysics::interpolateRatio(
+					const ScenePhysicsState* OW_UNUSED(previousState), 
+					double OW_UNUSED(multPrev),
+					const ScenePhysicsState* OW_UNUSED(currentState), 
+					double OW_UNUSED(multCurr))
 {}
 
 void NMSSplashScenePhysics::copy(ScenePhysicsState* source)
@@ -68,7 +72,7 @@ ScenePhysicsState* NMSSplashScenePhysics::clone()
 
 bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userInput,
 					std::string& nextScene, 
-					Camera* camera)
+					Camera* OW_UNUSED(camera))
 {
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
 	{
@@ -160,12 +164,15 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 #endif
 }
 
-void NMSSplashScene::activate(const std::string& previousScene, ScenePhysicsState* state,
-						Camera* camera, unsigned int callCount)
+void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 
+							  ScenePhysicsState* OW_UNUSED(state),
+							  Camera* OW_UNUSED(camera), 
+							  unsigned int OW_UNUSED(callCount))
 {
 }
 
-void NMSSplashScene::deActivate(const std::string& previousScene, 
-					const Camera* camera, ScenePhysicsState* state)
+void NMSSplashScene::deActivate(const std::string& OW_UNUSED(previousScene),
+							const Camera* OW_UNUSED(camera), 
+							ScenePhysicsState* OW_UNUSED(state))
 {
 }

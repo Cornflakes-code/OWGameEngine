@@ -106,7 +106,7 @@ float normalise(float value, float max)
 }
 
 void NoMansSky::loadStars(const std::string& fileName,
-						  const AABB& nmsSpace,
+						  const AABB& OW_UNUSED(nmsSpace),
 						  float scaleToWorld)
 {
 	int fontHeight = 12;

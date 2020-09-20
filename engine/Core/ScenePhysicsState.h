@@ -28,14 +28,14 @@ public:
 	virtual bool processUserCommands(const UserInput::AnyInput& userInput, 
 									 std::string& nextScene, 
 									 Camera* camera) = 0;
-	virtual void variableTimeStep(OWUtils::Time::duration /*dt*/) {}
+	virtual void variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt)) {}
 
 	// Good site for advanced interpolation (inclkuding eueler and RK4)
 	// https://github.com/BryanCai/6.S096-Final-Project/blob/master/nbody-project/src/System.cpp
-	virtual void interpolateRatio(const ScenePhysicsState* /*previousState*/, 
-								  double /*multPrev*/,
-								  const ScenePhysicsState* /*currentState*/, 
-								  double /*multCurr*/) {}
+	virtual void interpolateRatio(const ScenePhysicsState* OW_UNUSED(previousState),
+								  double OW_UNUSED(multPrev),
+								  const ScenePhysicsState* OW_UNUSED(currentState),
+								  double OW_UNUSED(multCurr)) {}
 	virtual ScenePhysicsState* clone() = 0;
 	const Scene* owner() const { return mOwner; }
 	virtual void clear() {}
@@ -74,7 +74,7 @@ public:
 		return tempRenderTarget;
 	}
 
-	void interpolateRenderTarget(OWUtils::Time::duration /*totalSceneTime*/, 
+	void interpolateRenderTarget(OWUtils::Time::duration OW_UNUSED(totalSceneTime),
 								 OWUtils::Time::duration remainingTime, 
 								 OWUtils::Time::duration fixedStep)
 	{

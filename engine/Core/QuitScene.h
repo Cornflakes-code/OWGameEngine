@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../OWEngine/OWEngine.h"
+
 #include "Scene.h"
 /*
 	A core Scene required as a placeholder for the Game Loop implementation in Movie.cpp
@@ -8,18 +10,18 @@ struct OWENGINE_API QuitScenePhysics: public ScenePhysicsState
 {
 	QuitScenePhysics(const Scene* owner)
 		: ScenePhysicsState(owner) {}
-	void variableTimeStep(OWUtils::Time::duration /*dt*/) override {}
-	void fixedTimeStep(std::string& /*nextSceneName*/, 
-					   OWUtils::Time::duration /*dt*/) override {}
-	void interpolateRatio(const ScenePhysicsState* /*previousState*/, 
-						  double /*multPrev*/,
-						  const ScenePhysicsState* /*currentState*/, 
-						  double /*multCurr*/) override {}
-	bool processUserCommands(const UserInput::AnyInput& /*userInput*/, 
-							 std::string& /*nextScene*/, 
-							 Camera* /*camera*/) override;
+	void variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt)) override {}
+	void fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
+					   OWUtils::Time::duration OW_UNUSED(dt)) override {}
+	void interpolateRatio(const ScenePhysicsState* OW_UNUSED(previousState),
+						  double OW_UNUSED(multPrev),
+						  const ScenePhysicsState* OW_UNUSED(currentState),
+						  double OW_UNUSED(multCurr)) override {}
+	bool processUserCommands(const UserInput::AnyInput& OW_UNUSED(userInput),
+							 std::string& OW_UNUSED(nextScene),
+							 Camera* OW_UNUSED(camera)) override;
 
-	void copy(ScenePhysicsState* /*source*/) override;
+	void copy(ScenePhysicsState* OW_UNUSED(source)) override;
 	ScenePhysicsState* clone() override;
 };
 

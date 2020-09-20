@@ -13,14 +13,17 @@
 #include "NMSUserInput.h"
 #include "NoMansSkyStarMap.h"
 
-void NMSMainScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
+void NMSMainScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
 {}
 
-void NMSMainScenePhysics::fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt)
+void NMSMainScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName), 
+										OWUtils::Time::duration OW_UNUSED(dt))
 {}
 
-void NMSMainScenePhysics::interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
-	const ScenePhysicsState* currentState, double multCurr)
+void NMSMainScenePhysics::interpolateRatio(const ScenePhysicsState* OW_UNUSED(previousState), 
+							double OW_UNUSED(multPrev),
+							const ScenePhysicsState* OW_UNUSED(currentState), 
+							double OW_UNUSED(multCurr))
 {}
 
 void NMSMainScenePhysics::copy(ScenePhysicsState* source)
@@ -85,7 +88,7 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	mAxis->setUp(world(), movie()->camera());
 }
 
-void NMSMainScene::render(const ScenePhysicsState* state,
+void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),
 						  const glm::mat4& proj, const glm::mat4& view)
 {
 	glm::mat4 model(1.0);
@@ -93,8 +96,9 @@ void NMSMainScene::render(const ScenePhysicsState* state,
 	mStarMap->render(proj, view, model);
 }
 
-void NMSMainScene::activate(const std::string& previousScene, ScenePhysicsState* state,
-					Camera* camera, unsigned int callCount)
+void NMSMainScene::activate(const std::string& OW_UNUSED(previousScene), 
+							ScenePhysicsState* state,
+							Camera* camera, unsigned int callCount)
 {
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	if (!callCount)
@@ -104,7 +108,8 @@ void NMSMainScene::activate(const std::string& previousScene, ScenePhysicsState*
 	}
 }
 
-void NMSMainScene::deActivate(const std::string& previousScene, const Camera* camera, ScenePhysicsState* state)
+void NMSMainScene::deActivate(const std::string& OW_UNUSED(previousScene), 
+							  const Camera* camera, ScenePhysicsState* state)
 {
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	sp->mCameraPosition = camera->position();
