@@ -73,7 +73,8 @@ void Shader::cleanUp()
 	glDeleteProgram(mShaderProgram);
 }
 
-int Shader::addShader(const std::string& sourceCode, unsigned int type, const std::string& errmsg)
+int Shader::addShader(const std::string& sourceCode, unsigned int type, 
+					const std::string& errmsg)
 {
 	GLenum err = glGetError();
 	if (!sourceCode.size())
@@ -130,17 +131,20 @@ void Shader::readFiles(const std::string& vertexPath,
 
 int Shader::addVertexShader(const std::string& shader)
 {
-	return addShader(shader, GL_VERTEX_SHADER, "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
+	return addShader(shader, GL_VERTEX_SHADER, 
+			"ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
 }
 
 int Shader::addFragmentShader(const std::string& shader)
 {
-	return addShader(shader, GL_FRAGMENT_SHADER, "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
+	return addShader(shader, GL_FRAGMENT_SHADER, 
+			"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
 }
 
 int Shader::addGeometryShader(const std::string& shader)
 {
-	return addShader(shader, GL_GEOMETRY_SHADER, "ERROR::SHADER::GEOMETRY::COMPILATION_FAILED\n");
+	return addShader(shader, GL_GEOMETRY_SHADER, 
+			"ERROR::SHADER::GEOMETRY::COMPILATION_FAILED\n");
 }
 
 void Shader::linkShaders(json& obj, const std::string& key)
@@ -238,63 +242,70 @@ int Shader::getAttributeLocation(const std::string& name) const
 	return glGetAttribLocation(mShaderProgram, name.c_str());
 }
 
-void Shader::setFloat(const std::string& name, float value, bool useShader)
+void Shader::setFloat(const std::string& name, float value, bool useShader) const
 {
 	if (useShader)
 		use();
 	glUniform1f(getUniformLocation(name), value);
 }
 
-void Shader::setInteger(const std::string& name, int value, bool useShader)
+void Shader::setInteger(const std::string& name, int value, bool useShader) const
 {
 	if (useShader)
 		use();
 	glUniform1i(getUniformLocation(name), value);
 }
 
-void Shader::setVector2f(const std::string& name, float x, float y, bool useShader)
+void Shader::setVector2f(const std::string& name, float x, float y, 
+				bool useShader) const
 {
 	if (useShader)
 		use();
 	glUniform2f(getUniformLocation(name), x, y);
 }
 
-void Shader::setVector2f(const std::string& name, const glm::vec2 &value, bool useShader)
+void Shader::setVector2f(const std::string& name, const glm::vec2 &value, 
+				bool useShader)  const
 {
 	if (useShader)
 		use();
 	glUniform2f(getUniformLocation(name), value.x, value.y);
 }
 
-void Shader::setVector3f(const std::string& name, float x, float y, float z, bool useShader)
+void Shader::setVector3f(const std::string& name, float x, float y, float z, 
+				bool useShader) const
 {
 	if (useShader)
 		use();
 	glUniform3f(getUniformLocation(name), x, y, z);
 }
 
-void Shader::setVector3f(const std::string& name, const glm::vec3 &value, bool useShader)
+void Shader::setVector3f(const std::string& name, const glm::vec3 &value, 
+				bool useShader) const
 {
 	if (useShader)
 		use();
 	glUniform3f(getUniformLocation(name), value.x, value.y, value.z);
 }
 
-void Shader::setVector4f(const std::string& name, float x, float y, float z, float width, bool useShader)
+void Shader::setVector4f(const std::string& name, float x, float y, float z, 
+				float width, bool useShader) const
 {
 	if (useShader)
 		use();
 	glUniform4f(getUniformLocation(name), x, y, z, width);
 }
 
-void Shader::setVector4f(const std::string& name, const glm::vec4 &value, bool useShader)
+void Shader::setVector4f(const std::string& name, const glm::vec4 &value, 
+				bool useShader) const
 {
 	if (useShader)
 		use();
 	glUniform4f(getUniformLocation(name), value.x, value.y, value.z, value.w);
 }
 
-void Shader::setMatrix4(const std::string& name, const glm::mat4 &matrix, bool useShader)
+void Shader::setMatrix4(const std::string& name, const glm::mat4 &matrix, 
+				bool useShader) const
 {
 	if (useShader)
 		use();

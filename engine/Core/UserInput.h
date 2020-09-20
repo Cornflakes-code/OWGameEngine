@@ -132,12 +132,11 @@ private:
 #pragma warning( disable : 4251 )
 	glm::ivec2 mFrameBuffer = glm::ivec2(0);
 	glm::ivec2 mWindowSize = glm::ivec2(0);
-	void doMouseClick(GLFWwindow* window, int button, int action, int mods);
-	void doKeyPressCallback(unsigned int codepoint, int key, int scancode, int action, int mods);
 	std::map<BaseKeyMapping, BaseUserCommand> mBaseKeyMapping;
-
 	std::vector<UserCommandCallbackType> mUserCommandCallbacks;
 	std::vector<PointingDeviceCallbackType> mPointingDeviceCallbacks;
+	void doMouseClick(GLFWwindow* window, int button, int action, int mods);
+	void doKeyPressCallback(unsigned int codepoint, int key, int scancode, int action, int mods);
 	virtual std::string userInputToString(int value) = 0;
 #pragma warning( pop )
 };

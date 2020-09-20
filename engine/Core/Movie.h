@@ -44,24 +44,23 @@ protected:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	std::queue<UserInput::AnyInput> mUserInput;
-	Logger* mLogger;
-	std::string mWindowTitle;
-	mutable bool mIsRunning = true;
-	Camera* mCamera = nullptr;
-
 	struct LoopControlStruct
 	{
-		unsigned int countActivateCalled = 0;
-		bool setupCalled = false;
 		Scene* scene = nullptr;
 		SceneLogic logic;
+		unsigned int countActivateCalled = 0;
+		bool setupCalled = false;
 	};
-
-	std::map<std::string, LoopControlStruct> mScenes;
+	Logger* mLogger;
+	Camera* mCamera = nullptr;
 	LoopControlStruct* mCurrent = nullptr;
 	LoopControlStruct* mPrevious = nullptr;
-	
+
+	std::string mWindowTitle;
+	std::queue<UserInput::AnyInput> mUserInput;
+	std::map<std::string, LoopControlStruct> mScenes;
+	mutable bool mIsRunning = true;
+
 	void makeCurrent(LoopControlStruct* lcs);
 	void makeCurrent(const std::string& newSceneName);
 

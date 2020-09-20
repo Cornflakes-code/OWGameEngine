@@ -36,7 +36,8 @@ class OWENGINE_API TextBillboard:
 		public SimpleVertexSource
 {
 protected:
-	TextBillboard(Shader* shader, const std::string& fontFileName, int fontHeight);
+	TextBillboard(Shader* shader, const std::string& pvmName, 
+				 const std::string& fontFileName, int fontHeight);
 public:
 	~TextBillboard();
 	void createText(const std::string& text, float sx, float sy);
@@ -62,12 +63,12 @@ public:
 protected:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+	const FreeTypeFontAtlas::FontDetails* mFontData;
+	Shader* mShader;
 	AABB mBounds;
 	glm::vec4 mColor;
 	glm::vec2 mScale = { 0.5f, 0.5f };
-	Shader* mShader;
 	std::vector<glm::vec4> mVertices;
-	const FreeTypeFontAtlas::FontDetails* mFontData;
 #pragma warning( pop )
 private:
 	AABB findBounds() const;

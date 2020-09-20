@@ -1,7 +1,7 @@
 #version 330 core
 layout(points) in;
-layout(line_strip, max_vertices = 200) out;
-//layout(triangle_strip, max_vertices = 200) out;
+//layout(line_strip, max_vertices = 200) out;
+layout(triangle_strip, max_vertices = 200) out;
 
 #define M_PI 3.141592653589793238462643383279
 #define M2_PI 6.28318530718
@@ -15,8 +15,8 @@ void doCircle(vec4 pos, float scale)
     for(float i = 0; i < 6.29 ; i += delta)
 	{
 	    //circle parametric equation
-        //gl_Position = pos;
-		//EmitVertex();      
+        gl_Position = pos;
+		EmitVertex();      
         gl_Position = pos + vec4(scale * cos(i) * X_SCALE, scale * sin(i), 0.0, 0.0);
 		EmitVertex();      
         gl_Position = pos + vec4(scale * cos(i+delta/2) * X_SCALE, scale * sin(i+delta/2), 0.0, 0.0);
@@ -26,5 +26,5 @@ void doCircle(vec4 pos, float scale)
 
 void main()
 {
-	doCircle(gl_in[0].gl_Position, 0.5);
+	doCircle(gl_in[0].gl_Position, 50);
 }

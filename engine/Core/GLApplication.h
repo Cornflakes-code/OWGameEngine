@@ -82,14 +82,14 @@ private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	SaveAndRestore* mSaveAndRestore = nullptr;
-	glm::uvec2 mPhysicalWindowSize;
 	GLFWwindow* mWindow;
 	Logger* mLogger;
-	glm::vec2 mPointingDevicePosition;
-	static OWUtils::Time::time_point mLoadTime;
 	const Movie* mMovie = nullptr;
-	// mUserInput needed because glfwSetWindowUserPointer pointing to one thing only;
+	// mUserInput needed because glfwSetWindowUserPointer pointing to one object only;
 	UserInput* mUserInput;
+	static OWUtils::Time::time_point mLoadTime;
+	glm::uvec2 mPhysicalWindowSize;
+	glm::vec2 mPointingDevicePosition;
 	std::vector<WindowCloseCallbackType> mWindowCloseListeners;
 	std::vector<KeyboardCallbackType> mKeyboardCallbacks;
 	std::vector<PointingDeviceCallbackType> mPointingDeviceCallbacks;

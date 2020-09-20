@@ -20,7 +20,10 @@ protected:
 	}
 	bool aspectRatioModified() const { return mAspectRatioChangedSinceLastRead;  }
 private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	float mAspectRatio = 1.0f;
 	mutable bool mAspectRatioChangedSinceLastRead = true;
+#pragma warning( pop )
 };
 

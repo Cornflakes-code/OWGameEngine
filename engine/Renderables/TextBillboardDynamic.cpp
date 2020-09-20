@@ -6,7 +6,7 @@
 
 TextBillboardDynamic::TextBillboardDynamic(const std::string& fontFileName, int fontHeight)
 	:TextBillboard(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""),
-		fontFileName, fontHeight)
+				"", fontFileName, fontHeight)
 {
 }
 

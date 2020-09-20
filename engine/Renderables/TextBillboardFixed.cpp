@@ -6,7 +6,7 @@
 
 TextBillboardFixed::TextBillboardFixed(const std::string& fileName, int fontHeight)
 	:TextBillboard(new Shader("textStaticBillboard.v.glsl", "text.f.glsl", ""),
-					fileName, fontHeight)
+					"", fileName, fontHeight)
 {
 }
 

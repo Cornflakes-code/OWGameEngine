@@ -36,9 +36,12 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 };
 
 class Axis;
+class FullScreen;
 
 class NMSSplashScene : public NMSScene
 {
+	
+	FullScreen* mFullScreen;
 	Axis* mAxis;
 	SimpleVertexRender mCircle;
 public:

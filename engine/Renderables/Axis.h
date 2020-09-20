@@ -28,11 +28,11 @@ public:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+	Points* mPoints;
 	SimpleVertexRender mX;
 	SimpleVertexRender mY;
 	SimpleVertexRender mZ;
 	SimpleVertexRender mCircle;
-	Points* mPoints;
 	std::vector<glm::vec3> mLines;
 #pragma warning( pop )
 };

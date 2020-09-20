@@ -45,7 +45,7 @@ void Texture::addTexture(const std::string& texturePath, bool transparent, bool 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		}
 		glGenerateMipmap(GL_TEXTURE_2D);
-		mTextures.push_back({ texture, transparent, flip });
+		mTextures.push_back({ flip, transparent, texture });
 	}
 	else
 	{

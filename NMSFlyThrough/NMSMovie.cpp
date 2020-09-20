@@ -63,7 +63,7 @@ void NMSMovie::preRun()
 	_camera->moveScale(NMSScene::world().size().x / 1.0f);
 	
 	const glm::vec3& wmax = NMSScene::world().maxPoint();
-	_camera->position({ 0.0f, 0.0f, wmax.z });
+	_camera->position({ 0.0f, 0.0f, 2 * wmax.z });
 	//_camera->position(glm::vec3(0.01f, -wmax.y*2.2, 0));
 	//_camera->position({ 0.001f, NMSScene::world().maxPoint().y * 0.01f, 0.001f });
 	_camera->lookAt(NMSScene::world().center());

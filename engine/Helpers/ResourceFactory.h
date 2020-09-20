@@ -40,15 +40,14 @@ protected:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	FreeTypeFontAtlas mFreeType;
 	struct FreeTypeFont
 	{
+		FT_Face face;
 		std::string fileName;
 		int fontHeight;
-		FT_Face face;
 	};
+	FreeTypeFontAtlas mFreeType;
 	std::vector<FreeTypeFont> mFreeTypes;
-	static std::string toString(ResourceType rt);
 	//std::mutex mut;
 	// A cache of accessed files with their contents stored as a std::string
 	std::map<std::experimental::filesystem::path, std::string> mLoadedFiles;
@@ -56,5 +55,6 @@ private:
 	// can exist for multiple ResourceType.
 	std::map<ResourceType, std::set<std::experimental::filesystem::path>> mResourcePaths;
 	std::istream* readFile(const std::string& path);
+	static std::string toString(ResourceType rt);
 #pragma warning( pop )
 };

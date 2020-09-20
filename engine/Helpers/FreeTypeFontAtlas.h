@@ -38,10 +38,6 @@ public:
 	private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-		void calcTextureSize(FT_Face& face, unsigned int maxRowWidth, int fontHeight);
-
-		static std::map<int, glm::vec2> mNiceFontSpacings;
-
 		struct Character
 		{
 			unsigned int advanceX;	// advance.screenX
@@ -53,15 +49,17 @@ public:
 			float offsetX;	// screenX offset of glyph in texture coordinates
 			float offsetY;	// screenY offset of glyph in texture coordinates
 		};
-		GLuint createGlyphBitmap(FT_Face& face, unsigned int maxWidth);
 
 		unsigned int mWidth = 0; // width of texture in pixel
 		unsigned int mHeight = 0; // height of texture in pixels
-		GLuint mTextureId = 0;
+		static std::map<int, glm::vec2> mNiceFontSpacings;
 		std::map<uint8_t, Character> mFONTMap;
+		GLuint mTextureId = 0;
+		GLuint createGlyphBitmap(FT_Face& face, unsigned int maxWidth);
+		void calcTextureSize(FT_Face& face, unsigned int maxRowWidth, int fontHeight);
 	};
 	const FontDetails* loadFont(const std::experimental::filesystem::path& path,
-							int fontHeight);
+								int fontHeight);
 #pragma warning( pop )
 private:
 #pragma warning( push )
@@ -71,8 +69,8 @@ private:
 		LoadedFace(const std::experimental::filesystem::path& path, int fontHeight);
 		LoadedFace() {}
 		FT_FaceRec_* face;
-		unsigned int maxRowWidth;
 		std::map<int, FontDetails> fontDimensions;
+		unsigned int maxRowWidth;
 	};
 	std::map<std::experimental::filesystem::path, LoadedFace> mFonts;
 #pragma warning( pop )

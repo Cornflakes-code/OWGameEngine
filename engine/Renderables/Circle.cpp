@@ -13,7 +13,7 @@
 #include "../Helpers/ResourceFactory.h"
 
 Circle::Circle()
-	: mShader(new Shader())
+: SimpleVertexSource(""), mShader(new Shader())
 {
 	mShader->loadShaders(ResourceFactory::boilerPlateVertexShader(),
 		ResourceFactory::boilerPlateFragmentShader(),

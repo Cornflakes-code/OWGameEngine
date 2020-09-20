@@ -17,8 +17,8 @@
 Movie::Movie(const std::string& _windowTitle, 
 			 Camera* _camera)
 : mLogger(new Logger())
-, mWindowTitle(_windowTitle)
 , mCamera(_camera)
+, mWindowTitle(_windowTitle)
 {
 }
 

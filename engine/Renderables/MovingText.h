@@ -16,13 +16,13 @@ class OWENGINE_API MovingText
 {
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	SimpleVertexRender mText;
 	Pyramid* mPyramid;
+	SimpleVertexRender mText;
 	SimpleVertexRender mPyramidRender;
 	AABB mBounds;
 	glm::vec3 mVelocity;
-	static OWUtils::Float mSpeed;
 	glm::vec4 mDirection = glm::vec4(1.0f, 1.0f, 0.0f, 0.0f); // (NorthWest)
+	static OWUtils::Float mSpeed;
 #pragma warning( pop )
 public:
 	MovingText();

@@ -14,10 +14,10 @@ class OWENGINE_API Pyramid: public SimpleVertexSource
 {
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	glm::vec3 mPosition = glm::vec3(0);
-	std::vector<glm::vec4> mVertices;
-	std::vector<unsigned int> mIndices;
 	Shader* mShader;
+	glm::vec3 mPosition = glm::vec3(0);
+	std::vector<unsigned int> mIndices;
+	std::vector<glm::vec4> mVertices;
 #pragma warning( pop )
 public:
 	Pyramid();

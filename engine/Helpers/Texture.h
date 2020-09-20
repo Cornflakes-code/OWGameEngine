@@ -13,9 +13,9 @@ class OWENGINE_API Texture
 #pragma warning( disable : 4251 )
 	struct TextureProps
 	{
-		unsigned int texture;
-		bool transparent;
 		bool flip;
+		bool transparent;
+		unsigned int texture;
 	};
 	std::vector<TextureProps> mTextures;
 #pragma warning( pop )

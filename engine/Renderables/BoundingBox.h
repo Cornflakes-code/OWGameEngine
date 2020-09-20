@@ -102,13 +102,13 @@ class OWENGINE_API Ball
 {
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	OWUtils::Float mRadius;
 	// Center is topLeft of a box around the ball
 	glm::vec4 mPosition;
+	OWUtils::Float mRadius;
 #pragma warning( pop )
 public:
 	Ball(const OWUtils::Float& _radius, const glm::vec4& _pos)
-	: mRadius(_radius), mPosition(_pos)
+	: mPosition(_pos), mRadius(_radius)
 	{}
 	bool contains(const AABB& other) const;
 	glm::vec4 center() const { return mPosition + glm::vec4(mRadius); }

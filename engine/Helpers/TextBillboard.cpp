@@ -14,8 +14,9 @@
 #include "ErrorHandling.h"
 #include "Shader.h"
 
-TextBillboard::TextBillboard(Shader* shader, const std::string& fontFileName, int fontHeight)
-	: mShader(shader)
+TextBillboard::TextBillboard(Shader* shader, const std::string& pvmName, 
+					const std::string& fontFileName, int fontHeight)
+	: SimpleVertexSource(pvmName), mShader(shader)
 {
 	mFontData = factory()->loadFreeTypeFont(fontFileName, fontHeight);
 }

@@ -15,10 +15,10 @@ class OWENGINE_API Circle : public SimpleVertexSource
 {
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+	Shader* mShader;
 	glm::vec3 mPosition = glm::vec3(0);
 	std::vector<glm::vec4> mVertices;
 	std::vector<unsigned int> mIndices;
-	Shader* mShader;
 #pragma warning( pop )
 public:
 	Circle();

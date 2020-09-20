@@ -12,7 +12,7 @@
 #include "../Helpers/ResourceFactory.h"
 
 Pyramid::Pyramid()
-: mShader(new Shader())
+: SimpleVertexSource(""), mShader(new Shader())
 {
 	mShader->loadShaders(ResourceFactory::boilerPlateVertexShader(),
 		ResourceFactory::boilerPlateFragmentShader(),

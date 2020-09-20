@@ -15,6 +15,7 @@
 #include <Renderables/TextBillboardFixed.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/Axis.h>
+#include <Renderables/FullScreen.h>
 #include <Renderables/Circle.h>
 #include <Core/GLApplication.h>
 
@@ -137,6 +138,10 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		sps->mEnjoy.direction(Compass::Rose[Compass::South] + Compass::Rose[Compass::West]); //South West
 		sps->mEnjoy.setPosition(NMSScene::world().center());
 	}
+	mFullScreen = new FullScreen(new Shader("thebookofshaders.v.glsl",
+					"thebookofshaders.f.glsl",
+					"thebookofshaders.g.glsl"));
+	mFullScreen->setUp(_world);
 	mAxis = new Axis();
 	mAxis->setUp(_world, movie()->camera());
 	Circle* circle = new Circle();
@@ -156,6 +161,8 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	glm::vec2 scale = { 20.2f * _world.size().x / theApp->physicalWindowSize().x,
 						20.2f * _world.size().y / theApp->physicalWindowSize().y };
 	mAxis->render(proj, view, model);
+	mFullScreen->render(proj, view, model);
+
 	sps->mEnjoy.render(proj, view, model);
 	mCircle.render(proj, view, model);
 #ifdef INCLUDE_WELCOME
