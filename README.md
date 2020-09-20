@@ -1,10 +1,10 @@
 # nms
 # Yet another Opengl Game Engine.
-OWGameEngine began as a project to learn OpenGL and it is still performing that role. At it's heart it is a simple and understandable set of classes which can be inherited off to leverage core functionality. The design of the main Game Loop lends itself to efficient multi threading (although I need to understand the issues more). The engine:
+OWGameEngine began as a project to learn OpenGL and it is still performing that role. At it's heart it is a simple and understandable set of classes which can be inherited off to leverage core functionality. The design of the main Game Loop lends itself to efficient multi threading (hopefully]). The engine:
  - Focusses on the higher level objects. 
  - Uses a Movie Based paradigm (Movie/Scenes/Actors/Scenery)
  - Is based on modern C++/OpenGL 3.3/Windows (Visual Studio 2017)/GLFW/GLM
- - The nature of the main game loop favours multi-threading (although more understanding needs to confirm this)
+ - The nature of the main game loop favours multi-threading
  - Is a work in progress
 
 ## The functionality currently existing or 'will be completed soon' includes:
