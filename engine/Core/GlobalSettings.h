@@ -17,6 +17,7 @@ class GLApplication;
 class OWENGINE_API GlobalSettings
 {
 public:
+	GlobalSettings();
 	// convenience methods. If tyhe host exe does not create GLApplication then
 	// these may be invalid.
 	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
@@ -45,12 +46,11 @@ public:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	GlobalSettings();
 	const MacroRecorder* mRecorder = nullptr;
 	const Movie* mMovie = nullptr;
 	const Logger* mLogger = nullptr;
 	GLApplication* mApplication = nullptr;
-	ResourceFactory* mResFactory;
+	ResourceFactory* mResFactory = nullptr;
 	glm::uvec2 mPhysicalWindowSize;
 	glm::vec2 mPointingDevicePosition;
 	SaveAndRestore* mSaveAndRestore = nullptr;

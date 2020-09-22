@@ -39,14 +39,12 @@ public:
 			  MacroRecorder* recorder, SaveAndRestore* saveRestore);
 	void run(Movie* movieSaveAndRestore);
 
-	enum class WindowResizeType
-	{
-		FrameBuffer, WindowResize
-	};
 	// callbacks
 	typedef std::function<void(GLFWwindow* window)> WindowCloseCallbackType;
-	typedef std::function<void(WindowResizeType resizeType, glm::ivec2 dimensions)> WindowResizeCallbackType;
-	typedef std::function<void(GLFWwindow* window, int button, int action, int mods)> PointingDeviceCallbackType;
+	typedef std::function<
+			void(GLFWwindow* window, glm::ivec2 dimensions)> WindowResizeCallbackType;
+	typedef std::function<
+			void(GLFWwindow* window, int button, int action, int mods)> PointingDeviceCallbackType;
 	typedef std::function<void(unsigned int codepoint, 
 			int key, int scancode, int action, int mods)> KeyboardCallbackType;
 	typedef std::function<void(GLFWwindow*, double, double)> CursorPositionCallback;
@@ -97,7 +95,6 @@ private:
 	virtual void onPointingDevicePositionCallback(GLFWwindow* window, double x, double y);
 	// Window resize callbacks
 	virtual void onFrameBufferResizeCallback(GLFWwindow* window, int width, int height);
-	virtual void onSetWindowSizeCallback(GLFWwindow* window, int width, int height);
 
 	// Other Callbacks
 	virtual void onCloseCallback(GLFWwindow* window);

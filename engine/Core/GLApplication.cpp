@@ -97,9 +97,6 @@ void GLApplication::init(Movie* movie, UserInput* ui,
 			onFrameBufferResizeCallback(mWindow, 
 				globals->mPhysicalWindowSize.x,
 				globals->mPhysicalWindowSize.y);
-			onSetWindowSizeCallback(mWindow, 
-				globals->mPhysicalWindowSize.x,
-				globals->mPhysicalWindowSize.y);
 		}
 
 		catch (const std::exception& ex)
@@ -196,11 +193,6 @@ void GLApplication::enableCallbacks()
 		pointer->onFrameBufferResizeCallback(window, width, height);
 	});
 
-	glfwSetWindowSizeCallback(mWindow, [](GLFWwindow* window, int width, int height) {
-		auto pointer = reinterpret_cast<GLApplication*>(glfwGetWindowUserPointer(window));
-		pointer->onSetWindowSizeCallback(window, width, height);
-	});
-
 	glfwSetKeyCallback(mWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 		auto pointer = reinterpret_cast<GLApplication*>(glfwGetWindowUserPointer(window));
 		pointer->onKeyPressCallback(window, key, scancode, action, mods);
@@ -223,20 +215,13 @@ void GLApplication::enableCallbacks()
 
 }
 
-void GLApplication::onFrameBufferResizeCallback(GLFWwindow* OW_UNUSED(window), 
+void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window, 
 								int width, int height)
 {
 	glViewport(0, 0, width, height);
 
 	for (auto& cb : mWindowResizeCallbacks)
-		cb.first(WindowResizeType::FrameBuffer, glm::ivec2(width, height));
-}
-
-void GLApplication::onSetWindowSizeCallback(GLFWwindow* OW_UNUSED(window), 
-								int width, int height)
-{
-	for (auto& cb : mWindowResizeCallbacks)
-		cb.first(WindowResizeType::WindowResize, glm::vec2(width, height));
+		cb.first(window, glm::ivec2(width, height));
 }
 
 void GLApplication::onPointingDeviceCallback(GLFWwindow* window, 

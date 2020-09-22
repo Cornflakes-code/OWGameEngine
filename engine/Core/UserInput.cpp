@@ -49,16 +49,13 @@ void UserInput::init(GLApplication* app)
 		doKeyPressCallback(codepoint, key, scancode, action, mods);
 	});
 
-	app->addWindowResizeListener([this](GLApplication::WindowResizeType resizeType, glm::ivec2 newSize)
+	app->addWindowResizeListener([this](GLFWwindow* window, glm::ivec2 newSize)
 	{
-		if (resizeType == GLApplication::WindowResizeType::FrameBuffer)
-		{
-			mFrameBuffer = newSize;
-		}
-		else if (resizeType == GLApplication::WindowResizeType::WindowResize)
-		{
-			mWindowSize = newSize;
-		}
+		mFrameBuffer = newSize;
+		int w, h;
+		glfwGetWindowSize(window, &w, &h);
+		mWindowSize.x = w;
+		mWindowSize.y = h;
 	});
 }
 

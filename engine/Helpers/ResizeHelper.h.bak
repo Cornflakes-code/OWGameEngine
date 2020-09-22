@@ -8,7 +8,7 @@ class OWENGINE_API ResizeHelper : public ListenerHelper
 public:
 	ResizeHelper();
 protected:
-	void resizeCallback(GLFWwindow* window, glm::ivec2 dimensions);
+	void resizeCallback(glm::ivec2 dimensions);
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale, 
 					bool clearFlag = true) const;
 	float aspectRatio(bool clearFlag = true) const

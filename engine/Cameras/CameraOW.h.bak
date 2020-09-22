@@ -120,7 +120,7 @@ public:
 		return mCurrent->aspectRatio();
 	}
 private:
-	void resizeCallback(GLFWwindow* OW_UNUSED(window), glm::ivec2 dimensions)
+	void resizeCallback(glm::ivec2 dimensions)
 	{
 		// There is a lot of interaction here between:
 		// 1. mAspectRatio.

@@ -6,9 +6,12 @@
 
 CameraOW::CameraOW()
 {
-	auto cb = std::bind(&CameraOW::resizeCallback, this,
-		std::placeholders::_1, std::placeholders::_2);
-	globals->application()->addWindowResizeListener(cb, this);
+	if (globals && globals->application())
+	{
+		auto cb = std::bind(&CameraOW::resizeCallback, this,
+			std::placeholders::_1, std::placeholders::_2);
+		globals->application()->addWindowResizeListener(cb, this);
+	}
 }
 
 

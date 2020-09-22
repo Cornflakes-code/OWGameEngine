@@ -36,8 +36,9 @@ void FullScreen::render(const glm::mat4& proj,
 	const glm::mat4& view,
 	const glm::mat4& model) const
 {
+	const glm::mat4 unity(1.0);
 	OWUtils::PolygonModeRIAA poly;
-	renderOpenGL(proj, view, model, GL_POINTS, [this, model]() {
+	renderOpenGL(unity, unity, unity, GL_POINTS, [this, model]() {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		if (aspectRatioModified())
 		{
