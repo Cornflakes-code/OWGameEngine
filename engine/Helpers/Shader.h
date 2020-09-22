@@ -3,14 +3,13 @@
 
 #include <json/single_include/nlohmann/json.hpp>
 #include <glm/glm.hpp>
-
-#include "ResourceSource.h"
+#include "../OWEngine/OWEngine.h"
 
 using json = nlohmann::json;
 /*
 	A wrapper for Shaders. Based on the Shader class at https://learnopengl.com/
 */
-class OWENGINE_API Shader: public ResourceSource
+class OWENGINE_API Shader //: public ResourceSource
 {
 public:
 	Shader();
@@ -63,6 +62,7 @@ private:
 	static int addShader(const std::string& sourceCode, 
 					unsigned int type, const std::string& errmsg);
 	static std::string readFile(const std::string& fileName);
+	static std::string getPath(const std::string& fileName);
 	void attachShader(int shader);
 	void linkShaders(int vertexShader, int fragmentShader, int geomShader,
 		const std::vector<TransformFeedback>& feedbacks 

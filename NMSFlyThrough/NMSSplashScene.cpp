@@ -122,8 +122,8 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		welcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
 		welcomeText->color({ 0.0, 0.0, 0.0, 1.0f });
 		sps->mWelcome.text(welcomeText);
-		glm::vec2 scale = { 1.2f * _world.size().x / theApp->physicalWindowSize().x,
-							1.2f * _world.size().y / theApp->physicalWindowSize().y };
+		glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
+							1.2f * _world.size().y / globals->physicalWindowSize().y };
 		welcomeText->scale(scale);
 		sps->mWelcome.direction(Compass::Rose[Compass::North] + Compass::Rose[Compass::East]
 									+ Compass::Rose[Compass::In]);
@@ -158,8 +158,8 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	glm::mat4 translation(1.0);
 	glm::mat4 rotation(1.0);
 	glm::mat4 model(1.0);
-	glm::vec2 scale = { 20.2f * _world.size().x / theApp->physicalWindowSize().x,
-						20.2f * _world.size().y / theApp->physicalWindowSize().y };
+	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
+						20.2f * _world.size().y / globals->physicalWindowSize().y };
 	mAxis->render(proj, view, model);
 	mFullScreen->render(proj, view, model);
 

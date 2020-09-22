@@ -45,12 +45,12 @@ void Points::render(const glm::mat4& proj,
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		if (aspectRatioModified())
 		{
-			glm::vec2 vv = theApp->physicalWindowSize();
+			glm::vec2 vv = globals->physicalWindowSize();
 			glm::vec2 v2 = scaleByAspectRatio({ vv });
 			glm::mat4 scaledModel = glm::scale(model, glm::vec3(v2, 0.0f));
 			mShader->setVector2f("u_resolution", v2);
 		}
-		mShader->setVector2f("u_mouse", theApp->pointingDevicePosition());
-		mShader->setFloat("u_time", theApp->secondsSinceLoad());
+		mShader->setVector2f("u_mouse", globals->pointingDevicePosition());
+		mShader->setFloat("u_time", globals->secondsSinceLoad());
 	});
 }

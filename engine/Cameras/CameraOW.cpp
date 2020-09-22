@@ -1,5 +1,6 @@
 #include "CameraOW.h"
 
+#include <Core/GLApplication.h>
 #include "../Helpers/Logger.h"
 #include <glm/gtx/string_cast.hpp>
 
@@ -7,7 +8,7 @@ CameraOW::CameraOW()
 {
 	auto cb = std::bind(&CameraOW::resizeCallback, this,
 		std::placeholders::_1, std::placeholders::_2);
-	theApp->addWindowResizeListener(cb, this);
+	globals->application()->addWindowResizeListener(cb, this);
 }
 
 

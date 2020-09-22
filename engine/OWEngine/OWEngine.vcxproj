@@ -158,7 +158,7 @@
   <ItemGroup>
     <ClInclude Include="..\Core\Camera.h" />
     <ClInclude Include="..\Core\GLApplication.h" />
-    <ClInclude Include="..\Core\GlobalSystem.h" />
+    <ClInclude Include="..\Core\GlobalSettings.h" />
     <ClInclude Include="..\Core\ListenerHelper.h" />
     <ClInclude Include="..\Core\Movie.h" />
     <ClInclude Include="..\Core\QuitScene.h" />
@@ -175,7 +175,6 @@
     <ClInclude Include="..\Helpers\PhongShader.h" />
     <ClInclude Include="..\Helpers\ResizeHelper.h" />
     <ClInclude Include="..\Helpers\ResourceFactory.h" />
-    <ClInclude Include="..\Helpers\ResourceSource.h" />
     <ClInclude Include="..\Helpers\Shader.h" />
     <ClInclude Include="..\Helpers\TextBillboard.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
@@ -199,7 +198,7 @@
   <ItemGroup>
     <ClCompile Include="..\Core\Camera.cpp" />
     <ClCompile Include="..\Core\GLApplication.cpp" />
-    <ClCompile Include="..\Core\GlobalSystem.cpp" />
+    <ClCompile Include="..\Core\GlobalSettings.cpp" />
     <ClCompile Include="..\Core\ListenerHelper.cpp" />
     <ClCompile Include="..\Core\Movie.cpp" />
     <ClCompile Include="..\Core\QuitScene.cpp" />
@@ -216,7 +215,6 @@
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
     <ClCompile Include="..\Helpers\ResizeHelper.cpp" />
     <ClCompile Include="..\Helpers\ResourceFactory.cpp" />
-    <ClCompile Include="..\Helpers\ResourceSource.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
     <ClCompile Include="..\Helpers\stb_image.cpp" />
     <ClCompile Include="..\Helpers\TextBillboard.cpp" />

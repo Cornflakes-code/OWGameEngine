@@ -123,13 +123,15 @@ const std::string& ResourceFactory::getPath(const std::string& fileName, Resourc
 	// TODO: add unique ptr and test for cache.
 	// TODO: Do not store istream* as this keeps the file locked.
 	if (!fileName.size())
-		throw NMSLogicException(std::stringstream() << "Empty string passed to ResourceFactory::get()");
+		throw NMSLogicException(std::stringstream() 
+				<< "Empty string passed to ResourceFactory::get()");
 
 	//std::lock_guard<std::mutex> guard(mut);
 	
 
 	std::experimental::filesystem::path p = appendPath(fileName, rt);
-	std::map<std::experimental::filesystem::path, std::string>::iterator it = mLoadedFiles.find(p);
+	std::map<std::experimental::filesystem::path, 
+			 std::string>::iterator it = mLoadedFiles.find(p);
 	if (it == mLoadedFiles.end())
 	{
 		std::ifstream f(p, std::ios::in | std::ios::binary);
@@ -141,20 +143,24 @@ const std::string& ResourceFactory::getPath(const std::string& fileName, Resourc
 		// https://stackoverflow.com/questions/1042940/writing-directly-to-stdstring-internal-buffers
 		// https://stackoverflow.com/questions/11149665/c-vector-that-doesnt-initialize-its-members?noredirect=1&lq=1
 		// https://stackoverflow.com/questions/17888569/how-can-i-switch-between-fstream-files-without-closing-them-simultaneous-output
-		std::string wholeFile;
+		std::string fileContents;
 		f.seekg(0, std::ios::end);
 		std::streampos sz = f.tellg();
-		wholeFile.reserve(sz);
+		fileContents.reserve(sz);
 		f.seekg(0, std::ios::beg);
 
-		// apparently read is a lot faster than wholeFile.assign but it does not read the whole file
-		wholeFile.assign(std::istreambuf_iterator<char>(f),	std::istreambuf_iterator<char>());
+		// apparently read is a LOT faster than wholeFile.assign but 
+		// it does not read the whole file
+		fileContents.assign(std::istreambuf_iterator<char>(f),
+					std::istreambuf_iterator<char>());
 		//f.read(&(wholeFile[0]), sz);
 
 		if (!f.is_open())
 			throw NMSException(std::stringstream() << 
 					"Could not find Resource [" << p.string() << "].\n");
-		auto ret = mLoadedFiles.insert(std::pair<std::experimental::filesystem::path, std::string>(p, wholeFile));
+		auto ret = mLoadedFiles.insert(
+				std::pair<std::experimental::filesystem::path, 
+						std::string>(p, fileContents));
 		return ret.first->second;
 	}
 	return it->second;

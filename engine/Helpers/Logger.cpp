@@ -14,7 +14,7 @@ int Logger::frame_count = 0;
 Logger::Logger()
 {}
 
-void Logger::update_fps_counter(GLFWwindow* window)
+void Logger::update_fps_counter(GLFWwindow* window) const
 {
 	double current_seconds = glfwGetTime();
 	double elapsed_seconds = current_seconds - previous_seconds;
@@ -31,7 +31,7 @@ void Logger::update_fps_counter(GLFWwindow* window)
 	frame_count++;
 }
 
-void Logger::log_gl_params(std::ostream& out)
+void Logger::log_gl_params(std::ostream& out) const
 {
 	GLenum params[] = {
 	  GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
@@ -86,7 +86,7 @@ void Logger::log_gl_params(std::ostream& out)
 	out << "-----------------------------\n";
 }
 
-std::string Logger::toString(GLenum type)
+std::string Logger::toString(GLenum type) 
 {
 	switch (type) 
 	{
@@ -181,7 +181,7 @@ void Logger::print_all(GLuint programme, std::ostream& out)
 	}
 }
 
-std::string Logger::versionString()
+std::string Logger::versionString() const
 {
 	std::string ss = glfwGetVersionString();
 	if (ss.size())

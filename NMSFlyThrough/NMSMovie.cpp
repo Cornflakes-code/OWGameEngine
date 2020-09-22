@@ -35,7 +35,7 @@ void NMSMovie::preRun()
 	// Maybe could be in a config file loaded at start up?
 	FreeTypeFontAtlas::FontDetails::pleasingSpacing(24, 0.00625f, 0.00625f * 2);
 	FreeTypeFontAtlas::FontDetails::pleasingSpacing(12, 0.00625f, 0.00625f * 2);
-	std::string activeScene = theApp->saveAndRestore()->activeScene();
+	std::string activeScene = globals->saveAndRestore()->activeScene();
 	NMSScene* s = new NMSSplashScene(this);
 
 	this->add(s, new NMSSplashScenePhysics(s), s->name() == activeScene);
@@ -58,8 +58,8 @@ void NMSMovie::preRun()
 	create camera at current star looking a center of galaxy
 	*/
 	Camera* _camera = camera();
-	_camera->aspectRatio(theApp->physicalWindowSize().x / 
-						(1.0f * theApp->physicalWindowSize().y));
+	_camera->aspectRatio(globals->physicalWindowSize().x /
+						(1.0f * globals->physicalWindowSize().y));
 	_camera->moveScale(NMSScene::world().size().x / 1.0f);
 	
 	const glm::vec3& wmax = NMSScene::world().maxPoint();

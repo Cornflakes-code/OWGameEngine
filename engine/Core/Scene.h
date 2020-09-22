@@ -34,7 +34,7 @@ class OWENGINE_API Scene
 {
 public:
 	static std::string quitSceneName() { return "Options"; }
-	static std::string previousScene() { return "previous"; }
+	static std::string previousSceneTag() { return "previous"; }
 	virtual std::string name() const = 0;
 	virtual void activate(const std::string& previousScene, 
 	ScenePhysicsState* state, Camera* camera, unsigned int callCount) = 0;

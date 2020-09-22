@@ -146,7 +146,7 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 		// Best practice is to default glfwSwapInterval to '1'
 			// 0: do not wait for vsync(may be overridden by driver / driver settings)
 			// 1 : wait for 1st vsync(may be overridden by driver / driver settings)
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 		glfwSwapBuffers(glfwWindow);
 		glfwPollEvents();
 		if (!mIsRunning)
@@ -159,7 +159,7 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 void Movie::makeCurrent(const std::string& newSceneName)
 {
 	std::string safeSceneName = newSceneName;
-	if (newSceneName == Scene::previousScene())
+	if (newSceneName == Scene::previousSceneTag())
 	{
 		if (mPrevious)
 		{

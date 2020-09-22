@@ -42,9 +42,6 @@
     <ClInclude Include="..\Core\GLApplication.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Core\GlobalSystem.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\ListenerHelper.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -88,9 +85,6 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="..\Helpers\ResourceFactory.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Helpers\ResourceSource.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="..\Helpers\Shader.h">
@@ -150,6 +144,9 @@
     <ClInclude Include="..\glad\include\glad\glad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Core\GlobalSettings.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -159,9 +156,6 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\GLApplication.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\GlobalSystem.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\ListenerHelper.cpp">
@@ -207,9 +201,6 @@
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\ResourceFactory.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Helpers\ResourceSource.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\Shader.cpp">
@@ -268,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="..\glad\src\glad.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\GlobalSettings.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

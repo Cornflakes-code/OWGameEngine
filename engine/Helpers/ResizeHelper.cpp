@@ -2,11 +2,11 @@
 
 
 ResizeHelper::ResizeHelper()
-: mAspectRatio(1.0f)// theApp->physicalWindowSize().x / (theApp->physicalWindowSize().y * 1.0f);
+: mAspectRatio(1.0f)// globals->physicalWindowSize().x / (globals->physicalWindowSize().y * 1.0f);
 {
 	auto cb = std::bind(&ResizeHelper::resizeCallback, this,
 		std::placeholders::_1, std::placeholders::_2);
-	theApp->addWindowResizeListener(cb, this);
+	globals->application()->addWindowResizeListener(cb, this);
 }
 
 void ResizeHelper::resizeCallback(

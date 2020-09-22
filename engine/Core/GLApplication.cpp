@@ -1,14 +1,13 @@
 #include "GLApplication.h"
 
-// Named in homage to MFC. Also gives you compiler errors 
-// if you include the heap of shit that is MFC :)
-OWENGINE_API GLApplication* theApp = nullptr;
+// Every app needs some globals. No need to get fancy. 
+// Bite the bullet and call them what they are.
+OWENGINE_API GlobalSettings* globals = nullptr;
 
 #include <algorithm>
 
 #include "../Helpers/ErrorHandling.h"
 #include "../Helpers/Logger.h"
-#include "../Helpers/ResourceSource.h"
 #include "SaveAndRestore.h"
 
 #pragma comment( lib, "glfw3.lib" )
@@ -16,13 +15,13 @@ OWENGINE_API GLApplication* theApp = nullptr;
 #pragma comment (lib, "freetype.lib")
 
 static GLApplication* hackForErrorCallback = nullptr;
-OWUtils::Time::time_point GLApplication::mLoadTime;
 void error_callback(int error, const char* description);
 
 GLApplication::GLApplication(UserInput* ui)
 	:mUserInput(ui)
 {
-	mLoadTime = OWUtils::Time::now();
+	globals = new GlobalSettings();
+	globals->application(this);
 }
 
 GLApplication::~GLApplication()
@@ -34,8 +33,10 @@ GLApplication::~GLApplication()
 void GLApplication::init(Movie* movie, UserInput* ui, 
 						 MacroRecorder* recorder, SaveAndRestore* saveRestore)
 {
-	mPhysicalWindowSize = saveRestore->physicalWindowSize();
-	mMovie = movie;
+	globals->mPhysicalWindowSize = saveRestore->physicalWindowSize();
+	globals->movie(movie);
+	globals->saveAndRestore(saveRestore);
+	globals->recorder(recorder);
 	if (glfwInit())
 	{
 		// https://antongerdelan.net/opengl/glcontext2.html
@@ -60,14 +61,16 @@ void GLApplication::init(Movie* movie, UserInput* ui,
 		mWindow = glfwCreateWindow(mScrWidth, mScrHeight, windowTitle, mon, NULL);
 		glfwSetWindowMonitor(window, NULL, -1000, 200, mScrWidth, mScrHeight, mode->refreshRate);
 #else
-		mWindow = glfwCreateWindow(mPhysicalWindowSize.x, mPhysicalWindowSize.y,
+		mWindow = glfwCreateWindow(globals->mPhysicalWindowSize.x,
+			globals->mPhysicalWindowSize.y,
 						movie->windowTitle().c_str(), NULL, NULL);
 		if (!mWindow)
 		{
 			throw NMSException("Could not create OpenGL window.");
 		}
 		glfwSetWindowMonitor(mWindow, NULL, 2000, 200, 
-			mPhysicalWindowSize.x, mPhysicalWindowSize.y, GLFW_DONT_CARE);
+			globals->mPhysicalWindowSize.x,
+			globals->mPhysicalWindowSize.y, GLFW_DONT_CARE);
 #endif
 		glfwMakeContextCurrent(mWindow);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -84,15 +87,19 @@ void GLApplication::init(Movie* movie, UserInput* ui,
 		// mFrameBufferSize and mWindowSize may differ. See:
 		// (https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates)
 
-		mLogger->log_gl_params(std::cout);
+		globals->mLogger->log_gl_params(std::cout);
 		enableCallbacks();
 		try
 		{
 			movie->init(this, ui, recorder);
 			mUserInput->init(this);
 			// We set the window size before the callbacks were hooked up.
-			onFrameBufferResizeCallback(mWindow, mPhysicalWindowSize.x, mPhysicalWindowSize.y);
-			onSetWindowSizeCallback(mWindow, mPhysicalWindowSize.x, mPhysicalWindowSize.y);
+			onFrameBufferResizeCallback(mWindow, 
+				globals->mPhysicalWindowSize.x,
+				globals->mPhysicalWindowSize.y);
+			onSetWindowSizeCallback(mWindow, 
+				globals->mPhysicalWindowSize.x,
+				globals->mPhysicalWindowSize.y);
 		}
 
 		catch (const std::exception& ex)
@@ -116,13 +123,6 @@ void GLApplication::run(Movie* movie)
 	movie->run(mUserInput, mWindow);
 	glfwDestroyWindow(mWindow);
 	glfwTerminate();
-}
-
-float GLApplication::secondsSinceLoad()
-{
-	OWUtils::Time::time_point t = OWUtils::Time::now();
-	auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(t - mLoadTime);
-	return milli.count() / 1000.0f;
 }
 
 void GLApplication::removeWindowResizeListener(const ListenerHelper* helper)
@@ -248,8 +248,8 @@ void GLApplication::onPointingDeviceCallback(GLFWwindow* window,
 
 void GLApplication::onPointingDevicePositionCallback(GLFWwindow* window, double x, double y)
 {
-	mPointingDevicePosition.x = static_cast<glm::vec2::value_type>(x);
-	mPointingDevicePosition.y = static_cast<glm::vec2::value_type>(y);
+	globals->mPointingDevicePosition.x = static_cast<glm::vec2::value_type>(x);
+	globals->mPointingDevicePosition.y = static_cast<glm::vec2::value_type>(y);
 
 	for (auto& cb : mCursorPositionCallbacks)
 		cb.first(window, x, y);

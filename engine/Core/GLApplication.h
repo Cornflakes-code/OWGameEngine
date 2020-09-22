@@ -6,6 +6,7 @@
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
+
 #include <GLFW/glfw3.h>
 
 #include "../OWEngine/OWEngine.h"
@@ -13,6 +14,8 @@
 #include "Camera.h"
 #include "Movie.h"
 #include "ListenerHelper.h"
+#include "GlobalSettings.h"
+
 /*
 	Provides access to GLFW callback functionality.
 */
@@ -24,22 +27,18 @@ class ResourceFactory;
 class MacroRecorder;
 class SaveAndRestore;
 class UserInput;
+class GlobalSettings;
 
 class OWENGINE_API GLApplication
 {
 public:
-	void init(Movie* movie, UserInput* ui, 
+	GLApplication(UserInput* ui);
+	~GLApplication();
+
+	void init(Movie* movie, UserInput* ui,
 			  MacroRecorder* recorder, SaveAndRestore* saveRestore);
 	void run(Movie* movieSaveAndRestore);
-	static GLApplication* getApplication(UserInput* ui);
 
-	// convenience methods
-	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
-	static float secondsSinceLoad();
-	const glm::uvec2& physicalWindowSize() const { return mPhysicalWindowSize; }
-	void physicalWindowSize(const glm::uvec2& newValue) { mPhysicalWindowSize = newValue; }
-	SaveAndRestore* saveAndRestore() { return mSaveAndRestore;  }
-	const Movie* movie() const { return mMovie; }
 	enum class WindowResizeType
 	{
 		FrameBuffer, WindowResize
@@ -76,20 +75,11 @@ public:
 	}
 	void removeWindowResizeListener(const ListenerHelper* helper);
 private:
-	GLApplication(UserInput* ui);
-	~GLApplication();
-
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	SaveAndRestore* mSaveAndRestore = nullptr;
 	GLFWwindow* mWindow;
-	Logger* mLogger;
-	const Movie* mMovie = nullptr;
 	// mUserInput needed because glfwSetWindowUserPointer pointing to one object only;
 	UserInput* mUserInput;
-	static OWUtils::Time::time_point mLoadTime;
-	glm::uvec2 mPhysicalWindowSize;
-	glm::vec2 mPointingDevicePosition;
 	std::vector<WindowCloseCallbackType> mWindowCloseListeners;
 	std::vector<KeyboardCallbackType> mKeyboardCallbacks;
 	std::vector<PointingDeviceCallbackType> mPointingDeviceCallbacks;

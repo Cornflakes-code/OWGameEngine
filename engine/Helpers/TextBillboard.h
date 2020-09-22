@@ -20,7 +20,6 @@
 #include "../Renderables/BoundingBox.h"
 
 #include "../Renderables/SimpleVertexSource.h"
-#include "ResourceSource.h"
 #include "ResourceFactory.h"
 #include "ResizeHelper.h"
 
@@ -31,7 +30,7 @@ class Shader;
 	by FreeTypeFontAtlas via ResourceManager. Rendering is done in SimpleVCertexRender
 */
 class OWENGINE_API TextBillboard:
-		public ResourceSource, 
+//		public ResourceSource, 
 		public ResizeHelper, 
 		public SimpleVertexSource
 {

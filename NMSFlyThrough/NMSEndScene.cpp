@@ -50,7 +50,7 @@ bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInpu
 		}
 		else if (input == NMSUserInput::BaseUserCommand::Accept)
 		{
-			nextScene = Scene::previousScene();
+			nextScene = Scene::previousSceneTag();
 			return true;
 		}
 	}
@@ -60,13 +60,13 @@ bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInpu
 NMSEndScene::NMSEndScene(const Movie* _movie)
 	: NMSScene(_movie)
 {
-	const glm::uvec2& screen = theApp->physicalWindowSize();
+	const glm::uvec2& screen = globals->physicalWindowSize();
 }
 
 void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 {
-	const float sx = 2.0f / theApp->physicalWindowSize().x;
-	const float sy = 2.0f / theApp->physicalWindowSize().y;
+	const float sx = 2.0f / globals->physicalWindowSize().x;
+	const float sy = 2.0f / globals->physicalWindowSize().y;
 	TextBillboard* txt = new TextBillboardDynamic("Arial.ttf", 24);
 
 	glm::vec4 color(0.5, 0.8f, 0.2f, 0);

@@ -18,12 +18,12 @@ TextBillboard::TextBillboard(Shader* shader, const std::string& pvmName,
 					const std::string& fontFileName, int fontHeight)
 	: SimpleVertexSource(pvmName), mShader(shader)
 {
-	mFontData = factory()->loadFreeTypeFont(fontFileName, fontHeight);
+	mFontData = globals->resourceCache()->loadFreeTypeFont(fontFileName, fontHeight);
 }
 
 TextBillboard::~TextBillboard()
 {
-	theApp->removeWindowResizeListener(this);
+	globals->application()->removeWindowResizeListener(this);
 	delete mShader;
 }
 

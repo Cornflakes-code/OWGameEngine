@@ -16,6 +16,8 @@
 #include "Logger.h"
 #include "ErrorHandling.h"
 #include "ResourceFactory.h"
+#include "CommonUtils.h"
+#include "../Core/GlobalSettings.h"
 
 Shader::Shader()
 {}
@@ -107,7 +109,38 @@ std::string Shader::readFile(const std::string& fileName)
 {
 	if (fileName.empty())
 		return "";
-	return factory()->getPath(fileName, ResourceFactory::ResourceType::Shader);
+	// Cannot get around the need to link ResourceFactory but this at 
+	// least allows us to avoid the considerable setup that ResourceFactory
+	// needs. For a quick and dirty use of the Shader class just use the 
+	// Shader::getPath function.
+	if (globals && globals->resourceCache())
+	{
+		return globals->resourceCache()->getPath(fileName, ResourceFactory::ResourceType::Shader);
+	}
+	else
+	{
+		return getPath(fileName);
+	}
+}
+
+// This is a cut down version of ResourceFactory::getPath. A full and correct 
+// pathname needs to be passed as there is less error checking.
+std::string Shader::getPath(const std::string& fileName)
+{
+	std::ifstream f(fileName, std::ios::in | std::ios::binary);
+
+	// ensure ifstream objects can throw exceptions:
+	f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	std::string fileContents;
+	f.seekg(0, std::ios::end);
+	std::streampos sz = f.tellg();
+	fileContents.reserve(sz);
+	f.seekg(0, std::ios::beg);
+
+	fileContents.assign(std::istreambuf_iterator<char>(f), 
+						std::istreambuf_iterator<char>());
+
+	return fileContents;
 }
 
 void Shader::loadShaders(const std::string& vertexShader,

@@ -18,7 +18,9 @@
 */
 
 class GLApplication;
-extern OWENGINE_API GLApplication* theApp;
+class GlobalSettings;
+
+extern OWENGINE_API GlobalSettings* globals;
 
 struct OWENGINE_API OWUtils
 {

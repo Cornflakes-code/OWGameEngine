@@ -4,12 +4,12 @@
 #include <Core/GLApplication.h>
 #include <Core/SaveAndRestore.h>
 
+#include <Helpers/Logger.h>
 #include <Helpers/ResourceFactory.h>
 #include <Cameras/CameraMazhar.h>
 #include <Cameras/CameraOW.h>
 
 #include <Helpers/MacroRecorder.h>
-#include <Helpers/ResourceSource.h>
 
 #include "NMSMovie.h"
 #include "NMSUserInput.h"
@@ -50,21 +50,11 @@ https://github.com/hdonk/lwjgl_vr_framework/tree/OpenGL
 */
 class MacroRecorder;
 
-extern OWENGINE_API GLApplication* theApp;
-
-GLApplication* GLApplication::getApplication(UserInput* ui)
-{
-	if (!theApp)
-	{
-		theApp = new GLApplication(ui);
-	}
-	return theApp;
-}
+extern OWENGINE_API GlobalSettings* globals;
 
 int main()
 {
 	ResourceFactory* rf = ResourceFactory::getResourceFactory();
-	ResourceSource::factory(rf);
 	rf->addPath("../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
 	rf->addPath("../engine/Resources/fonts", ResourceFactory::ResourceType::Font);
 	rf->addPath("../../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
@@ -90,13 +80,18 @@ int main()
 
 	try
 	{
+		SaveAndRestore sr;
 		MacroRecorder recorder;
-		GLApplication* app = GLApplication::getApplication(&ui);
+		Logger logger;
+		GLApplication app(&ui);
+		globals->resourceCache(rf);
+		globals->recorder(&recorder);
+		globals->saveAndRestore(&sr);
+		globals->logger(&logger);
 		CameraOW camera;
 		NMSMovie nms(&camera);
-		SaveAndRestore sr;
-		app->init(&nms, &ui, &recorder, &sr);
-		app->run(&nms);
+		app.init(&nms, &ui, &recorder, &sr);
+		app.run(&nms);
 	}
 	catch (const std::exception& e)
 	{

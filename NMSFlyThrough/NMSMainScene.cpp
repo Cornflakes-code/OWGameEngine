@@ -47,7 +47,8 @@ bool NMSMainScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 		// https://stackoverflow.com/questions/9901453/using-glms-unproject
 		*/
 		glm::vec4 viewportdata = glm::vec4(0.0f, 0.0f, 
-			theApp->physicalWindowSize().x, theApp->physicalWindowSize().y);
+				globals->physicalWindowSize().x, 
+				globals->physicalWindowSize().y);
 		glm::mat4 projection = camera->projection();
 		glm::mat4 view = camera->view();
 		glm::mat4 model = glm::mat4(1.0);
