@@ -7,7 +7,7 @@
 #include <glad/glad.h>
 
 #include <Renderables/BoundingBox.h>
-#include <Renderables/SimpleVertexRender.h>
+#include <Renderables/VertexRenderer.h>
 
 class Shader;
 
@@ -18,7 +18,7 @@ class Shader;
 class NoMansSky
 {
 	std::vector<glm::vec4> mStarPositions;
-	std::vector<SimpleVertexRender> mStarLabels;
+	std::vector<VertexRenderer> mStarLabels;
 	std::vector<glm::vec4> mStarColours;
 	std::vector<glm::vec3> mGrid;
 
@@ -28,6 +28,7 @@ class NoMansSky
 	void createGrid(const AABB& nmsSpace, 
 					const glm::u32vec3& gridSizes,
 					float scaleToWorld);
+	void createRandomStars(const AABB& nmsSpace);
 	Shader* mGridShader;
 	Shader* mStarShader;
 
@@ -38,4 +39,5 @@ public:
 	NoMansSky();
 	void setUp(const std::string& fileName, const AABB& world);
 	void render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model);
+	void readSaveFile(const std::string& saveFileMeta, const std::string& saveFile);
 };

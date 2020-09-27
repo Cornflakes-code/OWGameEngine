@@ -70,9 +70,9 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 	TextBillboard* txt = new TextBillboardDynamic("Arial.ttf", 24);
 
 	glm::vec4 color(0.5, 0.8f, 0.2f, 0);
-	txt->color(color);
+	txt->colour(color, "textcolor");
 	txt->createText("G", sx, sy);
-	mText.setUp(txt);
+	mText.addSource(txt);
 }
 
 

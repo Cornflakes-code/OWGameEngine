@@ -3,7 +3,7 @@
 #include "../OWEngine/OWEngine.h"
 
 #include "BoundingBox.h"
-#include "SimpleVertexRender.h"
+#include "../Renderables/VertexRenderer.h"
 
 
 class Pyramid;
@@ -17,8 +17,8 @@ class OWENGINE_API MovingText
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	Pyramid* mPyramid;
-	SimpleVertexRender mText;
-	SimpleVertexRender mPyramidRender;
+	VertexRenderer mPyramidRender;
+	VertexRenderer mText;
 	AABB mBounds;
 	glm::vec3 mVelocity;
 	glm::vec4 mDirection = glm::vec4(1.0f, 1.0f, 0.0f, 0.0f); // (NorthWest)

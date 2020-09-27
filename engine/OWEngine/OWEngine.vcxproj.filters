@@ -111,25 +111,10 @@
     <ClInclude Include="..\Renderables\Circle.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderables\FullScreen.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderables\MovingText.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderables\Points.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderables\Pyramid.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\Renderer.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\SimpleVertexRender.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\SimpleVertexSource.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
     <ClInclude Include="..\Renderables\TextBillboardDynamic.h">
@@ -146,6 +131,15 @@
     </ClInclude>
     <ClInclude Include="..\Core\GlobalSettings.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\VertexSource.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\FullScreen.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\VertexRenderer.h">
+      <Filter>Header Files\Renderables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -230,25 +224,10 @@
     <ClCompile Include="..\Renderables\Circle.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderables\FullScreen.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\MovingText.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderables\Points.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\Pyramid.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\Renderer.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\SimpleVertexRender.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\SimpleVertexSource.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
     <ClCompile Include="..\Renderables\TextBillboardDynamic.cpp">
@@ -262,6 +241,15 @@
     </ClCompile>
     <ClCompile Include="..\Core\GlobalSettings.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\VertexSource.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\FullScreen.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\VertexRenderer.cpp">
+      <Filter>Source Files\Renderables</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

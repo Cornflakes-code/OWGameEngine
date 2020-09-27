@@ -167,6 +167,7 @@ GLuint FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned
 		internalFormat, // format of the pixel data
 		bitmapType,
 		0); // data 
+	checkGLError();
 
 	// Clamping to edges is important to prevent artifacts when scaling
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

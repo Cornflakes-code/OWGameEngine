@@ -24,7 +24,7 @@ void ResizeHelper::resizeCallback(GLFWwindow* window, glm::ivec2 dimensions)
 	mAspectRatioChangedSinceLastRead = true;
 }
 
-glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale, bool clearFlag) const
+glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale) const
 {
 	// This seems to work best (trial and error) when resizing the window.
 	glm::vec2 retval = toScale;
@@ -38,7 +38,6 @@ glm::vec2 ResizeHelper::scaleByAspectRatio(const glm::vec2& toScale, bool clearF
 		retval.x /= mAspectRatio;
 		//retval.y *= mAspectRatio;
 	}
-	if (clearFlag)
-		mAspectRatioChangedSinceLastRead = false;
+	mAspectRatioChangedSinceLastRead = false;
 	return retval;
 }

@@ -47,8 +47,8 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	// Find the translation magnitudes
 	glm::vec4 velocity = glm::vec4(timeStep * mSpeed, timeStep * mSpeed, timeStep * mSpeed, 1.0);
 #ifdef INCLUDE_WELCOME
-	//mWelcome.move(velocity);
-	//mWelcome.bounceIfCollide(mWindowBounds);
+	mWelcome.move(velocity);
+	mWelcome.bounceIfCollide(mWindowBounds);
 #endif
 	mEnjoy.move(velocity);
 	mEnjoy.bounceIfCollide(mWindowBounds);
@@ -120,7 +120,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		TextBillboard* welcomeText = new TextBillboardDynamic("arial.ttf", fontHeight);
 
 		welcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
-		welcomeText->color({ 0.0, 0.0, 0.0, 1.0f });
+		welcomeText->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
 		sps->mWelcome.text(welcomeText);
 		glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
 							1.2f * _world.size().y / globals->physicalWindowSize().y };
@@ -133,21 +133,28 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	{
 		TextBillboard* enjoyFontAtlas = new TextBillboardFixed("arial.ttf", fontHeight);
 		enjoyFontAtlas->createText("Enjoy it while you can", nice.x, nice.y);
-		enjoyFontAtlas->color({ 0.1, 0.9, 0.1, 1 });
+		enjoyFontAtlas->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
 		sps->mEnjoy.text(enjoyFontAtlas);
 		sps->mEnjoy.direction(Compass::Rose[Compass::South] + Compass::Rose[Compass::West]); //South West
 		sps->mEnjoy.setPosition(NMSScene::world().center());
 	}
-	mFullScreen = new FullScreen(new Shader("thebookofshaders.v.glsl",
-					"thebookofshaders.f.glsl",
-					"thebookofshaders.g.glsl"));
-	mFullScreen->setUp(_world);
-	mAxis = new Axis();
-	mAxis->setUp(_world, movie()->camera());
-	Circle* circle = new Circle();
-	circle->setUp();
-	mCircle.setUp(circle);
-
+	{
+		FullScreen* fs = new FullScreen(new Shader("thebookofshaders.v.glsl",
+			"thebookofshaders.f.glsl",
+			"thebookofshaders_square.g.glsl"), "pvm");
+		fs->setUp(_world);
+		mFullScreen.addResizer(new ResizeHelper());
+		mFullScreen.addSource(fs);
+	}
+	{
+		mAxis = new Axis();
+		mAxis->setUp(_world, movie()->camera());
+	}
+	{
+		Circle* circle = new Circle();
+		circle->setUp();
+		mCircle.addSource(circle);
+	}
 }
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
@@ -161,7 +168,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
 						20.2f * _world.size().y / globals->physicalWindowSize().y };
 	mAxis->render(proj, view, model);
-	mFullScreen->render(proj, view, model);
+	mFullScreen.render(proj, view, model);
 
 	sps->mEnjoy.render(proj, view, model);
 	mCircle.render(proj, view, model);
@@ -183,3 +190,4 @@ void NMSSplashScene::deActivate(const std::string& OW_UNUSED(previousScene),
 							ScenePhysicsState* OW_UNUSED(state))
 {
 }
+

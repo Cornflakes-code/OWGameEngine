@@ -6,6 +6,11 @@
 #include <glad/glad.h>
 #endif
 
+NMSException::NMSException(const std::string& msg)
+	: std::exception(msg.c_str())
+{
+}
+
 static std::string toString(NMSErrorLevel err)
 {
 	switch (err)

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <Renderables/BoundingBox.h>
 #include <Renderables/MovingText.h>
+#include <Renderables/VertexRenderer.h>
 
 #include "NMSScene.h"
 /*
@@ -37,13 +38,14 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 
 class Axis;
 class FullScreen;
+class Circle;
 
 class NMSSplashScene : public NMSScene
 {
 	
-	FullScreen* mFullScreen;
+	VertexRenderer mFullScreen;
 	Axis* mAxis;
-	SimpleVertexRender mCircle;
+	VertexRenderer mCircle;
 public:
 	NMSSplashScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::splashSceneName(); }

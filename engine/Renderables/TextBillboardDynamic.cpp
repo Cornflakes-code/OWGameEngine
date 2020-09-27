@@ -4,15 +4,28 @@
 
 #include "../Helpers/Shader.h"
 
-TextBillboardDynamic::TextBillboardDynamic(const std::string& fontFileName, int fontHeight)
-	:TextBillboard(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""),
-				"", fontFileName, fontHeight)
+TextBillboardDynamic::TextBillboardDynamic(
+				const std::string& fontFileName, 
+				int fontHeight)
+	:TextBillboard(fontFileName, fontHeight)
 {
+	shader(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""), "VP");
+	mVertexLocation = mShader->getAttributeLocation("coord");
+	mVertexMode = GL_TRIANGLES;
+
+	mRenderCallback
+		= std::bind(&TextBillboardDynamic::renderCallback,
+			this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3, std::placeholders::_4);
+	mResizeCallback
+		= std::bind(&TextBillboardDynamic::resizeCallback,
+			this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3);
 }
 
-void TextBillboardDynamic::doRender(const glm::mat4& proj, 
-									const glm::mat4& view, 
-									const glm::mat4& model) const
+void TextBillboardDynamic::renderCallback(
+			const glm::mat4& proj, const glm::mat4& view,
+			const glm::mat4& model, Shader* shader)
 {
 	const glm::mat4 pv = proj * view;
 	mShader->use();
@@ -28,12 +41,12 @@ void TextBillboardDynamic::doRender(const glm::mat4& proj,
 	glm::vec3 xx = newModel[3];
 
 	mShader->setVector3f("BillboardPos", newModel[3]);
-	if (aspectRatioModified())
-	{
-//		float ratio = aspectRatio();
-		glm::vec2 scale = scaleByAspectRatio(mScale);
-		glm::vec2 bbSize({ mBounds.size().x * mScale.x, mBounds.size().y * mScale.y });
-		mShader->setVector2f("BillboardSize", bbSize);
-	}
-	mShader->setVector4f("textcolor", mColor);
+}
+
+void TextBillboardDynamic::resizeCallback(Shader* shader,
+					ResizeHelper::ScaleByAspectRatioType scaleByAspectRatio,
+					float aspectRatio)
+{
+	glm::vec2 bbSize({ mBounds.size().x * mScale.x, mBounds.size().y * mScale.y });
+	mShader->setVector2f("BillboardSize", bbSize);
 }

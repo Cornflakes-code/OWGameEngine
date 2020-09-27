@@ -6,9 +6,8 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "../Renderables/Renderer.h"
 #include "../Renderables/BoundingBox.h"
-#include "SimpleVertexRender.h"
+#include "../Renderables/VertexRenderer.h"
 
 class TextBillboard;
 class Points;
@@ -17,22 +16,24 @@ class Camera;
 /*
 	Wraps the rendering of an XYZ set of labelled axis. Useful for early development
 */
-class OWENGINE_API Axis: public Renderer
+class OWENGINE_API Axis
 {
 public:
-	Axis(Shader* _shader = nullptr);
+	Axis();
 
 	void setUp(const AABB& world, const Camera* camera);
-	void render(const glm::mat4& proj, const glm::mat4& view, 
+	void render(const glm::mat4& proj, 
+				const glm::mat4& view, 
 				const glm::mat4& model) const;
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	Points* mPoints;
-	SimpleVertexRender mX;
-	SimpleVertexRender mY;
-	SimpleVertexRender mZ;
-	SimpleVertexRender mCircle;
-	std::vector<glm::vec3> mLines;
+	std::vector<glm::vec3> mAxisCoords;
+	VertexRenderer mPoints;
+	VertexRenderer mTextX;
+	VertexRenderer mTextY;
+	VertexRenderer mTextZ;
+	VertexRenderer mCircle;
+	VertexRenderer mLines;
 #pragma warning( pop )
 };

@@ -185,13 +185,11 @@
     <ClInclude Include="..\Renderables\Circle.h" />
     <ClInclude Include="..\Renderables\FullScreen.h" />
     <ClInclude Include="..\Renderables\MovingText.h" />
-    <ClInclude Include="..\Renderables\Points.h" />
     <ClInclude Include="..\Renderables\Pyramid.h" />
-    <ClInclude Include="..\Renderables\Renderer.h" />
-    <ClInclude Include="..\Renderables\SimpleVertexRender.h" />
-    <ClInclude Include="..\Renderables\SimpleVertexSource.h" />
     <ClInclude Include="..\Renderables\TextBillboardDynamic.h" />
     <ClInclude Include="..\Renderables\TextBillboardFixed.h" />
+    <ClInclude Include="..\Renderables\VertexRenderer.h" />
+    <ClInclude Include="..\Renderables\VertexSource.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OWEngine.h" />
   </ItemGroup>
@@ -226,13 +224,11 @@
     <ClCompile Include="..\Renderables\Circle.cpp" />
     <ClCompile Include="..\Renderables\FullScreen.cpp" />
     <ClCompile Include="..\Renderables\MovingText.cpp" />
-    <ClCompile Include="..\Renderables\Points.cpp" />
     <ClCompile Include="..\Renderables\Pyramid.cpp" />
-    <ClCompile Include="..\Renderables\Renderer.cpp" />
-    <ClCompile Include="..\Renderables\SimpleVertexRender.cpp" />
-    <ClCompile Include="..\Renderables\SimpleVertexSource.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardDynamic.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardFixed.cpp" />
+    <ClCompile Include="..\Renderables\VertexRenderer.cpp" />
+    <ClCompile Include="..\Renderables\VertexSource.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

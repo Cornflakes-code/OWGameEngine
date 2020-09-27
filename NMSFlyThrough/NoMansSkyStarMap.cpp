@@ -4,16 +4,19 @@
 #include <fstream>
 #include <chrono>
 #include <regex>
+#include <random>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <json/single_include/nlohmann/json.hpp>
 
 #include <Helpers/ErrorHandling.h>
 #include <Helpers/Utils.h>
 #include <Helpers/Shader.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/TextBillboardFixed.h>
+
 
 NoMansSky::NoMansSky()
 	: mGridShader(new Shader("Lines.v.glsl", "Lines.f.glsl", ""))
@@ -26,6 +29,8 @@ NoMansSky::NoMansSky()
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 {
+
+
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
 
 	glGenVertexArrays(2, &mVao[0]);
@@ -126,10 +131,10 @@ void NoMansSky::loadStars(const std::string& fileName,
 			std::vector<std::string> elms = split(line, ',');
 			TextBillboard* text = new TextBillboardFixed("arial.ttf", fontHeight);
 			text->createText(elms[0], nice.x, nice.y);
-			text->color({ 0.0, 0.0, 0.0, 1.0f });
-			SimpleVertexRender svr;
-			svr.setUp(text);
-			mStarLabels.push_back(svr);
+			text->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
+			VertexRenderer sr;
+			sr.addSource(text);
+			mStarLabels.push_back(sr);
 
 			if (elms.size() == 2)
 			{
@@ -242,6 +247,21 @@ void NoMansSky::loadStars(const std::string& fileName,
 	}
 }
 
+void NoMansSky::createRandomStars(const AABB& nmsSpace)
+{
+	std::default_random_engine generator;
+	std::uniform_real_distribution<float> xDistribution(nmsSpace.minPoint().x,
+				nmsSpace.maxPoint().x);
+	std::uniform_real_distribution<float> yDistribution(nmsSpace.minPoint().y,
+				nmsSpace.maxPoint().y);
+	std::uniform_real_distribution<float> zDistribution(nmsSpace.minPoint().z,
+				nmsSpace.maxPoint().z);
+	glm::vec3 v3({ xDistribution(generator),	
+				   yDistribution(generator), 
+				   zDistribution(generator) });
+
+}
+
 void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
 {
 	glm::mat4 pvm = proj * view * model;
@@ -272,12 +292,16 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 	glBindVertexArray(0);
 	for (int i = 0; i < mStarLabels.size(); i++)
 	{
-		const SimpleVertexRender& svr = mStarLabels[i];
+		const VertexRenderer& sr = mStarLabels[i];
 		const glm::vec4& v4 = mStarPositions[i];
 		glm::mat4 temp = glm::translate(model, glm::vec3(v4.x, v4.y, v4.z));
-		svr.render(proj, view, temp);
+		sr.render(proj, view, temp);
 	}
 #endif
 	checkGLError();
 }
 
+void NoMansSky::readSaveFile(const std::string& saveFileMeta, const std::string& saveFile)
+{
+
+}

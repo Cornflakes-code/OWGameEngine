@@ -21,8 +21,7 @@ public:
 	NMSException(std::stringstream ss): NMSException(ss.str())
 	{}
 
-	NMSException(const std::string& msg): std::exception(msg.c_str())
-	{}
+	NMSException(const std::string& msg);
 };
 #pragma warning( pop )
 

@@ -14,23 +14,20 @@
 #include "ErrorHandling.h"
 #include "Shader.h"
 
-TextBillboard::TextBillboard(Shader* shader, const std::string& pvmName, 
-					const std::string& fontFileName, int fontHeight)
-	: SimpleVertexSource(pvmName), mShader(shader)
+TextBillboard::TextBillboard(const std::string& fontFileName, int fontHeight)
 {
 	mFontData = globals->resourceCache()->loadFreeTypeFont(fontFileName, fontHeight);
 }
 
 TextBillboard::~TextBillboard()
 {
-	globals->application()->removeWindowResizeListener(this);
-	delete mShader;
+//	globals->application()->removeWindowResizeListener(this);
 }
 
 void TextBillboard::createText(const std::string& text, float sx, float sy)
 {
-	mVertices = mFontData->createText(text, sx, sy);
-
+	mVec4 = mFontData->createText(text, sx, sy);
+	texture(mFontData->texture());
 	mBounds = findBounds();
 	// move to origin ...
 	mBounds = mBounds - mBounds.minPoint();
@@ -43,7 +40,7 @@ AABB TextBillboard::findBounds() const
 	glm::vec4 minPoint(_max, _max, 0, 1);
 	glm::vec4 maxPoint(-_max, -_max, 0, 1);
 
-	for (const auto& point : mVertices)
+	for (const auto& point : mVec4)
 	{
 		if (point.x < minPoint.x)
 			minPoint.x = point.x;
@@ -54,5 +51,5 @@ AABB TextBillboard::findBounds() const
 		else if (point.y > maxPoint.y)
 			maxPoint.y = point.y;
 	}
-	return mBounds;// AABB(minPoint, maxPoint);
+	return AABB(minPoint, maxPoint);
 }

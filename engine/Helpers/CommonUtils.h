@@ -27,6 +27,26 @@ struct OWENGINE_API OWUtils
 	typedef glm::f32 Float;
 	typedef std::chrono::steady_clock Time;
 
+	enum class SolidColours
+	{
+		BLACK,
+		BLUE,
+		GREEN,
+		CYAN,
+		RED,
+		MAGENTA,
+		YELLOW,
+		WHITE,
+		BRIGHT_BLACK,
+		BRIGHT_BLUE,
+		BRIGHT_GREEN,
+		BRIGHT_CYAN,
+		BRIGHT_RED,
+		BRIGHT_MAGENTA,
+		BRIGHT_YELLOW,
+		BRIGHT_WHITE
+	};
+	static glm::vec4 colour(SolidColours colour);
 	static bool nearlyEqual(Float a, Float b, Float epsilon)
 	{
 		// https://floating-point-gui.de/errors/comparison/

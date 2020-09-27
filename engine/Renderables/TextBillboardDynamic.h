@@ -13,7 +13,9 @@ class OWENGINE_API TextBillboardDynamic : public TextBillboard
 public:
 	TextBillboardDynamic(const std::string& fontFileName, int fontHeight);
 protected:
-	void doRender(const glm::mat4& proj, 
-				  const glm::mat4& view, 
-				  const glm::mat4& model) const override;
+	void renderCallback(const glm::mat4& proj, const glm::mat4& view,
+		const glm::mat4& model, Shader* shader);
+	void resizeCallback(Shader* shader, 
+		ResizeHelper::ScaleByAspectRatioType scaleByAspectRatio,
+		float aspectRatio);
 };

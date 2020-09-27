@@ -12,9 +12,20 @@
 #include "../Core/Movie.h"
 #include "../Core/GLApplication.h"
 
-FullScreen::FullScreen(Shader* _shader)
-	:Renderer(_shader)
+FullScreen::FullScreen(Shader* _shader, const std::string& pvm)
 {
+	shader(_shader, "");
+
+	mRenderCallback
+		= std::bind(&FullScreen::renderCallback,
+			this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3, std::placeholders::_4);
+
+	mResizeCallback
+		= std::bind(&FullScreen::resizeCallback,
+			this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3);
+
 }
 
 void FullScreen::setUp(const AABB& world)
@@ -23,31 +34,29 @@ void FullScreen::setUp(const AABB& world)
 	float y = world.size().y / 4.0f;
 	float z = 0.0f;
 
-	std::vector<glm::vec3> vertices;
-	vertices.push_back({ -x, y, z });
-	vertices.push_back({ x, y, z });
-	vertices.push_back({ x, -y, z });
-	vertices.push_back({ -x, -y, z });
-	
-	prepareOpenGL(vertices, std::vector<unsigned int>(), glm::vec4(1.0, 0.5, 1.0, 1.0));
+	std::vector<glm::vec3> vert;
+	vert.push_back({ -x, y, z });
+	vert.push_back({ x, y, z });
+	vert.push_back({ x, -y, z });
+	vert.push_back({ -x, -y, z });
+
+	vertices(vert, 0, GL_POINTS);
 }
 
-void FullScreen::render(const glm::mat4& proj,
-	const glm::mat4& view,
-	const glm::mat4& model) const
+void FullScreen::renderCallback(const glm::mat4& proj, const glm::mat4& view,
+	const glm::mat4& model, Shader* shader)
 {
-	const glm::mat4 unity(1.0);
 	OWUtils::PolygonModeRIAA poly;
-	renderOpenGL(unity, unity, unity, GL_POINTS, [this, model]() {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		if (aspectRatioModified())
-		{
-			glm::vec2 vv = globals->physicalWindowSize();
-			glm::vec2 v2 = scaleByAspectRatio({ vv });
-			glm::mat4 scaledModel = glm::scale(model, glm::vec3(v2, 0.0f));
-			mShader->setVector2f("u_resolution", v2);
-		}
-		mShader->setVector2f("u_mouse", globals->pointingDevicePosition());
-		mShader->setFloat("u_time", globals->secondsSinceLoad());
-	});
+	mShader->setVector2f("u_mouse", globals->pointingDevicePosition());
+	mShader->setFloat("u_time", globals->secondsSinceLoad());
+
+}
+
+void FullScreen::resizeCallback(Shader* shader,
+				ResizeHelper::ScaleByAspectRatioType scaleByAspectRatio,
+				float aspectRatio)
+{
+	glm::vec2 vv = globals->physicalWindowSize();
+	glm::vec2 v2 = scaleByAspectRatio({ vv });
+	mShader->setVector2f("u_resolution", v2);
 }

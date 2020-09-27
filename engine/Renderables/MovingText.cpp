@@ -12,7 +12,7 @@ MovingText::MovingText()
 {
 	mPyramid = new Pyramid();
 	mPyramid->setUp();
-	mPyramidRender.setUp(mPyramid);
+	mPyramidRender.addSource(mPyramid);
 }
 
 void MovingText::fixedTimeStep(float seconds)
@@ -28,7 +28,8 @@ Compass::Direction MovingText::wallIntersection(const AABB& scenery)
 void MovingText::text(TextBillboard* newValue)
 { 
 	mBounds = newValue->bounds();
-	mText.setUp(newValue);
+	mText.addResizer(new ResizeHelper());
+	mText.addSource(newValue);
 
 	// Start the minPoint of the text at 0,0,0.
 	mBounds = mBounds - mBounds.minPoint();

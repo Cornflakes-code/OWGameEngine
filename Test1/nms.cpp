@@ -112,7 +112,7 @@ int main()
 	std::string path = "E:/Apps/NMS/OWGameEngine/engine/Resources/shaders/";
 	shader.readFiles(path + "thebookofshaders.v.glsl",
 		path + "thebookofshaders.f.glsl",
-		path + "thebookofshaders.g.glsl");
+		path + "thebookofshaders_circle.g.glsl");
 	std::vector<float> vertices = { 0.0f,  0.0f, 0.0f };
 #endif
 	unsigned int VBO, VAO;
