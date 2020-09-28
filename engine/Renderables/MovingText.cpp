@@ -28,7 +28,6 @@ Compass::Direction MovingText::wallIntersection(const AABB& scenery)
 void MovingText::text(TextBillboard* newValue)
 { 
 	mBounds = newValue->bounds();
-	mText.addResizer(new ResizeHelper());
 	mText.addSource(newValue);
 
 	// Start the minPoint of the text at 0,0,0.

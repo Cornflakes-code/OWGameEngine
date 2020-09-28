@@ -45,11 +45,8 @@ void Axis::setUp(const AABB& world, const Camera* camera)
 		textY->colour({ 0.0, 1.0, 0.0, 1.0f }, "textcolor");
 		textZ->colour({ 0.0, 0.0, 1.0, 1.0f }, "textcolor");
 
-		mTextX.addResizer(new ResizeHelper());
 		mTextX.addSource(textX);
-		mTextY.addResizer(new ResizeHelper());
 		mTextY.addSource(textY);
-		mTextZ.addResizer(new ResizeHelper());
 		mTextZ.addSource(textZ);
 	}
 	{
@@ -77,8 +74,7 @@ void Axis::setUp(const AABB& world, const Camera* camera)
 		VertexSource* p = new VertexSource();
 		p->shader(pointShader, "pvm");
 		p->vertices({ mAxisCoords[0] }, 0, GL_POINTS);
-		mPoints.addResizer(new ResizeHelper());
-		mPoints.addSource(p);
+		mZeroPoint.addSource(p);
 	}
 }
 
@@ -91,13 +87,15 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 		shader->setFloat("u_time", globals->secondsSinceLoad());
 	};
 	auto pointResizeRender = [](Shader* shader,
-		ResizeHelper::ScaleByAspectRatioType scaler,
+		VertexSource::ScaleByAspectRatioType scaler,
 		float aspectRatio) {
 		glm::vec2 vv = globals->physicalWindowSize();
+		//vv.x /= 20.0f;
+		//vv.y /= 20.0f;
 		glm::vec2 v2 = scaler({ vv });
 		shader->setVector2f("u_resolution", v2);
 	};
-	mPoints.render(proj, view, model, pointRender, pointResizeRender);
+	mZeroPoint.render(proj, view, model, pointRender, pointResizeRender);
 
 	// Position the text at the ends of the lines
 	mTextX.render(proj, view, glm::translate(model, mAxisCoords[1]));

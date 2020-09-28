@@ -219,7 +219,7 @@ void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window,
 								int width, int height)
 {
 	glViewport(0, 0, width, height);
-
+	globals->physicalWindowSize({ width, height });
 	for (auto& cb : mWindowResizeCallbacks)
 		cb.first(window, glm::ivec2(width, height));
 }

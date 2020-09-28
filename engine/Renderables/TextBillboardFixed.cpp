@@ -34,7 +34,7 @@ void TextBillboardFixed::renderCallback(
 }
 
 void TextBillboardFixed::resizeCallback(Shader* shader,
-			ResizeHelper::ScaleByAspectRatioType scaleByAspectRatio,
+			ScaleByAspectRatioType scaleByAspectRatio,
 			float aspectRatio)
 {
 	glm::vec2 vv = { 0.5, 0.5 };

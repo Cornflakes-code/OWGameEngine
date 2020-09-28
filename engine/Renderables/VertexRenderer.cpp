@@ -5,9 +5,38 @@
 #include "../Helpers/Shader.h"
 #include "../Helpers/ResourceFactory.h"
 #include "../Helpers/ErrorHandling.h"
+#include "../Helpers/CommonUtils.h"
+#include "../Core/GlobalSettings.h"
 
 VertexRenderer::VertexRenderer()
 {
+}
+
+VertexRenderer::~VertexRenderer()
+{
+}
+
+float VertexRenderer::aspectRatio() const
+{
+	return globals->physicalWindowSize().x / (globals->physicalWindowSize().y * 1.0f);
+}
+
+glm::vec2 VertexRenderer::scaleByAspectRatio(const glm::vec2& toScale) const
+{
+	// This seems to work best (trial and error) when resizing the window.
+	glm::vec2 retval = toScale;
+	float _aspectRatio = aspectRatio();
+	if (_aspectRatio < 1)
+	{
+		retval.x /= _aspectRatio;
+		retval.y *= _aspectRatio;
+	}
+	else
+	{
+		retval.x /= _aspectRatio;
+		//retval.y *= _aspectRatio ;
+	}
+	return retval;
 }
 
 void VertexRenderer::prepareOpenGL()
@@ -83,8 +112,8 @@ void VertexRenderer::prepareOpenGL()
 
 void VertexRenderer::render( const glm::mat4& proj,
 				const glm::mat4& view, const glm::mat4& model,
-				VertexSource::SourceCallbackType renderCb,
-				ResizeHelper::ResizeCallbackType resizeCb) const
+				VertexSource::RenderCallbackType renderCb,
+				VertexSource::ResizeCallbackType resizeCb) const
 {
 	mSource->mShader->use();
 	if (!mSource->mPVMName.empty())
@@ -114,7 +143,7 @@ void VertexRenderer::render( const glm::mat4& proj,
 		glBindTexture(GL_TEXTURE_2D, mSource->mTexture);
 	}
 
-	if (mResizer && mResizer->aspectRatioModified())
+	if (globals->aspectRatioChanged())
 	{
 		// If no callback parameters then used the stored callbacks
 		if (!resizeCb)
@@ -122,9 +151,9 @@ void VertexRenderer::render( const glm::mat4& proj,
 		if (resizeCb)
 		{
 			resizeCb(mSource->mShader, 
-				std::bind(&ResizeHelper::scaleByAspectRatio,
-						mResizer, std::placeholders::_1),
-				mResizer->aspectRatio());
+				std::bind(&VertexRenderer::scaleByAspectRatio,
+						this, std::placeholders::_1),
+				aspectRatio());
 		}
 	}
 
@@ -159,7 +188,7 @@ void VertexRenderer::render( const glm::mat4& proj,
 	}
 }
 
-void VertexRenderer::checkForErrors()
+void VertexRenderer::checkSourceForErrors()
 {
 	if (mSource->mShader == nullptr)
 		throw NMSLogicException("mSource->mShader should not be null");

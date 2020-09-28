@@ -191,9 +191,6 @@
     <ClCompile Include="..\Helpers\PhongShader.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Helpers\ResizeHelper.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Helpers\ResourceFactory.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>

@@ -134,9 +134,9 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 		// logic()->interpolateRenderTarget will never change currentScene
 		//dumpMessage("render", NMSErrorLevel::NMSCritical);
 		mCurrent->logic.interpolateRenderTarget(t, accumulator, dt);
-
 		//OWUtils::Time::time_point beforeRender = OWUtils::HighTime::now();
 		render(mCurrent->logic.renderTarget());
+		globals->clearAspectRatioChangedFlag();
 		//OWUtils::Time::time_point afterRender = OWUtils::HighTime::now();
 		//OWUtils::Time::duration durr = afterRender - beforeRender;
 		//dumpMessage(std::stringstream() << "Render Time [" << durr.count() << "]", NMSErrorLevel::NMSInfo);

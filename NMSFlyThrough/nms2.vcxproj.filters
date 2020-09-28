@@ -153,9 +153,6 @@
     <ClInclude Include="..\engine\Helpers\PhongShader.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\Helpers\ResizeHelper.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="..\engine\Helpers\ResourceFactory.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>

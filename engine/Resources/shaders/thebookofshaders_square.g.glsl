@@ -29,5 +29,8 @@ void doSquare(vec4 pos, float x, float y, float aspect)
 
 void main()
 {
-	doSquare(gl_in[0].gl_Position, 1.0, 1.0, u_resolution.x / u_resolution.y);
+	vec4 v4 = vec4(0.0, 0.0, 0.0, 1.0);
+	
+	doSquare(v4, 1.0, 1.0, u_resolution.x / u_resolution.y);
+//	doSquare(gl_in[0].gl_Position, 1.0, 1.0, u_resolution.x / u_resolution.y);
 }

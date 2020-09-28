@@ -20,7 +20,6 @@
 
 NoMansSky::NoMansSky()
 	: mGridShader(new Shader("Lines.v.glsl", "Lines.f.glsl", ""))
-	, mStarShader(new Shader("points.v.glsl", "points.f.glsl", "points.g.glsl"))
 {
 }
 
@@ -58,17 +57,25 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 
 #ifdef DEBUG_STARS
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
-	glBindVertexArray(mVao[1]);
-	GLuint vboStar;
-	glGenBuffers(1, &vboStar);
-	glPointSize(30.0f);
-	glBindBuffer(GL_ARRAY_BUFFER, vboStar);
-	location = mStarShader->getAttributeLocation("pointpos");
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mStarPositions.size(), 
-			mStarPositions.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(location);
-	glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindVertexArray(0);
+	Shader* pointShader = new Shader("thebookofshaders.v.glsl",
+		"thebookofshaders.f.glsl",
+		"thebookofshaders_circle.g.glsl");
+	VertexSource* p = new VertexSource();
+	p->shader(pointShader, "pvm");
+	p->vertices(mStarPositions, 0, GL_POINTS);
+	mStarRenderer.addSource(p);
+
+	//glBindVertexArray(mVao[1]);
+	//GLuint vboStar;
+	//glGenBuffers(1, &vboStar);
+	//glPointSize(30.0f);
+	//glBindBuffer(GL_ARRAY_BUFFER, vboStar);
+	//location = mStarShader->getAttributeLocation("pointpos");
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mStarPositions.size(), 
+	//		mStarPositions.data(), GL_STATIC_DRAW);
+	//glEnableVertexAttribArray(location);
+	//glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	//glBindVertexArray(0);
 #endif
 }
 
@@ -259,7 +266,6 @@ void NoMansSky::createRandomStars(const AABB& nmsSpace)
 	glm::vec3 v3({ xDistribution(generator),	
 				   yDistribution(generator), 
 				   zDistribution(generator) });
-
 }
 
 void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
@@ -280,16 +286,22 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 #endif
 
 #ifdef DEBUG_STARS
-	mStarShader->use();
-	checkGLError();
-	mStarShader->setMatrix4("pvm", pvm);
-	checkGLError();
-	glBindVertexArray(mVao[1]);
-	checkGLError();
-	mStarShader->setVector4f("pointColour", { 0.6, 0.0, 0.3, 1 });
-	glDrawArrays(GL_POINTS, 0, GLsizei(mStarPositions.size()));
-	checkGLError();
-	glBindVertexArray(0);
+	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), 
+						 const glm::mat4& OW_UNUSED(view),
+						 const glm::mat4& OW_UNUSED(model), Shader* shader) {
+		shader->setVector2f("u_mouse", globals->pointingDevicePosition());
+		shader->setFloat("u_time", globals->secondsSinceLoad());
+	};
+	auto pointResizeRender = [](Shader* shader,
+		VertexSource::ScaleByAspectRatioType scaler,
+		float OW_UNUSED(aspectRatio)) {
+		glm::vec2 vv = globals->physicalWindowSize();
+		vv.x /= 0.02f;
+		vv.y /= 0.02f;
+		glm::vec2 v2 = scaler({ vv });
+		shader->setVector2f("u_resolution", v2);
+	};
+	mStarRenderer.render(proj, view, model, pointRender, pointResizeRender);
 	for (int i = 0; i < mStarLabels.size(); i++)
 	{
 		const VertexRenderer& sr = mStarLabels[i];

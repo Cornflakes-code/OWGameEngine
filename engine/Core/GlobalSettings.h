@@ -21,9 +21,15 @@ public:
 	// convenience methods. If tyhe host exe does not create GLApplication then
 	// these may be invalid.
 	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
+	bool aspectRatioChanged() const { return mAspectRatioChanged; }
+	void clearAspectRatioChangedFlag() { mAspectRatioChanged = false; }
 	float secondsSinceLoad();
 	const glm::uvec2& physicalWindowSize() const { return mPhysicalWindowSize; }
-	void physicalWindowSize(const glm::uvec2& newValue) { mPhysicalWindowSize = newValue; }
+	void physicalWindowSize(const glm::uvec2& newValue) 
+	{
+		mAspectRatioChanged = true;
+		mPhysicalWindowSize = newValue; 
+	}
 
 	// Getters. May be null depending on what the exe does
 	const SaveAndRestore* saveAndRestore() { return mSaveAndRestore; }
@@ -51,10 +57,11 @@ private:
 	const Logger* mLogger = nullptr;
 	GLApplication* mApplication = nullptr;
 	ResourceFactory* mResFactory = nullptr;
+	SaveAndRestore* mSaveAndRestore = nullptr;
 	glm::uvec2 mPhysicalWindowSize;
 	glm::vec2 mPointingDevicePosition;
-	SaveAndRestore* mSaveAndRestore = nullptr;
-	static OWUtils::Time::time_point mLoadTime;
+	static OWUtils::Time::time_point mLoadTime; 
+	bool mAspectRatioChanged = false;
 	friend class GLApplication;
 #pragma warning( pop )
 };

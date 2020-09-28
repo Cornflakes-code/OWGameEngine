@@ -14,7 +14,7 @@
 
 FullScreen::FullScreen(Shader* _shader, const std::string& pvm)
 {
-	shader(_shader, "");
+	shader(_shader, pvm);
 
 	mRenderCallback
 		= std::bind(&FullScreen::renderCallback,
@@ -30,16 +30,9 @@ FullScreen::FullScreen(Shader* _shader, const std::string& pvm)
 
 void FullScreen::setUp(const AABB& world)
 {
-	float x = world.size().x / 4.0f;
-	float y = world.size().y / 4.0f;
-	float z = 0.0f;
-
+	// Depending on the geometry shader it may not matter what we send.
 	std::vector<glm::vec3> vert;
-	vert.push_back({ -x, y, z });
-	vert.push_back({ x, y, z });
-	vert.push_back({ x, -y, z });
-	vert.push_back({ -x, -y, z });
-
+	vert.push_back({ 0.0f, 0.0f, 0.0f });
 	vertices(vert, 0, GL_POINTS);
 }
 
@@ -53,10 +46,9 @@ void FullScreen::renderCallback(const glm::mat4& proj, const glm::mat4& view,
 }
 
 void FullScreen::resizeCallback(Shader* shader,
-				ResizeHelper::ScaleByAspectRatioType scaleByAspectRatio,
+				ScaleByAspectRatioType scaleByAspectRatio,
 				float aspectRatio)
 {
 	glm::vec2 vv = globals->physicalWindowSize();
-	glm::vec2 v2 = scaleByAspectRatio({ vv });
-	mShader->setVector2f("u_resolution", v2);
+	mShader->setVector2f("u_resolution", vv);
 }

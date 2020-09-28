@@ -1,9 +1,13 @@
 #pragma once
 #include <vector>
+#include <functional>
 #include <glm/glm.hpp>
 
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
+
 #include "../OWEngine/OWEngine.h"
-#include "../Helpers/ResizeHelper.h"
 
 class Shader;
 
@@ -18,8 +22,13 @@ class OWENGINE_API VertexSource
 {
 public:
 	typedef std::function<void(const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, Shader* shader)> SourceCallbackType;
+		const glm::mat4& model, Shader* shader)> RenderCallbackType;
 
+	typedef std::function< glm::vec2(const glm::vec2)> ScaleByAspectRatioType;
+
+	typedef std::function<void(Shader* shader,
+		ScaleByAspectRatioType scaler,
+		float aspectRatio)> ResizeCallbackType;
 	VertexSource() {}
 	void shader(Shader* newValue, const std::string& pvmName) 
 	{ 
@@ -58,8 +67,8 @@ protected:
 	unsigned int mVertexMode = GL_INVALID_ENUM;
 	unsigned int mIndicesMode = GL_INVALID_ENUM;
 	unsigned int mTexture = 0;
-	SourceCallbackType mRenderCallback = nullptr;
-	ResizeHelper::ResizeCallbackType mResizeCallback = nullptr;
+	RenderCallbackType mRenderCallback = nullptr;
+	ResizeCallbackType mResizeCallback = nullptr;
 	friend class VertexRenderer;
 #pragma warning( pop )
 };

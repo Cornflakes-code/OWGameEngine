@@ -29,7 +29,7 @@ private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	std::vector<glm::vec3> mAxisCoords;
-	VertexRenderer mPoints;
+	VertexRenderer mZeroPoint;
 	VertexRenderer mTextX;
 	VertexRenderer mTextY;
 	VertexRenderer mTextZ;

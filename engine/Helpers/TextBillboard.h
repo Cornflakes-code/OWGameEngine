@@ -5,7 +5,6 @@
 
 #include <glm/glm.hpp>
 
-
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
@@ -21,7 +20,6 @@
 
 #include "../Renderables/VertexSource.h"
 #include "ResourceFactory.h"
-#include "ResizeHelper.h"
 
 class Shader;
 

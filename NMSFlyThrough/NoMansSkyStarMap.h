@@ -17,6 +17,7 @@ class Shader;
 */
 class NoMansSky
 {
+	VertexRenderer mStarRenderer;
 	std::vector<glm::vec4> mStarPositions;
 	std::vector<VertexRenderer> mStarLabels;
 	std::vector<glm::vec4> mStarColours;

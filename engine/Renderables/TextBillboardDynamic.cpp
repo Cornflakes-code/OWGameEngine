@@ -44,7 +44,7 @@ void TextBillboardDynamic::renderCallback(
 }
 
 void TextBillboardDynamic::resizeCallback(Shader* shader,
-					ResizeHelper::ScaleByAspectRatioType scaleByAspectRatio,
+					ScaleByAspectRatioType scaleByAspectRatio,
 					float aspectRatio)
 {
 	glm::vec2 bbSize({ mBounds.size().x * mScale.x, mBounds.size().y * mScale.y });

@@ -190,7 +190,6 @@
     <ClInclude Include="..\engine\Core\UserInput.h" />
     <ClInclude Include="..\engine\Helpers\CommonUtils.h" />
     <ClInclude Include="..\engine\Helpers\ErrorHandling.h" />
-    <ClInclude Include="..\engine\Helpers\ResizeHelper.h" />
     <ClInclude Include="..\engine\Helpers\TextBillboard.h" />
     <ClInclude Include="..\engine\Helpers\FreeTypeFontAtlas.h" />
     <ClInclude Include="..\engine\Helpers\Logger.h" />

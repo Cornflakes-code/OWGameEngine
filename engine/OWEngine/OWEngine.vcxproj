@@ -211,7 +211,6 @@
     <ClCompile Include="..\Helpers\Logger.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
-    <ClCompile Include="..\Helpers\ResizeHelper.cpp" />
     <ClCompile Include="..\Helpers\ResourceFactory.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
     <ClCompile Include="..\Helpers\stb_image.cpp" />

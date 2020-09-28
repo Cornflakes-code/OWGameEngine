@@ -143,7 +143,6 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 			"thebookofshaders.f.glsl",
 			"thebookofshaders_square.g.glsl"), "pvm");
 		fs->setUp(_world);
-		mFullScreen.addResizer(new ResizeHelper());
 		mFullScreen.addSource(fs);
 	}
 	{
@@ -160,21 +159,19 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 void NMSSplashScene::render(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view)
 {
-	const AABB& _world = world();
 	const NMSSplashScenePhysics* sps = dynamic_cast<const NMSSplashScenePhysics*>(state);
-	glm::mat4 translation(1.0);
-	glm::mat4 rotation(1.0);
 	glm::mat4 model(1.0);
+	mFullScreen.render(proj, view, model);
+	//mAxis->render(proj, view, model);
+
+	//sps->mEnjoy.render(proj, view, model);
+	//mCircle.render(proj, view, model);
+#ifdef INCLUDE_WELCOME
+	const AABB& _world = world();
 	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
 						20.2f * _world.size().y / globals->physicalWindowSize().y };
-	mAxis->render(proj, view, model);
-	mFullScreen.render(proj, view, model);
-
-	sps->mEnjoy.render(proj, view, model);
-	mCircle.render(proj, view, model);
-#ifdef INCLUDE_WELCOME
-	glm::mat4 m = glm::scale(model, glm::vec3(scale, 0.0));
-	sps->mWelcome.render(proj, view, m);
+	glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
+	//sps->mWelcome.render(proj, view, scaledModel);
 #endif
 }
 

@@ -16,6 +16,6 @@ protected:
 	void renderCallback(const glm::mat4& proj, const glm::mat4& view,
 		const glm::mat4& model, Shader* shader);
 	void resizeCallback(Shader* shader, 
-		ResizeHelper::ScaleByAspectRatioType scaleByAspectRatio,
+		ScaleByAspectRatioType scaleByAspectRatio,
 		float aspectRatio);
 };
