@@ -39,7 +39,6 @@ void FullScreen::setUp(const AABB& world)
 void FullScreen::renderCallback(const glm::mat4& proj, const glm::mat4& view,
 	const glm::mat4& model, Shader* shader)
 {
-	OWUtils::PolygonModeRIAA poly;
 	mShader->setVector2f("u_mouse", globals->pointingDevicePosition());
 	mShader->setFloat("u_time", globals->secondsSinceLoad());
 

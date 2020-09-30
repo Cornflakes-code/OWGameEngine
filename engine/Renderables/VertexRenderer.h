@@ -41,6 +41,8 @@ private:
 	unsigned int mVao = 0;
 	unsigned int mVbo = 0;
 	unsigned int mEbo = 0;
+	// Ok to modify Renderables if only for efficiency reasons
+	mutable bool mFirstTimeRender = true;
 	void prepareOpenGL();
 	void checkSourceForErrors();
 };

@@ -12,12 +12,10 @@ MovingText::MovingText()
 {
 	mPyramid = new Pyramid();
 	mPyramid->setUp();
-	mPyramidRender.addSource(mPyramid);
 }
 
 void MovingText::fixedTimeStep(float seconds)
 {
-
 }
 
 Compass::Direction MovingText::wallIntersection(const AABB& scenery)
@@ -28,7 +26,7 @@ Compass::Direction MovingText::wallIntersection(const AABB& scenery)
 void MovingText::text(TextBillboard* newValue)
 { 
 	mBounds = newValue->bounds();
-	mText.addSource(newValue);
+	mText = newValue;
 
 	// Start the minPoint of the text at 0,0,0.
 	mBounds = mBounds - mBounds.minPoint();
@@ -88,15 +86,4 @@ void MovingText::move(const glm::vec4& velocity)
 {
 	mBounds.move(mDirection * velocity);
 	mPyramid->move(mDirection * velocity);
-}
-
-void MovingText::render(const glm::mat4& proj, 
-						const glm::mat4& view,
-						const glm::mat4& model) const
-{
-	glm::mat4 temp = glm::translate(model, glm::vec3(mBounds.minPoint().x, 
-													 mBounds.minPoint().y, 
-													 mBounds.minPoint().z));
-	mText.render(proj, view, temp);
-//	mPyramidRender.render(proj, view, model);
 }

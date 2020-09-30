@@ -4,13 +4,14 @@
 
 #include <glm/glm.hpp>
 #include <Renderables/BoundingBox.h>
-#include <Renderables/MovingText.h>
+#include <Helpers/MovingText.h>
+#include <Renderables/MovingTextRender.h>
 #include <Renderables/VertexRenderer.h>
+#include <Renderables/VertexRendererCompound.h>
 
 #include "NMSScene.h"
 /*
 	An implementation of a Scene for the NMS game.
-	Will be moved out of the engine to a different repo
 */
 
 struct NMSSplashScenePhysics: public NMSWorldPhysicsState
@@ -37,12 +38,12 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 };
 
 class Axis;
-class FullScreen;
-class Circle;
+class VertexRendererCompound;
 
 class NMSSplashScene : public NMSScene
 {
-	
+	MovingTextRender mWelcomeTextRender;
+	MovingTextRender mEnjoyTextRender;
 	VertexRenderer mFullScreen;
 	Axis* mAxis;
 	VertexRenderer mCircle;

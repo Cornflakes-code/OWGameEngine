@@ -8,6 +8,8 @@
 
 #include "../Renderables/BoundingBox.h"
 #include "../Renderables/VertexRenderer.h"
+#include "../Renderables/VertexRendererCompound.h"
+#include "../Renderables/VertexSourceCompound.h"
 
 class TextBillboard;
 class Points;

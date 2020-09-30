@@ -61,7 +61,7 @@ void VertexRenderer::prepareOpenGL()
 
 	if (mSource->mVec3.size())
 	{
-		glVertexAttribPointer(mSource->mVertexLocation,
+		glVertexAttribPointer(mSource->mVertexLoc,
 			3,
 			GL_FLOAT, GL_FALSE, 0, (void*)0);
 		checkGLError();
@@ -71,12 +71,12 @@ void VertexRenderer::prepareOpenGL()
 	}
 	else if (mSource->mVec4.size())
 	{
-		glVertexAttribPointer(mSource->mVertexLocation,
+		glVertexAttribPointer(mSource->mVertexLoc,
 			4,
 			GL_FLOAT, GL_FALSE, 0, (void*)0);
 		checkGLError();
 
-		glEnableVertexAttribArray(mSource->mVertexLocation);
+		glEnableVertexAttribArray(mSource->mVertexLoc);
 		checkGLError();
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mSource->mVec4.size(),
 			mSource->mVec4.data(), GL_STATIC_DRAW);
@@ -115,6 +115,7 @@ void VertexRenderer::render( const glm::mat4& proj,
 				VertexSource::RenderCallbackType renderCb,
 				VertexSource::ResizeCallbackType resizeCb) const
 {
+	OWUtils::PolygonModeRIAA poly;
 	mSource->mShader->use();
 	if (!mSource->mPVMName.empty())
 	{
@@ -137,13 +138,24 @@ void VertexRenderer::render( const glm::mat4& proj,
 
 	}
 	glBindVertexArray(mVao);
-	if (mSource->mTexture)
+	if (mSource->mTextures.size())
 	{
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mSource->mTexture);
+		// A nice explanation
+		// https://community.khronos.org/t/what-is-a-texture-unit/63250
+		//
+		// https://www.reddit.com/r/opengl/comments/6gnc9x/trouble_with_framebuffer/
+		// This should be obtained from VertexSource
+		// bind mTextureLoc to a texture image unit (usually GL_TEXTURE0).
+		for (auto t : mSource->mTextures)
+		{
+			glActiveTexture(t.imageUnit);
+			glBindTexture(t.target, t.location);
+			// associate sampler with textureImageUnit
+			mSource->mShader->setInteger(t.name, t.imageUnit - GL_TEXTURE0);
+		}
 	}
 
-	if (globals->aspectRatioChanged())
+	if (mFirstTimeRender || globals->aspectRatioChanged())
 	{
 		// If no callback parameters then used the stored callbacks
 		if (!resizeCb)
@@ -154,6 +166,7 @@ void VertexRenderer::render( const glm::mat4& proj,
 				std::bind(&VertexRenderer::scaleByAspectRatio,
 						this, std::placeholders::_1),
 				aspectRatio());
+			mFirstTimeRender = false;
 		}
 	}
 
@@ -182,9 +195,14 @@ void VertexRenderer::render( const glm::mat4& proj,
 			static_cast<GLsizei>(mSource->mVec4.size()));
 	}
 	glBindVertexArray(0);
-	if (mSource->mTexture)
+	if (mSource->mTextures.size())
 	{
-		glBindTexture(GL_TEXTURE_2D, 0);
+		// clean up.
+		for (auto t : mSource->mTextures)
+		{
+			glActiveTexture(t.imageUnit);
+			glBindTexture(t.target, 0);
+		}
 	}
 }
 
@@ -198,8 +216,8 @@ void VertexRenderer::checkSourceForErrors()
 		throw NMSLogicException("both mVec3 and mVec4 are not empty");
 	if (mSource->mPVMName.empty())
 		throw NMSLogicException("mPVMName is empty");
-	if (mSource->mVertexLocation == GL_INVALID_INDEX)
-		throw NMSLogicException("mVertexLocation is unset");
+	if (mSource->mVertexLoc == GL_INVALID_INDEX)
+		throw NMSLogicException("mVertexLoc is unset");
 	if (mSource->mVertexMode == GL_INVALID_ENUM)
 		throw NMSLogicException("mVertexMode is unset");
 	if (mSource->mIndices.size() && mSource->mIndicesMode == GL_INVALID_ENUM)

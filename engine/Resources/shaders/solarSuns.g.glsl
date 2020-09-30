@@ -25,29 +25,7 @@ void doCircle(vec4 pos, float aspect, float scale)
 	}
 }
 
-void doSquare(vec4 pos, float x, float y, float aspect)
-{
-	float offset = 0.01;
-	gl_Position = vec4(-x + offset, y - offset, pos.z, pos.w);
-	EmitVertex();      
-	gl_Position = vec4(x - offset, -y + offset, pos.z, pos.w);
-	EmitVertex();      
-	gl_Position = vec4(-x + offset, -y + offset, pos.z, pos.w);
-	EmitVertex();      
-
-	gl_Position = vec4(-x + offset, y - offset, pos.z, pos.w);
-	EmitVertex();      
-	gl_Position = vec4(x - offset, y- offset, pos.z, pos.w);
-	EmitVertex();      
-	gl_Position = vec4(x - offset, -y + offset, pos.z, pos.w);
-	EmitVertex();      
-}
-
 void main()
 {
-	vec4 v4 = vec4(0.0, 0.0, 1.0, 1.0);
-	
-	doSquare(v4, 1.0, 1.0, u_resolution.x / u_resolution.y);
-//	doSquare(gl_in[0].gl_Position, 1.0, 1.0, u_resolution.x / u_resolution.y);
-//	doCircle(gl_in[0].gl_Position, u_resolution.y/u_resolution.x, 1.0);
+	doCircle(gl_in[0].gl_Position, u_resolution.y/u_resolution.x, 1.0);
 }

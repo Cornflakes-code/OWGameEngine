@@ -6,12 +6,6 @@
 #include "ErrorHandling.h"
 
 static ResourceFactory* mFactory = nullptr;
-unsigned int gCurrentTexture = 0;
-
-unsigned int ResourceFactory::nextTexture()
-{
-	return gCurrentTexture++;
-}
 
 std::string ResourceFactory::toString(ResourceType rt)
 {

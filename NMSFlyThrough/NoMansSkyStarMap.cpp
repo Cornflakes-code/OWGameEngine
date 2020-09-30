@@ -58,10 +58,17 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 #ifdef DEBUG_STARS
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
 	Shader* pointShader = new Shader("thebookofshaders.v.glsl",
-		"thebookofshaders.f.glsl",
-		"thebookofshaders_circle.g.glsl");
+							"solarSuns.f.glsl",
+							"thebookofshaders_circle.g.glsl");
 	VertexSource* p = new VertexSource();
 	p->shader(pointShader, "pvm");
+
+	//glm::vec4 v4 = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f );
+	//std::vector<glm::vec4> vv4;
+	//vv4.push_back(v4);
+	//p->vertices(vv4, 0, GL_POINTS);
+
+	//mStarPositions.push_back({ 0.0f, 0.0f, 0.0f, 1.0f });
 	p->vertices(mStarPositions, 0, GL_POINTS);
 	mStarRenderer.addSource(p);
 
@@ -286,20 +293,19 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 #endif
 
 #ifdef DEBUG_STARS
-	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), 
-						 const glm::mat4& OW_UNUSED(view),
-						 const glm::mat4& OW_UNUSED(model), Shader* shader) {
+	auto pointRender = [](const glm::mat4& proj, const glm::mat4& view,
+		const glm::mat4& model, Shader* shader) {
 		shader->setVector2f("u_mouse", globals->pointingDevicePosition());
 		shader->setFloat("u_time", globals->secondsSinceLoad());
 	};
 	auto pointResizeRender = [](Shader* shader,
 		VertexSource::ScaleByAspectRatioType scaler,
-		float OW_UNUSED(aspectRatio)) {
+		float aspectRatio) {
 		glm::vec2 vv = globals->physicalWindowSize();
-		vv.x /= 0.02f;
-		vv.y /= 0.02f;
-		glm::vec2 v2 = scaler({ vv });
-		shader->setVector2f("u_resolution", v2);
+		//vv.x /= 20.0f;
+		//vv.y /= 20.0f;
+		//glm::vec2 v2 = scaler({ vv });
+		shader->setVector2f("u_resolution", vv);
 	};
 	mStarRenderer.render(proj, view, model, pointRender, pointResizeRender);
 	for (int i = 0; i < mStarLabels.size(); i++)

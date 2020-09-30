@@ -8,6 +8,7 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
+#include "../Helpers/CommonUtils.h"
 
 class Shader;
 
@@ -52,7 +53,13 @@ public:
 		mColour = newValue; 
 		mColourName = colourName;
 	}
-	void texture(unsigned int newValue) { mTexture = newValue; }
+	void texture(const OWUtils::TextureBlock& tb)
+	{ 
+		// If there are more than one texture unit in a shader then we need to consider
+		// GL_TEXTURE1, GL_TEXTURE2 and so on. See:
+		// https://opentk.net/learn/chapter1/5-multiple-textures.html
+		mTextures.push_back(tb);
+	}
 protected:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
@@ -60,15 +67,15 @@ protected:
 	std::vector<glm::vec3> mVec3;
 	std::vector<glm::vec4> mVec4;
 	std::vector<unsigned int> mIndices;
+	std::vector<OWUtils::TextureBlock> mTextures;
 	glm::vec4 mColour;
 	std::string mPVMName;
 	std::string mColourName;
-	unsigned int mVertexLocation = GL_INVALID_INDEX;
-	unsigned int mVertexMode = GL_INVALID_ENUM;
-	unsigned int mIndicesMode = GL_INVALID_ENUM;
-	unsigned int mTexture = 0;
 	RenderCallbackType mRenderCallback = nullptr;
 	ResizeCallbackType mResizeCallback = nullptr;
+	unsigned int mVertexLoc = GL_INVALID_INDEX;
+	unsigned int mVertexMode = GL_INVALID_ENUM;
+	unsigned int mIndicesMode = GL_INVALID_ENUM;
 	friend class VertexRenderer;
 #pragma warning( pop )
 };

@@ -117,26 +117,35 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 							fontHeight, movie()->camera()->aspectRatio());
 #ifdef INCLUDE_WELCOME
 	{
-		TextBillboard* welcomeText = new TextBillboardDynamic("arial.ttf", fontHeight);
-
-		welcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
-		welcomeText->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
-		sps->mWelcome.text(welcomeText);
 		glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
 							1.2f * _world.size().y / globals->physicalWindowSize().y };
-		welcomeText->scale(scale);
-		sps->mWelcome.direction(Compass::Rose[Compass::North] + Compass::Rose[Compass::East]
-									+ Compass::Rose[Compass::In]);
+		{
+			TextBillboard* welcomeText 
+					= new TextBillboardDynamic("arial.ttf", fontHeight);
+			welcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
+			welcomeText->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
+			welcomeText->scale(scale);
+			sps->mWelcome.text(welcomeText);
+		}
+		sps->mWelcome.direction(Compass::Rose[Compass::North] + 
+								Compass::Rose[Compass::East] + 
+								Compass::Rose[Compass::In]);
 		sps->mWelcome.setPosition(NMSScene::world().center());
+		mWelcomeTextRender.addSource(sps->mWelcome);
 	}
 #endif
 	{
-		TextBillboard* enjoyFontAtlas = new TextBillboardFixed("arial.ttf", fontHeight);
-		enjoyFontAtlas->createText("Enjoy it while you can", nice.x, nice.y);
-		enjoyFontAtlas->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
-		sps->mEnjoy.text(enjoyFontAtlas);
-		sps->mEnjoy.direction(Compass::Rose[Compass::South] + Compass::Rose[Compass::West]); //South West
+		{
+			TextBillboard* enjoyText 
+					= new TextBillboardFixed("arial.ttf", 12);
+			enjoyText->createText("Enjoy it while you can", nice.x, nice.y);
+			enjoyText->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
+			sps->mEnjoy.text(enjoyText);
+		}
+		sps->mEnjoy.direction(Compass::Rose[Compass::South] + 
+							  Compass::Rose[Compass::West]);
 		sps->mEnjoy.setPosition(NMSScene::world().center());
+		mEnjoyTextRender.addSource(sps->mEnjoy);
 	}
 	{
 		FullScreen* fs = new FullScreen(new Shader("thebookofshaders.v.glsl",
@@ -159,19 +168,20 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 void NMSSplashScene::render(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view)
 {
-	const NMSSplashScenePhysics* sps = dynamic_cast<const NMSSplashScenePhysics*>(state);
+	const NMSSplashScenePhysics* sps 
+			= dynamic_cast<const NMSSplashScenePhysics*>(state);
 	glm::mat4 model(1.0);
+	mCircle.render(proj, view, model);
 	mFullScreen.render(proj, view, model);
-	//mAxis->render(proj, view, model);
+	mAxis->render(proj, view, model);
 
-	//sps->mEnjoy.render(proj, view, model);
-	//mCircle.render(proj, view, model);
+	mEnjoyTextRender.render(proj, view, model, &sps->mEnjoy);
 #ifdef INCLUDE_WELCOME
 	const AABB& _world = world();
 	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
 						20.2f * _world.size().y / globals->physicalWindowSize().y };
 	glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
-	//sps->mWelcome.render(proj, view, scaledModel);
+	mWelcomeTextRender.render(proj, view, scaledModel, &sps->mWelcome);
 #endif
 }
 

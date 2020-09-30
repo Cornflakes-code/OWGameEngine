@@ -172,6 +172,7 @@
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
     <ClInclude Include="..\Helpers\Logger.h" />
     <ClInclude Include="..\Helpers\MacroRecorder.h" />
+    <ClInclude Include="..\Helpers\MovingText.h" />
     <ClInclude Include="..\Helpers\PhongShader.h" />
     <ClInclude Include="..\Helpers\ResizeHelper.h" />
     <ClInclude Include="..\Helpers\ResourceFactory.h" />
@@ -184,7 +185,7 @@
     <ClInclude Include="..\Renderables\BoundingBox.h" />
     <ClInclude Include="..\Renderables\Circle.h" />
     <ClInclude Include="..\Renderables\FullScreen.h" />
-    <ClInclude Include="..\Renderables\MovingText.h" />
+    <ClInclude Include="..\Renderables\MovingTextRender.h" />
     <ClInclude Include="..\Renderables\Pyramid.h" />
     <ClInclude Include="..\Renderables\TextBillboardDynamic.h" />
     <ClInclude Include="..\Renderables\TextBillboardFixed.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
     <ClCompile Include="..\Helpers\Logger.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
+    <ClCompile Include="..\Helpers\MovingText.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
     <ClCompile Include="..\Helpers\ResourceFactory.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
@@ -222,12 +224,14 @@
     <ClCompile Include="..\Renderables\BoundingBox.cpp" />
     <ClCompile Include="..\Renderables\Circle.cpp" />
     <ClCompile Include="..\Renderables\FullScreen.cpp" />
-    <ClCompile Include="..\Renderables\MovingText.cpp" />
+    <ClCompile Include="..\Renderables\MovingTextRender.cpp" />
     <ClCompile Include="..\Renderables\Pyramid.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardDynamic.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardFixed.cpp" />
     <ClCompile Include="..\Renderables\VertexRenderer.cpp" />
+    <ClCompile Include="..\Renderables\VertexRendererCompound.cpp" />
     <ClCompile Include="..\Renderables\VertexSource.cpp" />
+    <ClCompile Include="..\Renderables\VertexSourceCompound.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

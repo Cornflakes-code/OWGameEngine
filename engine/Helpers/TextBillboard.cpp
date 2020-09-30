@@ -27,7 +27,13 @@ TextBillboard::~TextBillboard()
 void TextBillboard::createText(const std::string& text, float sx, float sy)
 {
 	mVec4 = mFontData->createText(text, sx, sy);
-	texture(mFontData->texture());
+	OWUtils::TextureBlock tb = mFontData->texture();
+	// A bit dodgy because we only know this string because of knowledge of ALL 
+	// shaders in derived classes
+	tb.name = "textureImageId";
+
+	texture(tb);
+
 	mBounds = findBounds();
 	// move to origin ...
 	mBounds = mBounds - mBounds.minPoint();

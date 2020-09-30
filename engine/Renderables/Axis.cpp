@@ -69,11 +69,16 @@ void Axis::setUp(const AABB& world, const Camera* camera)
 	}
 	{
 		Shader* pointShader = new Shader("thebookofshaders.v.glsl",
-										"thebookofshaders.f.glsl",
+										"solarSuns.f.glsl",
+										//"text.f.glsl",
 										"thebookofshaders_circle.g.glsl");
 		VertexSource* p = new VertexSource();
+		p->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
 		p->shader(pointShader, "pvm");
-		p->vertices({ mAxisCoords[0] }, 0, GL_POINTS);
+		glm::vec4 v4 = glm::vec4(mAxisCoords[0], 1.0);
+		std::vector<glm::vec4> vv4;
+		vv4.push_back(v4);
+		p->vertices(vv4, 0, GL_POINTS);
 		mZeroPoint.addSource(p);
 	}
 }
@@ -92,8 +97,8 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 		glm::vec2 vv = globals->physicalWindowSize();
 		//vv.x /= 20.0f;
 		//vv.y /= 20.0f;
-		glm::vec2 v2 = scaler({ vv });
-		shader->setVector2f("u_resolution", v2);
+		//glm::vec2 v2 = scaler({ vv });
+		shader->setVector2f("u_resolution", vv);
 	};
 	mZeroPoint.render(proj, view, model, pointRender, pointResizeRender);
 

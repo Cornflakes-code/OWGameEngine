@@ -13,18 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Game">
-      <UniqueIdentifier>{a8f0cd09-e524-4aa1-ab0b-73a7ca3f894d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Core">
-      <UniqueIdentifier>{75ba3ede-034a-4f23-9b17-19a4619d9cac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Helpers">
-      <UniqueIdentifier>{433c28e1-6e9c-4516-b3da-082158e72c6b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Renderables">
-      <UniqueIdentifier>{ffd2750d-faab-425d-b131-f886aa74bd0a}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\engine\container.jpg">
@@ -88,130 +76,25 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSEndScene.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSMainScene.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSMovie.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSScene.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSSplashScene.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSUserInput.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NoMansSkyStarMap.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\Camera.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\GLApplication.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\GlobalSystem.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\ListenerHelper.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\Movie.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\QuitScene.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\Scene.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\ScenePhysicsState.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\UserInput.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\CommonUtils.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\ErrorHandling.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\FreeTypeFontAtlas.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\Logger.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\MacroRecorder.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\PhongShader.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\ResourceFactory.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\ResourceSource.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\Shader.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\TextBillboard.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\Texture.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Helpers\utils.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\Actor.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\Axis.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\BoundingBox.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\FullScreen.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\MovingText.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\Points.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\Renderer.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\SimpleVertexRender.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\SimpleVertexSource.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\TextBillboardDynamic.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\TextBillboardFixed.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Core\SaveAndRestore.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\Circle.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Renderables\Pyramid.h">
-      <Filter>Header Files\Renderables</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

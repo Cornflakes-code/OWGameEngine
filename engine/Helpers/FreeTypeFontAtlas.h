@@ -11,7 +11,7 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-
+#include "CommonUtils.h"
 /*
 	Caches loaded FreeType FontAtlas textures. class FreeTypeFontAtlas::FontDetails is
 	returned to objects that implement rendered text
@@ -30,7 +30,7 @@ public:
 		~FontDetails();
 		float width() const { return static_cast<float>(mWidth); }
 		float height() const { return static_cast<float>(mHeight); }
-		GLuint texture() const { return mTextureId; }
+		OWUtils::TextureBlock texture() const { return mTextureBlock; }
 		std::vector<glm::vec4> createText(const std::string& text, float sx, float sy) const;
 
 		static glm::vec2 pleasingSpacing(int fontHeight, float aspectRatio = 1.0f);
@@ -53,9 +53,9 @@ public:
 		unsigned int mWidth = 0; // width of texture in pixel
 		unsigned int mHeight = 0; // height of texture in pixels
 		static std::map<int, glm::vec2> mNiceFontSpacings;
-		std::map<uint8_t, Character> mFONTMap;
-		GLuint mTextureId = 0;
-		GLuint createGlyphBitmap(FT_Face& face, unsigned int maxWidth);
+		std::map<uint8_t, Character> mFontMap;
+		OWUtils::TextureBlock mTextureBlock;
+		OWUtils::TextureBlock createGlyphBitmap(FT_Face& face, unsigned int maxWidth);
 		void calcTextureSize(FT_Face& face, unsigned int maxRowWidth, int fontHeight);
 	};
 	const FontDetails* loadFont(const std::experimental::filesystem::path& path,

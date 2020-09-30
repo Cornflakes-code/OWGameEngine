@@ -10,7 +10,7 @@ TextBillboardDynamic::TextBillboardDynamic(
 	:TextBillboard(fontFileName, fontHeight)
 {
 	shader(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""), "VP");
-	mVertexLocation = mShader->getAttributeLocation("coord");
+	mVertexLoc = mShader->getAttributeLocation("coord");
 	mVertexMode = GL_TRIANGLES;
 
 	mRenderCallback

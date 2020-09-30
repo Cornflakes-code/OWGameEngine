@@ -2,7 +2,7 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "BoundingBox.h"
+#include "../Renderables/BoundingBox.h"
 #include "../Renderables/VertexRenderer.h"
 
 
@@ -17,8 +17,7 @@ class OWENGINE_API MovingText
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	Pyramid* mPyramid;
-	VertexRenderer mPyramidRender;
-	VertexRenderer mText;
+	VertexSource* mText;
 	AABB mBounds;
 	glm::vec3 mVelocity;
 	glm::vec4 mDirection = glm::vec4(1.0f, 1.0f, 0.0f, 0.0f); // (NorthWest)
@@ -34,5 +33,5 @@ public:
 	void bounceIfCollide(const AABB& scenery);
 	void setPosition(const glm::vec3& newValue);
 	void move(const glm::vec4& velocity);
-	void render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model) const;
+	friend class MovingTextRender;
 };

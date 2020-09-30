@@ -10,7 +10,7 @@ TextBillboardFixed::TextBillboardFixed(
 {
 	shader(new Shader("textStaticBillboard.v.glsl", "text.f.glsl", ""), "VP");
 	mShader->use();
-	mVertexLocation = mShader->getAttributeLocation("coord");
+	mVertexLoc = mShader->getAttributeLocation("coord");
 	mVertexMode = GL_TRIANGLES;
 
 	mRenderCallback

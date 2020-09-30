@@ -25,7 +25,6 @@ public:
 	static ResourceFactory* getResourceFactory();
 	void addPath(const std::experimental::filesystem::path& path, 
 				 ResourceType key = ResourceType::UnknownType);
-	static unsigned int nextTexture();
 	static std::string& boilerPlateVertexShader();
 	static std::string& boilerPlateFragmentShader();
 	static std::string& boilerPlateGeometryShader();

@@ -76,7 +76,7 @@ FreeTypeFontAtlas::FontDetails::FontDetails(FT_Face face, unsigned int maxRowWid
 {
 	calcTextureSize(face, maxRowWidth, fontHeight);
 	checkGLError();
-	mTextureId = createGlyphBitmap(face, maxRowWidth);
+	mTextureBlock = createGlyphBitmap(face, maxRowWidth);
 	checkGLError();
 }
 
@@ -144,22 +144,24 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 	mHeight += rowHeight;
 }
 
-GLuint FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned int maxWidth)
+OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned int maxWidth)
 {
+	OWUtils::TextureBlock tb;
+	tb.location = GL_INVALID_INDEX;
+	tb.imageUnit = GL_TEXTURE0;
+	tb.target = GL_TEXTURE_2D;
+
 	// The next step is probably to go to mipmaps.
 	// see http://www.opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube/
-	GLuint textureId;
 	// Create a texture that will be used to hold all ASCII glyphs
-	glGenTextures(1, &textureId);
-	int ii = ResourceFactory::nextTexture();
-	glActiveTexture(GL_TEXTURE0 + ii);
-	glBindTexture(GL_TEXTURE_2D, textureId);
+	glGenTextures(1, &tb.location);
+	glActiveTexture(tb.imageUnit);
+	glBindTexture(tb.target, tb.location);
 	// Create the texture
-	const GLuint textureType = GL_TEXTURE_2D;
 	const GLint level = 0;
 	const GLenum internalFormat = GL_RGBA;
 	const GLenum bitmapType = GL_UNSIGNED_BYTE;
-	glTexImage2D(textureType,
+	glTexImage2D(tb.target,
 		level,
 		internalFormat, // internal format
 		mWidth, mHeight,
@@ -170,12 +172,12 @@ GLuint FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned
 	checkGLError();
 
 	// Clamping to edges is important to prevent artifacts when scaling
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(tb.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(tb.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	/* Linear filtering usually looks best for text */
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(tb.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(tb.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	/* Enable blending, necessary for our alpha texture */
 	glEnable(GL_BLEND);
@@ -198,7 +200,8 @@ GLuint FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned
 	{
 		if (FT_Load_Char(face, i, FT_LOAD_RENDER))
 		{
-			dumpMessage(std::stringstream() << "Loading character " << i << " failed!", NMSErrorLevel::NMSInfo);
+			dumpMessage(std::stringstream() << "Loading character " << i 
+					<< " failed!", NMSErrorLevel::NMSInfo);
 			continue;
 		}
 
@@ -208,7 +211,7 @@ GLuint FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned
 			rowHeight = 0;
 			xOffset = 0;
 		}
-		glTexSubImage2D(textureType,
+		glTexSubImage2D(tb.target,
 			level,
 			xOffset, yOffset, // offsets
 			g->bitmap.width, g->bitmap.rows, // width, height
@@ -242,12 +245,12 @@ GLuint FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned
 		ch.offsetX = static_cast<float>(xOffset);
 		ch.offsetY = static_cast<float>(yOffset);
 
-		mFONTMap.insert({ i, ch });
+		mFontMap.insert({ i, ch });
 		rowHeight = std::max(rowHeight, g->bitmap.rows);
 		xOffset += g->bitmap.width + 1;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-	return textureId;
+	return tb;
 }
 
 std::vector<glm::vec4> FreeTypeFontAtlas::FontDetails::createText(
@@ -261,7 +264,7 @@ std::vector<glm::vec4> FreeTypeFontAtlas::FontDetails::createText(
 	for (int i = 0; i < text.size(); i++)
 	{
 		// Calculate the vertex and texture coordinates
-		const FontDetails::Character& ch = mFONTMap.at(text[i]);
+		const FontDetails::Character& ch = mFontMap.at(text[i]);
 		float x2 = x + ch.bitmapLeft * sx;
 		float y2 = -y - (ch.bitmapTop) * sy;
 		float w = ch.bitmapWidth * sx;
