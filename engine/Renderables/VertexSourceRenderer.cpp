@@ -1,4 +1,4 @@
-#include "VertexRenderer.h"
+#include "VertexSourceRenderer.h"
 
 #include <glm/gtx/transform.hpp>
 
@@ -8,20 +8,22 @@
 #include "../Helpers/CommonUtils.h"
 #include "../Core/GlobalSettings.h"
 
-VertexRenderer::VertexRenderer()
+#include "VertexSource.h"
+
+VertexSourceRenderer::VertexSourceRenderer()
 {
 }
 
-VertexRenderer::~VertexRenderer()
+VertexSourceRenderer::~VertexSourceRenderer()
 {
 }
 
-float VertexRenderer::aspectRatio() const
+float VertexSourceRenderer::aspectRatio() const
 {
 	return globals->physicalWindowSize().x / (globals->physicalWindowSize().y * 1.0f);
 }
 
-glm::vec2 VertexRenderer::scaleByAspectRatio(const glm::vec2& toScale) const
+glm::vec2 VertexSourceRenderer::scaleByAspectRatio(const glm::vec2& toScale) const
 {
 	// This seems to work best (trial and error) when resizing the window.
 	glm::vec2 retval = toScale;
@@ -39,8 +41,9 @@ glm::vec2 VertexRenderer::scaleByAspectRatio(const glm::vec2& toScale) const
 	return retval;
 }
 
-void VertexRenderer::prepareOpenGL()
+void VertexSourceRenderer::prepare(const VertexSource* source)
 {
+	checkSourceForErrors(source);
 	OWUtils::PolygonModeRIAA poly;
 	glGenVertexArrays(1, &mVao);
 	// bind the Vertex Array Object first, then bind and set 
@@ -50,46 +53,46 @@ void VertexRenderer::prepareOpenGL()
 	glGenBuffers(1, &mVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 
-	mSource->mShader->use();
-	mSource->mShader->setVector4f(mSource->mColourName, mSource->mColour);
+	source->mShader->use();
+	source->mShader->setVector4f(source->mColourName, source->mColour);
 
-	if (!mSource->mIndices.empty())
+	if (!source->mIndices.empty())
 	{
 		glGenBuffers(1, &mEbo);
 	}
 	checkGLError();
 
-	if (mSource->mVec3.size())
+	if (source->mVec3.size())
 	{
-		glVertexAttribPointer(mSource->mVertexLoc,
-			3,
-			GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(source->mVertexLoc,
+			3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glEnableVertexAttribArray(source->mVertexLoc);
 		checkGLError();
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * mSource->mVec3.size(),
-			mSource->mVec3.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * source->mVec3.size(),
+			source->mVec3.data(), GL_STATIC_DRAW);
 		checkGLError();
 	}
-	else if (mSource->mVec4.size())
+	else if (source->mVec4.size())
 	{
-		glVertexAttribPointer(mSource->mVertexLoc,
+		glVertexAttribPointer(source->mVertexLoc,
 			4,
 			GL_FLOAT, GL_FALSE, 0, (void*)0);
 		checkGLError();
 
-		glEnableVertexAttribArray(mSource->mVertexLoc);
+		glEnableVertexAttribArray(source->mVertexLoc);
 		checkGLError();
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mSource->mVec4.size(),
-			mSource->mVec4.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * source->mVec4.size(),
+			source->mVec4.data(), GL_STATIC_DRAW);
 		checkGLError();
 	}
 
-	if (!mSource->mIndices.empty())
+	if (!source->mIndices.empty())
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
 		checkGLError();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(unsigned int) * static_cast<GLsizei>(mSource->mIndices.size()),
-			mSource->mIndices.data(), GL_STATIC_DRAW);
+			sizeof(unsigned int) * static_cast<GLsizei>(source->mIndices.size()),
+			source->mIndices.data(), GL_STATIC_DRAW);
 		checkGLError();
 	}
 
@@ -110,35 +113,36 @@ void VertexRenderer::prepareOpenGL()
 	checkGLError();
 }
 
-void VertexRenderer::render( const glm::mat4& proj,
+void VertexSourceRenderer::render(const VertexSource* source,
+				const glm::mat4& proj,
 				const glm::mat4& view, const glm::mat4& model,
-				VertexSource::RenderCallbackType renderCb,
-				VertexSource::ResizeCallbackType resizeCb) const
+				OWUtils::RenderCallbackType renderCb,
+				OWUtils::ResizeCallbackType resizeCb) const
 {
 	OWUtils::PolygonModeRIAA poly;
-	mSource->mShader->use();
-	if (!mSource->mPVMName.empty())
+	source->mShader->use();
+	if (!source->mPVMName.empty())
 	{
 		// Testing for name.size() is seriously tacky.
 		// Must be a better way !!
-		if (mSource->mPVMName.size() < 3)
+		if (source->mPVMName.size() < 3)
 		{
 			glm::mat4 pvm = proj * view;
-			mSource->mShader->setMatrix4(mSource->mPVMName, pvm);
+			source->mShader->setMatrix4(source->mPVMName, pvm);
 		}
 		else
 		{
 			glm::mat4 pvm = proj * view * model;
-			mSource->mShader->setMatrix4(mSource->mPVMName, pvm);
+			source->mShader->setMatrix4(source->mPVMName, pvm);
 		}
 	}
-	if (!mSource->mColourName.empty())
+	if (!source->mColourName.empty())
 	{
-		mSource->mShader->setVector4f(mSource->mColourName, mSource->mColour);
+		source->mShader->setVector4f(source->mColourName, source->mColour);
 
 	}
 	glBindVertexArray(mVao);
-	if (mSource->mTextures.size())
+	if (source->mTextures.size())
 	{
 		// A nice explanation
 		// https://community.khronos.org/t/what-is-a-texture-unit/63250
@@ -146,12 +150,12 @@ void VertexRenderer::render( const glm::mat4& proj,
 		// https://www.reddit.com/r/opengl/comments/6gnc9x/trouble_with_framebuffer/
 		// This should be obtained from VertexSource
 		// bind mTextureLoc to a texture image unit (usually GL_TEXTURE0).
-		for (auto t : mSource->mTextures)
+		for (auto t : source->mTextures)
 		{
 			glActiveTexture(t.imageUnit);
 			glBindTexture(t.target, t.location);
 			// associate sampler with textureImageUnit
-			mSource->mShader->setInteger(t.name, t.imageUnit - GL_TEXTURE0);
+			source->mShader->setInteger(t.name, t.imageUnit - GL_TEXTURE0);
 		}
 	}
 
@@ -159,46 +163,46 @@ void VertexRenderer::render( const glm::mat4& proj,
 	{
 		// If no callback parameters then used the stored callbacks
 		if (!resizeCb)
-			resizeCb = mSource->mResizeCallback;
+			resizeCb = source->mResizeCallback;
 		if (resizeCb)
 		{
-			resizeCb(mSource->mShader, 
-				std::bind(&VertexRenderer::scaleByAspectRatio,
+			resizeCb(source->mShader,
+				std::bind(&VertexSourceRenderer::scaleByAspectRatio,
 						this, std::placeholders::_1),
 				aspectRatio());
 			mFirstTimeRender = false;
 		}
 	}
 
-	// Allow callers to override the callback stored in mSource
+	// Allow callers to override the callback stored in source
 	if (!renderCb)
-		renderCb = mSource->mRenderCallback;
+		renderCb = source->mRenderCallback;
 	if (renderCb)
 	{
-		renderCb(proj, view, model, mSource->mShader);
+		renderCb(proj, view, model, source->mShader);
 	}
 
-	GLsizei sz = static_cast<GLsizei>(mSource->mIndices.size());
-	if (mSource->mIndices.size())
+	GLsizei sz = static_cast<GLsizei>(source->mIndices.size());
+	if (source->mIndices.size())
 	{
-		glDrawElements(mSource->mIndicesMode,
+		glDrawElements(source->mIndicesMode,
 			static_cast<GLsizei>(sz), GL_UNSIGNED_INT, 0);
 	}
-	else if (mSource->mVec3.size())
+	else if (source->mVec3.size())
 	{
-		glDrawArrays(mSource->mVertexMode, 0,
-			static_cast<GLsizei>(mSource->mVec3.size()));
+		glDrawArrays(source->mVertexMode, 0,
+			static_cast<GLsizei>(source->mVec3.size()));
 	}
-	else if (mSource->mVec4.size())
+	else if (source->mVec4.size())
 	{
-		glDrawArrays(mSource->mVertexMode, 0,
-			static_cast<GLsizei>(mSource->mVec4.size()));
+		glDrawArrays(source->mVertexMode, 0,
+			static_cast<GLsizei>(source->mVec4.size()));
 	}
 	glBindVertexArray(0);
-	if (mSource->mTextures.size())
+	if (source->mTextures.size())
 	{
 		// clean up.
-		for (auto t : mSource->mTextures)
+		for (auto t : source->mTextures)
 		{
 			glActiveTexture(t.imageUnit);
 			glBindTexture(t.target, 0);
@@ -206,21 +210,23 @@ void VertexRenderer::render( const glm::mat4& proj,
 	}
 }
 
-void VertexRenderer::checkSourceForErrors()
+void VertexSourceRenderer::checkSourceForErrors(const VertexSource* source)
 {
-	if (mSource->mShader == nullptr)
-		throw NMSLogicException("mSource->mShader should not be null");
-	if (mSource->mVec3.size() == 0 && mSource->mVec4.size() == 0)
+	if (source->mShader == nullptr)
+		throw NMSLogicException("source->mShader should not be null");
+	if (source->mRenderer == nullptr)
+		throw NMSLogicException("source->mRenderer must not be null");
+	if (source->mVec3.size() == 0 && source->mVec4.size() == 0)
 		throw NMSLogicException("both mVec3 and mVec4 are empty");
-	if (mSource->mVec3.size() != 0 && mSource->mVec4.size() != 0)
+	if (source->mVec3.size() != 0 && source->mVec4.size() != 0)
 		throw NMSLogicException("both mVec3 and mVec4 are not empty");
-	if (mSource->mPVMName.empty())
+	if (source->mPVMName.empty())
 		throw NMSLogicException("mPVMName is empty");
-	if (mSource->mVertexLoc == GL_INVALID_INDEX)
+	if (source->mVertexLoc == GL_INVALID_INDEX)
 		throw NMSLogicException("mVertexLoc is unset");
-	if (mSource->mVertexMode == GL_INVALID_ENUM)
+	if (source->mVertexMode == GL_INVALID_ENUM)
 		throw NMSLogicException("mVertexMode is unset");
-	if (mSource->mIndices.size() && mSource->mIndicesMode == GL_INVALID_ENUM)
+	if (source->mIndices.size() && source->mIndicesMode == GL_INVALID_ENUM)
 		throw NMSLogicException("mIndicesMode is unset");
-	//mSource->mTexture = 0;
+	//source->mTexture = 0;
 }

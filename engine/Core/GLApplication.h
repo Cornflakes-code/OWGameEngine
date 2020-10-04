@@ -2,6 +2,7 @@
 #include <functional>
 #include <iostream>
 
+#include <glm/glm.hpp>
 
 #ifndef __gl_h_
 #include <glad/glad.h>
@@ -11,10 +12,7 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "Camera.h"
-#include "Movie.h"
 #include "ListenerHelper.h"
-#include "GlobalSettings.h"
 
 /*
 	Provides access to GLFW callback functionality.

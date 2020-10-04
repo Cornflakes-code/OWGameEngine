@@ -15,12 +15,13 @@ class OWENGINE_API FullScreen: public VertexSource
 #pragma warning( disable : 4251 )
 #pragma warning( pop )
 public:
-	FullScreen(Shader* _shader, const std::string& pvm);
-	void setUp(const AABB& world);
+	FullScreen(const glm::vec3& initialPosition, 
+				Shader* _shader, const std::string& pvm);
+	void prepare(const AABB& world);
 protected:
 	void renderCallback(const glm::mat4& proj, const glm::mat4& view,
 		const glm::mat4& model, Shader* shader);
 	void resizeCallback(Shader* shader,
-		ScaleByAspectRatioType scaleByAspectRatio,
+		OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 		float aspectRatio);
 };

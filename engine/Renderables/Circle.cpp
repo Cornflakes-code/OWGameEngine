@@ -12,7 +12,8 @@
 #include "../Helpers/CommonUtils.h"
 #include "../Helpers/ResourceFactory.h"
 
-Circle::Circle()
+Circle::Circle(const glm::vec3& initialPosition)
+	:VertexSource(initialPosition)
 {
 	Shader* sh = new Shader();
 	sh->loadShaders(ResourceFactory::boilerPlateVertexShader(),
@@ -21,7 +22,7 @@ Circle::Circle()
 	shader(sh, "pvm");
 }
 
-void Circle::setUp()
+void Circle::prepare()
 {
 	float radius = 20;
 	float delta = glm::two_pi<float>() / 16;
@@ -33,18 +34,4 @@ void Circle::setUp()
 	}
 	vertices(v4, 0, GL_LINE_LOOP);
 	colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK), "colour");
-}
-
-void Circle::setPosition(const glm::vec3& newValue)
-{
-	mPosition.x = newValue.x;
-	mPosition.y = newValue.y;
-	mPosition.z = newValue.x;
-}
-
-void Circle::move(const glm::vec3& newValue)
-{
-	mPosition.x += newValue.x;
-	mPosition.y += newValue.y;
-	mPosition.z += newValue.x;
 }

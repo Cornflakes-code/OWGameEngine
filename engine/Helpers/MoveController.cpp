@@ -1,38 +1,42 @@
-#include "MovingText.h"
+#include "MoveController.h"
+#include <limits>
 
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
-#include "../Helpers/TextBillboard.h"
-#include "../Helpers/Shader.h"
+#include "../Renderables/Vertices.h"
+#include "ErrorHandling.h"
 
-#include "../Renderables/Pyramid.h"
-
-MovingText::MovingText()
-{
-	mPyramid = new Pyramid();
-	mPyramid->setUp();
-}
-
-void MovingText::fixedTimeStep(float seconds)
+MoveController::MoveController()
 {
 }
 
-Compass::Direction MovingText::wallIntersection(const AABB& scenery)
+void MoveController::targetGeometry(const AABB& targetBounds, 
+									const glm::vec3& initialPosition)
+{ 
+	mBounds = targetBounds;
+	mInitialPosition = initialPosition;
+
+	// Start the minPoint of the text at 0,0,0.
+	setPosition(initialPosition);
+	mBounds = mBounds - mBounds.minPoint();
+}
+
+void MoveController::move(const glm::vec4& speed)
+{
+	mBounds.move(mDirection * speed);
+}
+
+void MoveController::setPosition(const glm::vec3& newValue)
+{
+	mBounds = mBounds - mBounds.minPoint() + newValue;
+}
+
+Compass::Direction MoveController::wallIntersection(const AABB& scenery)
 {
 	return scenery.wallIntersection(mBounds);
 }
 
-void MovingText::text(TextBillboard* newValue)
-{ 
-	mBounds = newValue->bounds();
-	mText = newValue;
-
-	// Start the minPoint of the text at 0,0,0.
-	mBounds = mBounds - mBounds.minPoint();
-}
-
-void MovingText::bounceIfCollide(const AABB& scenery)
+void MoveController::bounceIfCollide(const AABB& scenery)
 {
 	Compass::Direction dir = wallIntersection(scenery);
 
@@ -71,19 +75,10 @@ void MovingText::bounceIfCollide(const AABB& scenery)
 			break;
 		}
 		mBounds.move(rebound);
-		mPyramid->move(rebound);
 	}
 }
 
-void MovingText::setPosition(const glm::vec3& newValue)
+glm::mat4 MoveController::translate(const glm::mat4& model) const
 {
-	// move to origin and then position
-	mBounds = mBounds - mBounds.minPoint() + newValue;
-	mPyramid->setPosition(newValue);
-}
-
-void MovingText::move(const glm::vec4& velocity)
-{
-	mBounds.move(mDirection * velocity);
-	mPyramid->move(mDirection * velocity);
+	return glm::translate(model, glm::vec3(mBounds.center()) - mInitialPosition);
 }

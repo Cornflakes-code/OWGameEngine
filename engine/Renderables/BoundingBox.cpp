@@ -16,10 +16,11 @@ glm::vec4 Plane::ClosestPointOnPlane(const glm::vec4& p)
 }
 
 //__cdecl AABB::AABB(struct glm::vec<4,float,0> const &,struct glm::vec<4,float,0> const &)" (? ? 0AABB@@QEAA@AEBU?$vec@$03M$0A@@glm@@0@Z) referenced in function "private: class AABB __cdecl TextBillboard::findBounds(void)const " (? findBounds@TextBillboard@@AEBA?AVAABB@@XZ)
-AABB::AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint)
+AABB::AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint, bool validate)
 	: mMinPoint(_minPoint), mMaxPoint(_maxPoint)
 {
-	isValid();
+	if (validate)
+		isValid();
 }
 AABB::AABB()
 : mMinPoint(glm::vec4(0.0, 0.0, 0.0, 1.0)), mMaxPoint(glm::vec4(0.0, 0.0, 0.0, 1.0))
@@ -145,6 +146,19 @@ glm::vec4 AABB::calcBouncePosition(const glm::vec4& origen, const glm::vec4& des
 		throw NMSLogicException("Object should have intersected Boundary");
 }
 
+// returns the AABB that encompasses both params
+AABB operator+(const AABB& left, const AABB& right)
+{
+	glm::vec4 minPoint = glm::vec4(std::min(left.minPoint().x, right.minPoint().x),
+		std::min(left.minPoint().y, right.minPoint().y),
+		std::min(left.minPoint().z, right.minPoint().z),
+		1.0);
+	glm::vec4 maxPoint = glm::vec4(std::max(left.maxPoint().x, right.maxPoint().x),
+		std::max(left.maxPoint().y, right.maxPoint().y),
+		std::max(left.maxPoint().z, right.maxPoint().z),
+		1.0);
+	return AABB(minPoint, maxPoint);
+}
 //AABB operator-(const AABB& left, const AABB& right)
 //{
 //	AABB retval = left;

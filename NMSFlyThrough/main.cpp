@@ -3,6 +3,7 @@
 
 #include <Core/GLApplication.h>
 #include <Core/SaveAndRestore.h>
+#include <Core/GlobalSettings.h>
 
 #include <Helpers/Logger.h>
 #include <Helpers/ResourceFactory.h>

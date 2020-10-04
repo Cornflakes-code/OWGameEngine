@@ -135,14 +135,29 @@
     <ClInclude Include="..\Renderables\FullScreen.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderables\VertexRenderer.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\MovingTextRender.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Helpers\MovingText.h">
+    <ClInclude Include="..\Helpers\GeometricShapes.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\MoveController.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\MoveTarget.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\VertexRenderBase.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\VertexSourceRenderer.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\InstanceSource.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\InstanceSourceRenderer.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\Vertices.h">
+      <Filter>Header Files\Renderables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -245,20 +260,35 @@
     <ClCompile Include="..\Renderables\FullScreen.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderables\VertexRenderer.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\VertexRendererCompound.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
     <ClCompile Include="..\Renderables\VertexSourceCompound.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderables\MovingTextRender.cpp">
+    <ClCompile Include="..\Helpers\GeometricShapes.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\MoveController.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\MoveTarget.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\VertexSourceRenderer.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\Helpers\MovingText.cpp">
-      <Filter>Source Files\Helpers</Filter>
+    <ClCompile Include="..\Renderables\VertexRenderBase.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\InstanceSourceRenderer.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\InstanceSource.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\Vertices.cpp">
+      <Filter>Source Files\Renderables</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

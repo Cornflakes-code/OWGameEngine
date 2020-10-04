@@ -6,15 +6,11 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "../Renderables/BoundingBox.h"
-#include "../Renderables/VertexRenderer.h"
-#include "../Renderables/VertexRendererCompound.h"
-#include "../Renderables/VertexSourceCompound.h"
+#include "BoundingBox.h"
+#include "Circle.h"
+#include "VertexSource.h"
 
 class TextBillboard;
-class Points;
-class Shader;
-class Camera;
 /*
 	Wraps the rendering of an XYZ set of labelled axis. Useful for early development
 */
@@ -23,19 +19,18 @@ class OWENGINE_API Axis
 public:
 	Axis();
 
-	void setUp(const AABB& world, const Camera* camera);
+	void prepare(const AABB& world);
 	void render(const glm::mat4& proj, 
 				const glm::mat4& view, 
 				const glm::mat4& model) const;
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	std::vector<glm::vec3> mAxisCoords;
-	VertexRenderer mZeroPoint;
-	VertexRenderer mTextX;
-	VertexRenderer mTextY;
-	VertexRenderer mTextZ;
-	VertexRenderer mCircle;
-	VertexRenderer mLines;
+	TextBillboard* mTextX;
+	TextBillboard* mTextY;
+	TextBillboard* mTextZ;
+	VertexSource mZeroPoint;
+	Circle mCircle;
+	VertexSource mLines;
 #pragma warning( pop )
 };

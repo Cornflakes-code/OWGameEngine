@@ -47,7 +47,7 @@ class OWENGINE_API AABB
 	void isValid() const;
 #pragma warning( pop )
 public:
-	AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint);
+	AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint, bool validate = true);
 	AABB();
 	bool overlap(const AABB& other) const;
 	Compass::Direction wallIntersection(const AABB& other) const;
@@ -94,9 +94,8 @@ public:
 		return *this + (-glm::vec4(v, 1.0));
 	}
 };
-// These operators do not make much sense
 //AABB operator-(const AABB& left, const AABB& right);
-//AABB operator+(const AABB& left, const AABB& right);
+AABB operator+(const AABB& left, const AABB& right);
 
 class OWENGINE_API Ball
 {

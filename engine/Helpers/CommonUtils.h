@@ -3,6 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 #include <glm/glm.hpp>
 
@@ -19,11 +20,20 @@
 
 class GLApplication;
 class GlobalSettings;
-
+class Shader;
 extern OWENGINE_API GlobalSettings* globals;
 
 struct OWENGINE_API OWUtils
 {
+	typedef std::function<void(const glm::mat4& proj, const glm::mat4& view,
+				const glm::mat4& model, Shader* shader)> RenderCallbackType;
+
+	typedef std::function< glm::vec2(const glm::vec2)> ScaleByAspectRatioType;
+
+	typedef std::function<void(Shader* shader,
+					ScaleByAspectRatioType scaler,
+					float aspectRatio)> ResizeCallbackType;
+
 	struct TextureBlock
 	{
 		std::string name; // string in shader

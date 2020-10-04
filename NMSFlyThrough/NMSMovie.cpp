@@ -4,8 +4,9 @@
 
 #include <Core/GLApplication.h>
 #include <Core/SaveAndRestore.h>
-
+#include <Core/GlobalSettings.h>
 #include <Core/Camera.h>
+
 #include <Helpers/ErrorHandling.h>
 #include <Helpers/FreeTypeFontAtlas.h>
 

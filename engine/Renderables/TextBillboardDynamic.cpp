@@ -4,10 +4,11 @@
 
 #include "../Helpers/Shader.h"
 
-TextBillboardDynamic::TextBillboardDynamic(
-				const std::string& fontFileName, 
-				int fontHeight)
-	:TextBillboard(fontFileName, fontHeight)
+//http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
+
+TextBillboardDynamic::TextBillboardDynamic(const glm::vec3& initialPosition,
+				const std::string& fontFileName, int fontHeight)
+	:TextBillboard(initialPosition, fontFileName, fontHeight)
 {
 	shader(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""), "VP");
 	mVertexLoc = mShader->getAttributeLocation("coord");
@@ -36,7 +37,7 @@ void TextBillboardDynamic::renderCallback(
 	mShader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
 	glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 	mShader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
-	glm::vec4 center = mBounds.center();
+	glm::vec4 center = bounds().center();
 	glm::mat4 newModel = glm::translate(model, glm::vec3(center.x, center.y, center.z));
 	glm::vec3 xx = newModel[3];
 
@@ -44,9 +45,9 @@ void TextBillboardDynamic::renderCallback(
 }
 
 void TextBillboardDynamic::resizeCallback(Shader* shader,
-					ScaleByAspectRatioType scaleByAspectRatio,
+	OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 					float aspectRatio)
 {
-	glm::vec2 bbSize({ mBounds.size().x * mScale.x, mBounds.size().y * mScale.y });
+	glm::vec2 bbSize({ bounds().size().x * mScale.x, bounds().size().y * mScale.y });
 	mShader->setVector2f("BillboardSize", bbSize);
 }

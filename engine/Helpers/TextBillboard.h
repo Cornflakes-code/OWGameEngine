@@ -19,6 +19,7 @@
 #include "../Renderables/BoundingBox.h"
 
 #include "../Renderables/VertexSource.h"
+#include "../Helpers/MoveTarget.h"
 #include "ResourceFactory.h"
 
 class Shader;
@@ -30,19 +31,16 @@ class Shader;
 class OWENGINE_API TextBillboard: public VertexSource
 {
 protected:
-	TextBillboard(const std::string& fontFileName, int fontHeight);
+	TextBillboard(const glm::vec3& initialPosition, 
+				  const std::string& fontFileName, int fontHeight);
 public:
 	~TextBillboard();
 	void createText(const std::string& text, float sx, float sy);
 	void scale(const glm::vec2& newValue) { mScale = newValue; }
-	const AABB& bounds() const { return mBounds; }
-
-
 protected:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	const FreeTypeFontAtlas::FontDetails* mFontData;
-	AABB mBounds;
 	glm::vec2 mScale = { 0.5f, 0.5f };
 #pragma warning( pop )
 	AABB findBounds() const;

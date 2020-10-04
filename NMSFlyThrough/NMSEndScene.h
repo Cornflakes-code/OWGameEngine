@@ -2,9 +2,6 @@
 
 #include "NMSScene.h"
 
-#include <Renderables/VertexRenderer.h>
-
-class Shader;
 class TextBillboard;
 
 /*
@@ -32,7 +29,7 @@ struct NMSEndScenePhysics : public ScenePhysicsState
 
 class NMSEndScene : public NMSScene
 {
-	VertexRenderer mText;
+	TextBillboard* mText;
 public:
 	NMSEndScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::endSceneName(); }

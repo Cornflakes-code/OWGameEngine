@@ -4,21 +4,16 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "../Renderables/VertexSource.h"
+#include "VertexSource.h"
 
-class Shader;
 /*
 	Simple class wrapping creation and Rendering of a Triangle. Will be removed.
 */
 class OWENGINE_API Circle : public VertexSource
 {
-#pragma warning( push )
-#pragma warning( disable : 4251 )
-	glm::vec3 mPosition = glm::vec3(0);
-#pragma warning( pop )
 public:
-	Circle();
-	void setUp();
-	void setPosition(const glm::vec3& newValue);
-	void move(const glm::vec3& newValue);
+	Circle(const glm::vec3& initialPosition);
+	Circle()
+		:Circle(glm::vec3(0.0f, 0.0f, 0.0f)) {}
+	void prepare();
 };

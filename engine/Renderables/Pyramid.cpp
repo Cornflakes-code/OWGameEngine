@@ -48,20 +48,6 @@ void Pyramid::setUp()
 			std::placeholders::_3, std::placeholders::_4);
 }
 
-void Pyramid::setPosition(const glm::vec3& newValue)
-{
-	mPosition.x = newValue.x;
-	mPosition.y = newValue.y;
-	mPosition.z = newValue.x;
-}
-
-void Pyramid::move(const glm::vec3& newValue)
-{ 
-	mPosition.x += newValue.x;
-	mPosition.y += newValue.y;
-	mPosition.z += newValue.x;
-}
-
 void Pyramid::renderCallback(
 	const glm::mat4& proj, const glm::mat4& view,
 	const glm::mat4& model, Shader* shader)

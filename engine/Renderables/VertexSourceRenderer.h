@@ -9,33 +9,30 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-#include "VertexSource.h"
-
+#include "VertexRenderBase.h"
 /*
 	class to render class VertexSource.
 	Hides all the vao/vbo/ebo and texture functionaility.
 	Accepts callbacks to assist renderering
 */
 
-class OWENGINE_API VertexRenderer
+class VertexSource;
+
+class OWENGINE_API VertexSourceRenderer: public VertexRenderBase
 {
 public:
-	VertexRenderer();
-	~VertexRenderer();
-	void addSource(const VertexSource* rs) 
-	{ 
-		mSource = rs;
-		checkSourceForErrors();
-		prepareOpenGL();
-	}
-	void render(const glm::mat4& proj,
-			const glm::mat4& view,
-			const glm::mat4& model,
-			VertexSource::RenderCallbackType renderCb = nullptr,
-			VertexSource::ResizeCallbackType resizeCb = nullptr) const;
+	VertexSourceRenderer();
+	~VertexSourceRenderer();
+	void prepare(const VertexSource* source);
+	void render(const VertexSource* vsb,
+		const glm::mat4& proj,
+		const glm::mat4& view,
+		const glm::mat4& model,
+		OWUtils::RenderCallbackType renderCb = nullptr,
+		OWUtils::ResizeCallbackType resizeCb = nullptr) const;
 protected:
-	const VertexSource* mSource;
 private:
+	virtual void checkSourceForErrors(const VertexSource* source);
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
 	float aspectRatio() const;
 	unsigned int mVao = 0;
@@ -43,6 +40,4 @@ private:
 	unsigned int mEbo = 0;
 	// Ok to modify Renderables if only for efficiency reasons
 	mutable bool mFirstTimeRender = true;
-	void prepareOpenGL();
-	void checkSourceForErrors();
 };

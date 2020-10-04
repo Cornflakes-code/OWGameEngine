@@ -1,21 +1,31 @@
 #include "VertexSource.h"
 
-void VertexSource::vertices(const std::vector<glm::vec3>& v,
-	unsigned int location,
-	unsigned int drawMode)
+#include <glm/ext/matrix_transform.hpp>
+
+#include "../Helpers/MoveController.h"
+
+#include "VertexSourceRenderer.h"
+
+void VertexSource::addRenderer(VertexSourceRenderer* source)
 {
-	mVec3 = v;
-	mVertexLoc = location;
-	mVertexMode = drawMode;
-	assert(!mVec4.size() && mVec3.size());
+	mRenderer = source;
+	mRenderer->prepare(this);
 }
 
-void VertexSource::vertices(const std::vector<glm::vec4>& v,
-	unsigned int location,
-	unsigned int drawMode)
+void VertexSource::render(const glm::mat4& proj,
+	const glm::mat4& view,
+	const glm::mat4& model,
+	const MoveController* mover,
+	OWUtils::RenderCallbackType renderCb,
+	OWUtils::ResizeCallbackType resizeCb) const
 {
-	mVec4 = v;
-	mVertexLoc = location;
-	mVertexMode = drawMode;
-	assert(!mVec3.size() && mVec4.size());
+	if (mover)
+	{
+		mRenderer->render(this, proj, view, mover->translate(model), renderCb, resizeCb);
+	}
+	else
+	{
+		glm::mat4 initialPositionModel = glm::translate(model, initialPosition());
+		mRenderer->render(this, proj, view, initialPositionModel, renderCb, resizeCb);
+	}
 }

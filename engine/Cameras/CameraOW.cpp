@@ -1,8 +1,10 @@
 #include "CameraOW.h"
 
-#include <Core/GLApplication.h>
-#include "../Helpers/Logger.h"
 #include <glm/gtx/string_cast.hpp>
+
+#include "../Core/GLApplication.h"
+#include "../Core/GlobalSettings.h"
+#include "../Helpers/Logger.h"
 
 CameraOW::CameraOW()
 {

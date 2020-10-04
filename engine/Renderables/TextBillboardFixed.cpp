@@ -4,9 +4,9 @@
 
 #include "../Helpers/Shader.h"
 
-TextBillboardFixed::TextBillboardFixed(
+TextBillboardFixed::TextBillboardFixed(const glm::vec3& initialPosition,
 		const std::string& fontFileName, int fontHeight)
-:TextBillboard(fontFileName, fontHeight)
+:TextBillboard(initialPosition, fontFileName, fontHeight)
 {
 	shader(new Shader("textStaticBillboard.v.glsl", "text.f.glsl", ""), "VP");
 	mShader->use();
@@ -27,14 +27,14 @@ void TextBillboardFixed::renderCallback(
 		const glm::mat4& proj, const glm::mat4& view,
 		const glm::mat4& model, Shader* shader)
 {
-	glm::vec4 center = mBounds.center();
+	glm::vec4 center = bounds().center();
 	glm::mat4 newModel =
 		glm::translate(model, glm::vec3(center.x, center.y, center.z));
 	shader->setVector3f("BillboardPos", newModel[3]);
 }
 
 void TextBillboardFixed::resizeCallback(Shader* shader,
-			ScaleByAspectRatioType scaleByAspectRatio,
+			OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 			float aspectRatio)
 {
 	glm::vec2 vv = { 0.5, 0.5 };

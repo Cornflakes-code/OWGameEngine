@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include "../OWEngine/OWEngine.h"
 #include "../Helpers/CommonUtils.h"
 
@@ -18,9 +19,13 @@ class OWENGINE_API GlobalSettings
 {
 public:
 	GlobalSettings();
-	// convenience methods. If tyhe host exe does not create GLApplication then
+	// convenience methods. If the host exe does not create GLApplication then
 	// these may be invalid.
 	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
+	float aspectRatio() const 
+	{ 
+		return static_cast<float>(globals->physicalWindowSize().x / globals->physicalWindowSize().y);
+	}
 	bool aspectRatioChanged() const { return mAspectRatioChanged; }
 	void clearAspectRatioChangedFlag() { mAspectRatioChanged = false; }
 	float secondsSinceLoad();

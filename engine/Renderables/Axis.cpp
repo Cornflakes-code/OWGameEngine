@@ -8,8 +8,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../Core/Camera.h"
+#include "../Core/GlobalSettings.h"
 #include "../Helpers/Shader.h"
 #include "../Helpers/CommonUtils.h"
+
+#include "VertexSourceRenderer.h"
 
 #include "TextBillboardFixed.h"
 #include "TextBillboardDynamic.h"
@@ -19,11 +22,11 @@
 Axis::Axis()
 {}
 
-void Axis::setUp(const AABB& world, const Camera* camera)
+void Axis::prepare(const AABB& world)
 {
 	float scale = 1.0;
 
-	mAxisCoords = {
+	std::vector<glm::vec3> axisCoords = {
 		{ world.center().x, world.center().y, world.center().z },
 		{ world.maxPoint().x * scale, 0.0, 0.0 },
 		{ 0.0, world.maxPoint().y * scale, 0.0 },
@@ -31,55 +34,57 @@ void Axis::setUp(const AABB& world, const Camera* camera)
 	{
 		int fontHeight = 12;
 		glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
-			fontHeight, camera->aspectRatio());
+										fontHeight, globals->aspectRatio());
 		//nice.first /= 2.0f;
 		//nice.second /= 2.0f;
-		TextBillboard* textX = new TextBillboardFixed("arial.ttf", fontHeight);
-		TextBillboard* textY = new TextBillboardFixed("arial.ttf", fontHeight);
-		TextBillboard* textZ = new TextBillboardFixed("arial.ttf", fontHeight);
-		textX->createText("X", nice.x, nice.y);
-		textY->createText("Y", nice.x, nice.y);
-		textZ->createText("Z", nice.x, nice.y);
+		mTextX = new TextBillboardFixed(axisCoords[1], "arial.ttf", fontHeight);
+		mTextY = new TextBillboardFixed(axisCoords[2], "arial.ttf", fontHeight);
+		mTextZ = new TextBillboardFixed(axisCoords[3], "arial.ttf", fontHeight);
 
-		textX->colour({ 1.0, 0.0, 0.0, 1.0f }, "textcolor");
-		textY->colour({ 0.0, 1.0, 0.0, 1.0f }, "textcolor");
-		textZ->colour({ 0.0, 0.0, 1.0, 1.0f }, "textcolor");
+		mTextX->createText("X", nice.x, nice.y);
+		mTextY->createText("Y", nice.x, nice.y);
+		mTextZ->createText("Z", nice.x, nice.y);
 
-		mTextX.addSource(textX);
-		mTextY.addSource(textY);
-		mTextZ.addSource(textZ);
+		mTextX->colour({ 1.0, 0.0, 0.0, 1.0f }, "textcolor");
+		mTextY->colour({ 0.0, 1.0, 0.0, 1.0f }, "textcolor");
+		mTextZ->colour({ 0.0, 0.0, 1.0, 1.0f }, "textcolor");
+
+		mTextX->addRenderer(new VertexSourceRenderer());
+		mTextY->addRenderer(new VertexSourceRenderer());
+		mTextZ->addRenderer(new VertexSourceRenderer());
 	}
 	{
 		Shader* lineShader = new Shader();
 		lineShader->loadShaders(ResourceFactory::boilerPlateVertexShader(),
 			ResourceFactory::boilerPlateFragmentShader(),
 			ResourceFactory::boilerPlateGeometryShader());
-		VertexSource* vsline = new VertexSource();
-		vsline->shader(lineShader, "pvm");
-		vsline->vertices(mAxisCoords, 0, GL_LINES);
-		vsline->indices({ 0,1, 0,2, 0,3 }, GL_LINES);
-		vsline->colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK),
-			"colour");
-		mLines.addSource(vsline);
+		mLines.shader(lineShader, "pvm");
+		mLines.vertices(axisCoords, 0, GL_LINES);
+		mLines.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
+		mLines.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK),
+					"colour");
+		mLines.addRenderer(new VertexSourceRenderer());
 	}
 	{
-		Circle* circle = new Circle();
-		circle->setUp();
-		mCircle.addSource(circle);
+		mCircle.prepare();
+		mCircle.addRenderer(new VertexSourceRenderer());
 	}
 	{
-		Shader* pointShader = new Shader("thebookofshaders.v.glsl",
-										"solarSuns.f.glsl",
-										//"text.f.glsl",
-										"thebookofshaders_circle.g.glsl");
-		VertexSource* p = new VertexSource();
-		p->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
-		p->shader(pointShader, "pvm");
-		glm::vec4 v4 = glm::vec4(mAxisCoords[0], 1.0);
+		//Shader* pointShader = new Shader("thebookofshaders.v.glsl",
+		//								"solarSuns.f.glsl",
+		//								//"text.f.glsl",
+		//								"thebookofshaders_circle.g.glsl");
+		Shader* pointShader = new Shader("smallSuns.v.glsl",
+										"smallSuns.f.glsl",
+										"");
+//										"smallSuns.g.glsl");
+		mZeroPoint.colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
+		mZeroPoint.shader(pointShader, "pvm");
+		glm::vec4 v4 = glm::vec4(axisCoords[0], 1.0);
 		std::vector<glm::vec4> vv4;
 		vv4.push_back(v4);
-		p->vertices(vv4, 0, GL_POINTS);
-		mZeroPoint.addSource(p);
+		mZeroPoint.vertices(vv4, 0, GL_POINTS);
+		mZeroPoint.addRenderer(new VertexSourceRenderer());
 	}
 }
 
@@ -92,7 +97,7 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 		shader->setFloat("u_time", globals->secondsSinceLoad());
 	};
 	auto pointResizeRender = [](Shader* shader,
-		VertexSource::ScaleByAspectRatioType scaler,
+		OWUtils::ScaleByAspectRatioType scaler,
 		float aspectRatio) {
 		glm::vec2 vv = globals->physicalWindowSize();
 		//vv.x /= 20.0f;
@@ -100,16 +105,15 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 		//glm::vec2 v2 = scaler({ vv });
 		shader->setVector2f("u_resolution", vv);
 	};
-	mZeroPoint.render(proj, view, model, pointRender, pointResizeRender);
+	mZeroPoint.render(proj, view, model, nullptr, pointRender, pointResizeRender);
 
-	// Position the text at the ends of the lines
-	mTextX.render(proj, view, glm::translate(model, mAxisCoords[1]));
-	mTextY.render(proj, view, glm::translate(model, mAxisCoords[2]));
-	mTextZ.render(proj, view, glm::translate(model, mAxisCoords[3]));
+	mTextX->render(proj, view, model);
+	mTextY->render(proj, view, model);
+	mTextZ->render(proj, view, model);
 	mCircle.render(proj, view, model);
-	mLines.render(proj, view, model, [](const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, Shader* shader) {
-		OWUtils::PolygonModeRIAA poly;
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	});
+	mLines.render(proj, view, model, nullptr, [](const glm::mat4& proj, const glm::mat4& view,
+				const glm::mat4& model, Shader* shader) {
+				OWUtils::PolygonModeRIAA poly;
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			});
 }

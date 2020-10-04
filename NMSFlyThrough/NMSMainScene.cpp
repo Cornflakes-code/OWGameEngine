@@ -5,9 +5,11 @@
 #include <glm/ext/matrix_projection.hpp>
 
 #include <Core/GLApplication.h>
+#include <Core/Camera.h>
+#include <Core/GlobalSettings.h>
 
 #include <Helpers/ErrorHandling.h>
-#include <Core/Camera.h>
+
 #include <Renderables/Axis.h>
 
 #include "NMSUserInput.h"
@@ -86,7 +88,7 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	mStarMap->setUp("../NMSFlyThrough/NMSMap.txt", world());
 	mAxis = new Axis();
 	
-	mAxis->setUp(world(), movie()->camera());
+	mAxis->prepare(world());
 }
 
 void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),

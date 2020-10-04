@@ -11,6 +11,7 @@
 #endif
 
 #include "GLApplication.h"
+#include "GlobalSettings.h"
 #include "QuitScene.h"
 #include "Scene.h"
 

@@ -11,8 +11,11 @@
 #include "../Helpers/CommonUtils.h"
 #include "../Core/Movie.h"
 #include "../Core/GLApplication.h"
+#include "../Core/GlobalSettings.h"
 
-FullScreen::FullScreen(Shader* _shader, const std::string& pvm)
+FullScreen::FullScreen(const glm::vec3& initialPosition,
+					   Shader* _shader, const std::string& pvm)
+	: VertexSource(initialPosition)
 {
 	shader(_shader, pvm);
 
@@ -25,10 +28,9 @@ FullScreen::FullScreen(Shader* _shader, const std::string& pvm)
 		= std::bind(&FullScreen::resizeCallback,
 			this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3);
-
 }
 
-void FullScreen::setUp(const AABB& world)
+void FullScreen::prepare(const AABB& world)
 {
 	// Depending on the geometry shader it may not matter what we send.
 	std::vector<glm::vec3> vert;
@@ -45,7 +47,7 @@ void FullScreen::renderCallback(const glm::mat4& proj, const glm::mat4& view,
 }
 
 void FullScreen::resizeCallback(Shader* shader,
-				ScaleByAspectRatioType scaleByAspectRatio,
+				OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 				float aspectRatio)
 {
 	glm::vec2 vv = globals->physicalWindowSize();

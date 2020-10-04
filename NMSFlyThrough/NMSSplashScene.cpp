@@ -8,16 +8,17 @@
 #include <GLFW/glfw3.h>
 
 #include <Core/Movie.h>
+#include <Core/GLApplication.h>
+#include <Core/GlobalSettings.h>
+#include <Core/Camera.h>
 
 #include <Helpers/Shader.h>
-#include <Core/Camera.h>
 #include <Helpers/ErrorHandling.h>
+
 #include <Renderables/TextBillboardFixed.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/Axis.h>
-#include <Renderables/FullScreen.h>
-#include <Renderables/Circle.h>
-#include <Core/GLApplication.h>
+#include <Renderables/VertexSourceRenderer.h>
 
 #include "NMSUserInput.h"
 
@@ -47,11 +48,11 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	// Find the translation magnitudes
 	glm::vec4 velocity = glm::vec4(timeStep * mSpeed, timeStep * mSpeed, timeStep * mSpeed, 1.0);
 #ifdef INCLUDE_WELCOME
-	mWelcome.move(velocity);
-	mWelcome.bounceIfCollide(mWindowBounds);
+	mWelcomeMover.move(velocity);
+	mWelcomeMover.bounceIfCollide(mWindowBounds);
 #endif
-	mEnjoy.move(velocity);
-	mEnjoy.bounceIfCollide(mWindowBounds);
+	mEnjoyMover.move(velocity);
+	mEnjoyMover.bounceIfCollide(mWindowBounds);
 }
 
 void NMSSplashScenePhysics::interpolateRatio(
@@ -100,7 +101,11 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 }
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////
 NMSSplashScene::NMSSplashScene(const Movie* movie)
-	: NMSScene(movie)
+	: NMSScene(movie),
+	mFullScreen(glm::vec3(0.0f, 0.0f, 0.0f),
+		new Shader("thebookofshaders.v.glsl",
+		"thebookofshaders.f.glsl",
+		"thebookofshaders_square.g.glsl"), "pvm")
 {
 }
 
@@ -116,53 +121,39 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 							fontHeight, movie()->camera()->aspectRatio());
 #ifdef INCLUDE_WELCOME
-	{
-		glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
-							1.2f * _world.size().y / globals->physicalWindowSize().y };
-		{
-			TextBillboard* welcomeText 
-					= new TextBillboardDynamic("arial.ttf", fontHeight);
-			welcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
-			welcomeText->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
-			welcomeText->scale(scale);
-			sps->mWelcome.text(welcomeText);
-		}
-		sps->mWelcome.direction(Compass::Rose[Compass::North] + 
-								Compass::Rose[Compass::East] + 
-								Compass::Rose[Compass::In]);
-		sps->mWelcome.setPosition(NMSScene::world().center());
-		mWelcomeTextRender.addSource(sps->mWelcome);
-	}
+	glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
+						1.2f * _world.size().y / globals->physicalWindowSize().y };
+	mWelcomeText  = new TextBillboardDynamic(glm::vec3(0.0f, 0.0f, 0.0f),
+											"arial.ttf", fontHeight);
+	mWelcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
+	mWelcomeText->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
+	mWelcomeText->scale(scale);
+	mWelcomeText->addRenderer(new VertexSourceRenderer());
+
+	sps->mWelcomeMover.targetGeometry(mWelcomeText->bounds(), mWelcomeText->initialPosition());
+	sps->mWelcomeMover.direction(Compass::Rose[Compass::North] +
+							Compass::Rose[Compass::East] + 
+							Compass::Rose[Compass::In]);
+	sps->mWelcomeMover.setPosition(NMSScene::world().center());
 #endif
-	{
-		{
-			TextBillboard* enjoyText 
-					= new TextBillboardFixed("arial.ttf", 12);
-			enjoyText->createText("Enjoy it while you can", nice.x, nice.y);
-			enjoyText->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
-			sps->mEnjoy.text(enjoyText);
-		}
-		sps->mEnjoy.direction(Compass::Rose[Compass::South] + 
-							  Compass::Rose[Compass::West]);
-		sps->mEnjoy.setPosition(NMSScene::world().center());
-		mEnjoyTextRender.addSource(sps->mEnjoy);
-	}
-	{
-		FullScreen* fs = new FullScreen(new Shader("thebookofshaders.v.glsl",
-			"thebookofshaders.f.glsl",
-			"thebookofshaders_square.g.glsl"), "pvm");
-		fs->setUp(_world);
-		mFullScreen.addSource(fs);
-	}
-	{
-		mAxis = new Axis();
-		mAxis->setUp(_world, movie()->camera());
-	}
-	{
-		Circle* circle = new Circle();
-		circle->setUp();
-		mCircle.addSource(circle);
-	}
+	mEnjoyText = new TextBillboardFixed(glm::vec3(0.0f, 0.0f, 0.0f),
+										"arial.ttf", 12);
+	mEnjoyText->createText("Enjoy it while you can", nice.x, nice.y);
+	mEnjoyText->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
+	//mEnjoyText->scale(scale);
+	mEnjoyText->addRenderer(new VertexSourceRenderer());
+	sps->mEnjoyMover.targetGeometry(mEnjoyText->bounds(), mEnjoyText->initialPosition());
+	sps->mEnjoyMover.direction(Compass::Rose[Compass::South] +
+							   Compass::Rose[Compass::West]);
+
+	mFullScreen.prepare(_world);
+	mFullScreen.addRenderer(new VertexSourceRenderer());
+
+	mAxis = new Axis();
+	mAxis->prepare(_world);
+
+	mCircle.prepare();
+	mCircle.addRenderer(new VertexSourceRenderer());
 }
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
@@ -175,14 +166,16 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	mFullScreen.render(proj, view, model);
 	mAxis->render(proj, view, model);
 
-	mEnjoyTextRender.render(proj, view, model, &sps->mEnjoy);
+	mEnjoyText->render(proj, view, model, &sps->mEnjoyMover);
 #ifdef INCLUDE_WELCOME
 	const AABB& _world = world();
 	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
 						20.2f * _world.size().y / globals->physicalWindowSize().y };
-	glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
-	mWelcomeTextRender.render(proj, view, scaledModel, &sps->mWelcome);
+	//glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
+	glm::mat4 scaledModel = model;
+	mWelcomeText->render(proj, view, scaledModel, &sps->mWelcomeMover);
 #endif
+
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 

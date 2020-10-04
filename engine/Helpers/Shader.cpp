@@ -99,7 +99,7 @@ int Shader::addShader(const std::string& sourceCode, unsigned int type,
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
 		std::stringstream str;
 		str << errmsg << infoLog << std::endl;
-		throw std::exception(str.str().c_str());
+		throw NMSLogicException(str.str().c_str());
 	}
 	err = glGetError();
 	return shader;
@@ -157,9 +157,20 @@ void Shader::readFiles(const std::string& vertexPath,
 					   const std::string& fragPath,
 					   const std::string& geometryPath)
 {
-	loadShaders(readFile(vertexPath),
+	try
+	{
+		loadShaders(readFile(vertexPath),
 				readFile(fragPath),
 				readFile(geometryPath));
+	}
+	catch (const NMSLogicException& e)
+	{
+		std::stringstream ss;
+		ss << e.what() << " Could be vertex[" << vertexPath << "] frag ["
+			<< fragPath << "] Geom [" << geometryPath << "]";
+		NMSLogicException ee(ss.str());
+		throw ee;
+	}
 }
 
 int Shader::addVertexShader(const std::string& shader)

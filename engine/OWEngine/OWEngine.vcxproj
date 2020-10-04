@@ -170,9 +170,11 @@
     <ClInclude Include="..\Helpers\CommonUtils.h" />
     <ClInclude Include="..\Helpers\ErrorHandling.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
+    <ClInclude Include="..\Helpers\GeometricShapes.h" />
     <ClInclude Include="..\Helpers\Logger.h" />
     <ClInclude Include="..\Helpers\MacroRecorder.h" />
-    <ClInclude Include="..\Helpers\MovingText.h" />
+    <ClInclude Include="..\Helpers\MoveController.h" />
+    <ClInclude Include="..\Helpers\MoveTarget.h" />
     <ClInclude Include="..\Helpers\PhongShader.h" />
     <ClInclude Include="..\Helpers\ResizeHelper.h" />
     <ClInclude Include="..\Helpers\ResourceFactory.h" />
@@ -185,12 +187,15 @@
     <ClInclude Include="..\Renderables\BoundingBox.h" />
     <ClInclude Include="..\Renderables\Circle.h" />
     <ClInclude Include="..\Renderables\FullScreen.h" />
-    <ClInclude Include="..\Renderables\MovingTextRender.h" />
+    <ClInclude Include="..\Renderables\InstanceSource.h" />
+    <ClInclude Include="..\Renderables\InstanceSourceRenderer.h" />
     <ClInclude Include="..\Renderables\Pyramid.h" />
     <ClInclude Include="..\Renderables\TextBillboardDynamic.h" />
     <ClInclude Include="..\Renderables\TextBillboardFixed.h" />
-    <ClInclude Include="..\Renderables\VertexRenderer.h" />
+    <ClInclude Include="..\Renderables\VertexRenderBase.h" />
     <ClInclude Include="..\Renderables\VertexSource.h" />
+    <ClInclude Include="..\Renderables\Vertices.h" />
+    <ClInclude Include="..\Renderables\VertexSourceRenderer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OWEngine.h" />
   </ItemGroup>
@@ -209,9 +214,11 @@
     <ClCompile Include="..\Helpers\CommonUtils.cpp" />
     <ClCompile Include="..\Helpers\ErrorHandling.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
+    <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
     <ClCompile Include="..\Helpers\Logger.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
-    <ClCompile Include="..\Helpers\MovingText.cpp" />
+    <ClCompile Include="..\Helpers\MoveController.cpp" />
+    <ClCompile Include="..\Helpers\MoveTarget.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
     <ClCompile Include="..\Helpers\ResourceFactory.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
@@ -224,14 +231,17 @@
     <ClCompile Include="..\Renderables\BoundingBox.cpp" />
     <ClCompile Include="..\Renderables\Circle.cpp" />
     <ClCompile Include="..\Renderables\FullScreen.cpp" />
-    <ClCompile Include="..\Renderables\MovingTextRender.cpp" />
+    <ClCompile Include="..\Renderables\InstanceSource.cpp" />
+    <ClCompile Include="..\Renderables\InstanceSourceRenderer.cpp" />
     <ClCompile Include="..\Renderables\Pyramid.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardDynamic.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardFixed.cpp" />
-    <ClCompile Include="..\Renderables\VertexRenderer.cpp" />
+    <ClCompile Include="..\Renderables\VertexRenderBase.cpp" />
     <ClCompile Include="..\Renderables\VertexRendererCompound.cpp" />
     <ClCompile Include="..\Renderables\VertexSource.cpp" />
+    <ClCompile Include="..\Renderables\Vertices.cpp" />
     <ClCompile Include="..\Renderables\VertexSourceCompound.cpp" />
+    <ClCompile Include="..\Renderables\VertexSourceRenderer.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

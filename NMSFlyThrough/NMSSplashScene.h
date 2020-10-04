@@ -4,11 +4,10 @@
 
 #include <glm/glm.hpp>
 #include <Renderables/BoundingBox.h>
-#include <Helpers/MovingText.h>
-#include <Renderables/MovingTextRender.h>
-#include <Renderables/VertexRenderer.h>
-#include <Renderables/VertexRendererCompound.h>
-
+#include <Renderables/FullScreen.h>
+#include <Renderables/Circle.h>
+#include <Helpers/MoveController.h>
+#include <Helpers/TextBillboard.h>
 #include "NMSScene.h"
 /*
 	An implementation of a Scene for the NMS game.
@@ -33,20 +32,19 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 	static AABB mWindowBounds;
 	static OWUtils::Float mSpeed;
 
-	MovingText mWelcome;
-	MovingText mEnjoy;
+	MoveController mWelcomeMover;
+	MoveController mEnjoyMover;
 };
 
 class Axis;
-class VertexRendererCompound;
 
 class NMSSplashScene : public NMSScene
 {
-	MovingTextRender mWelcomeTextRender;
-	MovingTextRender mEnjoyTextRender;
-	VertexRenderer mFullScreen;
+	TextBillboard* mWelcomeText;
+	TextBillboard* mEnjoyText;
+	FullScreen mFullScreen;
+	Circle mCircle;
 	Axis* mAxis;
-	VertexRenderer mCircle;
 public:
 	NMSSplashScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::splashSceneName(); }

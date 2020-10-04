@@ -2,9 +2,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include <Renderables/TextBillboardDynamic.h>
-#include <Helpers/Shader.h>
 #include <Core/Camera.h>
+#include <Core/GlobalSettings.h>
+#include <Helpers/Shader.h>
+#include <Renderables/TextBillboardDynamic.h>
+#include <Renderables/VertexSourceRenderer.h>
 
 #include "NMSUserInput.h"
 
@@ -60,27 +62,26 @@ bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInpu
 NMSEndScene::NMSEndScene(const Movie* _movie)
 	: NMSScene(_movie)
 {
-	const glm::uvec2& screen = globals->physicalWindowSize();
+//	const glm::uvec2& screen = globals->physicalWindowSize();
 }
 
 void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 {
 	const float sx = 2.0f / globals->physicalWindowSize().x;
 	const float sy = 2.0f / globals->physicalWindowSize().y;
-	TextBillboard* txt = new TextBillboardDynamic("Arial.ttf", 24);
+	mText = new TextBillboardDynamic(glm::vec3(0.0f, 0.0f, 0.0f), "Arial.ttf", 24);
 
 	glm::vec4 color(0.5, 0.8f, 0.2f, 0);
-	txt->colour(color, "textcolor");
-	txt->createText("G", sx, sy);
-	mText.addSource(txt);
+	mText->createText("G", sx, sy);
+	mText->colour(color, "textcolor");
+	mText->addRenderer(new VertexSourceRenderer());
 }
-
 
 void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
 	const glm::mat4& proj, const glm::mat4& view)
 {
 	glm::mat4 model(1.0f);
-	mText.render(proj, view, model);
+	mText->render(proj, view, model);
 }
 
 void NMSEndScene::activate(const std::string& OW_UNUSED(previousScene),

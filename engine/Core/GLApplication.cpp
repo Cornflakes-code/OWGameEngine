@@ -9,6 +9,8 @@ OWENGINE_API GlobalSettings* globals = nullptr;
 #include "../Helpers/ErrorHandling.h"
 #include "../Helpers/Logger.h"
 #include "SaveAndRestore.h"
+#include "GlobalSettings.h"
+#include "Movie.h"
 
 #pragma comment( lib, "glfw3.lib" )
 #pragma comment (lib, "OpenGL32.lib")

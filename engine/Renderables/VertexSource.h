@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <functional>
+
+
 #include <glm/glm.hpp>
 
 #ifndef __gl_h_
@@ -9,9 +11,10 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "../Helpers/CommonUtils.h"
+#include "Vertices.h"
 
 class Shader;
-
+class VertexSourceRenderer;
 /*
 	Basically a struct that contains the data to be rendered.
 	Passed to VertexRenderer to be rendered.
@@ -19,29 +22,21 @@ class Shader;
 	No getters. Values only accessible by VertexRenderer and derived classes.
 	Does this means it cannot be inherited from outside of the DLL?
 */
-class OWENGINE_API VertexSource
+class OWENGINE_API VertexSource: public Vertices
 {
 public:
-	typedef std::function<void(const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, Shader* shader)> RenderCallbackType;
+	VertexSource(const glm::vec3& initialPosition)
+		:Vertices(initialPosition) {}
+	VertexSource()
+		:VertexSource(glm::vec3(0.0f, 0.0f, 0.0f)) {}
+	void addRenderer(VertexSourceRenderer* source);
+	void render(const glm::mat4& proj,
+		const glm::mat4& view,
+		const glm::mat4& model,
+		const MoveController* mover = nullptr,
+		OWUtils::RenderCallbackType renderCb = nullptr,
+		OWUtils::ResizeCallbackType resizeCb = nullptr) const override;
 
-	typedef std::function< glm::vec2(const glm::vec2)> ScaleByAspectRatioType;
-
-	typedef std::function<void(Shader* shader,
-		ScaleByAspectRatioType scaler,
-		float aspectRatio)> ResizeCallbackType;
-	VertexSource() {}
-	void shader(Shader* newValue, const std::string& pvmName) 
-	{ 
-		mShader = newValue; 
-		mPVMName = pvmName;
-	}
-	void vertices(const std::vector<glm::vec3>& v,
-				unsigned int location,
-				unsigned int drawMode);
-	void vertices(const std::vector<glm::vec4>& v,
-				unsigned int location,
-				unsigned int drawMode);
 	void indices(const std::vector<unsigned int>& newValue,
 				 unsigned int drawMode) 
 	{ 
@@ -63,19 +58,14 @@ public:
 protected:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	Shader* mShader = nullptr;
-	std::vector<glm::vec3> mVec3;
-	std::vector<glm::vec4> mVec4;
+	VertexSourceRenderer* mRenderer = nullptr;
 	std::vector<unsigned int> mIndices;
 	std::vector<OWUtils::TextureBlock> mTextures;
 	glm::vec4 mColour;
-	std::string mPVMName;
 	std::string mColourName;
-	RenderCallbackType mRenderCallback = nullptr;
-	ResizeCallbackType mResizeCallback = nullptr;
-	unsigned int mVertexLoc = GL_INVALID_INDEX;
-	unsigned int mVertexMode = GL_INVALID_ENUM;
+	OWUtils::RenderCallbackType mRenderCallback = nullptr;
+	OWUtils::ResizeCallbackType mResizeCallback = nullptr;
 	unsigned int mIndicesMode = GL_INVALID_ENUM;
-	friend class VertexRenderer;
+	friend class VertexSourceRenderer;
 #pragma warning( pop )
 };
