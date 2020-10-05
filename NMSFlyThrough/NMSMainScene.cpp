@@ -9,6 +9,7 @@
 #include <Core/GlobalSettings.h>
 
 #include <Helpers/ErrorHandling.h>
+#include <Helpers/ResourceFactory.h>
 
 #include <Renderables/Axis.h>
 
@@ -85,7 +86,10 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	sp->mLookAt = { 0,0,0 };
 
 	mStarMap = new NoMansSky();
-	mStarMap->setUp("../NMSFlyThrough/NMSMap.txt", world());
+	std::experimental::filesystem::path p
+		= globals->resourceCache()->appendPath
+		("../../NMSFlyThrough/NMSMap.txt", ResourceFactory::ResourceType::UnknownType);
+	mStarMap->setUp(p.string(), world());
 	mAxis = new Axis();
 	
 	mAxis->prepare(world());
@@ -95,7 +99,7 @@ void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),
 						  const glm::mat4& proj, const glm::mat4& view)
 {
 	glm::mat4 model(1.0);
-	mAxis->render(proj, view, model);
+//	mAxis->render(proj, view, model);
 	mStarMap->render(proj, view, model);
 }
 

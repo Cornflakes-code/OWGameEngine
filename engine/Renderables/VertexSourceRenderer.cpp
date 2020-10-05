@@ -18,29 +18,6 @@ VertexSourceRenderer::~VertexSourceRenderer()
 {
 }
 
-float VertexSourceRenderer::aspectRatio() const
-{
-	return globals->physicalWindowSize().x / (globals->physicalWindowSize().y * 1.0f);
-}
-
-glm::vec2 VertexSourceRenderer::scaleByAspectRatio(const glm::vec2& toScale) const
-{
-	// This seems to work best (trial and error) when resizing the window.
-	glm::vec2 retval = toScale;
-	float _aspectRatio = aspectRatio();
-	if (_aspectRatio < 1)
-	{
-		retval.x /= _aspectRatio;
-		retval.y *= _aspectRatio;
-	}
-	else
-	{
-		retval.x /= _aspectRatio;
-		//retval.y *= _aspectRatio ;
-	}
-	return retval;
-}
-
 void VertexSourceRenderer::prepare(const VertexSource* source)
 {
 	checkSourceForErrors(source);
@@ -121,21 +98,7 @@ void VertexSourceRenderer::render(const VertexSource* source,
 {
 	OWUtils::PolygonModeRIAA poly;
 	source->mShader->use();
-	if (!source->mPVMName.empty())
-	{
-		// Testing for name.size() is seriously tacky.
-		// Must be a better way !!
-		if (source->mPVMName.size() < 3)
-		{
-			glm::mat4 pvm = proj * view;
-			source->mShader->setMatrix4(source->mPVMName, pvm);
-		}
-		else
-		{
-			glm::mat4 pvm = proj * view * model;
-			source->mShader->setMatrix4(source->mPVMName, pvm);
-		}
-	}
+	renderPVM(source, proj, view, model);
 	if (!source->mColourName.empty())
 	{
 		source->mShader->setVector4f(source->mColourName, source->mColour);
@@ -158,29 +121,8 @@ void VertexSourceRenderer::render(const VertexSource* source,
 			source->mShader->setInteger(t.name, t.imageUnit - GL_TEXTURE0);
 		}
 	}
-
-	if (mFirstTimeRender || globals->aspectRatioChanged())
-	{
-		// If no callback parameters then used the stored callbacks
-		if (!resizeCb)
-			resizeCb = source->mResizeCallback;
-		if (resizeCb)
-		{
-			resizeCb(source->mShader,
-				std::bind(&VertexSourceRenderer::scaleByAspectRatio,
-						this, std::placeholders::_1),
-				aspectRatio());
-			mFirstTimeRender = false;
-		}
-	}
-
-	// Allow callers to override the callback stored in source
-	if (!renderCb)
-		renderCb = source->mRenderCallback;
-	if (renderCb)
-	{
-		renderCb(proj, view, model, source->mShader);
-	}
+	callResizeCallback(source, resizeCb);
+	callRenderCallback(source, proj, view, model, renderCb);
 
 	GLsizei sz = static_cast<GLsizei>(source->mIndices.size());
 	if (source->mIndices.size())
@@ -212,20 +154,9 @@ void VertexSourceRenderer::render(const VertexSource* source,
 
 void VertexSourceRenderer::checkSourceForErrors(const VertexSource* source)
 {
-	if (source->mShader == nullptr)
-		throw NMSLogicException("source->mShader should not be null");
+	checkBaseSourceForErrors(source);
 	if (source->mRenderer == nullptr)
 		throw NMSLogicException("source->mRenderer must not be null");
-	if (source->mVec3.size() == 0 && source->mVec4.size() == 0)
-		throw NMSLogicException("both mVec3 and mVec4 are empty");
-	if (source->mVec3.size() != 0 && source->mVec4.size() != 0)
-		throw NMSLogicException("both mVec3 and mVec4 are not empty");
-	if (source->mPVMName.empty())
-		throw NMSLogicException("mPVMName is empty");
-	if (source->mVertexLoc == GL_INVALID_INDEX)
-		throw NMSLogicException("mVertexLoc is unset");
-	if (source->mVertexMode == GL_INVALID_ENUM)
-		throw NMSLogicException("mVertexMode is unset");
 	if (source->mIndices.size() && source->mIndicesMode == GL_INVALID_ENUM)
 		throw NMSLogicException("mIndicesMode is unset");
 	//source->mTexture = 0;

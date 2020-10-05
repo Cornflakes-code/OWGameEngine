@@ -16,7 +16,7 @@
 #include <Helpers/ErrorHandling.h>
 #include <Helpers/Utils.h>
 #include <Helpers/Shader.h>
-
+#include <Helpers/GeometricShapes.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/TextBillboardFixed.h>
 #include <Renderables/InstanceSourceRenderer.h>
@@ -27,7 +27,7 @@ NoMansSky::NoMansSky()
 {
 }
 
-#define DEBUG_GRID
+//#define DEBUG_GRID
 #define DEBUG_STARS
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
@@ -66,22 +66,21 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 //		"thebookofshaders_circle.g.glsl");
 	Shader* instanceShader = new Shader("instanced.v.glsl",
 					"instanced.f.glsl",
-					"instanced.g.glsl");
-	mStarRenderer.shader(instanceShader, "pvm");
+//					"instanced.g.glsl"
+					""
+					);
+	mStarRenderer.shader(instanceShader, "VP");
 
 	//glm::vec4 v4 = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f );
 	//std::vector<glm::vec4> vv4;
 	//vv4.push_back(v4);
 	//p->vertices(vv4, 0, GL_POINTS);
 
-	std::vector<glm::vec3> particleVertices = {
-		{ -0.5f, -0.5f, 0.0f },
-		{ 0.5f, -0.5f, 0.0f },
-		{ -0.5f, 0.5f, 0.0f },
-		{ 0.5f, 0.5f, 0.0f }
-	};
+	float scale = 1.0f;
+	std::vector<glm::vec3> squareVertices = GeometricShapes::rectangle(glm::vec2(1.0, 1.0));
 
-	mStarRenderer.vertices(particleVertices, 0, GL_POINTS);
+	mStarRenderer.vertices(squareVertices, 0, GL_TRIANGLES);
+	mStarRenderer.positions(mStarPositions, 1, 1, GL_POINTS);
 
 	std::vector<glm::vec4> instanceColours;
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN));
@@ -89,7 +88,6 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
-	mStarRenderer.positions(mStarPositions, 0, 1, GL_TRIANGLE_STRIP);
 	mStarRenderer.colours(instanceColours, 2);
 
 	mStarRenderer.addRenderer(new InstanceSourceRenderer());
@@ -317,25 +315,27 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 #endif
 
 #ifdef DEBUG_STARS
-	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), const glm::mat4& OW_UNUSED(view),
+	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), const glm::mat4& view,
 		const glm::mat4& OW_UNUSED(model), Shader* shader) {
-		shader->setVector2f("u_mouse", globals->pointingDevicePosition());
-		shader->setFloat("u_time", globals->secondsSinceLoad());
+		glm::vec3 CameraRight_worldspace =
+		{ view[0][0], view[1][0], view[2][0] };
+		shader->use();
+		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
+		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
+		shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
 	};
 	auto pointResizeRender = [](Shader* shader,
 		OWUtils::ScaleByAspectRatioType scaler,
 		float OW_UNUSED(aspectRatio)) {
 		glm::vec2 vv = globals->physicalWindowSize();
-		//vv.x /= 20.0f;
-		//vv.y /= 20.0f;
-		//glm::vec2 v2 = scaler({ vv });
 		shader->setVector2f("u_resolution", vv);
 	};
 	mStarRenderer.render(proj, view, model, nullptr, pointRender, pointResizeRender);
 	for (int i = 0; i < mStarLabels.size(); i++)
 	{
 		const VertexSource* sr = mStarLabels[i];
-		sr->render(proj, view, model);
+		//sr->render(proj, view, model);
+		checkGLError();
 	}
 #endif
 	checkGLError();

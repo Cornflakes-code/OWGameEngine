@@ -35,19 +35,20 @@ std::vector<glm::vec2> GeometricShapes::torus(float innerRadius,
 	return retval;
 }
 
-std::vector<glm::vec2> GeometricShapes::rectangle(const glm::vec2& dims, 
+std::vector<glm::vec3> GeometricShapes::rectangle(const glm::vec2& dims, 
 							const glm::vec2& bottomLeft)
 {
 	const float& x = bottomLeft.x;
 	const float& y = bottomLeft.y;
-	std::vector<glm::vec2> retval;
-	retval.push_back({ x, y });
-	retval.push_back({ x, dims.y + y });
-	retval.push_back({ dims.x + x, y });
+	float z = 0.0f;
+	std::vector<glm::vec3> retval;
+	retval.push_back({ x, y, z });
+	retval.push_back({ x, dims.y + y, z });
+	retval.push_back({ dims.x + x, y, z });
 
-	retval.push_back({ dims.x + x, y });
-	retval.push_back({ x, dims.y + y });
-	retval.push_back({ dims.x + x, dims.y + y });
+	retval.push_back({ dims.x + x, y, z });
+	retval.push_back({ x, dims.y + y, z });
+	retval.push_back({ dims.x + x, dims.y + y, z });
 
 	return retval;
 }

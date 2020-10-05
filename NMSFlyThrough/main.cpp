@@ -1,11 +1,13 @@
 #include <map>
 #include <fstream>
+#include <experimental/filesystem>
 
 #include <Core/GLApplication.h>
 #include <Core/SaveAndRestore.h>
 #include <Core/GlobalSettings.h>
 
 #include <Helpers/Logger.h>
+#include <Helpers/ErrorHandling.h>
 #include <Helpers/ResourceFactory.h>
 #include <Cameras/CameraMazhar.h>
 #include <Cameras/CameraOW.h>
@@ -53,13 +55,22 @@ class MacroRecorder;
 
 extern OWENGINE_API GlobalSettings* globals;
 
-int main()
+int main(int argc, char* argv[])
 {
 	ResourceFactory* rf = ResourceFactory::getResourceFactory();
 	rf->addPath("../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
 	rf->addPath("../engine/Resources/fonts", ResourceFactory::ResourceType::Font);
 	rf->addPath("../../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
 	rf->addPath("../../engine/Resources/fonts", ResourceFactory::ResourceType::Font);
+	std::string p = std::experimental::filesystem::current_path().string();
+	rf->addPath(p, ResourceFactory::ResourceType::UnknownType);
+	if (argc)
+	{
+		std::experimental::filesystem::path exePath = argv[0];
+		exePath.remove_filename();
+		rf->addPath(exePath.string(), ResourceFactory::ResourceType::UnknownType);
+	}
+	
 	NMSUserInput ui;
 	//ui.addKeyMapping(GLFW_KEY_W, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Forward);
 	//ui.addKeyMapping(GLFW_KEY_A, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::YawLeft);
@@ -90,6 +101,7 @@ int main()
 		globals->saveAndRestore(&sr);
 		globals->logger(&logger);
 		CameraOW camera;
+		globals->camera(&camera);
 		NMSMovie nms(&camera);
 		app.init(&nms, &ui, &recorder, &sr);
 		app.run(&nms);

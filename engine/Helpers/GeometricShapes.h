@@ -4,7 +4,9 @@
 
 #include <glm/glm.hpp>
 
-class GeometricShapes
+#include "../OWEngine/OWEngine.h"
+
+class OWENGINE_API GeometricShapes
 {
 public:
 	GeometricShapes();
@@ -12,6 +14,6 @@ public:
 	static std::vector<glm::vec2> torus(float innerRadius, 
 									float outerRadius, 
 									float arcRadians);
-	static std::vector<glm::vec2> rectangle(const glm::vec2& dims, 
+	static std::vector<glm::vec3> rectangle(const glm::vec2& dims, 
 						const glm::vec2& bottomLeft = { 0.0f, 0.0f });
 };

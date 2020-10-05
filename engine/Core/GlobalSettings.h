@@ -14,6 +14,7 @@ class MacroRecorder;
 class Logger;
 class ResourceFactory;
 class GLApplication;
+class Camera;
 
 class OWENGINE_API GlobalSettings
 {
@@ -41,6 +42,7 @@ public:
 	const Movie* movie() const { return mMovie; }
 	const MacroRecorder* recorder() const { return mRecorder;  }
 	const Logger* logger() const { return mLogger; };
+	const Camera* camera() const { return mCamera; };
 	const ResourceFactory* resourceCache() const { return mResFactory; }
 	ResourceFactory* resourceCache() { return mResFactory; }
 	GLApplication* application() { return mApplication; }
@@ -51,7 +53,8 @@ public:
 	void saveAndRestore(SaveAndRestore* newValue) { mSaveAndRestore = newValue; }
 	void movie(Movie* newValue) { mMovie = newValue; }
 	void recorder(MacroRecorder* newValue) { mRecorder = newValue; }
-	void logger(Logger* newValue) { mLogger = newValue; };
+	void logger(Logger* newValue) { mLogger = newValue; }
+	void camera(Camera* newValue) { mCamera = newValue; }
 	void resourceCache(ResourceFactory* newValue) { mResFactory = newValue; }
 	void application(GLApplication* newValue) { mApplication = newValue; }
 private:
@@ -63,6 +66,7 @@ private:
 	GLApplication* mApplication = nullptr;
 	ResourceFactory* mResFactory = nullptr;
 	SaveAndRestore* mSaveAndRestore = nullptr;
+	Camera* mCamera = nullptr;
 	glm::uvec2 mPhysicalWindowSize;
 	glm::vec2 mPointingDevicePosition;
 	static OWUtils::Time::time_point mLoadTime; 

@@ -68,13 +68,16 @@ void InstanceSource::render(const glm::mat4& proj,
 	OWUtils::RenderCallbackType renderCb,
 	OWUtils::ResizeCallbackType resizeCb) const
 {
+	checkGLError();
 	if (mover)
 	{
 		mRenderer->render(this, proj, view, mover->translate(model), renderCb, resizeCb);
+		checkGLError();
 	}
 	else
 	{
 		glm::mat4 initialPositionModel = glm::translate(model, initialPosition());
 		mRenderer->render(this, proj, view, initialPositionModel, renderCb, resizeCb);
+		checkGLError();
 	}
 }

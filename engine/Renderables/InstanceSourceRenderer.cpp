@@ -3,6 +3,7 @@
 #include "../Helpers/ErrorHandling.h"
 
 #include "InstanceSource.h"
+#include "../Helpers/Shader.h"
 
 InstanceSourceRenderer::InstanceSourceRenderer()
 {}
@@ -32,6 +33,7 @@ void InstanceSourceRenderer::prepare(const InstanceSource* source)
 	glGenBuffers(3, &mVbo[0]);
 
 	// The triangles to draw
+	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 	glVertexAttribPointer(
 		source->mVertexLoc, // attribute. must match the layout in the shader.
@@ -45,7 +47,9 @@ void InstanceSourceRenderer::prepare(const InstanceSource* source)
 				source->mVec3.data(), GL_STATIC_DRAW);
 
 	// The positions
+	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
+	checkGLError();
 	if (source->mPositionsV3.size())
 	{
 		glVertexAttribPointer(
@@ -56,7 +60,6 @@ void InstanceSourceRenderer::prepare(const InstanceSource* source)
 			0, // stride
 			(void*)0 // array buffer offset
 		);
-		glEnableVertexAttribArray(1);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * source->mPositionsV3.size(),
 			source->mPositionsV3.data(), GL_STREAM_DRAW);
 	}
@@ -70,17 +73,17 @@ void InstanceSourceRenderer::prepare(const InstanceSource* source)
 			0, // stride
 			(void*)0 // array buffer offset
 		);
-		glEnableVertexAttribArray(1);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * source->mPositionsV4.size(),
 			source->mPositionsV4.data(), GL_STREAM_DRAW);
 	}
 
 	// The colours
+	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[2]);
 	glVertexAttribPointer(
 		source->mColourLocation, // must match the layout in the shader.
 		4, // size : r + g + b + a => 4
-		GL_UNSIGNED_BYTE, // type
+		GL_FLOAT, // type
 		GL_TRUE, // normalized? *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
 		0, // stride
 		(void*)0 // array buffer offset
@@ -91,6 +94,7 @@ void InstanceSourceRenderer::prepare(const InstanceSource* source)
 				source->mColours.data(), GL_STREAM_DRAW);
 
 	glBindVertexArray(0);
+	checkGLError();
 }
 
 void InstanceSourceRenderer::render(const InstanceSource* source,
@@ -100,6 +104,15 @@ void InstanceSourceRenderer::render(const InstanceSource* source,
 	OWUtils::RenderCallbackType renderCb,
 	OWUtils::ResizeCallbackType resizeCb) const
 {
+	OWUtils::PolygonModeRIAA poly;
+	source->mShader->use();
+	renderPVM(source, proj, view, model);
+	checkGLError();
+
+	glBindVertexArray(mVao);
+	callResizeCallback(source, resizeCb);
+	callRenderCallback(source, proj, view, model, renderCb);
+
 	// These functions are specific to glDrawArrays*Instanced*.
 	// The first parameter is the attribute buffer we're talking about.
 	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
@@ -107,12 +120,15 @@ void InstanceSourceRenderer::render(const InstanceSource* source,
 
 	// particles vertices : always reuse the same 3 vertices -> 0
 	glVertexAttribDivisor(source->mVertexLoc, 0); 
+	checkGLError();
 
 	// positions : one per quad (its center) -> 1
 	glVertexAttribDivisor(source->mPositionLocation, source->mPositionDivisor); 
+	checkGLError();
 
 	// color : 
 	glVertexAttribDivisor(source->mColourLocation, source->mColourDivisor); 
+	checkGLError();
 
 	// Draw the particles !
 	// This draws many times a small triangle_strip (which looks like a quad).
@@ -124,17 +140,20 @@ void InstanceSourceRenderer::render(const InstanceSource* source,
 		glDrawArraysInstanced(source->mVertexMode, 0, 
 			static_cast<GLsizei>(source->mVec3.size()),
 			static_cast<GLsizei>(source->mPositionsV3.size()));
+		checkGLError();
 	}
 	else if (source->mPositionsV4.size())
 	{
 		glDrawArraysInstanced(source->mVertexMode, 0, 
 			static_cast<GLsizei>(source->mVec3.size()),
 			static_cast<GLsizei>(source->mPositionsV4.size()));
+		checkGLError();
 	}
 }
 
 void InstanceSourceRenderer::checkSourceForErrors(const InstanceSource* source)
 {
+	checkBaseSourceForErrors(source);
 	if (source->mVec3.size() == 0)
 		throw NMSLogicException("mVec3 must be used for InstanceSourceRenderer");
 	if (source->mVec4.size() != 0)

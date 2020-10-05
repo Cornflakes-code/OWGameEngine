@@ -56,9 +56,15 @@ protected:
 	std::vector<glm::vec4> mVec4;
 	unsigned int mVertexLoc = GL_INVALID_INDEX;
 	unsigned int mVertexMode = GL_INVALID_ENUM;
+	OWUtils::RenderCallbackType mRenderCallback = nullptr;
+	OWUtils::ResizeCallbackType mResizeCallback = nullptr;
 #pragma warning( pop )
 private:
 	AABB calcBounds() const;
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	mutable AABB mBounds;
 	mutable bool mBoundsValid = false;
+#pragma warning( pop )
+	friend class VertexRenderBase;
 };

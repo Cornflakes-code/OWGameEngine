@@ -30,7 +30,6 @@ void TextBillboardDynamic::renderCallback(
 {
 	const glm::mat4 pv = proj * view;
 	mShader->use();
-	mShader->setMatrix4("VP", pv);
 
 	glm::vec3 CameraRight_worldspace =
 	{ view[0][0], view[1][0], view[2][0] };

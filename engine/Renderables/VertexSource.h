@@ -63,8 +63,6 @@ protected:
 	std::vector<OWUtils::TextureBlock> mTextures;
 	glm::vec4 mColour;
 	std::string mColourName;
-	OWUtils::RenderCallbackType mRenderCallback = nullptr;
-	OWUtils::ResizeCallbackType mResizeCallback = nullptr;
 	unsigned int mIndicesMode = GL_INVALID_ENUM;
 	friend class VertexSourceRenderer;
 #pragma warning( pop )

@@ -33,11 +33,7 @@ public:
 protected:
 private:
 	virtual void checkSourceForErrors(const VertexSource* source);
-	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
-	float aspectRatio() const;
 	unsigned int mVao = 0;
 	unsigned int mVbo = 0;
 	unsigned int mEbo = 0;
-	// Ok to modify Renderables if only for efficiency reasons
-	mutable bool mFirstTimeRender = true;
 };
