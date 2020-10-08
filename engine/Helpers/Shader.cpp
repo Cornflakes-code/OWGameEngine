@@ -34,7 +34,7 @@ Shader::~Shader()
 
 void Shader::debugPrint()
 {
-	Logger::print_all(mShaderProgram, std::cout);
+	Logger::print_all(mShaderProgram);
 }
 
 void Shader::use() const
@@ -274,10 +274,6 @@ void Shader::linkShaders(int vertexShader, int fragmentShader, int geomShader,
 int Shader::getUniformLocation(const std::string& name) const
 {
 	GLint loc = glGetUniformLocation(mShaderProgram, name.c_str());
-	if (loc == -1)
-	{
-		checkGLError();
-	}
 	return loc;
 }
 

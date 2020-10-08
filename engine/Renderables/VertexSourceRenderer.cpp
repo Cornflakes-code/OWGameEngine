@@ -37,57 +37,46 @@ void VertexSourceRenderer::prepare(const VertexSource* source)
 	{
 		glGenBuffers(1, &mEbo);
 	}
-	checkGLError();
 
 	if (source->mVec3.size())
 	{
 		glVertexAttribPointer(source->mVertexLoc,
 			3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		glEnableVertexAttribArray(source->mVertexLoc);
-		checkGLError();
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * source->mVec3.size(),
 			source->mVec3.data(), GL_STATIC_DRAW);
-		checkGLError();
 	}
 	else if (source->mVec4.size())
 	{
 		glVertexAttribPointer(source->mVertexLoc,
 			4,
 			GL_FLOAT, GL_FALSE, 0, (void*)0);
-		checkGLError();
 
 		glEnableVertexAttribArray(source->mVertexLoc);
-		checkGLError();
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * source->mVec4.size(),
 			source->mVec4.data(), GL_STATIC_DRAW);
-		checkGLError();
 	}
 
 	if (!source->mIndices.empty())
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
-		checkGLError();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 			sizeof(unsigned int) * static_cast<GLsizei>(source->mIndices.size()),
 			source->mIndices.data(), GL_STATIC_DRAW);
-		checkGLError();
 	}
 
 	glEnableVertexAttribArray(0);
-	checkGLError();
 
 	// note that this is allowed, the call to glVertexAttribPointer 
 	// registered VBO as the vertex attribute's bound vertex buffer 
 	// object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	checkGLError();
 
 	// You can unbind the VAO afterwards so other VAO calls won't 
 	// accidentally modify this VAO, but this rarely happens. Modifying other
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't 
 	// unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
-	checkGLError();
 }
 
 void VertexSourceRenderer::render(const VertexSource* source,

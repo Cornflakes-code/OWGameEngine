@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #endif
 
+#include "LogStream.h"
+
 NMSException::NMSException(const std::string& msg)
 	: std::exception(msg.c_str())
 {
@@ -20,16 +22,6 @@ static std::string toString(NMSErrorLevel err)
 		case NMSErrorLevel::NMSCritical: return "NMSCritical";
 		default: throw NMSException("Unknow NMSErrorLevel");
 	}
-}
-
-void dumpMessage(const std::string& msg, NMSErrorLevel err)
-{
-	std::cout << msg << toString(err) << "\n";
-}
-
-void dumpMessage(const std::stringstream& ss, NMSErrorLevel err)
-{
-	dumpMessage(ss.str(), err);
 }
 
 std::string glCheckError_(GLenum errorCode)
@@ -56,7 +48,7 @@ void debugCheckGLError(const char* file, int line)
 	GLenum err;
 	while ((err = glGetError()) != GL_NO_ERROR)
 	{
-		std::cout << "errorCode[" << err << "] [" << glCheckError_(err) 
+		LogStream(LogStreamLevel::Warning) << "errorCode[" << err << "] [" << glCheckError_(err)
 			<< "in file[" << file << "] line [" << line << "]\n";
 	}
 }

@@ -26,6 +26,7 @@ public:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+	TextBillboard* mTextZero;
 	TextBillboard* mTextX;
 	TextBillboard* mTextY;
 	TextBillboard* mTextZ;

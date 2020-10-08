@@ -8,6 +8,8 @@ TextBillboardFixed::TextBillboardFixed(const glm::vec3& initialPosition,
 		const std::string& fontFileName, int fontHeight)
 :TextBillboard(initialPosition, fontFileName, fontHeight)
 {
+	// The following has some info
+	// http://ogldev.org/www/tutorial27/tutorial27.html
 	shader(new Shader("textStaticBillboard.v.glsl", "text.f.glsl", ""), "VP");
 	mShader->use();
 	mVertexLoc = mShader->getAttributeLocation("coord");

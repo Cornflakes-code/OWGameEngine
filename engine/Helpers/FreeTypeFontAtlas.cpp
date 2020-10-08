@@ -12,6 +12,7 @@
 
 #include "ErrorHandling.h"
 #include "ResourceFactory.h"
+#include "LogStream.h"
 
 const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
 		const std::experimental::filesystem::path& path, int fontHeight)
@@ -28,22 +29,20 @@ const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
 		mFonts[path] = LoadedFace(path, fontHeight);
 		iter = mFonts.find(path);
 	}
-	checkGLError();
 
 	auto fontHeightDataIter = iter->second.fontDimensions.find(fontHeight);
 	if (fontHeightDataIter == iter->second.fontDimensions.end())
 	{
 		iter->second.fontDimensions[fontHeight]
 			= FontDetails(iter->second.face, iter->second.maxRowWidth, fontHeight);
-		checkGLError();
-		dumpMessage(std::stringstream() << "For face "
+		LogStream(LogStreamLevel::Info) << "For face "
 			<< iter->second.face->family_name
 			<< ", font height " << fontHeight << ", generated a "
 			<< iter->second.fontDimensions[fontHeight].width()
 			<< " * " << iter->second.fontDimensions[fontHeight].height()
 			<< "(" << iter->second.fontDimensions[fontHeight].width() *
 			iter->second.fontDimensions[fontHeight].height() / 1024
-			<< "kb) texture atlas\n", NMSErrorLevel::NMSInfo);
+			<< "kb) texture atlas\n";
 
 	}
 	return &(iter->second.fontDimensions[fontHeight]);
@@ -75,9 +74,7 @@ FreeTypeFontAtlas::FontDetails::FontDetails(FT_Face face, unsigned int maxRowWid
 				int fontHeight)
 {
 	calcTextureSize(face, maxRowWidth, fontHeight);
-	checkGLError();
 	mTextureBlock = createGlyphBitmap(face, maxRowWidth);
-	checkGLError();
 }
 
 FreeTypeFontAtlas::FontDetails::~FontDetails()
@@ -122,8 +119,7 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 	{
 		if (FT_Load_Char(face, i, FT_LOAD_RENDER))
 		{
-			dumpMessage(std::stringstream() << "Loading FT character [" << i << "] failed",
-				NMSErrorLevel::NMSWarning);
+			LogStream(LogStreamLevel::Warning) << "Loading FT character [" << i << "] failed";
 			continue;
 		}
 
@@ -169,7 +165,6 @@ OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face&
 		internalFormat, // format of the pixel data
 		bitmapType,
 		0); // data 
-	checkGLError();
 
 	// Clamping to edges is important to prevent artifacts when scaling
 	glTexParameteri(tb.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -200,8 +195,7 @@ OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face&
 	{
 		if (FT_Load_Char(face, i, FT_LOAD_RENDER))
 		{
-			dumpMessage(std::stringstream() << "Loading character " << i 
-					<< " failed!", NMSErrorLevel::NMSInfo);
+			LogStream(LogStreamLevel::Info) << "Loading character " << i << " failed!";
 			continue;
 		}
 
@@ -226,8 +220,8 @@ OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face&
 			err = glGetError();
 			if (err != GL_NO_ERROR)
 			{
-				dumpMessage(std::stringstream() << "glTexSubImage2D Error: [" << std::hex << err
-					<< "]" << std::dec << " index[" << i << "]", NMSErrorLevel::NMSInfo);
+				LogStream(LogStreamLevel::Info) << "glTexSubImage2D Error: [" << std::hex << err
+					<< "]" << std::dec << " index[" << i << "]";
 				continue;
 			}
 		}

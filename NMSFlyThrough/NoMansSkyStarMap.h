@@ -20,6 +20,7 @@ class Shader;
 class NoMansSky
 {
 	InstanceSource mStarRenderer;
+	std::vector<glm::vec3> mRandomMinorStars;
 	std::vector<glm::vec4> mStarPositions;
 	std::vector<VertexSource*> mStarLabels;
 	std::vector<glm::vec4> mStarColours;
@@ -31,7 +32,10 @@ class NoMansSky
 	void createGrid(const AABB& nmsSpace, 
 					const glm::u32vec3& gridSizes,
 					float scaleToWorld);
-	void createRandomStars(const AABB& nmsSpace);
+	void createRandomVectors(const AABB& world,
+		std::vector<glm::vec3>& target,
+		unsigned int count,
+		float scaleToWorld);
 	Shader* mGridShader;
 	Shader* mStarShader;
 

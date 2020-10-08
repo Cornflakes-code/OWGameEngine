@@ -13,6 +13,7 @@
 #include <Cameras/CameraOW.h>
 
 #include <Helpers/MacroRecorder.h>
+#include <Helpers/LogStream.h>
 
 #include "NMSMovie.h"
 #include "NMSUserInput.h"
@@ -69,8 +70,9 @@ int main(int argc, char* argv[])
 		std::experimental::filesystem::path exePath = argv[0];
 		exePath.remove_filename();
 		rf->addPath(exePath.string(), ResourceFactory::ResourceType::UnknownType);
+		LogStream::setLogFile(exePath);
 	}
-	
+
 	NMSUserInput ui;
 	//ui.addKeyMapping(GLFW_KEY_W, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Forward);
 	//ui.addKeyMapping(GLFW_KEY_A, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::YawLeft);
@@ -112,4 +114,5 @@ int main(int argc, char* argv[])
 		int c;
 		std::cin >> c;
 	}
+	LogStream::closeLogFile();
 }

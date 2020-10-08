@@ -5,6 +5,8 @@
 #include <chrono>
 #include <regex>
 #include <random>
+#include <cmath>
+#include <algorithm>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -27,7 +29,7 @@ NoMansSky::NoMansSky()
 {
 }
 
-//#define DEBUG_GRID
+#define DEBUG_GRID
 #define DEBUG_STARS
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
@@ -70,39 +72,19 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 					""
 					);
 	mStarRenderer.shader(instanceShader, "VP");
-
-	//glm::vec4 v4 = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f );
-	//std::vector<glm::vec4> vv4;
-	//vv4.push_back(v4);
-	//p->vertices(vv4, 0, GL_POINTS);
-
-	float scale = 1.0f;
 	std::vector<glm::vec3> squareVertices = GeometricShapes::rectangle(glm::vec2(1.0, 1.0));
-
+	createRandomVectors(NMSSize, mRandomMinorStars, 50000, scaleNMStoWorld);
 	mStarRenderer.vertices(squareVertices, 0, GL_TRIANGLES);
-	mStarRenderer.positions(mStarPositions, 1, 1, GL_POINTS);
+	mStarRenderer.positions(mRandomMinorStars, 1, 1, GL_POINTS);
 
 	std::vector<glm::vec4> instanceColours;
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
-	mStarRenderer.colours(instanceColours, 2);
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::GREEN));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
+	mStarRenderer.colours(instanceColours, 2, 0);
 
 	mStarRenderer.addRenderer(new InstanceSourceRenderer());
-
-	//glBindVertexArray(mVao[1]);
-	//GLuint vboStar;
-	//glGenBuffers(1, &vboStar);
-	//glPointSize(30.0f);
-	//glBindBuffer(GL_ARRAY_BUFFER, vboStar);
-	//location = mStarShader->getAttributeLocation("pointpos");
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mStarPositions.size(), 
-	//		mStarPositions.data(), GL_STATIC_DRAW);
-	//glEnableVertexAttribArray(location);
-	//glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, 0, 0);
-	//glBindVertexArray(0);
 #endif
 }
 
@@ -283,18 +265,35 @@ void NoMansSky::loadStars(const std::string& fileName,
 	}
 }
 
-void NoMansSky::createRandomStars(const AABB& nmsSpace)
+void NoMansSky::createRandomVectors(const AABB& nmsSpace,
+				std::vector<glm::vec3>& target,
+				unsigned int count,
+				float scaleToWorld)
 {
 	std::default_random_engine generator;
-	std::uniform_real_distribution<float> xDistribution(nmsSpace.minPoint().x,
-				nmsSpace.maxPoint().x);
-	std::uniform_real_distribution<float> yDistribution(nmsSpace.minPoint().y,
-				nmsSpace.maxPoint().y);
-	std::uniform_real_distribution<float> zDistribution(nmsSpace.minPoint().z,
-				nmsSpace.maxPoint().z);
-	glm::vec3 v3({ xDistribution(generator),	
-				   yDistribution(generator), 
-				   zDistribution(generator) });
+	// 3 times std dev either side of mean.
+	float xstddev = nmsSpace.size().x * scaleToWorld / 6.0f;
+	float ystddev = nmsSpace.size().y * scaleToWorld / 6.0f;
+	float zstddev = nmsSpace.size().z * scaleToWorld / 6.0f;
+
+	std::normal_distribution<float> xdistribution(0.0f, xstddev);
+	std::normal_distribution<float> ydistribution(0.0f, ystddev);
+	std::normal_distribution<float> zdistribution(0.0f, zstddev);
+
+	std::vector<float> x(count);
+	std::vector<float> y(count);
+	std::vector<float> z(count);
+	for (unsigned int i = 0; i < count; i++)
+	{
+		x[i] = xdistribution(generator);
+		y[i] = ydistribution(generator);
+		z[i] = zdistribution(generator);
+	}
+
+	for (unsigned int i = 0; i < count; i++)
+	{
+		target.push_back({ x[i], y[i], z[i] });
+	}
 }
 
 void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
@@ -302,15 +301,10 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 	glm::mat4 pvm = proj * view * model;
 #ifdef DEBUG_GRID
 	mGridShader->use();
-	checkGLError();
 	mGridShader->setMatrix4("pvm", pvm);
-	checkGLError();
 	glBindVertexArray(mVao[0]);
-	checkGLError();
 	mGridShader->setVector4f("uColour", { 0, 1.0, 0.5, 1 });
-	checkGLError();
 	glDrawArrays(GL_LINES, 0, GLsizei(mGrid.size()));
-	checkGLError();
 	glBindVertexArray(0);
 #endif
 
@@ -324,21 +318,13 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 		shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
 	};
-	auto pointResizeRender = [](Shader* shader,
-		OWUtils::ScaleByAspectRatioType scaler,
-		float OW_UNUSED(aspectRatio)) {
-		glm::vec2 vv = globals->physicalWindowSize();
-		shader->setVector2f("u_resolution", vv);
-	};
-	mStarRenderer.render(proj, view, model, nullptr, pointRender, pointResizeRender);
+	mStarRenderer.render(proj, view, model, nullptr, pointRender);
 	for (int i = 0; i < mStarLabels.size(); i++)
 	{
 		const VertexSource* sr = mStarLabels[i];
-		//sr->render(proj, view, model);
-		checkGLError();
+		sr->render(proj, view, model);
 	}
 #endif
-	checkGLError();
 }
 
 void NoMansSky::readSaveFile(const std::string& saveFileMeta, const std::string& saveFile)

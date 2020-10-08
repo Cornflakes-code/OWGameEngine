@@ -2,6 +2,7 @@
 
 #include "GLApplication.h"
 #include "../Helpers/ErrorHandling.h"
+#include "../Helpers/LogStream.h"
 
 // AnyKey must be mapped to a non printable key
 int UserInput::AnyKey = 0;
@@ -118,8 +119,8 @@ void UserInput::doKeyPressCallback(unsigned int codepoint,
 	{
 		if (key < 32)
 			return;
-		dumpMessage(std::stringstream() << "data.key["
-			<< data.key << "] action[" << action << "]\n", NMSErrorLevel::NMSInfo);
+		LogStream(LogStreamLevel::Info) << "data.key["
+			<< data.key << "] action[" << action << "]\n";
 		data.action = action;
 		data.key = key;
 		data.mods = mods;

@@ -8,7 +8,11 @@
 InstanceSourceRenderer::InstanceSourceRenderer()
 {}
 
+// Basically code pasted from:
 //http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
+
+// This has some info as well
+// https://www.informit.com/articles/article.aspx?p=2033340&seqNum=5
 
 // One buffer for the vertices of the mesh.No index buffer, 
 //		so it’s 6 vec3, which make 2 triangles, which make 1 quad.
@@ -49,7 +53,6 @@ void InstanceSourceRenderer::prepare(const InstanceSource* source)
 	// The positions
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
-	checkGLError();
 	if (source->mPositionsV3.size())
 	{
 		glVertexAttribPointer(
@@ -94,7 +97,6 @@ void InstanceSourceRenderer::prepare(const InstanceSource* source)
 				source->mColours.data(), GL_STREAM_DRAW);
 
 	glBindVertexArray(0);
-	checkGLError();
 }
 
 void InstanceSourceRenderer::render(const InstanceSource* source,
@@ -107,7 +109,6 @@ void InstanceSourceRenderer::render(const InstanceSource* source,
 	OWUtils::PolygonModeRIAA poly;
 	source->mShader->use();
 	renderPVM(source, proj, view, model);
-	checkGLError();
 
 	glBindVertexArray(mVao);
 	callResizeCallback(source, resizeCb);
@@ -120,15 +121,12 @@ void InstanceSourceRenderer::render(const InstanceSource* source,
 
 	// particles vertices : always reuse the same 3 vertices -> 0
 	glVertexAttribDivisor(source->mVertexLoc, 0); 
-	checkGLError();
 
 	// positions : one per quad (its center) -> 1
 	glVertexAttribDivisor(source->mPositionLocation, source->mPositionDivisor); 
-	checkGLError();
 
 	// color : 
 	glVertexAttribDivisor(source->mColourLocation, source->mColourDivisor); 
-	checkGLError();
 
 	// Draw the particles !
 	// This draws many times a small triangle_strip (which looks like a quad).
@@ -137,17 +135,33 @@ void InstanceSourceRenderer::render(const InstanceSource* source,
 	// but faster.
 	if (source->mPositionsV3.size())
 	{
-		glDrawArraysInstanced(source->mVertexMode, 0, 
-			static_cast<GLsizei>(source->mVec3.size()),
-			static_cast<GLsizei>(source->mPositionsV3.size()));
-		checkGLError();
+		if (source->mVec3.size())
+		{
+			glDrawArraysInstanced(source->mVertexMode, 0,
+				static_cast<GLsizei>(source->mVec3.size()),
+				static_cast<GLsizei>(source->mPositionsV3.size()));
+		}
+		else
+		{
+			glDrawArraysInstanced(source->mVertexMode, 0,
+				static_cast<GLsizei>(source->mVec4.size()),
+				static_cast<GLsizei>(source->mPositionsV3.size()));
+		}
 	}
 	else if (source->mPositionsV4.size())
 	{
-		glDrawArraysInstanced(source->mVertexMode, 0, 
-			static_cast<GLsizei>(source->mVec3.size()),
-			static_cast<GLsizei>(source->mPositionsV4.size()));
-		checkGLError();
+		if (source->mVec3.size())
+		{
+			glDrawArraysInstanced(source->mVertexMode, 0,
+				static_cast<GLsizei>(source->mVec3.size()),
+				static_cast<GLsizei>(source->mPositionsV4.size()));
+		}
+		else
+		{
+			glDrawArraysInstanced(source->mVertexMode, 0,
+				static_cast<GLsizei>(source->mVec4.size()),
+				static_cast<GLsizei>(source->mPositionsV4.size()));
+		}
 	}
 }
 

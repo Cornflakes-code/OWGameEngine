@@ -179,6 +179,7 @@
     <ClInclude Include="..\Helpers\ResizeHelper.h" />
     <ClInclude Include="..\Helpers\ResourceFactory.h" />
     <ClInclude Include="..\Helpers\Shader.h" />
+    <ClInclude Include="..\Helpers\LogStream.h" />
     <ClInclude Include="..\Helpers\TextBillboard.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
     <ClInclude Include="..\Helpers\utils.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="..\Helpers\ResourceFactory.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
     <ClCompile Include="..\Helpers\stb_image.cpp" />
+    <ClCompile Include="..\Helpers\LogStream.cpp" />
     <ClCompile Include="..\Helpers\TextBillboard.cpp" />
     <ClCompile Include="..\Helpers\Texture.cpp" />
     <ClCompile Include="..\Helpers\utils.cpp" />

@@ -23,7 +23,8 @@ public:
 					unsigned int divisor,
 					unsigned int mode);
 	void colours(const std::vector<glm::vec4>& _colours,
-					unsigned int location);
+					unsigned int location,
+					unsigned int colourDivisor = GL_INVALID_INDEX);
 	virtual void render(const glm::mat4& proj,
 					const glm::mat4& view,
 					const glm::mat4& model,

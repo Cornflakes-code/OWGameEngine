@@ -52,9 +52,6 @@ public:
 	{}
 };
 
-void OWENGINE_API dumpMessage(const std::string& msg, NMSErrorLevel err);
-void OWENGINE_API dumpMessage(const std::stringstream& ss, NMSErrorLevel err);
-
 #define DEBUG_OPENGL
 
 #ifdef DEBUG_OPENGL

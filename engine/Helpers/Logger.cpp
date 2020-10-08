@@ -8,6 +8,8 @@
 #include <glad/glad.h>
 #endif
 
+#include "../Helpers/LogStream.h"
+
 double Logger::previous_seconds = 0.0;
 int Logger::frame_count = 0;
 
@@ -31,8 +33,9 @@ void Logger::update_fps_counter(GLFWwindow* window) const
 	frame_count++;
 }
 
-void Logger::log_gl_params(std::ostream& out) const
+void Logger::log_gl_params() const
 {
+	LogStream tee(LogStreamLevel::ImportantInfo);
 	GLenum params[] = {
 	  GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
 	  GL_MAX_CUBE_MAP_TEXTURE_SIZE,
@@ -61,29 +64,29 @@ void Logger::log_gl_params(std::ostream& out) const
 	  "GL_MAX_VIEWPORT_DIMS",
 	  "GL_STEREO",
 	};
-	out << "GL Context Params:\n";
+	tee << "GL Context Params:\n";
 	// integers - only works if the order is 0-10 integer return types6
 	for (int i = 0; i < 10; i++)
 	{
 		int v = 0;
 		glGetIntegerv(params[i], &v);
-		out << names[i] << " " << v << "\n";
+		tee << names[i] << " " << v << "\n";
 	}
 	// others
 	int v[2];
 	v[0] = v[1] = 0;
 	glGetIntegerv(params[10], v);
-	std::cout << names[10] << " " << v[0] << " " << v[1] << "\n";
+	tee << names[10] << " " << v[0] << " " << v[1] << "\n";
 	unsigned char s = 0;
 	glGetBooleanv(params[11], &s);
-	out << names[11] << " " << s << "\n";
+	tee << names[11] << " " << s << "\n";
 
 	const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
 	const GLubyte* version = glGetString(GL_VERSION); // version as a string
 
-	std::cout << "Renderer: " << renderer << "\n";
-	std::cout << "OpenGL version supported: " << version << "\n";
-	out << "-----------------------------\n";
+	tee << "Renderer: " << renderer << "\n";
+	tee << "OpenGL version supported: " << version << "\n";
+	tee << "-----------------------------\n";
 }
 
 std::string Logger::toString(GLenum type) 
@@ -108,18 +111,19 @@ std::string Logger::toString(GLenum type)
 	return "other";
 }
 
-void Logger::print_all(GLuint programme, std::ostream& out)
+void Logger::print_all(GLuint programme)
 {
-	printf("--------------------\nshader programme %i info:\n", programme);
+	LogStream tee(LogStreamLevel::ImportantInfo);
+	tee << "--------------------\nshader programme " << programme << " info:\n";
 	int params = -1;
 	glGetProgramiv(programme, GL_LINK_STATUS, &params);
-	out << "GL_LINK_STATUS = " << params << "\n";
+	tee << "GL_LINK_STATUS = " << params << "\n";
 
 	glGetProgramiv(programme, GL_ATTACHED_SHADERS, &params);
-	out << "GL_ATTACHED_SHADERS = " << params << "\n";
+	tee << "GL_ATTACHED_SHADERS = " << params << "\n";
 
 	glGetProgramiv(programme, GL_ACTIVE_ATTRIBUTES, &params);
-	out << "GL_ACTIVE_ATTRIBUTES = " << params << "\n";
+	tee << "GL_ACTIVE_ATTRIBUTES = " << params << "\n";
 	for (int i = 0; i < params; i++) 
 	{
 		char name[64];
@@ -136,7 +140,7 @@ void Logger::print_all(GLuint programme, std::ostream& out)
 				long_name << name << "[" << j << "]\n";
 				
 				int location = glGetAttribLocation(programme, long_name.str().c_str());
-				out << "  " << i << ") type:" << toString(type)
+				tee << "  " << i << ") type:" << toString(type)
 					<< " name:" << long_name.str().c_str() 
 					<< " location:"	<< location << "\n";
 			}
@@ -144,14 +148,14 @@ void Logger::print_all(GLuint programme, std::ostream& out)
 		else 
 		{
 			int location = glGetAttribLocation(programme, name);
-			out << "  " << i << ") type:" << toString(type)
+			tee << "  " << i << ") type:" << toString(type)
 				<< " name:" << name
 				<< " location:" << location << "\n";
 		}
 	}
 
 	glGetProgramiv(programme, GL_ACTIVE_UNIFORMS, &params);
-	out << "GL_ACTIVE_UNIFORMS = " << params << "\n";
+	tee << "GL_ACTIVE_UNIFORMS = " << params << "\n";
 	for (int i = 0; i < params; i++) 
 	{
 		char name[64];
@@ -167,14 +171,14 @@ void Logger::print_all(GLuint programme, std::ostream& out)
 				std::stringstream long_name;
 				long_name << name << "[" << j << "]\n";
 				int location = glGetUniformLocation(programme, long_name.str().c_str());
-				out << "  " << i << ") type:" << toString(type)
+				tee << "  " << i << ") type:" << toString(type)
 					<< " name:" << long_name.str().c_str()
 					<< " location:" << location << "\n";
 			}
 		}
 		else {
 			int location = glGetUniformLocation(programme, name);
-			out << "  " << i << ") type:" << toString(type)
+			tee << "  " << i << ") type:" << toString(type)
 				<< " name:" << name
 				<< " location:" << location << "\n";
 		}

@@ -41,23 +41,31 @@ void InstanceSource::positions(const std::vector<glm::vec4>& _positions,
 }
 
 void InstanceSource::colours(const std::vector<glm::vec4>& _colours,
-	unsigned int location)
+							unsigned int location,
+							unsigned int colourDivisor)
 {
 	mColours = _colours;
 	mColourLocation = location;
+	mColourDivisor = colourDivisor;
 	if (mPositionsV3.size() == 0 && mPositionsV4.size() == 0)
 	{
 		throw NMSException("InstanceSource.colours needs number of positions set to calc divisor");
 	}
 	else if (mPositionsV3.size())
 	{
-		mColourDivisor = static_cast<unsigned int>(
+		if (colourDivisor == GL_INVALID_INDEX)
+		{
+			mColourDivisor = static_cast<unsigned int>(
 				std::ceil(mPositionsV3.size() / (1.0f * mColours.size())));
+		}
 	}
 	else if (mPositionsV4.size())
 	{
-		mColourDivisor = static_cast<unsigned int>(
+		if (colourDivisor == GL_INVALID_INDEX)
+		{
+			mColourDivisor = static_cast<unsigned int>(
 				std::ceil(mPositionsV4.size() / (1.0f * mColours.size())));
+		}
 	}
 }
 
@@ -68,16 +76,13 @@ void InstanceSource::render(const glm::mat4& proj,
 	OWUtils::RenderCallbackType renderCb,
 	OWUtils::ResizeCallbackType resizeCb) const
 {
-	checkGLError();
 	if (mover)
 	{
 		mRenderer->render(this, proj, view, mover->translate(model), renderCb, resizeCb);
-		checkGLError();
 	}
 	else
 	{
 		glm::mat4 initialPositionModel = glm::translate(model, initialPosition());
 		mRenderer->render(this, proj, view, initialPositionModel, renderCb, resizeCb);
-		checkGLError();
 	}
 }

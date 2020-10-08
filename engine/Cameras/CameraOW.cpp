@@ -5,6 +5,7 @@
 #include "../Core/GLApplication.h"
 #include "../Core/GlobalSettings.h"
 #include "../Helpers/Logger.h"
+#include "../Helpers/LogStream.h"
 
 CameraOW::CameraOW()
 {
@@ -111,7 +112,7 @@ bool CameraOW::processKeyboardInput(
 			conditionalAdd(isPitchKey, keyInput.userCommand, mPitch) ||
 			conditionalAdd(isYawKey, keyInput.userCommand, mYaw);
 	}
-	dumpMessage("processKeyboardInput\n", NMSErrorLevel::NMSInfo);
+	LogStream(LogStreamLevel::Info) << "processKeyboardInput\n";
 
 	// Does order of these calls matter????
 	// Also there is a delay. Maybe caused by the call to processUserInput
@@ -120,22 +121,22 @@ bool CameraOW::processKeyboardInput(
 	if (mPitch)
 	{
 		doProcessKeyboardInput(mPitch, seconds);
-		dumpMessage("Processing pitch\n", NMSErrorLevel::NMSInfo);
+		LogStream(LogStreamLevel::Info) << "Processing pitch\n";
 	}
 	if (mRoll)
 	{
 		doProcessKeyboardInput(mRoll, seconds);
-		dumpMessage("Processing roll\n", NMSErrorLevel::NMSInfo);
+		LogStream(LogStreamLevel::Info) << "Processing roll\n";
 	}
 	if (mYaw)
 	{
 		doProcessKeyboardInput(mYaw, seconds);
-		dumpMessage("Processing yaw\n", NMSErrorLevel::NMSInfo);
+		LogStream(LogStreamLevel::Info) << "Processing yaw\n";
 	}
 	if (mDirection)
 	{
 		doProcessKeyboardInput(mDirection, seconds);
-		dumpMessage("Processing direction\n", NMSErrorLevel::NMSInfo);
+		LogStream(LogStreamLevel::Info) << "Processing direction\n";
 	}
 	return foundKey;
 }
@@ -180,7 +181,6 @@ void CameraOW::doProcessKeyboardInput(int userCommand, float seconds)
 			<< userCommand << "] stored in Camera.\n");
 	}
 	const glm::vec3 v3 = mCurrent->position();
-	dumpMessage(std::stringstream() << "Camera position ["
-		<< glm::to_string(v3) << "]\n",
-		NMSErrorLevel::NMSInfo);
+	LogStream(LogStreamLevel::Info) << "Camera position ["
+		<< glm::to_string(v3) << "]\n";
 }

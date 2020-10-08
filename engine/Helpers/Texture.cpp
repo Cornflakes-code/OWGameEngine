@@ -52,7 +52,7 @@ void Texture::addTexture(const std::string& texturePath, bool transparent, bool 
 		char infoLog[512];
 		std::stringstream str;
 		str << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-		std::cout << "Failed to load texture" << std::endl;
+		str << "Failed to load texture" << std::endl;
 		throw std::exception(str.str().c_str());
 	}
 	stbi_image_free(data);

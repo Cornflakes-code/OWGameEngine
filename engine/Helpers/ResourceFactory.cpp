@@ -6,6 +6,7 @@
 #include "ErrorHandling.h"
 
 static ResourceFactory* mFactory = nullptr;
+#define GLSL(src) "#version 330 core\n" #src
 
 std::string ResourceFactory::toString(ResourceType rt)
 {
@@ -183,25 +184,25 @@ const FreeTypeFontAtlas::FontDetails* ResourceFactory::loadFreeTypeFont(
 
 std::string& ResourceFactory::boilerPlateVertexShader()
 {
-	static std::string s = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"uniform mat4 pvm;\n"
-		"void main()\n"
-		"{\n"
-		"   gl_Position = pvm * vec4(aPos, 1.0);\n"
-		"}\0";
+	static std::string s = 
+		GLSL(layout (location = 0) in vec3 aPos;
+		uniform mat4 pvm;
+		void main()
+		{
+		   gl_Position = pvm * vec4(aPos, 1.0);
+		});
 	return s;
 }
 
 std::string& ResourceFactory::boilerPlateFragmentShader()
 {
-	static std::string s = "#version 330 core\n"
-		"out vec4 FragColor;\n"
-		"uniform vec4 colour = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-		"void main()\n"
-		"{\n"
-		"   FragColor = colour;\n"
-		"}\n\0";
+	static std::string s = 
+		GLSL(out vec4 FragColor;
+		uniform vec4 colour = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+		void main()
+		{
+		   FragColor = colour;
+		});
 	return s;
 }
 

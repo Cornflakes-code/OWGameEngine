@@ -37,18 +37,22 @@ void Axis::prepare(const AABB& world)
 										fontHeight, globals->aspectRatio());
 		//nice.first /= 2.0f;
 		//nice.second /= 2.0f;
+		mTextZero = new TextBillboardFixed(axisCoords[0], "arial.ttf", fontHeight);
 		mTextX = new TextBillboardFixed(axisCoords[1], "arial.ttf", fontHeight);
 		mTextY = new TextBillboardFixed(axisCoords[2], "arial.ttf", fontHeight);
 		mTextZ = new TextBillboardFixed(axisCoords[3], "arial.ttf", fontHeight);
 
+		mTextZero->createText("(0,0)", nice.x, nice.y);
 		mTextX->createText("X", nice.x, nice.y);
 		mTextY->createText("Y", nice.x, nice.y);
 		mTextZ->createText("Z", nice.x, nice.y);
 
+		mTextZero->colour({ 0.3, 0.45, 0.7, 1.0f }, "textcolor");
 		mTextX->colour({ 1.0, 0.0, 0.0, 1.0f }, "textcolor");
 		mTextY->colour({ 0.0, 1.0, 0.0, 1.0f }, "textcolor");
 		mTextZ->colour({ 0.0, 0.0, 1.0, 1.0f }, "textcolor");
 
+		mTextZero->addRenderer(new VertexSourceRenderer());
 		mTextX->addRenderer(new VertexSourceRenderer());
 		mTextY->addRenderer(new VertexSourceRenderer());
 		mTextZ->addRenderer(new VertexSourceRenderer());
@@ -107,6 +111,7 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 	};
 	mZeroPoint.render(proj, view, model, nullptr, pointRender, pointResizeRender);
 
+	mTextZero->render(proj, view, model);
 	mTextX->render(proj, view, model);
 	mTextY->render(proj, view, model);
 	mTextZ->render(proj, view, model);

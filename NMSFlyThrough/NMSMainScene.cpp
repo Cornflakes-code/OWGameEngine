@@ -99,7 +99,7 @@ void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),
 						  const glm::mat4& proj, const glm::mat4& view)
 {
 	glm::mat4 model(1.0);
-//	mAxis->render(proj, view, model);
+	mAxis->render(proj, view, model);
 	mStarMap->render(proj, view, model);
 }
 

@@ -48,6 +48,9 @@ public:
 	typedef std::function<void(GLFWwindow*, double, double)> CursorPositionCallback;
 
 	void errorReporting(int error, const char* description);
+	void onDebugMessageCallback(GLenum source, GLenum type, GLuint id, 
+								GLenum severity, GLsizei length, 
+								const GLchar *message, const void *userParam);
 	void addWindowCloseListener(WindowCloseCallbackType cb)
 	{
 		mWindowCloseListeners.push_back(cb);
