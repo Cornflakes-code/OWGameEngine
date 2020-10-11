@@ -1,6 +1,8 @@
 #include "Movie.h"
 
 #include <iostream>
+#include <thread>
+
 #include <GLFW/glfw3.h>
 
 #include "../Helpers/ErrorHandling.h"
@@ -18,8 +20,8 @@
 #include "Scene.h"
 
 Movie::Movie(const std::string& _windowTitle, 
-			 Camera* _camera)
-: mLogger(new Logger())
+			 Camera* _camera, Logger* logger)
+: mLogger(logger)
 , mCamera(_camera)
 , mWindowTitle(_windowTitle)
 {
@@ -147,9 +149,14 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 		// Best practice is to default glfwSwapInterval to '1'
 			// 0: do not wait for vsync(may be overridden by driver / driver settings)
 			// 1 : wait for 1st vsync(may be overridden by driver / driver settings)
-		glfwSwapInterval(1);
+		glfwSwapInterval(mSwapInterval);
 		glfwSwapBuffers(glfwWindow);
-		glfwPollEvents();
+		do
+		{
+			glfwPollEvents();
+			if (globals->minimised())
+				std::this_thread::sleep_for(clamp);
+		} while (globals->minimised());
 		if (!mIsRunning)
 		{ 
 			glfwSetWindowShouldClose(glfwWindow, true);

@@ -9,11 +9,11 @@
 #include <Helpers/Logger.h>
 #include <Helpers/ErrorHandling.h>
 #include <Helpers/ResourceFactory.h>
-#include <Cameras/CameraMazhar.h>
-#include <Cameras/CameraOW.h>
-
 #include <Helpers/MacroRecorder.h>
 #include <Helpers/LogStream.h>
+
+#include <Cameras/CameraMazhar.h>
+#include <Cameras/CameraOW.h>
 
 #include "NMSMovie.h"
 #include "NMSUserInput.h"
@@ -59,53 +59,33 @@ extern OWENGINE_API GlobalSettings* globals;
 int main(int argc, char* argv[])
 {
 	ResourceFactory* rf = ResourceFactory::getResourceFactory();
-	rf->addPath("../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
-	rf->addPath("../engine/Resources/fonts", ResourceFactory::ResourceType::Font);
-	rf->addPath("../../engine/Resources/shaders", ResourceFactory::ResourceType::Shader);
-	rf->addPath("../../engine/Resources/fonts", ResourceFactory::ResourceType::Font);
-	std::string p = std::experimental::filesystem::current_path().string();
-	rf->addPath(p, ResourceFactory::ResourceType::UnknownType);
-	if (argc)
-	{
-		std::experimental::filesystem::path exePath = argv[0];
-		exePath.remove_filename();
-		rf->addPath(exePath.string(), ResourceFactory::ResourceType::UnknownType);
-		LogStream::setLogFile(exePath);
-	}
-
-	NMSUserInput ui;
-	//ui.addKeyMapping(GLFW_KEY_W, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Forward);
-	//ui.addKeyMapping(GLFW_KEY_A, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::YawLeft);
-	//ui.addKeyMapping(GLFW_KEY_S, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Back);
-	//ui.addKeyMapping(GLFW_KEY_D, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::YawRight);
-	//ui.addKeyMapping(GLFW_KEY_Q, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Left);
-	//ui.addKeyMapping(GLFW_KEY_E, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::Right);
-	//ui.addKeyMapping(GLFW_KEY_R, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::PitchUp);
-	//ui.addKeyMapping(GLFW_KEY_F, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::PitchDown);
-	//ui.addKeyMapping(GLFW_KEY_F, NMSUserInput::InputMods::NoMod, NMSUserInput::UserCommand::PitchDown);
-	
-	// It would be nice if the following call removed base class mapping
-	//ui.addKeyMapping(GLFW_KEY_W, NMSUserInput::InputMods::NoMod, UserInput::BaseUserCommand::NoCommand);
-	// The following call will allow any key input to be used if the key is not used for anything else
-	//ui.addKeyMapping(UserInput::AnyKey, NMSUserInput::InputMods::NoMod, NMSUserInput::NMSUserCommand::SpecialKey1);
-
-	//	nms.addKeyMapping(ANY_KEY, KeyMods::NoMod, NMSUserCommands::AnyKey);
-	//CameraMazhar camera;
-
 	try
 	{
+		std::experimental::filesystem::path exePath;
+		if (argc)
+		{
+			exePath = argv[0];
+			LogStream::setLogFile(exePath);
+			std::experimental::filesystem::path configFileName = exePath.filename();
+			configFileName.replace_extension("json");
+			exePath.remove_filename();
+			rf->addPath(exePath, ResourceFactory::ResourceType::UnknownType);
+			rf->addPath(std::experimental::filesystem::current_path(), 
+						ResourceFactory::ResourceType::UnknownType);
+			exePath.append(configFileName);
+		}
+		// Config file is 'path of exe/exename.json'
+		globals = new GlobalSettings(exePath);
 		SaveAndRestore sr;
 		MacroRecorder recorder;
 		Logger logger;
-		GLApplication app(&ui);
-		globals->resourceCache(rf);
-		globals->recorder(&recorder);
-		globals->saveAndRestore(&sr);
-		globals->logger(&logger);
+		NMSUserInput ui;
 		CameraOW camera;
-		globals->camera(&camera);
-		NMSMovie nms(&camera);
-		app.init(&nms, &ui, &recorder, &sr);
+		GLApplication app(&ui);
+		NMSMovie nms(&camera, &logger);
+		globals->configAndSet(&sr, &nms, &recorder,
+							&logger, &camera, rf, &app, &ui);
+		app.init(&nms, &ui, &recorder, &sr, &camera);
 		app.run(&nms);
 	}
 	catch (const std::exception& e)

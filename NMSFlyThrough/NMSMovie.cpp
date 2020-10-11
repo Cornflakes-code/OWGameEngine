@@ -18,8 +18,8 @@
 #include "NMSEndScene.h"
 #include "NMSMainScene.h"
 
-NMSMovie::NMSMovie(Camera* _camera)
-	: Movie("NMS", _camera)
+NMSMovie::NMSMovie(Camera* _camera, Logger* logger)
+	: Movie("NMS", _camera, logger)
 {
 }
 

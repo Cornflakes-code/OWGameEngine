@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <iostream>
+#include <experimental/filesystem>
 
 #include <glm/glm.hpp>
 
@@ -26,6 +27,7 @@ class MacroRecorder;
 class SaveAndRestore;
 class UserInput;
 class GlobalSettings;
+class Camera;
 
 class OWENGINE_API GLApplication
 {
@@ -33,8 +35,8 @@ public:
 	GLApplication(UserInput* ui);
 	~GLApplication();
 
-	void init(Movie* movie, UserInput* ui,
-			  MacroRecorder* recorder, SaveAndRestore* saveRestore);
+	void init(Movie* movie, UserInput* ui, MacroRecorder* recorder, 
+			SaveAndRestore* saveRestore, Camera* camera);
 	void run(Movie* movieSaveAndRestore);
 
 	// callbacks

@@ -98,6 +98,13 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(ProjectDir)$(ProjectName).json" "$(TargetDir)\$(ProjectName).json"
+
+del /q "$(TargetDir)\config*.json"
+</Command>
+      <Message>Copy user config file to exe dir and delete existing log filess</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -152,6 +159,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(ProjectDir)$(ProjectName).json" "$(TargetDir)\$(ProjectName).json"
+
+del /q "$(TargetDir)\config*.json"
+</Command>
+      <Message>Copy user config file to exe dir and delete existing log filess</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Image Include="..\engine\awesomeface.png" />

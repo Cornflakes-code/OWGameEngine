@@ -89,6 +89,7 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	std::experimental::filesystem::path p
 		= globals->resourceCache()->appendPath
 		("NMSMap.txt", ResourceFactory::ResourceType::UnknownType);
+//		("../../NMSFlyThrough/NMSMap.txt", ResourceFactory::ResourceType::UnknownType);
 	mStarMap->setUp(p.string(), world());
 	mAxis = new Axis();
 	

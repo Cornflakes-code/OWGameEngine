@@ -20,20 +20,23 @@ class OWENGINE_API ResourceFactory
 public:
 	enum class ResourceType
 	{
-		Shader, Font, Texture, UnknownType
+		Shader, Font, Texture, SaveFile, UnknownType
 	};
 	static ResourceFactory* getResourceFactory();
 	void addPath(const std::experimental::filesystem::path& path, 
 				 ResourceType key = ResourceType::UnknownType);
-	static std::string& boilerPlateVertexShader();
-	static std::string& boilerPlateFragmentShader();
-	static std::string& boilerPlateGeometryShader();
+	static const std::string& boilerPlateVertexShader();
+	static const std::string& boilerPlateFragmentShader();
+	static const std::string& boilerPlateGeometryShader();
 	json get(const std::string& fileName, const std::string& jsonObj, bool cache = true);
 	const std::string& getPath(const std::string& fileName, ResourceType rt);
 	const FreeTypeFontAtlas::FontDetails* loadFreeTypeFont(
 					const std::string&, unsigned int fontHeight);
 	std::experimental::filesystem::path appendPath(
 					const std::string& fileName, ResourceType key);
+	static std::string toString(ResourceType rt);
+	static ResourceFactory::ResourceType
+		resourceTypeFromString(const std::string& rt);
 protected:
 	ResourceFactory();
 private:
@@ -54,6 +57,5 @@ private:
 	// can exist for multiple ResourceType.
 	std::map<ResourceType, std::set<std::experimental::filesystem::path>> mResourcePaths;
 	std::istream* readFile(const std::string& path);
-	static std::string toString(ResourceType rt);
 #pragma warning( pop )
 };

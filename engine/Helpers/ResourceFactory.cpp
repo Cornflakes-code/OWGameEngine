@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "ErrorHandling.h"
+#include "LogStream.h"
 
 static ResourceFactory* mFactory = nullptr;
 #define GLSL(src) "#version 330 core\n" #src
@@ -15,9 +16,21 @@ std::string ResourceFactory::toString(ResourceType rt)
 		case ResourceType::Shader: return "Shader";
 		case ResourceType::Font: return "Font";
 		case ResourceType::Texture: return "Texture";
+		case ResourceType::SaveFile: return "SaveFile";
 		case ResourceType::UnknownType: return "UnknownType";
 		default: return "Internal logic error";
 	}	
+}
+
+ResourceFactory::ResourceType 
+	ResourceFactory::resourceTypeFromString(const std::string& rt)
+{
+	if (rt == "Shader") return ResourceType::Shader;
+	if (rt == "Font") return ResourceType::Font;
+	if (rt == "Texture") return ResourceType::Texture;
+	if (rt == "UnknownType") return ResourceType::UnknownType;
+	throw NMSException(std::stringstream()
+		<< "Unknown ResourceType [" << rt << "]/n");
 }
 
 ResourceFactory* ResourceFactory::getResourceFactory()
@@ -25,7 +38,6 @@ ResourceFactory* ResourceFactory::getResourceFactory()
 	if (!mFactory)
 	{
 		mFactory = new ResourceFactory();
-		mFactory->addPath(std::experimental::filesystem::current_path(), ResourceType::UnknownType);
 	}
 	return mFactory;
 }
@@ -70,7 +82,8 @@ ResourceFactory::appendPath(const std::string& fileName, ResourceType key)
 	if (it == mResourcePaths.end())
 	{
 		// No path of this type, nor a path of UnknownType, found
-		throw NMSException(std::stringstream() << "Fatal Error: No resource path of type ["
+		throw NMSException(std::stringstream() 
+			<< "Fatal Error: No resource path of type ["
 			<< toString(key) << "] found\n.");
 	}
 		// now search for the file in every found path.
@@ -92,16 +105,25 @@ ResourceFactory::appendPath(const std::string& fileName, ResourceType key)
 	p1.remove_filename();
 	if (!std::experimental::filesystem::is_directory(p1))
 	{
-		throw NMSException(std::stringstream() << "Fatal Error: Directory ["
-			<< p1 << "] not found.\n");
+		p1 = fileName;
+//		const std::experimental::filesystem::path p2 
+//			= std::experimental::filesystem::u8path(p1.string());
+		std::stringstream ss;
+		//ss.imbue(std::locale());
+		ss << "Fatal Error: Directory ["
+			<< p1.string() << "] not found. File ["
+			<< fileName << "] not loaded/n";
+		throw NMSException(ss.str());
 	}
 
-	throw NMSException(std::stringstream() << "Fatal Error: File ["
-		<< fileName << "] not found in directories:\n");
+	throw NMSException(std::stringstream() 
+			<< "Fatal Error: File ["
+			<< fileName << "] not found in directories:\n");
 	return std::experimental::filesystem::path();
 }
 
-json ResourceFactory::get(const std::string& fileName, const std::string& jsonObj, bool cache)
+json ResourceFactory::get(const std::string& fileName, 
+						const std::string& jsonObj, bool cache)
 {
 	//auto it = loadedFiles.find(fileName);
 	//if (it == loadedFiles.end())
@@ -182,7 +204,7 @@ const FreeTypeFontAtlas::FontDetails* ResourceFactory::loadFreeTypeFont(
 	return mFreeType.loadFont(p, fontHeight);
 }
 
-std::string& ResourceFactory::boilerPlateVertexShader()
+const std::string& ResourceFactory::boilerPlateVertexShader()
 {
 	static std::string s = 
 		GLSL(layout (location = 0) in vec3 aPos;
@@ -194,7 +216,7 @@ std::string& ResourceFactory::boilerPlateVertexShader()
 	return s;
 }
 
-std::string& ResourceFactory::boilerPlateFragmentShader()
+const std::string& ResourceFactory::boilerPlateFragmentShader()
 {
 	static std::string s = 
 		GLSL(out vec4 FragColor;
@@ -206,7 +228,7 @@ std::string& ResourceFactory::boilerPlateFragmentShader()
 	return s;
 }
 
-std::string& ResourceFactory::boilerPlateGeometryShader()
+const std::string& ResourceFactory::boilerPlateGeometryShader()
 {
 	static std::string s = "";
 	return s;

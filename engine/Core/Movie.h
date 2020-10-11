@@ -33,8 +33,9 @@ public:
 	const Camera* camera() const { return mCamera; }
 	Camera* camera() { return mCamera; }
 	void close() const { mIsRunning = false; }
+	void swapInterval(int newValue) { mSwapInterval = newValue; }
 protected:
-	Movie(const std::string& _windowTitle, Camera* _camera);
+	Movie(const std::string& _windowTitle, Camera* _camera, Logger* logger);
 
 	void add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent = false);
 	virtual void render(const ScenePhysicsState* state);
@@ -49,7 +50,7 @@ private:
 		unsigned int countActivateCalled = 0;
 		bool setupCalled = false;
 	};
-	Logger* mLogger;
+	Logger* mLogger = nullptr;
 	Camera* mCamera = nullptr;
 	LoopControlStruct* mCurrent = nullptr;
 	LoopControlStruct* mPrevious = nullptr;
@@ -57,6 +58,7 @@ private:
 	std::string mWindowTitle;
 	std::queue<UserInput::AnyInput> mUserInput;
 	std::map<std::string, LoopControlStruct> mScenes;
+	int mSwapInterval = 0;
 	mutable bool mIsRunning = true;
 
 	void makeCurrent(LoopControlStruct* lcs);

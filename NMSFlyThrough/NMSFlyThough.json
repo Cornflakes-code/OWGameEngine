@@ -1,0 +1,67 @@
+{
+  "Version": 1.1,
+  "Directories": [
+    {
+      "Directory": "../engine/Resources/shaders",
+      "ResourceType": "Shader"
+    },
+    {
+      "Directory": "..\\engine\\Resources\\fonts",
+      "ResourceType": "Font"
+    },
+    {
+      "Directory": "E:\\Apps\\NMS\\OWGameEngine\\engine\\Resources\\shaders",
+      "ResourceType": "Shader"
+    }
+  ],
+  "OpenGL": {
+    "Window": {
+      "Size": {
+        "X": 800,
+        "Y": 600
+      },
+      "Position": {
+        "X": 100,
+        "Y": 100
+      }
+    },
+    "Monitor": 1,
+	"SwapInterval": 0
+  },
+  "Camera": {
+	"MoveScale": 3.0,
+	"Scale": 1.7,
+	"FOV": 47
+  },
+  "PointingDevices": {
+    "Mouse": {"Colour": 255},
+    "Joystick": {"Colour": 255}
+  },
+  "KeyMapping": [
+    {
+      "Key": "w",
+      "Mods": [
+        "Shift",
+        "Focus",
+        "Mustang"
+      ],
+      "Logical": "Forward"
+    },
+    {
+      "Key": "a",
+      "Mods": [
+        "Shift",
+        "Focus",
+        "Mustang"
+      ],
+      "Logical": "Forward"
+    },
+    {
+      "name": "Fiat",
+      "models": [
+        "500",
+        "Panda"
+      ]
+    }
+  ]
+}

@@ -13,6 +13,7 @@ OWENGINE_API GlobalSettings* globals = nullptr;
 #include "SaveAndRestore.h"
 #include "GlobalSettings.h"
 #include "Movie.h"
+#include "Camera.h"
 
 #pragma comment( lib, "glfw3.lib" )
 #pragma comment (lib, "OpenGL32.lib")
@@ -27,8 +28,6 @@ void GLAPIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id,
 GLApplication::GLApplication(UserInput* ui)
 	:mUserInput(ui)
 {
-	globals = new GlobalSettings();
-	globals->application(this);
 }
 
 GLApplication::~GLApplication()
@@ -37,17 +36,13 @@ GLApplication::~GLApplication()
 		hackForErrorCallback = nullptr;
 }
 
-void GLApplication::init(Movie* movie, UserInput* ui, 
-						 MacroRecorder* recorder, SaveAndRestore* saveRestore)
+void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder, 
+						SaveAndRestore* saveRestore, Camera* camera)
 {
 	globals->mPhysicalWindowSize = saveRestore->physicalWindowSize();
-	globals->movie(movie);
-	globals->saveAndRestore(saveRestore);
-	globals->recorder(recorder);
 	if (glfwInit())
 	{
 		// https://antongerdelan.net/opengl/glcontext2.html
-
 		// You'll find a list of all the key codes and other input handling commands 
 		// at http://www.glfw.org/docs/latest/group__input.html. 
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
@@ -118,6 +113,7 @@ void GLApplication::init(Movie* movie, UserInput* ui,
 	{
 		throw NMSException("glfwInit() failed");
 	}
+	camera->bindResize(this);
 }
 
 void GLApplication::run(Movie* movie)
@@ -181,6 +177,7 @@ void GLApplication::enableCallbacks()
 	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
 	{
+		// https://www.seas.upenn.edu/~pcozzi/OpenGLInsights/OpenGLInsights-ARB_debug_output.pdf
 		// https://learnopengl.com/In-Practice/Debugging
 		// https://www.khronos.org/opengl/wiki/Debug_Output
 		// initialize debug output 
@@ -229,6 +226,16 @@ void GLApplication::enableCallbacks()
 void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window, 
 								int width, int height)
 {
+	if (width == 0 || height == 0)
+	{
+		// Also happens when minimised
+		globals->minimised(true);
+		return;
+	}
+	else
+	{
+		globals->minimised(false);
+	}
 	glViewport(0, 0, width, height);
 	globals->physicalWindowSize({ width, height });
 	for (auto& cb : mWindowResizeCallbacks)

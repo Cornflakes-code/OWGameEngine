@@ -9,14 +9,14 @@
 
 CameraOW::CameraOW()
 {
-	if (globals && globals->application())
-	{
-		auto cb = std::bind(&CameraOW::resizeCallback, this,
-			std::placeholders::_1, std::placeholders::_2);
-		globals->application()->addWindowResizeListener(cb, this);
-	}
 }
 
+void CameraOW::bindResize(GLApplication* app)
+{
+	auto cb = std::bind(&CameraOW::resizeCallback, this,
+		std::placeholders::_1, std::placeholders::_2);
+	app->addWindowResizeListener(cb, this);
+}
 
 bool CameraOW::processInput(UserInput::AnyInput input, float seconds)
 {

@@ -11,6 +11,10 @@
 // http://wordaligned.org/articles/cpp-streambufs
 // https://stackoverflow.com/questions/1760726/how-can-i-compose-output-streams-so-output-goes-multiple-places-at-once
 
+// And eventually I think I will go to 
+// https://github.com/amrayn/easyloggingpp
+// https://stackoverflow.com/questions/5028302/small-logger-class
+// https://github.com/gabime/spdlog
 enum LogStreamLevel {
 	Error, LogicError, Warning, ImportantInfo, Info, Debug, Debug1, Debug2, Debug3, Debug4
 };

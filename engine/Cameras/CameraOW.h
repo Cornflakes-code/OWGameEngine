@@ -24,6 +24,7 @@ public:
 	{
 		//mCurrent->Update();
 	}
+	void bindResize(GLApplication* app) override;
 	void pushCurrent() override
 	{
 		// copy current data. No heap involved
