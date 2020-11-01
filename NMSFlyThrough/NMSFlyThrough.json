@@ -2,12 +2,20 @@
   "Version": 1.1,
   "Directories": [
     {
-      "Directory": "../engine/Resources/shaders",
+      "Directory": "../../engine/Resources/shaders",
       "ResourceType": "Shader"
     },
     {
-      "Directory": "..\\engine\\Resources\\fonts",
+      "Directory": "..\\..\\engine\\Resources\\fonts",
       "ResourceType": "Font"
+    },
+    {
+      "Directory": "..\\..",
+      "ResourceType": "UnknownType"
+    },
+    {
+      "Directory": "..\\..\\NMSFlyThrough",
+      "ResourceType": "UnknownType"
     },
     {
       "Directory": "E:\\Apps\\NMS\\OWGameEngine\\engine\\Resources\\shaders",

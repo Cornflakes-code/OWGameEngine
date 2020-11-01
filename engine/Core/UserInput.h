@@ -13,6 +13,8 @@
 
 #include "../OWEngine/OWEngine.h"
 
+#include "ListenerHelper.h"
+
 #define ANY_KEY (GLFW_KEY_LAST+1)
 
 /*
@@ -42,8 +44,12 @@ public:
 		Restore,
 		RecordingStart,
 		RecordingEnd,
+		PlaybackStart,
+		PlaybackEnd,
 		OptionsScreen,
 		Accept,
+		WindowResize,
+		WindowClose,
 		NumBaseCommands
 	};
 
@@ -115,15 +121,32 @@ public:
 
 	typedef std::function<void(const UserCommandCallbackData&)> UserCommandCallbackType;
 	typedef std::function<void(const PointingDeviceCallbackData&)> PointingDeviceCallbackType;
-
+	typedef std::function<void(void* window, glm::ivec2 dimensions)> WindowResizeCallbackType;
 	UserInput();
 
 	void init(GLApplication* app);
-	void addUserCommandListener(UserCommandCallbackType callback)
-		{ mUserCommandCallbacks.push_back(callback); }
+	void addUserCommandListener(UserCommandCallbackType cb,
+		const ListenerHelper* helper = nullptr)
+	{ 
+		mUserCommandCallbacks.push_back({ cb, helper ? helper->mUniqueId : 0 });
+	}
+	void removeUserCommandListener(const ListenerHelper* helper);
 
-	void addPointingDeviceListener(PointingDeviceCallbackType callback)
-		{ mPointingDeviceCallbacks.push_back(callback); }
+	void addPointingDeviceListener(PointingDeviceCallbackType cb,
+		const ListenerHelper* helper = nullptr)
+	{
+		mPointingDeviceCallbacks.push_back({ cb, helper ? helper->mUniqueId : 0 });
+	}
+	void removePointingDeviceListener(const ListenerHelper* helper);
+
+	void addWindowResizeListener(WindowResizeCallbackType cb,
+		const ListenerHelper* helper = nullptr)
+	{
+		mWindowResizeCallbacks.push_back({ cb, helper ? helper->mUniqueId : 0 });
+	}
+
+	void removeWindowResizeListener(const ListenerHelper* helper);
+
 
 protected:
 	virtual int userCommand(const UserCommandCallbackData& data);
@@ -133,12 +156,18 @@ private:
 	glm::ivec2 mFrameBuffer = glm::ivec2(0);
 	glm::ivec2 mWindowSize = glm::ivec2(0);
 	std::map<BaseKeyMapping, BaseUserCommand> mBaseKeyMapping;
-	std::vector<UserCommandCallbackType> mUserCommandCallbacks;
-	std::vector<PointingDeviceCallbackType> mPointingDeviceCallbacks;
-	void doMouseClick(GLFWwindow* window, int button, int action, int mods);
-	void doKeyPressCallback(unsigned int codepoint, int key, int scancode, int action, int mods);
+	std::vector< std::pair<UserCommandCallbackType, size_t>> mUserCommandCallbacks;
+	std::vector<std::pair<PointingDeviceCallbackType, size_t>> mPointingDeviceCallbacks;
+	std::vector<std::pair<WindowResizeCallbackType, size_t>> mWindowResizeCallbacks;
+	void windowResize(void* window, const glm::ivec2& widthHeight);
+	void pointingDevice(void* window, int button, int action, int mods, const glm::vec3& pos);
+	void cursorPosition(void* window, double x, double y);
+	void keyboard(unsigned int codepoint, int key, int scancode, int action, int mods);
+	void closeWindow(void* window);
+
 	virtual std::string userInputToString(int value) = 0;
 #pragma warning( pop )
+	friend class GLApplication;
 };
 
 /*

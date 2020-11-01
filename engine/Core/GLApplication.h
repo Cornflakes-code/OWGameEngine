@@ -38,54 +38,22 @@ public:
 	void init(Movie* movie, UserInput* ui, MacroRecorder* recorder, 
 			SaveAndRestore* saveRestore, Camera* camera);
 	void run(Movie* movieSaveAndRestore);
-
-	// callbacks
-	typedef std::function<void(GLFWwindow* window)> WindowCloseCallbackType;
-	typedef std::function<
-			void(GLFWwindow* window, glm::ivec2 dimensions)> WindowResizeCallbackType;
-	typedef std::function<
-			void(GLFWwindow* window, int button, int action, int mods)> PointingDeviceCallbackType;
-	typedef std::function<void(unsigned int codepoint, 
-			int key, int scancode, int action, int mods)> KeyboardCallbackType;
-	typedef std::function<void(GLFWwindow*, double, double)> CursorPositionCallback;
-
 	void errorReporting(int error, const char* description);
-	void onDebugMessageCallback(GLenum source, GLenum type, GLuint id, 
-								GLenum severity, GLsizei length, 
-								const GLchar *message, const void *userParam);
-	void addWindowCloseListener(WindowCloseCallbackType cb)
-	{
-		mWindowCloseListeners.push_back(cb);
-	}
-	void addKeyboardListener(KeyboardCallbackType cb)
-			{ mKeyboardCallbacks.push_back(cb); }
+	void onDebugMessageCallback(GLenum source, GLenum type, GLuint id,
+		GLenum severity, GLsizei length,
+		const GLchar *message, const void *userParam);
 
-	void addPointingDeviceListener(PointingDeviceCallbackType cb)
-			{ mPointingDeviceCallbacks.push_back(cb); }
-
-	void addCursorPositionCallback(CursorPositionCallback cb,
-		const ListenerHelper* helper = nullptr)
-	{
-		mCursorPositionCallbacks.push_back({ cb, helper ? helper->mUniqueId : 0 });
-	}	
-	void removeCursorPositionCallback(const ListenerHelper* helper);
-	void addWindowResizeListener(WindowResizeCallbackType cb, 
-								 const ListenerHelper* helper = nullptr)
-	{
-		mWindowResizeCallbacks.push_back({ cb, helper? helper->mUniqueId : 0 });
-	}
-	void removeWindowResizeListener(const ListenerHelper* helper);
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	GLFWwindow* mWindow;
-	// mUserInput needed because glfwSetWindowUserPointer pointing to one object only;
+	glm::ivec2 mFrameBuffer = glm::ivec2(0);
+	glm::ivec2 mWindowSize = glm::ivec2(0);
+
+	// GLApplication knows nothing about logical commands. UserInput translates physical 
+	// commands to logical commands. UserInput could be subclassed to handle different
+	// types of physical systems.
 	UserInput* mUserInput;
-	std::vector<WindowCloseCallbackType> mWindowCloseListeners;
-	std::vector<KeyboardCallbackType> mKeyboardCallbacks;
-	std::vector<PointingDeviceCallbackType> mPointingDeviceCallbacks;
-	std::vector<std::pair<WindowResizeCallbackType, size_t>> mWindowResizeCallbacks;
-	std::vector<std::pair<CursorPositionCallback, size_t>> mCursorPositionCallbacks;
 
 	void enableCallbacks(); 
 

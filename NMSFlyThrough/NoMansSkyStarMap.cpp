@@ -67,12 +67,14 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 //		"solarSuns.f.glsl",
 //		"thebookofshaders_circle.g.glsl");
 	Shader* instanceShader = new Shader("instanced.v.glsl",
-					"instanced.f.glsl",
+		"instanced_snoise.f.glsl",
+		//"instanced.f.glsl",
 //					"instanced.g.glsl"
 					""
 					);
 	mStarRenderer.shader(instanceShader, "VP");
-	std::vector<glm::vec3> squareVertices = GeometricShapes::rectangle(glm::vec2(1.0, 1.0));
+	std::vector<glm::vec3> squareVertices 
+		= GeometricShapes::rectangle(glm::vec2(1.0, 1.0), glm::vec2(-0.5, -0.5));
 	createRandomVectors(NMSSize, mRandomMinorStars, 50000, scaleNMStoWorld);
 	mStarRenderer.vertices(squareVertices, 0, GL_TRIANGLES);
 	mStarRenderer.positions(mRandomMinorStars, 1, 1, GL_POINTS);
@@ -81,8 +83,10 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::GREEN));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
-	mStarRenderer.colours(instanceColours, 2, 0);
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
+	mStarRenderer.colours(instanceColours, 2, 1);
 
 	mStarRenderer.addRenderer(new InstanceSourceRenderer());
 #endif
@@ -317,6 +321,9 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
 		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 		shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
+		shader->setFloat("u_time", globals->secondsSinceLoad());
+		glm::vec2 v2 = globals->pointingDevicePosition();
+		shader->setVector2f("u_mouse", v2);
 	};
 	mStarRenderer.render(proj, view, model, nullptr, pointRender);
 	for (int i = 0; i < mStarLabels.size(); i++)

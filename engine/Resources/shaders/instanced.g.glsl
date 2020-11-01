@@ -26,6 +26,7 @@ layout(points) in;
 //layout(line_strip, max_vertices = 200) out;
 layout(triangle_strip, max_vertices = 200) out;
 
+
 #define M_PI 3.141592653589793238462643383279
 #define M2_PI 6.28318530718
 #define M_PI_4 0.78539816339

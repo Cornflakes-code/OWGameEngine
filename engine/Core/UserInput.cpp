@@ -39,25 +39,6 @@ UserInput::UserInput()
 
 void UserInput::init(GLApplication* app)
 {
-	app->addPointingDeviceListener([this](GLFWwindow* window, int button, int action, int mods)
-	{
-		doMouseClick(window, button, action, mods);
-	});
-
-	app->addKeyboardListener([this](unsigned int codepoint,
-		int key, int scancode, int action, int mods)
-	{
-		doKeyPressCallback(codepoint, key, scancode, action, mods);
-	});
-
-	app->addWindowResizeListener([this](GLFWwindow* window, glm::ivec2 newSize)
-	{
-		mFrameBuffer = newSize;
-		int w, h;
-		glfwGetWindowSize(window, &w, &h);
-		mWindowSize.x = w;
-		mWindowSize.y = h;
-	});
 }
 
 UserInput::PointingDeviceAction getMouseButton(int button)
@@ -75,38 +56,37 @@ UserInput::PointingDeviceAction getMouseButton(int button)
 	}
 }
 
-void UserInput::doMouseClick(GLFWwindow* window, int button, int action, int mods)
+void UserInput::pointingDevice(void* window, int button, int action, 
+				int mods, const glm::vec3& pos)
 {
 	if (action == GLFW_PRESS)
 	{
-		// https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates
-		// https://stackoverflow.com/questions/11277501/how-to-recover-view-space-position-given-view-space-depth-value-and-ndc-xy?noredirect=1&lq=1
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		glm::vec2 screen_pos = glm::vec2(xpos, ypos);
-		glm::vec2 pixel_pos 
-			= screen_pos * glm::vec2(mFrameBuffer.x, mFrameBuffer.y) / 
-						  glm::vec2(mWindowSize.x, mWindowSize.y);
-		// shift to GL's center convention
-		pixel_pos = pixel_pos + glm::vec2(0.5f, 0.5f); 
-
 		PointingDeviceCallbackData data;
-		data.pos = glm::vec3(pixel_pos.x, mWindowSize.y - pixel_pos.y, 0.0f);
-
-		glReadPixels(static_cast<GLint>(xpos), static_cast<GLint>(ypos), 1, 1,
-				GL_DEPTH_COMPONENT, GL_FLOAT, &data.pos.z);
+		data.pos = pos;
 		data.action = getMouseButton(button);
 		data.mods = mods;
 
 		for (auto& cb : mPointingDeviceCallbacks)
 		{
-			cb(data);
+			cb.first(data);
 		}
 	}
 }
 
-void UserInput::doKeyPressCallback(unsigned int codepoint, 
-					int key, int OW_UNUSED(scancode), int action, int mods)
+void UserInput::cursorPosition(void* window, double x, double y)
+{
+	PointingDeviceCallbackData data;
+	data.action = UserInput::PointingDeviceAction::MouseMove;
+	data.pos = glm::vec3(x, y, 0);
+	for (auto& cb : mPointingDeviceCallbacks)
+	{
+		cb.first(data);
+	}
+}
+
+
+void UserInput::keyboard(unsigned int codepoint,
+						int key, int OW_UNUSED(scancode), int action, int mods)
 {
 	UserCommandCallbackData data;
 	if (codepoint)
@@ -129,7 +109,7 @@ void UserInput::doKeyPressCallback(unsigned int codepoint,
 			return;
 		for (auto& cb : mUserCommandCallbacks)
 		{
-			cb(data);
+			cb.first(data);
 		}
 	}
 }
@@ -149,6 +129,66 @@ int UserInput::userCommand(const UserCommandCallbackData& data)
 		++iter;
 	}
 	return BaseUserCommand::NoCommand; 
+}
+
+void UserInput::windowResize(void* window, const glm::ivec2& widthHeight)
+{
+	UserCommandCallbackData data;
+	data.action = 0;
+	data.key = 0;
+	data.mods = 0;
+	data.userCommand = UserInput::WindowResize;
+	for (auto& cb : mUserCommandCallbacks)
+	{
+		cb.first(data);
+	}
+}
+
+template <class T>
+void removeListener(std::vector<std::pair<T, size_t>> v, 
+				const ListenerHelper* helper)
+{
+	if (helper)
+	{
+		auto iter = v.begin();
+		while (iter != v.end())
+		{
+			if (iter->second == helper->mUniqueId)
+			{
+				v.erase(iter);
+				return;
+			}
+			++iter;
+		}
+	}
+}
+
+void UserInput::removeUserCommandListener(const ListenerHelper* helper)
+{
+	removeListener(mPointingDeviceCallbacks, helper);
+}
+
+void UserInput::removePointingDeviceListener(const ListenerHelper* helper)
+{
+	removeListener(mPointingDeviceCallbacks, helper);
+}
+
+void UserInput::removeWindowResizeListener(const ListenerHelper* helper)
+{
+	removeListener(mWindowResizeCallbacks, helper);
+}
+
+void UserInput::closeWindow(void* window)
+{
+	UserCommandCallbackData data;
+	data.action = 0;
+	data.key = 0;
+	data.mods = 0;
+	data.userCommand = UserInput::WindowClose;
+	for (auto& cb : mUserCommandCallbacks)
+	{
+		cb.first(data);
+	}
 }
 
 /*

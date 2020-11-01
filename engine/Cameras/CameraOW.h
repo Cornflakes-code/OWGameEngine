@@ -2,7 +2,7 @@
 #include <set>
 
 #include <Core/Camera.h>
-#include <Core/GLApplication.h>
+#include <Core/UserInput.h>
 #include <Core/ListenerHelper.h>
 
 #include "../Helpers/ErrorHandling.h"
@@ -24,7 +24,7 @@ public:
 	{
 		//mCurrent->Update();
 	}
-	void bindResize(GLApplication* app) override;
+	void bindResize(UserInput* app) override;
 	void pushCurrent() override
 	{
 		// copy current data. No heap involved
@@ -121,7 +121,7 @@ public:
 		return mCurrent->aspectRatio();
 	}
 private:
-	void resizeCallback(GLFWwindow* OW_UNUSED(window), glm::ivec2 dimensions)
+	void resizeCallback(void* OW_UNUSED(window), glm::ivec2 dimensions)
 	{
 		// There is a lot of interaction here between:
 		// 1. mAspectRatio.

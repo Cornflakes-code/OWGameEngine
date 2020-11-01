@@ -6,8 +6,6 @@
 
 #include "UserInput.h"
 
-class GLApplication;
-
 /*
 	Abstract interface for a Camera. It is intended that this class provides 
 	the interface for 3D POV as well as a traditional fixed view of a scene
@@ -19,7 +17,7 @@ public:
 	{
 		ORTHO, FREE, SPHERICAL
 	};
-	virtual void bindResize(GLApplication* app) = 0;
+	virtual void bindResize(UserInput* app) = 0;
 	virtual void update() = 0;
 	virtual void pushCurrent() = 0;
 	virtual void restoreCurrent() = 0;

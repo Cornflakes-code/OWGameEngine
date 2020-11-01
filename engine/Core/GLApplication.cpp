@@ -113,7 +113,7 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder,
 	{
 		throw NMSException("glfwInit() failed");
 	}
-	camera->bindResize(this);
+	camera->bindResize(mUserInput);
 }
 
 void GLApplication::run(Movie* movie)
@@ -122,42 +122,6 @@ void GLApplication::run(Movie* movie)
 	movie->run(mUserInput, mWindow);
 	glfwDestroyWindow(mWindow);
 	glfwTerminate();
-}
-
-void GLApplication::removeWindowResizeListener(const ListenerHelper* helper)
-{
-	if (!helper)
-	{
-		return;
-	}
-	auto iter = mWindowResizeCallbacks.begin();
-	while (iter != mWindowResizeCallbacks.end())
-	{
-		if (iter->second == helper->mUniqueId)
-		{
-			mWindowResizeCallbacks.erase(iter);
-			return;
-		}
-		++iter;
-	}
-}
-
-void GLApplication::removeCursorPositionCallback(const ListenerHelper* helper)
-{
-	if (!helper)
-	{
-		return;
-	}
-	auto iter = mCursorPositionCallbacks.begin();
-	while (iter != mCursorPositionCallbacks.end())
-	{
-		if (iter->second == helper->mUniqueId)
-		{
-			mCursorPositionCallbacks.erase(iter);
-			return;
-		}
-		++iter;
-	}
 }
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
@@ -184,7 +148,7 @@ void GLApplication::enableCallbacks()
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		GLuint ignore = { 131185 }; // NVidia telling us that a buffer was successfully created.
-		int count = sizeof(ignore) / sizeof(GLuint);
+//		int count = sizeof(ignore) / sizeof(GLuint);
 		glDebugMessageCallback(debugMessageCallback, nullptr);
 		// Does not seem to be working
 //		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
@@ -220,7 +184,6 @@ void GLApplication::enableCallbacks()
 		auto pointer = reinterpret_cast<GLApplication*>(glfwGetWindowUserPointer(window));
 		pointer->onPointingDevicePositionCallback(window, x, y);
 	});
-
 }
 
 void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window, 
@@ -236,45 +199,64 @@ void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window,
 	{
 		globals->minimised(false);
 	}
+	// The following is need for Mouse Clicks
+	mFrameBuffer = glm::ivec2(width, height);
+	int w, h;
+	glfwGetWindowSize(window, &w, &h);
+	mWindowSize.x = w;
+	mWindowSize.y = h;
+
 	glViewport(0, 0, width, height);
 	globals->physicalWindowSize({ width, height });
-	for (auto& cb : mWindowResizeCallbacks)
-		cb.first(window, glm::ivec2(width, height));
+	mUserInput->windowResize(window, glm::ivec2(width, height));
 }
 
 void GLApplication::onPointingDeviceCallback(GLFWwindow* window, 
 										int button, int action, int mods)
 {
-	for (auto& cb : mPointingDeviceCallbacks)
-		cb(window, button, action, mods);
+	if (action == GLFW_PRESS)
+	{
+		// https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates
+		// https://stackoverflow.com/questions/11277501/how-to-recover-view-space-position-given-view-space-depth-value-and-ndc-xy?noredirect=1&lq=1
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		glm::vec2 screen_pos = glm::vec2(xpos, ypos);
+		glm::vec2 pixel_pos
+			= screen_pos * glm::vec2(mFrameBuffer.x, mFrameBuffer.y) /
+			glm::vec2(mWindowSize.x, mWindowSize.y);
+		// shift to GL's center convention
+		pixel_pos = pixel_pos + glm::vec2(0.5f, 0.5f);
+
+		glm::vec3 pos = glm::vec3(pixel_pos.x, mWindowSize.y - pixel_pos.y, 0.0f);
+
+		glReadPixels(static_cast<GLint>(xpos), static_cast<GLint>(ypos), 1, 1,
+			GL_DEPTH_COMPONENT, GL_FLOAT, &pos.z);
+
+		mUserInput->pointingDevice(window, button, action, mods, pos);
+	}
 }
 
 void GLApplication::onPointingDevicePositionCallback(GLFWwindow* window, double x, double y)
 {
 	globals->mPointingDevicePosition.x = static_cast<glm::vec2::value_type>(x);
 	globals->mPointingDevicePosition.y = static_cast<glm::vec2::value_type>(y);
-
-	for (auto& cb : mCursorPositionCallbacks)
-		cb.first(window, x, y);
+	mUserInput->cursorPosition(window, x, y);
 }
 
 void GLApplication::onCharCallback(GLFWwindow* OW_UNUSED(window), unsigned int codepoint)
 {
-	for (auto& cb : mKeyboardCallbacks)
-		cb(codepoint, 0, 0, 0, 0);
+	mUserInput->keyboard(codepoint, 0, 0, 0, 0);
 }
 
 void GLApplication::onKeyPressCallback(GLFWwindow* OW_UNUSED(window), 
 								int key, int scancode, int action, int mods)
 {
-	for (auto& cb : mKeyboardCallbacks)
-		cb(0, key, scancode, action, mods);
+	mUserInput->keyboard(0, key, scancode, action, mods);
 }
 
 void GLApplication::onCloseCallback(GLFWwindow* window)
 {
-	for (auto& cb : mWindowCloseListeners)
-		cb(window);	
+	mUserInput->closeWindow(window);
 }
 
 static std::string sourceAsString(GLenum source)

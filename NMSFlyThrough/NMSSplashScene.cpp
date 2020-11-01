@@ -14,11 +14,13 @@
 
 #include <Helpers/Shader.h>
 #include <Helpers/ErrorHandling.h>
+#include <Helpers/GeometricShapes.h>
 
 #include <Renderables/TextBillboardFixed.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/Axis.h>
 #include <Renderables/VertexSourceRenderer.h>
+#include <Renderables/InstanceSourceRenderer.h>
 
 #include "NMSUserInput.h"
 
@@ -154,27 +156,65 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 
 	mCircle.prepare();
 	mCircle.addRenderer(new VertexSourceRenderer());
+
+	Shader* instanceShader = new Shader("instanced.v.glsl",
+							"instanced.f.glsl",
+		//					instanced.g.glsl
+		""
+	);
+	mStarRenderer.shader(instanceShader, "VP");
+	std::vector<glm::vec3> squareVertices 
+//		= GeometricShapes::rectangle(glm::vec2(1.0, 1.0), glm::vec2(-0.5, -0.5));
+		= GeometricShapes::rectangle(glm::vec2(8.00, 8.0), glm::vec2(-4, -4));
+	std::vector<glm::vec3> target;
+	target.push_back({ 0,0,0 });
+	mStarRenderer.vertices(squareVertices, 0, GL_TRIANGLES);
+	mStarRenderer.positions(target, 1, 1, GL_POINTS);
+
+	std::vector<glm::vec4> instanceColours;
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::GREEN));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
+	mStarRenderer.colours(instanceColours, 2, 1);
+
+	mStarRenderer.addRenderer(new InstanceSourceRenderer());
 }
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view)
 {
-	const NMSSplashScenePhysics* sps 
-			= dynamic_cast<const NMSSplashScenePhysics*>(state);
+//	const NMSSplashScenePhysics* sps 
+//			= dynamic_cast<const NMSSplashScenePhysics*>(state);
 	glm::mat4 model(1.0);
-	mCircle.render(proj, view, model);
-	mFullScreen.render(proj, view, model);
+//	mCircle.render(proj, view, model);
+//	mFullScreen.render(proj, view, model);
 	mAxis->render(proj, view, model);
-
-	mEnjoyText->render(proj, view, model, &sps->mEnjoyMover);
-#ifdef INCLUDE_WELCOME
-	const AABB& _world = world();
-	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
-						20.2f * _world.size().y / globals->physicalWindowSize().y };
-	//glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
-	glm::mat4 scaledModel = model;
-	mWelcomeText->render(proj, view, scaledModel, &sps->mWelcomeMover);
-#endif
+//
+//	mEnjoyText->render(proj, view, model, &sps->mEnjoyMover);
+//#ifdef INCLUDE_WELCOME
+//	const AABB& _world = world();
+//	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
+//						20.2f * _world.size().y / globals->physicalWindowSize().y };
+//	//glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
+//	glm::mat4 scaledModel = model;
+//	mWelcomeText->render(proj, view, scaledModel, &sps->mWelcomeMover);
+//#endif
+	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), const glm::mat4& view,
+		const glm::mat4& OW_UNUSED(model), Shader* shader) {
+		glm::vec3 CameraRight_worldspace =
+		{ view[0][0], view[1][0], view[2][0] };
+		shader->use();
+		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
+		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
+		shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
+		shader->setFloat("u_time", globals->secondsSinceLoad());
+		glm::vec2 v2 = globals->pointingDevicePosition();
+		shader->setVector2f("u_mouse", v2);
+	};
+	mStarRenderer.render(proj, view, model, nullptr, pointRender);
 
 }
 

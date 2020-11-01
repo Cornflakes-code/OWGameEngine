@@ -66,12 +66,12 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 	if (!mScenes.size())
 	{
 		throw NMSLogicException(
-			"Error. Calling Movie::run() without no Scenes is not a good thing.\n");
+			"Error. Calling Movie::run() with no Scenes is not a good thing.\n");
 	}
 	if (!mCurrent)
 	{
 		throw NMSLogicException(
-			"Error. Calling Movie::run() with no current Scene is not a good thing.\n");
+			"Error. Calling Movie::run() without a current Scene is not a good thing.\n");
 	}
 
 	// https://gamedev.stackexchange.com/questions/1589/when-should-i-use-a-fixed-or-variable-time-step

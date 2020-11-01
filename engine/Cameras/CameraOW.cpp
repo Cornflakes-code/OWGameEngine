@@ -2,7 +2,6 @@
 
 #include <glm/gtx/string_cast.hpp>
 
-#include "../Core/GLApplication.h"
 #include "../Core/GlobalSettings.h"
 #include "../Helpers/Logger.h"
 #include "../Helpers/LogStream.h"
@@ -11,7 +10,7 @@ CameraOW::CameraOW()
 {
 }
 
-void CameraOW::bindResize(GLApplication* app)
+void CameraOW::bindResize(UserInput* app)
 {
 	auto cb = std::bind(&CameraOW::resizeCallback, this,
 		std::placeholders::_1, std::placeholders::_2);

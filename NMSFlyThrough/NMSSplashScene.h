@@ -3,11 +3,15 @@
 #include <limits>
 
 #include <glm/glm.hpp>
+
+#include <Helpers/MoveController.h>
+#include <Helpers/TextBillboard.h>
+
 #include <Renderables/BoundingBox.h>
 #include <Renderables/FullScreen.h>
 #include <Renderables/Circle.h>
-#include <Helpers/MoveController.h>
-#include <Helpers/TextBillboard.h>
+#include <Renderables/InstanceSource.h>
+
 #include "NMSScene.h"
 /*
 	An implementation of a Scene for the NMS game.
@@ -40,6 +44,7 @@ class Axis;
 
 class NMSSplashScene : public NMSScene
 {
+	InstanceSource mStarRenderer;
 	TextBillboard* mWelcomeText;
 	TextBillboard* mEnjoyText;
 	FullScreen mFullScreen;
