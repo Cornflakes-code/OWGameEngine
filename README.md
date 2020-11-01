@@ -10,11 +10,11 @@ OWGameEngine began as a project to learn OpenGL and it is still performing that 
 ## The functionality currently existing or 'will be completed soon' includes:
  - ResourceManager. Singleton resource cache
  - UserInput. Wraps physical implementation of Keyboard and pointing device and emits logical commands via callbacks
- - Scene. The static implementation of a screen in a game. Examples of a scene include Main (where all the gameplay is), Welcome screen or Key mapping screen. Provides access to the Render functionality. Heavy on objects but contains no state information. Apart from setup code is pretty empty. Closely bound to ScenePhysicsState.
- - ScenePhysicsState. Contains the mutable aspects of a scene. Heavy on code but light on state data. Think of it as the Cookies of a Webpage. Closely coupled to a Scene.
+ - Scene. The const implementation of a screen in a game. Examples of a scene include Main (where all the gameplay is), Welcome screen or Key mapping screen. Provides access to the Render functionality. Heavy on objects but contains no (?) state information. Apart from setup code is pretty empty. Closely bound to ScenePhysicsState.
+ - ScenePhysicsState. Contains the non const aspects of a scene. Heavy on code but light on state data. Think of it as Cookies of a Webpage. Closely coupled to a Scene.
  - Movie. Provides a fixed timestep physics step and a variable time step render step inside a Game Loop. Swaps Scenes in and out
- - SafeAndRestore. Like the name says. Also used by MacroRecorder.
- - MacroRecorder. Provides the ability to replay game events. Only possible with fixed physics timesteps
+ - SafeAndRestore. Like the name says.
+ - MacroRecorder. Provides the ability to replay game events. Must be deterministic. Only possible with fixed physics timesteps.
  - Camera
  
 ## Third party libs:
