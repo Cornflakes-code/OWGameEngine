@@ -5,8 +5,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-#include <GLFW/glfw3.h>
-
 #include <Core/Movie.h>
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>

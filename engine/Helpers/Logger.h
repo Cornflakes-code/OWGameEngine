@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <iostream>
 
@@ -11,6 +12,7 @@
 #include <glm/glm.hpp>
 #pragma warning( pop )
 
+#include "CommonUtils.h"
 #include "../OWEngine/OWEngine.h"
 
 struct GLFWwindow;
@@ -26,7 +28,10 @@ public:
 	static void print_all(GLuint programme);
 	std::string versionString() const;
 private:
-	static double previous_seconds;
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+	static OWUtils::Time::time_point previous_seconds;
 	static int frame_count;
 	static std::string toString(GLenum type);
+#pragma warning( pop )
 };

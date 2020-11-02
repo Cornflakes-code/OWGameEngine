@@ -10,7 +10,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include <Core/UserInput.h>
 #include <Core/GlobalSettings.h>

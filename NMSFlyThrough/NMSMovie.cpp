@@ -1,7 +1,5 @@
 #include "NMSMovie.h"
 
-#include <GLFW/glfw3.h>
-
 #include <Core/GLApplication.h>
 #include <Core/SaveAndRestore.h>
 #include <Core/GlobalSettings.h>

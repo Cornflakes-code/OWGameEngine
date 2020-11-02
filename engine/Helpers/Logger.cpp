@@ -9,8 +9,10 @@
 #endif
 
 #include "../Helpers/LogStream.h"
+#include "CommonUtils.h"
 
-double Logger::previous_seconds = 0.0;
+OWUtils::Time::time_point Logger::previous_seconds;
+const static OWUtils::Time::duration gInterval = std::chrono::milliseconds(1000);
 int Logger::frame_count = 0;
 
 Logger::Logger()
@@ -18,13 +20,14 @@ Logger::Logger()
 
 void Logger::update_fps_counter(GLFWwindow* window) const
 {
-	double current_seconds = glfwGetTime();
-	double elapsed_seconds = current_seconds - previous_seconds;
-	/* limit text updates to 4 per second */
-	if (elapsed_seconds > 0.25) 
+	OWUtils::Time::time_point current_seconds = OWUtils::Time::now();
+	OWUtils::Time::duration elapsed = current_seconds - previous_seconds;
+	// limit text updates
+	if (elapsed > gInterval)
 	{
 		previous_seconds = current_seconds;
-		double fps = frame_count / elapsed_seconds;
+		OWUtils::Float xx = std::chrono::duration<float>(elapsed).count();
+		unsigned int fps = static_cast<unsigned int>(frame_count / xx);
 		std::stringstream ss;
 		ss << "opengl @ fps: " << fps << "\n";
 		glfwSetWindowTitle(window, ss.str().c_str());

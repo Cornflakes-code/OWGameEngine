@@ -1,7 +1,5 @@
 #include "NMSEndScene.h"
 
-#include <GLFW/glfw3.h>
-
 #include <Core/Camera.h>
 #include <Core/GlobalSettings.h>
 #include <Helpers/Shader.h>
