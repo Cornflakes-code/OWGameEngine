@@ -83,7 +83,7 @@ int Shader::addShader(const std::string& sourceCode, unsigned int type,
 		return 0;
 	int shader = glCreateShader(type);
 	err = glGetError();
-	const GLchar* const ch = sourceCode.c_str();
+	const GLchar* ch = sourceCode.c_str();
 	glShaderSource(shader, 1, &ch, NULL);
 	err = glGetError();
 	glCompileShader(shader);

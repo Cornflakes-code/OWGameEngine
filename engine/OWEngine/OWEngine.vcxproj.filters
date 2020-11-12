@@ -251,9 +251,6 @@
     <ClCompile Include="..\Renderables\BoundingBox.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="..\glad\src\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\GlobalSettings.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -295,6 +292,9 @@
     </ClCompile>
     <ClCompile Include="..\Helpers\LogStream.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

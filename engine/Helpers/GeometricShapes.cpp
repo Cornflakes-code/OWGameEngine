@@ -52,3 +52,50 @@ std::vector<glm::vec3> GeometricShapes::rectangle(const glm::vec2& dims,
 
 	return retval;
 }
+
+// But the points are bunched near the poles.
+std::vector<glm::vec3> GeometricShapes::pointsOnSphere(
+	int numHoroSegments, int numVertSegments, float TAU)
+{
+	// https://www.youtube.com/watch?v=lctXaT9pxA0
+	std::vector<glm::vec3> retVal;
+	for (int h = 0; h < numHoroSegments; h++)
+	{
+		float angle1 = (h + 1) * glm::pi<float>() / (numHoroSegments + 1);
+		for (int v = 0; v < numVertSegments; v++)
+		{
+			float angle2 = v * TAU / numVertSegments;
+				float x = sin(angle1) * cos(angle2);
+				float y = cos(angle1);
+				float z = sin(angle1) * sin(angle2);
+				glm::vec3 pointOnSphere = glm::vec3(x, y, z);
+				retVal.push_back(pointOnSphere);
+		}
+	}
+	return retVal;
+}
+
+// Evenly distributed points on a sphere.
+std::vector<glm::vec3> GeometricShapes::fibonacciSphere(int numPoints, float TAU)
+{
+	// https://www.youtube.com/watch?v=lctXaT9pxA0
+
+	// https://www.redblobgames.com/x/1842-delaunay-voronoi-sphere/
+	std::vector<glm::vec3> retVal;
+
+	const double goldenRatio = (1 + sqrt(5)) / 2.0;
+	const double angleIncrement = TAU * goldenRatio;
+	for (int i = 0; i < numPoints; i++)
+	{
+		double t = (i * 1.0) / numPoints;
+		double angle1 = acos(1 - 2 * t);
+		double angle2 = angleIncrement * i;
+		float x = static_cast<float>(sin(angle1) * cos(angle2));
+		float y = static_cast<float>(sin(angle1) * sin(angle2));
+		float z = static_cast<float>(cos(angle1));
+		glm::vec3 pointOnSphere = glm::vec3(x, y, z);
+		retVal.push_back(pointOnSphere);
+	}
+	return retVal;
+}
+

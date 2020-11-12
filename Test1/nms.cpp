@@ -1,4 +1,10 @@
 
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
+
+#include <GLFW/glfw3.h>
+
 #pragma comment( lib, "glfw3.lib" )
 #pragma comment (lib, "OpenGL32.lib")
 
@@ -41,8 +47,8 @@ int main()
 {
 	if (!globals)
 	{
-		globals = new GlobalSettings();
-		globals->physicalWindowSize({ 800, 600 });
+//		globals = new GlobalSettings();
+//		globals->physicalWindowSize({ 800, 600 });
 	}
 	// glfw: initialize and configure
 	// ------------------------------

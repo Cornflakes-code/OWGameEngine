@@ -90,7 +90,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;OWENGINE_EXPORTS;_WINDOWS;OWENGINE_DLL;GLAD_GLAPI_EXPORT_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;OWENGINE_EXPORTS;_WINDOWS;OWENGINE_DLL;GLAD_GLAPI_EXPORT_BUILD;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4100;4275</DisableSpecificWarnings>
     </ClCompile>
@@ -143,7 +143,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;OWENGINE_EXPORTS;_WINDOWS;_USRDLL;GLAD_GLAPI_EXPORT_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;OWENGINE_EXPORTS;_WINDOWS;_USRDLL;GLAD_GLAPI_EXPORT_BUILD;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4100;4275</DisableSpecificWarnings>
     </ClCompile>
@@ -211,7 +211,6 @@
     <ClCompile Include="..\Core\Scene.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
-    <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="..\Helpers\CommonUtils.cpp" />
     <ClCompile Include="..\Helpers\ErrorHandling.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
@@ -245,6 +244,7 @@
     <ClCompile Include="..\Renderables\VertexSourceCompound.cpp" />
     <ClCompile Include="..\Renderables\VertexSourceRenderer.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="glad.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
