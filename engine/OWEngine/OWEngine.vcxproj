@@ -201,6 +201,7 @@
     <ClInclude Include="OWEngine.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
     <ClCompile Include="..\Core\Camera.cpp" />
     <ClCompile Include="..\Core\GLApplication.cpp" />
     <ClCompile Include="..\Core\GlobalSettings.cpp" />
@@ -244,7 +245,6 @@
     <ClCompile Include="..\Renderables\VertexSourceCompound.cpp" />
     <ClCompile Include="..\Renderables\VertexSourceRenderer.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="glad.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
