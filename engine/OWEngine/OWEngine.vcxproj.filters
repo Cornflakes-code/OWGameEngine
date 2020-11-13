@@ -162,6 +162,9 @@
     <ClInclude Include="..\Helpers\LogStream.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Helpers\ModelLoader.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -295,6 +298,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\ModelLoader.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

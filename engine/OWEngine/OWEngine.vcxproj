@@ -173,6 +173,7 @@
     <ClInclude Include="..\Helpers\GeometricShapes.h" />
     <ClInclude Include="..\Helpers\Logger.h" />
     <ClInclude Include="..\Helpers\MacroRecorder.h" />
+    <ClInclude Include="..\Helpers\ModelLoader.h" />
     <ClInclude Include="..\Helpers\MoveController.h" />
     <ClInclude Include="..\Helpers\MoveTarget.h" />
     <ClInclude Include="..\Helpers\PhongShader.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
     <ClCompile Include="..\Helpers\Logger.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
+    <ClCompile Include="..\Helpers\ModelLoader.cpp" />
     <ClCompile Include="..\Helpers\MoveController.cpp" />
     <ClCompile Include="..\Helpers\MoveTarget.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
@@ -245,6 +247,14 @@
     <ClCompile Include="..\Renderables\VertexSourceCompound.cpp" />
     <ClCompile Include="..\Renderables\VertexSourceRenderer.cpp" />
     <ClCompile Include="dllmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\OpenGL\Glitter\Build\Glitter\Vendor\assimp\code\assimp.vcxproj">
+      <Project>{cf5faf9f-32d0-38de-80f9-d5ce12a52691}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\zlib\windows\zlibstatic.vcxproj">
+      <Project>{cfb82b0a-aabf-3d1f-a3a5-cfd831dcd4e7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
