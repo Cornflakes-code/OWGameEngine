@@ -165,6 +165,15 @@
     <ClInclude Include="..\Helpers\ModelLoader.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Renderables\Model.h">
+      <Filter>Source Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\ModelRenderer.h">
+      <Filter>Source Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\RenderableBase.h">
+      <Filter>Source Files\Renderables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -301,6 +310,15 @@
     </ClCompile>
     <ClCompile Include="..\Helpers\ModelLoader.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\Model.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\ModelRenderer.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\RenderableBase.cpp">
+      <Filter>Source Files\Renderables</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

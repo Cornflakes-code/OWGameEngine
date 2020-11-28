@@ -15,7 +15,7 @@ void Vertices::vertices(const std::vector<glm::vec3>& v,
 	mVertexLoc = location;
 	mVertexMode = drawMode;
 	assert(!mVec4.size() && mVec3.size());
-	mBoundsValid = false;
+	invalidateBounds();
 }
 
 void Vertices::vertices(const std::vector<glm::vec4>& v,
@@ -26,7 +26,7 @@ void Vertices::vertices(const std::vector<glm::vec4>& v,
 	mVertexLoc = location;
 	mVertexMode = drawMode;
 	assert(!mVec3.size() && mVec4.size());
-	mBoundsValid = false;
+	invalidateBounds();
 }
 
 AABB Vertices::calcBounds() const

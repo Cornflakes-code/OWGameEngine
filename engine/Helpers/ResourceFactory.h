@@ -20,7 +20,7 @@ class OWENGINE_API ResourceFactory
 public:
 	enum class ResourceType
 	{
-		Shader, Font, Texture, SaveFile, UnknownType
+		Shader, Font, Texture, Model, SaveFile, UnknownType
 	};
 	static ResourceFactory* getResourceFactory();
 	void addPath(const std::experimental::filesystem::path& path, 

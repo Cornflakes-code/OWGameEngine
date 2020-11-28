@@ -20,6 +20,7 @@ class OWENGINE_API Texture
 	std::vector<TextureProps> mTextures;
 #pragma warning( pop )
 public:
+	Texture();
 	void addTexture(const std::string& texturePath, bool transparent, bool flip);
 	void use();
 };

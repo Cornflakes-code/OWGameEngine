@@ -9,6 +9,10 @@
 #include <glad/glad.h>
 #endif
 
+Texture::Texture()
+{
+
+}
 void Texture::addTexture(const std::string& texturePath, bool transparent, bool flip)
 {
 	unsigned int texture;
@@ -49,10 +53,8 @@ void Texture::addTexture(const std::string& texturePath, bool transparent, bool 
 	}
 	else
 	{
-		char infoLog[512];
 		std::stringstream str;
-		str << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-		str << "Failed to load texture" << std::endl;
+		str << "Failed to load texture [" << texturePath << "]" << std::endl;
 		throw std::exception(str.str().c_str());
 	}
 	stbi_image_free(data);
