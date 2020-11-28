@@ -11,7 +11,6 @@
 #include FT_FREETYPE_H
 
 #include "ErrorHandling.h"
-#include "ResourceFactory.h"
 #include "LogStream.h"
 
 const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(

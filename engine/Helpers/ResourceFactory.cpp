@@ -6,9 +6,8 @@
 #include "ErrorHandling.h"
 #include "LogStream.h"
 
-static ResourceFactory* mFactory = nullptr;
-#define GLSL(src) "#version 330 core\n" #src
-
+std::map<ResourceFactory::ResourceType, 
+	std::set<std::experimental::filesystem::path>> ResourceFactory::mResourcePaths;
 std::string ResourceFactory::toString(ResourceType rt)
 {
 	switch (rt)
@@ -31,20 +30,6 @@ ResourceFactory::ResourceType
 	if (rt == "UnknownType") return ResourceType::UnknownType;
 	throw NMSException(std::stringstream()
 		<< "Unknown ResourceType [" << rt << "]/n");
-}
-
-ResourceFactory* ResourceFactory::getResourceFactory()
-{
-	if (!mFactory)
-	{
-		mFactory = new ResourceFactory();
-	}
-	return mFactory;
-}
-
-ResourceFactory::ResourceFactory()
-{
-
 }
 
 void ResourceFactory::addPath(const std::experimental::filesystem::path& path, ResourceType key)
@@ -122,114 +107,3 @@ ResourceFactory::appendPath(const std::string& fileName, ResourceType key)
 	return std::experimental::filesystem::path();
 }
 
-json ResourceFactory::get(const std::string& fileName, 
-						const std::string& jsonObj, bool cache)
-{
-	//auto it = loadedFiles.find(fileName);
-	//if (it == loadedFiles.end())
-	//{
-	//	std::ifstream ifs(fileName);
-	//	it->second = nlohmann::json::parse(ifs);
-	//}
-	//return it->second[jsonObj];
-	return nullptr;
-}
-
-const std::string& ResourceFactory::getPath(const std::string& fileName, ResourceType rt)
-{
-	// TODO: add unique ptr and test for cache.
-	// TODO: Do not store istream* as this keeps the file locked.
-	if (!fileName.size())
-		throw NMSLogicException(std::stringstream() 
-				<< "Empty string passed to ResourceFactory::get()");
-
-	//std::lock_guard<std::mutex> guard(mut);
-	
-
-	std::experimental::filesystem::path p = appendPath(fileName, rt);
-	std::map<std::experimental::filesystem::path, 
-			 std::string>::iterator it = mLoadedFiles.find(p);
-	if (it == mLoadedFiles.end())
-	{
-		std::ifstream f(p, std::ios::in | std::ios::binary);
-
-		// ensure ifstream objects can throw exceptions:
-		f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-		// https://cpluspluspedia.com/en/tutorial/496/file-i-o
-		// https://stackoverflow.com/questions/1042940/writing-directly-to-stdstring-internal-buffers
-		// https://stackoverflow.com/questions/11149665/c-vector-that-doesnt-initialize-its-members?noredirect=1&lq=1
-		// https://stackoverflow.com/questions/17888569/how-can-i-switch-between-fstream-files-without-closing-them-simultaneous-output
-		std::string fileContents;
-		f.seekg(0, std::ios::end);
-		std::streampos sz = f.tellg();
-		fileContents.reserve(sz);
-		f.seekg(0, std::ios::beg);
-
-		// apparently read is a LOT faster than wholeFile.assign but 
-		// it does not read the whole file
-		fileContents.assign(std::istreambuf_iterator<char>(f),
-					std::istreambuf_iterator<char>());
-		//f.read(&(wholeFile[0]), sz);
-
-		if (!f.is_open())
-			throw NMSException(std::stringstream() << 
-					"Could not find Resource [" << p.string() << "].\n");
-		auto ret = mLoadedFiles.insert(
-				std::pair<std::experimental::filesystem::path, 
-						std::string>(p, fileContents));
-		return ret.first->second;
-	}
-	return it->second;
-}
-
-std::istream* ResourceFactory::readFile(const std::string& path)
-{
-	if (!path.size())
-		throw NMSException(std::stringstream() << "Resource [" << path << "] not found");
-	std::ifstream* f = new std::ifstream(path);
-
-	// ensure ifstream objects can throw exceptions:
-	f->exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-	f->open(path);
-	return f;
-}
-
-const FreeTypeFontAtlas::FontDetails* ResourceFactory::loadFreeTypeFont(
-				const std::string& fileName, unsigned int fontHeight)
-{
-	std::experimental::filesystem::path p
-		= appendPath(fileName, ResourceFactory::ResourceType::Font);
-	return mFreeType.loadFont(p, fontHeight);
-}
-
-const std::string& ResourceFactory::boilerPlateVertexShader()
-{
-	static std::string s = 
-		GLSL(layout (location = 0) in vec3 aPos;
-		uniform mat4 pvm;
-		void main()
-		{
-		   gl_Position = pvm * vec4(aPos, 1.0);
-		});
-	return s;
-}
-
-const std::string& ResourceFactory::boilerPlateFragmentShader()
-{
-	static std::string s = 
-		GLSL(out vec4 FragColor;
-		uniform vec4 colour = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-		void main()
-		{
-		   FragColor = colour;
-		});
-	return s;
-}
-
-const std::string& ResourceFactory::boilerPlateGeometryShader()
-{
-	static std::string s = "";
-	return s;
-}

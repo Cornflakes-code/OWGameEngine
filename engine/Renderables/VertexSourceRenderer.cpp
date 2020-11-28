@@ -3,7 +3,6 @@
 #include <glm/gtx/transform.hpp>
 
 #include "../Helpers/Shader.h"
-#include "../Helpers/ResourceFactory.h"
 #include "../Helpers/ErrorHandling.h"
 #include "../Helpers/CommonUtils.h"
 #include "../Core/GlobalSettings.h"

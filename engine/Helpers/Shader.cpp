@@ -15,7 +15,7 @@
 
 #include "Logger.h"
 #include "ErrorHandling.h"
-#include "ResourceFactory.h"
+#include "ShaderFactory.h"
 #include "CommonUtils.h"
 #include "../Core/GlobalSettings.h"
 
@@ -113,9 +113,9 @@ std::string Shader::readFile(const std::string& fileName)
 	// least allows us to avoid the considerable setup that ResourceFactory
 	// needs. For a quick and dirty use of the Shader class just use the 
 	// Shader::getPath function.
-	if (globals && globals->resourceCache())
+	if (true)
 	{
-		return globals->resourceCache()->getPath(fileName, ResourceFactory::ResourceType::Shader);
+		return ShaderFactory().getShader(fileName);
 	}
 	else
 	{

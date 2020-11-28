@@ -20,7 +20,7 @@
 
 #include "../Renderables/VertexSource.h"
 #include "../Helpers/MoveTarget.h"
-#include "ResourceFactory.h"
+#include "FreeTypeFontAtlas.h"
 
 class Shader;
 

@@ -174,6 +174,12 @@
     <ClInclude Include="..\Renderables\RenderableBase.h">
       <Filter>Source Files\Renderables</Filter>
     </ClInclude>
+    <ClInclude Include="..\Helpers\FontFactory.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\ShaderFactory.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -319,6 +325,12 @@
     </ClCompile>
     <ClCompile Include="..\Renderables\RenderableBase.cpp">
       <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\FontFactory.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\ShaderFactory.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

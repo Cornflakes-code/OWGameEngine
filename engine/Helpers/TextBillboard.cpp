@@ -10,7 +10,7 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-#include "ResourceFactory.h"
+#include "FontFactory.h"
 #include "ErrorHandling.h"
 #include "Shader.h"
 #include "../Core/GlobalSettings.h"
@@ -19,7 +19,7 @@ TextBillboard::TextBillboard(const glm::vec3& initialPosition,
 	const std::string& fontFileName, int fontHeight)
 	:VertexSource(initialPosition)
 {
-	mFontData = globals->resourceCache()->loadFreeTypeFont(fontFileName, fontHeight);
+	mFontData = FontFactory().loadFreeTypeFont(fontFileName, fontHeight);
 }
 
 TextBillboard::~TextBillboard()

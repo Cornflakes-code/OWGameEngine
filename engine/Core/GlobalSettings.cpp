@@ -289,8 +289,7 @@ void GlobalSettings::readFile(const std::experimental::filesystem::path& configF
 }
 
 void GlobalSettings::configAndSet(SaveAndRestore* sr, Movie* mov, MacroRecorder* mr,
-	Logger* log, Camera* cam, ResourceFactory* rf,
-	GLApplication* app, UserInput* /*ui*/)
+	Logger* log, Camera* cam, GLApplication* app, UserInput* OW_UNUSED(ui))
 {
 	mSaveAndRestore = sr;
 
@@ -308,11 +307,11 @@ void GlobalSettings::configAndSet(SaveAndRestore* sr, Movie* mov, MacroRecorder*
 	//  newValue->scale ??
 	mCamera = cam;
 
+	ResourceFactory paths;
 	for (auto& d : gConfigFile.directories)
 	{
-		rf->addPath(d.directory, d.resType);
+		paths.addPath(d.directory, d.resType);
 	}
-	mResFactory = rf;
 
 	mApplication = app;
 }

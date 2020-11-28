@@ -10,7 +10,6 @@ class SaveAndRestore;
 class Movie;
 class MacroRecorder;
 class Logger;
-class ResourceFactory;
 class GLApplication;
 class Camera;
 class UserInput;
@@ -50,19 +49,16 @@ public:
 	const MacroRecorder* recorder() const { return mRecorder; }
 	const Logger* logger() const { return mLogger; };
 	const Camera* camera() const { return mCamera; };
-	const ResourceFactory* resourceCache() const { return mResFactory; }
 	const GLApplication* application() const { return mApplication; }
 	bool minimised() const { return mMinimised; }
 
 	// Getters. 
-	ResourceFactory* resourceCache() { return mResFactory; }
 	GLApplication* application() { return mApplication; }
 
 	// Setters. Quick and dirty applications do not need to call all of these
 	//  Linkage stills applies so you need to include OWEngine.dll.
 	void configAndSet(SaveAndRestore* sr, Movie* m, MacroRecorder* mr,
-		Logger* log, Camera* c, ResourceFactory* rf,
-		GLApplication* app, UserInput* ui);
+		Logger* log, Camera* c, GLApplication* app, UserInput* ui);
 private:
 	void readFile(const std::experimental::filesystem::path& configFile);
 #pragma warning( push )
@@ -71,7 +67,6 @@ private:
 	const Movie* mMovie = nullptr;
 	const Logger* mLogger = nullptr;
 	GLApplication* mApplication = nullptr;
-	ResourceFactory* mResFactory = nullptr;
 	SaveAndRestore* mSaveAndRestore = nullptr;
 	Camera* mCamera = nullptr;
 	glm::uvec2 mPhysicalWindowSize;

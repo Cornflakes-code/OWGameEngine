@@ -11,6 +11,7 @@
 #include "../Core/GlobalSettings.h"
 #include "../Helpers/Shader.h"
 #include "../Helpers/CommonUtils.h"
+#include "../Helpers/ShaderFactory.h"
 
 #include "VertexSourceRenderer.h"
 
@@ -58,10 +59,11 @@ void Axis::prepare(const AABB& world)
 		mTextZ->addRenderer(new VertexSourceRenderer());
 	}
 	{
+		ShaderFactory shaders;
 		Shader* lineShader = new Shader();
-		lineShader->loadShaders(ResourceFactory::boilerPlateVertexShader(),
-			ResourceFactory::boilerPlateFragmentShader(),
-			ResourceFactory::boilerPlateGeometryShader());
+		lineShader->loadShaders(shaders.boilerPlateVertexShader(),
+			shaders.boilerPlateFragmentShader(),
+			shaders.boilerPlateGeometryShader());
 		mLines.shader(lineShader, "pvm");
 		mLines.vertices(axisCoords, 0, GL_LINES);
 		mLines.indices({ 0,1, 0,2, 0,3 }, GL_LINES);

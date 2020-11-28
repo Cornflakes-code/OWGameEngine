@@ -169,6 +169,7 @@
     <ClInclude Include="..\glad\include\glad\glad.h" />
     <ClInclude Include="..\Helpers\CommonUtils.h" />
     <ClInclude Include="..\Helpers\ErrorHandling.h" />
+    <ClInclude Include="..\Helpers\FontFactory.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
     <ClInclude Include="..\Helpers\GeometricShapes.h" />
     <ClInclude Include="..\Helpers\Logger.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="..\Helpers\ResourceFactory.h" />
     <ClInclude Include="..\Helpers\Shader.h" />
     <ClInclude Include="..\Helpers\LogStream.h" />
+    <ClInclude Include="..\Helpers\ShaderFactory.h" />
     <ClInclude Include="..\Helpers\TextBillboard.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
     <ClInclude Include="..\Helpers\utils.h" />
@@ -218,6 +220,7 @@
     <ClCompile Include="..\Core\UserInput.cpp" />
     <ClCompile Include="..\Helpers\CommonUtils.cpp" />
     <ClCompile Include="..\Helpers\ErrorHandling.cpp" />
+    <ClCompile Include="..\Helpers\FontFactory.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
     <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
     <ClCompile Include="..\Helpers\Logger.cpp" />
@@ -228,6 +231,7 @@
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
     <ClCompile Include="..\Helpers\ResourceFactory.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
+    <ClCompile Include="..\Helpers\ShaderFactory.cpp" />
     <ClCompile Include="..\Helpers\stb_image.cpp" />
     <ClCompile Include="..\Helpers\LogStream.cpp" />
     <ClCompile Include="..\Helpers\TextBillboard.cpp" />

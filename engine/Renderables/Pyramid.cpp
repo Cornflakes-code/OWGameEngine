@@ -9,14 +9,15 @@
 
 #include "../Helpers/Shader.h"
 #include "../Helpers/CommonUtils.h"
-#include "../Helpers/ResourceFactory.h"
+#include "../Helpers/ShaderFactory.h"
 
 Pyramid::Pyramid()
 {
+	ShaderFactory shaders;
 	Shader* sh = new Shader();
-	sh->loadShaders(ResourceFactory::boilerPlateVertexShader(),
-		ResourceFactory::boilerPlateFragmentShader(),
-		ResourceFactory::boilerPlateGeometryShader());
+	sh->loadShaders(shaders.boilerPlateVertexShader(),
+		shaders.boilerPlateFragmentShader(),
+		shaders.boilerPlateGeometryShader());
 	shader(sh, "pvm");
 }
 

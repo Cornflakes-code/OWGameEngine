@@ -58,7 +58,6 @@ extern OWENGINE_API GlobalSettings* globals;
 
 int main(int argc, char* argv[])
 {
-	ResourceFactory* rf = ResourceFactory::getResourceFactory();
 	try
 	{
 		std::experimental::filesystem::path exePath;
@@ -69,8 +68,9 @@ int main(int argc, char* argv[])
 			std::experimental::filesystem::path configFileName = exePath.filename();
 			configFileName.replace_extension("json");
 			exePath.remove_filename();
-			rf->addPath(exePath, ResourceFactory::ResourceType::UnknownType);
-			rf->addPath(std::experimental::filesystem::current_path(), 
+			ResourceFactory paths;
+			paths.addPath(exePath, ResourceFactory::ResourceType::UnknownType);
+			paths.addPath(std::experimental::filesystem::current_path(),
 						ResourceFactory::ResourceType::UnknownType);
 			exePath.append(configFileName);
 		}
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 		GLApplication app(&ui);
 		NMSMovie nms(&camera, &logger);
 		globals->configAndSet(&sr, &nms, &recorder,
-							&logger, &camera, rf, &app, &ui);
+							&logger, &camera, &app, &ui);
 		app.init(&nms, &ui, &recorder, &sr, &camera);
 		app.run(&nms);
 	}
