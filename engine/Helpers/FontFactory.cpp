@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "ResourceFactory.h"
+#include "ResourcePathFactory.h"
 #include "ErrorHandling.h"
 #include "LogStream.h"
 
@@ -14,7 +14,8 @@ const FreeTypeFontAtlas::FontDetails* FontFactory::loadFreeTypeFont(
 	const std::string& fileName, unsigned int fontHeight)
 {
 	std::experimental::filesystem::path p
-		= ResourceFactory().appendPath(fileName, ResourceFactory::ResourceType::Font);
+		= ResourcePathFactory().appendPath(fileName, 
+					ResourcePathFactory::ResourceType::Font);
 	return mFreeType.loadFont(p, fontHeight);
 }
 

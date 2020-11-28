@@ -1,4 +1,4 @@
-#include "ResourceFactory.h"
+#include "ResourcePathFactory.h"
 
 #include <iostream>
 #include <fstream>
@@ -6,9 +6,9 @@
 #include "ErrorHandling.h"
 #include "LogStream.h"
 
-std::map<ResourceFactory::ResourceType, 
-	std::set<std::experimental::filesystem::path>> ResourceFactory::mResourcePaths;
-std::string ResourceFactory::toString(ResourceType rt)
+std::map<ResourcePathFactory::ResourceType, 
+	std::set<std::experimental::filesystem::path>> ResourcePathFactory::mResourcePaths;
+std::string ResourcePathFactory::toString(ResourceType rt)
 {
 	switch (rt)
 	{
@@ -21,8 +21,8 @@ std::string ResourceFactory::toString(ResourceType rt)
 	}	
 }
 
-ResourceFactory::ResourceType 
-	ResourceFactory::resourceTypeFromString(const std::string& rt)
+ResourcePathFactory::ResourceType 
+	ResourcePathFactory::resourceTypeFromString(const std::string& rt)
 {
 	if (rt == "Shader") return ResourceType::Shader;
 	if (rt == "Font") return ResourceType::Font;
@@ -32,9 +32,9 @@ ResourceFactory::ResourceType
 		<< "Unknown ResourceType [" << rt << "]/n");
 }
 
-void ResourceFactory::addPath(const std::experimental::filesystem::path& path, ResourceType key)
+void ResourcePathFactory::addPath(const std::experimental::filesystem::path& path, ResourceType key)
 {
-	std::pair<std::map<ResourceFactory::ResourceType,
+	std::pair<std::map<ResourcePathFactory::ResourceType,
 			std::set<std::experimental::filesystem::path>>::iterator, bool> iter;
 	iter.first = mResourcePaths.find(key);
 	if (iter.first == mResourcePaths.end())
@@ -54,7 +54,7 @@ void ResourceFactory::addPath(const std::experimental::filesystem::path& path, R
 }
 
 std::experimental::filesystem::path 
-ResourceFactory::appendPath(const std::string& fileName, ResourceType key)
+ResourcePathFactory::appendPath(const std::string& fileName, ResourceType key)
 {
 	// First search for a set of paths identified by the key. If that is not found 
 	// then get the set of paths without a key identifier.

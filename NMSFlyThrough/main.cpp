@@ -8,7 +8,7 @@
 
 #include <Helpers/Logger.h>
 #include <Helpers/ErrorHandling.h>
-#include <Helpers/ResourceFactory.h>
+#include <Helpers/ResourcePathFactory.h>
 #include <Helpers/MacroRecorder.h>
 #include <Helpers/LogStream.h>
 
@@ -68,10 +68,10 @@ int main(int argc, char* argv[])
 			std::experimental::filesystem::path configFileName = exePath.filename();
 			configFileName.replace_extension("json");
 			exePath.remove_filename();
-			ResourceFactory paths;
-			paths.addPath(exePath, ResourceFactory::ResourceType::UnknownType);
+			ResourcePathFactory paths;
+			paths.addPath(exePath, ResourcePathFactory::ResourceType::UnknownType);
 			paths.addPath(std::experimental::filesystem::current_path(),
-						ResourceFactory::ResourceType::UnknownType);
+						ResourcePathFactory::ResourceType::UnknownType);
 			exePath.append(configFileName);
 		}
 		// Config file is 'path of exe/exename.json'

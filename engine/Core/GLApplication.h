@@ -22,7 +22,6 @@ struct GLFWwindow;
 class Movie;
 
 class Logger;
-class ResourceFactory;
 class MacroRecorder;
 class SaveAndRestore;
 class UserInput;

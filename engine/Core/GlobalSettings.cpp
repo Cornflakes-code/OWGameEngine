@@ -4,7 +4,7 @@
 #include <json/single_include/nlohmann/json.hpp>
 
 #include "UserInput.h"
-#include "../Helpers/ResourceFactory.h"
+#include "../Helpers/ResourcePathFactory.h"
 #include "../Helpers/ErrorHandling.h"
 #include "../Helpers/LogStream.h"
 #include "../Core/Movie.h"
@@ -33,7 +33,7 @@ struct ConfigFileStruct
 	struct Directory
 	{
 		std::string directory;
-		ResourceFactory::ResourceType resType;
+		ResourcePathFactory::ResourceType resType;
 	};
 	struct WindowCoord
 	{
@@ -100,7 +100,7 @@ ConfigFileStruct gConfigFile;
 void to_json(json& j, const ConfigFileStruct::Directory& d)
 {
 	j = json{ {"Directory", d.directory},{"ResourceType",
-		ResourceFactory::toString(d.resType)} };
+		ResourcePathFactory::toString(d.resType)} };
 }
 
 void from_json(const json& j, ConfigFileStruct::Directory& d)
@@ -108,7 +108,7 @@ void from_json(const json& j, ConfigFileStruct::Directory& d)
 	j.at("Directory").get_to(d.directory);
 	std::string s;
 	j.at("ResourceType").get_to(s);
-	d.resType = ResourceFactory::resourceTypeFromString(s);
+	d.resType = ResourcePathFactory::resourceTypeFromString(s);
 }
 
 void to_json(json& j, const ConfigFileStruct::WindowCoord& d)
@@ -220,10 +220,10 @@ void from_json(const json& j, ConfigFileStruct& d)
 	catch (const std::exception& ex)
 	{
 		d.directories = {
-			{"../engine/Resources/shaders", ResourceFactory::ResourceType::Shader},
-			{"../engine/Resources/fonts", ResourceFactory::ResourceType::Font},
-			{"../../engine/Resources/shaders", ResourceFactory::ResourceType::Shader},
-			{"../../engine/Resources/fonts", ResourceFactory::ResourceType::Font}
+			{"../engine/Resources/shaders", ResourcePathFactory::ResourceType::Shader},
+			{"../engine/Resources/fonts", ResourcePathFactory::ResourceType::Font},
+			{"../../engine/Resources/shaders", ResourcePathFactory::ResourceType::Shader},
+			{"../../engine/Resources/fonts", ResourcePathFactory::ResourceType::Font}
 		};		
 		LogStream(LogStreamLevel::Error) << "Cannot parse config file Directories"
 			<< "Exception [" << ex.what() << "]\n";
@@ -307,7 +307,7 @@ void GlobalSettings::configAndSet(SaveAndRestore* sr, Movie* mov, MacroRecorder*
 	//  newValue->scale ??
 	mCamera = cam;
 
-	ResourceFactory paths;
+	ResourcePathFactory paths;
 	for (auto& d : gConfigFile.directories)
 	{
 		paths.addPath(d.directory, d.resType);

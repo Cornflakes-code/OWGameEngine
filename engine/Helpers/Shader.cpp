@@ -109,8 +109,8 @@ std::string Shader::readFile(const std::string& fileName)
 {
 	if (fileName.empty())
 		return "";
-	// Cannot get around the need to link ResourceFactory but this at 
-	// least allows us to avoid the considerable setup that ResourceFactory
+	// Cannot get around the need to link ResourcePathFactory but this at 
+	// least allows us to avoid the considerable setup that ResourcePathFactory
 	// needs. For a quick and dirty use of the Shader class just use the 
 	// Shader::getPath function.
 	if (true)
@@ -123,7 +123,7 @@ std::string Shader::readFile(const std::string& fileName)
 	}
 }
 
-// This is a cut down version of ResourceFactory::getPath. A full and correct 
+// This is a cut down version of ResourcePathFactory::getPath. A full and correct 
 // pathname needs to be passed as there is less error checking.
 std::string Shader::getPath(const std::string& fileName)
 {

@@ -8,7 +8,7 @@
 #include <Core/GlobalSettings.h>
 
 #include <Helpers/ErrorHandling.h>
-#include <Helpers/ResourceFactory.h>
+#include <Helpers/ResourcePathFactory.h>
 
 #include <Renderables/Axis.h>
 
@@ -86,7 +86,7 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 
 	mStarMap = new NoMansSky();
 	std::experimental::filesystem::path p
-		= ResourceFactory().appendPath("NMSMap.txt", ResourceFactory::ResourceType::UnknownType);
+		= ResourcePathFactory().appendPath("NMSMap.txt", ResourcePathFactory::ResourceType::UnknownType);
 	mStarMap->setUp(p.string(), world());
 	mAxis = new Axis();
 	

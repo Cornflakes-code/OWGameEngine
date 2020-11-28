@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include "ErrorHandling.h"
-#include "ResourceFactory.h"
+#include "ResourcePathFactory.h"
 
 
 #define GLSL(src) "#version 330 core\n" #src
@@ -17,13 +17,13 @@ const std::string& ShaderFactory::getShader(const std::string& fileName)
 	// TODO: Do not store istream* as this keeps the file locked.
 	if (!fileName.size())
 		throw NMSLogicException(std::stringstream()
-			<< "Empty string passed to ResourceFactory::getShader()");
+			<< "Empty string passed to ResourcePathFactory::getShader()");
 
 	//std::lock_guard<std::mutex> guard(mut);
 
 
 	std::experimental::filesystem::path p = 
-			ResourceFactory().appendPath(fileName, ResourceFactory::ResourceType::Shader);
+			ResourcePathFactory().appendPath(fileName, ResourcePathFactory::ResourceType::Shader);
 	std::map<std::experimental::filesystem::path,
 		std::string>::iterator it = mLoadedFiles.find(p);
 	if (it == mLoadedFiles.end())

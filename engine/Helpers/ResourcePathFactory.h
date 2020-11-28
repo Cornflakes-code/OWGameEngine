@@ -13,10 +13,10 @@ using json = nlohmann::json;
 /*
 	Caching of paths and resources. A singleton class.
 */
-class OWENGINE_API ResourceFactory
+class OWENGINE_API ResourcePathFactory
 {
 public:
-	ResourceFactory() {}
+	ResourcePathFactory() {}
 	enum class ResourceType
 	{
 		Shader, Font, Texture, Model, SaveFile, UnknownType
@@ -26,7 +26,7 @@ public:
 	std::experimental::filesystem::path appendPath(
 					const std::string& fileName, ResourceType key);
 	static std::string toString(ResourceType rt);
-	static ResourceFactory::ResourceType
+	static ResourcePathFactory::ResourceType
 		resourceTypeFromString(const std::string& rt);
 private:
 #pragma warning( push )

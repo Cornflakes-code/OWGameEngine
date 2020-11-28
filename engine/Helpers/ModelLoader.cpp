@@ -7,7 +7,7 @@
 
 #include "LogStream.h"
 #include "Texture.h"
-#include "ResourceFactory.h"
+#include "ResourcePathFactory.h"
 #include "stb/stb_image.h"
 
 ModelLoader::ModelLoader()
@@ -18,7 +18,7 @@ bool ModelLoader::create(const std::string& fileName, Model& model, bool cache)
 	return false;
 	/*
 	std::string modelPath = globals->resourceCache()->
-			getPath(fileName, ResourceFactory::ResourceType::Model);
+			getPath(fileName, ResourcePathFactory::ResourceType::Model);
 
 	std::map<std::string, Model*>::const_iterator found = mCache.find(modelPath);
 	if (found != mCache.end())
@@ -29,7 +29,7 @@ bool ModelLoader::create(const std::string& fileName, Model& model, bool cache)
 	{
 		Texture* tex = new Texture;
 		std::string texturePath = globals->resourceCache()->
-			getPath(fileName, ResourceFactory::ResourceType::Texture);
+			getPath(fileName, ResourcePathFactory::ResourceType::Texture);
 		unsigned char* data = nullptr;
 
 		// Do not want to find the same file as the model
