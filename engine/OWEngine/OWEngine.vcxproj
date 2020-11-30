@@ -174,7 +174,7 @@
     <ClInclude Include="..\Helpers\GeometricShapes.h" />
     <ClInclude Include="..\Helpers\Logger.h" />
     <ClInclude Include="..\Helpers\MacroRecorder.h" />
-    <ClInclude Include="..\Helpers\ModelLoader.h" />
+    <ClInclude Include="..\Helpers\ModelFactory.h" />
     <ClInclude Include="..\Helpers\MoveController.h" />
     <ClInclude Include="..\Helpers\MoveTarget.h" />
     <ClInclude Include="..\Helpers\PhongShader.h" />
@@ -185,6 +185,7 @@
     <ClInclude Include="..\Helpers\ShaderFactory.h" />
     <ClInclude Include="..\Helpers\TextBillboard.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
+    <ClInclude Include="..\Helpers\TextureFactory.h" />
     <ClInclude Include="..\Helpers\utils.h" />
     <ClInclude Include="..\Renderables\Actor.h" />
     <ClInclude Include="..\Renderables\Axis.h" />
@@ -225,7 +226,7 @@
     <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
     <ClCompile Include="..\Helpers\Logger.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
-    <ClCompile Include="..\Helpers\ModelLoader.cpp" />
+    <ClCompile Include="..\Helpers\ModelFactory.cpp" />
     <ClCompile Include="..\Helpers\MoveController.cpp" />
     <ClCompile Include="..\Helpers\MoveTarget.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
@@ -236,6 +237,7 @@
     <ClCompile Include="..\Helpers\LogStream.cpp" />
     <ClCompile Include="..\Helpers\TextBillboard.cpp" />
     <ClCompile Include="..\Helpers\Texture.cpp" />
+    <ClCompile Include="..\Helpers\TextureFactory.cpp" />
     <ClCompile Include="..\Helpers\utils.cpp" />
     <ClCompile Include="..\Renderables\Actor.cpp" />
     <ClCompile Include="..\Renderables\Axis.cpp" />

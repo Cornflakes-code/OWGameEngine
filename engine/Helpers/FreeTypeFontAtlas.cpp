@@ -73,14 +73,15 @@ FreeTypeFontAtlas::FontDetails::FontDetails(FT_Face face, unsigned int maxRowWid
 				int fontHeight)
 {
 	calcTextureSize(face, maxRowWidth, fontHeight);
-	mTextureBlock = createGlyphBitmap(face, maxRowWidth);
+	mTexture = createGlyphBitmap(face, maxRowWidth);
 }
 
 FreeTypeFontAtlas::FontDetails::~FontDetails()
 {
 }
 
-glm::vec2 FreeTypeFontAtlas::FontDetails::pleasingSpacing(int fontHeight, float aspectRatio)
+glm::vec2 FreeTypeFontAtlas::FontDetails::pleasingSpacing
+		(int fontHeight, float aspectRatio)
 {
 	auto iter = mNiceFontSpacings.find(fontHeight);
 	if (iter == mNiceFontSpacings.end())
@@ -118,7 +119,8 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 	{
 		if (FT_Load_Char(face, i, FT_LOAD_RENDER))
 		{
-			LogStream(LogStreamLevel::Warning) << "Loading FT character [" << i << "] failed";
+			LogStream(LogStreamLevel::Warning) 
+				<< "Loading FT character [" << i << "] failed";
 			continue;
 		}
 
@@ -139,43 +141,19 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 	mHeight += rowHeight;
 }
 
-OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face& face, unsigned int maxWidth)
+Texture FreeTypeFontAtlas::FontDetails::createGlyphBitmap(
+					FT_Face& face, unsigned int maxWidth)
 {
-	OWUtils::TextureBlock tb;
-	tb.location = GL_INVALID_INDEX;
-	tb.imageUnit = GL_TEXTURE0;
-	tb.target = GL_TEXTURE_2D;
-
+	// Create a texture that will be used to hold all ASCII glyphs
 	// The next step is probably to go to mipmaps.
 	// see http://www.opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube/
-	// Create a texture that will be used to hold all ASCII glyphs
-	glGenTextures(1, &tb.location);
-	glActiveTexture(tb.imageUnit);
-	glBindTexture(tb.target, tb.location);
-	// Create the texture
-	const GLint level = 0;
+	Texture texture;
+
 	const GLenum internalFormat = GL_RGBA;
+	const GLint level = 0;
 	const GLenum bitmapType = GL_UNSIGNED_BYTE;
-	glTexImage2D(tb.target,
-		level,
-		internalFormat, // internal format
-		mWidth, mHeight,
-		0,  // border = 0
-		internalFormat, // format of the pixel data
-		bitmapType,
-		0); // data 
-
-	// Clamping to edges is important to prevent artifacts when scaling
-	glTexParameteri(tb.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(tb.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	/* Linear filtering usually looks best for text */
-	glTexParameteri(tb.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(tb.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	/* Enable blending, necessary for our alpha texture */
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	texture.init(mWidth, mHeight, GL_LINEAR, nullptr,
+				internalFormat, level, bitmapType);
 
 	GLenum err = glGetError();
 	unsigned int rowHeight = 0;
@@ -204,7 +182,7 @@ OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face&
 			rowHeight = 0;
 			xOffset = 0;
 		}
-		glTexSubImage2D(tb.target,
+		glTexSubImage2D(texture.target(),
 			level,
 			xOffset, yOffset, // offsets
 			g->bitmap.width, g->bitmap.rows, // width, height
@@ -219,7 +197,8 @@ OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face&
 			err = glGetError();
 			if (err != GL_NO_ERROR)
 			{
-				LogStream(LogStreamLevel::Info) << "glTexSubImage2D Error: [" << std::hex << err
+				LogStream(LogStreamLevel::Info) 
+					<< "glTexSubImage2D Error: [" << std::hex << err
 					<< "]" << std::dec << " index[" << i << "]";
 				continue;
 			}
@@ -243,7 +222,7 @@ OWUtils::TextureBlock FreeTypeFontAtlas::FontDetails::createGlyphBitmap(FT_Face&
 		xOffset += g->bitmap.width + 1;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-	return tb;
+	return texture;
 }
 
 std::vector<glm::vec4> FreeTypeFontAtlas::FontDetails::createText(

@@ -103,10 +103,11 @@ void VertexSourceRenderer::render(const VertexSource* source,
 		// bind mTextureLoc to a texture image unit (usually GL_TEXTURE0).
 		for (auto t : source->mTextures)
 		{
-			glActiveTexture(t.imageUnit);
-			glBindTexture(t.target, t.location);
+			glActiveTexture(t.imageUnit());
+			glBindTexture(t.target(), t.location());
 			// associate sampler with textureImageUnit
-			source->mShader->setInteger(t.name, t.imageUnit - GL_TEXTURE0);
+			source->mShader->setInteger("textureImageId", 
+									t.imageUnit() - GL_TEXTURE0);
 		}
 	}
 	callResizeCallback(source, resizeCb);
@@ -134,8 +135,8 @@ void VertexSourceRenderer::render(const VertexSource* source,
 		// clean up.
 		for (auto t : source->mTextures)
 		{
-			glActiveTexture(t.imageUnit);
-			glBindTexture(t.target, 0);
+			glActiveTexture(t.imageUnit());
+			glBindTexture(t.target(), 0);
 		}
 	}
 }

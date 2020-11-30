@@ -159,12 +159,6 @@
     <ClInclude Include="..\Helpers\LogStream.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Helpers\ModelLoader.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\Model.h">
-      <Filter>Source Files\Renderables</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderables\ModelRenderer.h">
       <Filter>Source Files\Renderables</Filter>
     </ClInclude>
@@ -179,6 +173,15 @@
     </ClInclude>
     <ClInclude Include="..\Helpers\ResourcePathFactory.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\ModelFactory.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\TextureFactory.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\Model.h">
+      <Filter>Header Files\Renderables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -311,9 +314,6 @@
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Helpers\ModelLoader.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\Model.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
@@ -330,6 +330,12 @@
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\ResourcePathFactory.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\ModelFactory.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\TextureFactory.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>

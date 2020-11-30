@@ -30,11 +30,11 @@ TextBillboard::~TextBillboard()
 void TextBillboard::createText(const std::string& text, float sx, float sy)
 {
 	mVec4 = mFontData->createText(text, sx, sy);
-	OWUtils::TextureBlock tb = mFontData->texture();
+	Texture tex = mFontData->texture();
 
 	// A bit dodgy because we only know this string because of knowledge of ALL 
 	// shaders in derived classes.
-	tb.name = "textureImageId";
+	//tex.name = "textureImageId";
 
-	texture(tb);
+	texture(tex);
 }

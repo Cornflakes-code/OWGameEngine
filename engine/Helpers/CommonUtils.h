@@ -34,14 +34,6 @@ struct OWENGINE_API OWUtils
 					ScaleByAspectRatioType scaler,
 					float aspectRatio)> ResizeCallbackType;
 
-	struct TextureBlock
-	{
-		std::string name; // string in shader
-		unsigned int location; // from glGenTextures
-		unsigned int imageUnit; // GL_TEXTURE0 -> GL_TEXTUREN
-		unsigned int target; // i.e. GL_TEXTURE_2D
-	};
-
 	typedef glm::f32 Float;
 	typedef std::chrono::steady_clock Time;
 

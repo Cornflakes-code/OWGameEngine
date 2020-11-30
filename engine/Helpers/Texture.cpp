@@ -11,8 +11,50 @@
 
 Texture::Texture()
 {
-
+	mLocation = GL_INVALID_INDEX;
+	mImageUnit = GL_TEXTURE0;
+	mTarget = GL_TEXTURE_2D;
 }
+
+void Texture::init(int width, int height, GLint filter,
+	unsigned char* data, GLenum internalFormat, GLint level,
+	GLenum bitmapType)
+{
+	if (width > 0 && height > 0)
+	{
+		glGenTextures(1, &mLocation);
+		glActiveTexture(mImageUnit);
+		glBindTexture(mTarget, mLocation);
+
+		// set the texture wrapping parameters
+		// set texture wrapping to GL_REPEAT (default wrapping method)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexImage2D(mTarget,
+			level,
+			internalFormat, // internal format
+			width, height,
+			0,  // border = 0
+			internalFormat, // format of the pixel data
+			bitmapType,
+			data);
+
+		// Clamping to edges is important to prevent artifacts when scaling
+		glTexParameteri(mTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(mTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		glTexParameteri(mTarget, GL_TEXTURE_MIN_FILTER, filter);
+		glTexParameteri(mTarget, GL_TEXTURE_MAG_FILTER, filter);
+
+		/* Enable blending, necessary for our alpha texture */
+		if (internalFormat == GL_RGBA)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+	}
+}
+/*
 void Texture::addTexture(const std::string& texturePath, bool transparent, bool flip)
 {
 	unsigned int texture;
@@ -72,3 +114,4 @@ void Texture::use()
 		glBindTexture(GL_TEXTURE_2D, mTextures[i].texture);
 	}
 }
+*/

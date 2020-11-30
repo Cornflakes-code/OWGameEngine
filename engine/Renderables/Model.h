@@ -11,7 +11,7 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-#include "../Helpers/CommonUtils.h"
+#include "../Helpers/Texture.h"
 #include "RenderableBase.h"
 
 class Shader;
@@ -41,7 +41,7 @@ public:
 		mIndices = newValue;
 		mIndicesMode = drawMode;
 	}
-	void texture(const OWUtils::TextureBlock& tb)
+	void texture(const Texture& tb)
 	{
 		// If there are more than one texture unit in a shader then we need to consider
 		// GL_TEXTURE1, GL_TEXTURE2 and so on. See:
@@ -53,7 +53,7 @@ protected:
 #pragma warning( disable : 4251 )
 	ModelRenderer* mRenderer = nullptr;
 	std::vector<unsigned int> mIndices;
-	std::vector<OWUtils::TextureBlock> mTextures;
+	std::vector<Texture> mTextures;
 	glm::vec4 mColour;
 	std::string mColourName;
 	unsigned int mIndicesMode = GL_INVALID_ENUM;
