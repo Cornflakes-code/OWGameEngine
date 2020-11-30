@@ -33,23 +33,17 @@ const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
 	if (fontHeightDataIter == iter->second.fontDimensions.end())
 	{
 		iter->second.fontDimensions[fontHeight]
-			= FontDetails(iter->second.face, iter->second.maxRowWidth, fontHeight);
-		LogStream(LogStreamLevel::Info) << "For face "
-			<< iter->second.face->family_name
-			<< ", font height " << fontHeight << ", generated a "
-			<< iter->second.fontDimensions[fontHeight].width()
-			<< " * " << iter->second.fontDimensions[fontHeight].height()
-			<< "(" << iter->second.fontDimensions[fontHeight].width() *
-			iter->second.fontDimensions[fontHeight].height() / 1024
-			<< "kb) texture atlas\n";
-
+			= FontDetails(iter->second.face, 
+					iter->second.maxRowWidth, fontHeight);
+		LogStream log(LogStreamLevel::Info);
+		iter->second.debugData(log, fontHeight);
 	}
 	return &(iter->second.fontDimensions[fontHeight]);
 }
 
 FreeTypeFontAtlas::LoadedFace::LoadedFace(
 		const std::experimental::filesystem::path& path, int fontHeight)
-	: maxRowWidth(512) // Nothing really magical about this number
+	: maxRowWidth(512) // Nothing really magical about 512
 {
 	FT_Library ft;
 
@@ -66,13 +60,25 @@ FreeTypeFontAtlas::LoadedFace::LoadedFace(
 	}
 }
 
+void FreeTypeFontAtlas::LoadedFace::debugData(
+			std::ostream& out, unsigned int fontHeight)
+{
+	out << "For face " << face->family_name
+		<< ", font height " << fontHeight << ", generated a "
+		<< fontDimensions[fontHeight].width()
+		<< " * " << fontDimensions[fontHeight].height()
+		<< "(" << fontDimensions[fontHeight].width() *
+		fontDimensions[fontHeight].height() / 1024
+		<< "kb) texture atlas\n";
+}
+
 // Allocate storage for the static
 std::map<int, glm::vec2> FreeTypeFontAtlas::FontDetails::mNiceFontSpacings;
 
-FreeTypeFontAtlas::FontDetails::FontDetails(FT_Face face, unsigned int maxRowWidth,
-				int fontHeight)
+FreeTypeFontAtlas::FontDetails::FontDetails(FT_Face face, 
+	unsigned int maxRowWidth, int fontHeight)
 {
-	calcTextureSize(face, maxRowWidth, fontHeight);
+	calcTextureSize(face, mWidth, mHeight, maxRowWidth, fontHeight);
 	mTexture = createGlyphBitmap(face, maxRowWidth);
 }
 
@@ -80,13 +86,15 @@ FreeTypeFontAtlas::FontDetails::~FontDetails()
 {
 }
 
+
 glm::vec2 FreeTypeFontAtlas::FontDetails::pleasingSpacing
 		(int fontHeight, float aspectRatio)
 {
 	auto iter = mNiceFontSpacings.find(fontHeight);
 	if (iter == mNiceFontSpacings.end())
 		throw NMSException(std::stringstream()
-			<< "Font scaling not set for Font height [" << fontHeight << "]\n");
+			<< "Font scaling not set for Font height [" 
+			<< fontHeight << "]\n");
 
 	glm::vec2 retval = mNiceFontSpacings[fontHeight];
 	if (aspectRatio < 1.0f)
@@ -103,7 +111,9 @@ void FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 }
 
 void FreeTypeFontAtlas::FontDetails::calcTextureSize(
-			FT_Face& face, unsigned int maxRowWidth, int fontHeight)
+			FT_Face& face, 
+			unsigned int& width, unsigned int& height,
+			unsigned int maxRowWidth, int fontHeight) const
 {
 
 	if (FT_Set_Pixel_Sizes(face, 0, fontHeight))
@@ -114,6 +124,7 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 
 	unsigned int rowWidth = 0;
 	unsigned int rowHeight = 0;
+
 	// Find minimum size for a texture holding all visible ASCII characters
 	for (uint8_t i = 32; i < 128; i++)
 	{
@@ -126,9 +137,9 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 
 		if (rowWidth + face->glyph->bitmap.width + 1 >= maxRowWidth)
 		{
-			if (rowWidth > mWidth)
-				mWidth = rowWidth;
-			mHeight += rowHeight;
+			if (rowWidth > width)
+				width = rowWidth;
+			height += rowHeight;
 			rowHeight = 0;
 			rowWidth = 0;
 		}
@@ -136,24 +147,23 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 		rowHeight = std::max(rowHeight, face->glyph->bitmap.rows);
 	}
 
-	if (rowWidth > mWidth)
-		mWidth = rowWidth;
-	mHeight += rowHeight;
+	if (rowWidth > width)
+		width = rowWidth;
+	height += rowHeight;
 }
 
 Texture FreeTypeFontAtlas::FontDetails::createGlyphBitmap(
 					FT_Face& face, unsigned int maxWidth)
 {
 	// Create a texture that will be used to hold all ASCII glyphs
-	// The next step is probably to go to mipmaps.
-	// see http://www.opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube/
+	// The next step is probably to go to mipmaps. See
+	// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube/
 	Texture texture;
-
-	const GLenum internalFormat = GL_RGBA;
-	const GLint level = 0;
-	const GLenum bitmapType = GL_UNSIGNED_BYTE;
-	texture.init(mWidth, mHeight, GL_LINEAR, nullptr,
-				internalFormat, level, bitmapType);
+	Texture::InitData initData;
+	initData.filter = GL_LINEAR;
+	initData.wrap = GL_REPEAT;
+	initData.clamp = GL_CLAMP_TO_EDGE;
+	texture.init(nullptr, mWidth, mHeight, initData);
 
 	GLenum err = glGetError();
 	unsigned int rowHeight = 0;
@@ -172,7 +182,8 @@ Texture FreeTypeFontAtlas::FontDetails::createGlyphBitmap(
 	{
 		if (FT_Load_Char(face, i, FT_LOAD_RENDER))
 		{
-			LogStream(LogStreamLevel::Info) << "Loading character " << i << " failed!";
+			LogStream(LogStreamLevel::Info) << "Loading character " 
+				<< i << " failed!";
 			continue;
 		}
 
@@ -183,16 +194,16 @@ Texture FreeTypeFontAtlas::FontDetails::createGlyphBitmap(
 			xOffset = 0;
 		}
 		glTexSubImage2D(texture.target(),
-			level,
+			initData.level,
 			xOffset, yOffset, // offsets
 			g->bitmap.width, g->bitmap.rows, // width, height
 			GL_RED, // format
-			bitmapType,
+			initData.bitmapType,
 			g->bitmap.buffer); // data
 		err = glGetError();
 
-		if ((xOffset + g->bitmap.width) > static_cast<unsigned int>(width()) ||
-			(yOffset + g->bitmap.rows) > static_cast<unsigned int>(height()))
+		if ((xOffset + g->bitmap.width) > mWidth ||
+			(yOffset + g->bitmap.rows) > mHeight)
 		{
 			err = glGetError();
 			if (err != GL_NO_ERROR)

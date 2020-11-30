@@ -32,9 +32,11 @@ public:
 		float width() const { return static_cast<float>(mWidth); }
 		float height() const { return static_cast<float>(mHeight); }
 		Texture texture() const { return mTexture; }
-		std::vector<glm::vec4> createText(const std::string& text, float sx, float sy) const;
+		std::vector<glm::vec4> createText(const std::string& text, 
+			float sx, float sy) const;
 
-		static glm::vec2 pleasingSpacing(int fontHeight, float aspectRatio = 1.0f);
+		static glm::vec2 pleasingSpacing(
+			int fontHeight, float aspectRatio = 1.0f);
 		static void pleasingSpacing(int fontHeight, float x, float y);
 	private:
 #pragma warning( push )
@@ -57,21 +59,26 @@ public:
 		std::map<uint8_t, Character> mFontMap;
 		Texture mTexture;
 		Texture createGlyphBitmap(FT_Face& face, unsigned int maxWidth);
-		void calcTextureSize(FT_Face& face, unsigned int maxRowWidth, int fontHeight);
+		void calcTextureSize(FT_Face& face, 
+				unsigned int& width, unsigned int& height,
+				unsigned int maxRowWidth, int fontHeight) const;
 	};
-	const FontDetails* loadFont(const std::experimental::filesystem::path& path,
-								int fontHeight);
+	const FontDetails* loadFont(
+				const std::experimental::filesystem::path& path,
+				int fontHeight);
 #pragma warning( pop )
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	struct LoadedFace
 	{
-		LoadedFace(const std::experimental::filesystem::path& path, int fontHeight);
+		LoadedFace(const std::experimental::filesystem::path& path, 
+					int fontHeight);
 		LoadedFace() {}
 		FT_FaceRec_* face;
 		std::map<int, FontDetails> fontDimensions;
 		unsigned int maxRowWidth;
+		void debugData(std::ostream& out, unsigned int fontHeight);
 	};
 	std::map<std::experimental::filesystem::path, LoadedFace> mFonts;
 #pragma warning( pop )

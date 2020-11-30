@@ -16,9 +16,7 @@ Texture::Texture()
 	mTarget = GL_TEXTURE_2D;
 }
 
-void Texture::init(int width, int height, GLint filter,
-	unsigned char* data, GLenum internalFormat, GLint level,
-	GLenum bitmapType)
+void Texture::init(unsigned char* data, int width, int height, const InitData& initData)
 {
 	if (width > 0 && height > 0)
 	{
@@ -28,26 +26,35 @@ void Texture::init(int width, int height, GLint filter,
 
 		// set the texture wrapping parameters
 		// set texture wrapping to GL_REPEAT (default wrapping method)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		if (initData.wrap != GL_INVALID_INDEX)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, initData.wrap);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, initData.wrap);
+		}
 		glTexImage2D(mTarget,
-			level,
-			internalFormat, // internal format
+			initData.level,
+			initData.internalFormat, // internal format
 			width, height,
 			0,  // border = 0
-			internalFormat, // format of the pixel data
-			bitmapType,
+			initData.internalFormat, // format of the pixel data
+			initData.bitmapType,
 			data);
 
 		// Clamping to edges is important to prevent artifacts when scaling
-		glTexParameteri(mTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(mTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		if (initData.clamp != GL_INVALID_INDEX)
+		{
+			glTexParameteri(mTarget, GL_TEXTURE_WRAP_S, initData.clamp);
+			glTexParameteri(mTarget, GL_TEXTURE_WRAP_T, initData.clamp);
+		}
 
-		glTexParameteri(mTarget, GL_TEXTURE_MIN_FILTER, filter);
-		glTexParameteri(mTarget, GL_TEXTURE_MAG_FILTER, filter);
+		if (initData.filter != GL_INVALID_INDEX)
+		{
+			glTexParameteri(mTarget, GL_TEXTURE_MIN_FILTER, initData.filter);
+			glTexParameteri(mTarget, GL_TEXTURE_MAG_FILTER, initData.filter);
+		}
 
-		/* Enable blending, necessary for our alpha texture */
-		if (internalFormat == GL_RGBA)
+		// Enable blending, necessary for alpha texture
+		if (initData.internalFormat == GL_RGBA)
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

@@ -12,10 +12,17 @@
 class OWENGINE_API Texture
 {
 public:
+	struct InitData
+	{
+		GLenum internalFormat = GL_RGBA;
+		GLenum bitmapType = GL_UNSIGNED_BYTE;
+		GLint filter = GL_INVALID_INDEX;
+		GLint clamp = GL_INVALID_INDEX;
+		GLint wrap = GL_INVALID_INDEX;
+		GLint level = 0;
+	};
 	Texture();
-	void init(int width, int height, GLint filter,
-		unsigned char* data, GLenum internalFormat, GLint level,
-		GLenum bitmapType);
+	void init(unsigned char* data, int width, int height, const InitData& initData);
 	unsigned int location() const { return mLocation;  }
 	unsigned int imageUnit() const { return mImageUnit; }
 	unsigned int target() const { return mTarget; }

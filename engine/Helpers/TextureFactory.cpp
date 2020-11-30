@@ -42,12 +42,12 @@ const Texture& TextureFactory::getTexture(const std::string& fileName)
 	if (data)
 	{
 		Texture texture;
+		Texture::InitData initData;
 
-		const GLenum internalFormat = transparent ? GL_RGBA : GL_RGB;
-		const GLint level = 0;
-		const GLenum bitmapType = GL_UNSIGNED_BYTE;
-		texture.init(width, height, GL_LINEAR,
-			data, internalFormat, level, bitmapType);
+		initData.internalFormat = transparent ? GL_RGBA : GL_RGB;
+		initData.filter = GL_LINEAR;
+		initData.clamp = GL_CLAMP_TO_EDGE;
+		texture.init(data, width, height, initData);
 
 		mLoadedFiles[path] = texture;
 		stbi_image_free(data);
