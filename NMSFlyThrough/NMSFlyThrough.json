@@ -2,8 +2,16 @@
   "Version": 1.1,
   "Directories": [
     {
-      "Directory": "../../engine/Resources/shaders",
+      "Directory": "../../engine/Resources/Shaders",
       "ResourceType": "Shader"
+    },
+    {
+      "Directory": "../../engine/Resources/Models",
+      "ResourceType": "Model"
+    },
+    {
+      "Directory": "../../engine/Resources/Textures",
+      "ResourceType": "Texture"
     },
     {
       "Directory": "..\\..\\engine\\Resources\\fonts",

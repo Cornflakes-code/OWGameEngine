@@ -18,7 +18,7 @@
 #include "../Helpers/CommonUtils.h"
 #include "../Renderables/BoundingBox.h"
 
-#include "../Renderables/VertexSource.h"
+#include "../Renderables/SimpleModel.h"
 #include "../Helpers/MoveTarget.h"
 #include "FreeTypeFontAtlas.h"
 
@@ -28,7 +28,7 @@ class Shader;
 	Base class for fixed and dynamic Billboard Text. Font texture loading is cached
 	by FreeTypeFontAtlas via ResourceManager. Rendering is done in SimpleVCertexRender
 */
-class OWENGINE_API TextBillboard: public VertexSource
+class OWENGINE_API TextBillboard: public SimpleModel
 {
 protected:
 	TextBillboard(const glm::vec3& initialPosition, 

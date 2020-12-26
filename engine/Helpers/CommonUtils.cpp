@@ -1,4 +1,7 @@
 #include "CommonUtils.h"
+
+#include <ctime>
+
 #include "ErrorHandling.h"
 
 namespace Compass
@@ -53,4 +56,15 @@ glm::vec4 gSolidColours[16] =
 glm::vec4 OWUtils::colour(OWUtils::SolidColours colour)
 {
 	return gSolidColours[static_cast<unsigned int>(colour)];
+}
+
+std::string OWUtils::nowAsString()
+{
+	std::time_t now_c
+		= std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::tm t;
+	localtime_s(&t, &now_c);
+	char buffer[100];
+	std::strftime(buffer, sizeof(buffer), "config_%H-%M-%S.json", &t);
+	return std::string(buffer);
 }

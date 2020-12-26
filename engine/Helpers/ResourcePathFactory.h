@@ -31,8 +31,8 @@ public:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	// A map of file paths to search. Each ResourceType can have many paths and the sam path 
-	// can exist for multiple ResourceType.
+	// A map of file paths to search. Each ResourceType can have many paths and 
+	// the same path can exist for multiple ResourceType.
 	static std::map<ResourceType, std::set<std::experimental::filesystem::path>> mResourcePaths;
 #pragma warning( pop )
 };

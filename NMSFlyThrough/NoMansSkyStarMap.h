@@ -7,8 +7,8 @@
 #include <glad/glad.h>
 
 #include <Renderables/BoundingBox.h>
-#include <Renderables/InstanceSource.h>
-#include <Renderables/VertexSource.h>
+#include <Renderables/Particles.h>
+#include <Renderables/SimpleModel.h>
 
 
 class Shader;
@@ -19,10 +19,10 @@ class Shader;
 */
 class NoMansSky
 {
-	InstanceSource mStarRenderer;
+	Particles mStarRenderer;
 	std::vector<glm::vec3> mRandomMinorStars;
 	std::vector<glm::vec4> mStarPositions;
-	std::vector<VertexSource*> mStarLabels;
+	std::vector<SimpleModel*> mStarLabels;
 	std::vector<glm::vec4> mStarColours;
 	std::vector<glm::vec3> mGrid;
 

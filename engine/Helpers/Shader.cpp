@@ -105,42 +105,36 @@ int Shader::addShader(const std::string& sourceCode, unsigned int type,
 	return shader;
 }
 
-std::string Shader::readFile(const std::string& fileName)
+std::string Shader::readFile(const std::string& fileName, 
+							 bool usePathFactory)
 {
 	if (fileName.empty())
 		return "";
-	// Cannot get around the need to link ResourcePathFactory but this at 
-	// least allows us to avoid the considerable setup that ResourcePathFactory
-	// needs. For a quick and dirty use of the Shader class just use the 
-	// Shader::getPath function.
-	if (true)
+	// Cannot get around the need to link ResourcePathFactory but 
+	// usePathFactory == false allows us to avoid the considerable setup 
+	// that ResourcePathFactory needs.
+	if (usePathFactory)
 	{
 		return ShaderFactory().getShader(fileName);
 	}
 	else
 	{
-		return getPath(fileName);
+		// No caching
+		std::ifstream f(fileName, std::ios::in | std::ios::binary);
+
+		// ensure ifstream objects can throw exceptions:
+		f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		std::string fileContents;
+		f.seekg(0, std::ios::end);
+		std::streampos sz = f.tellg();
+		fileContents.reserve(sz);
+		f.seekg(0, std::ios::beg);
+
+		fileContents.assign(std::istreambuf_iterator<char>(f),
+			std::istreambuf_iterator<char>());
+
+		return fileContents;
 	}
-}
-
-// This is a cut down version of ResourcePathFactory::getPath. A full and correct 
-// pathname needs to be passed as there is less error checking.
-std::string Shader::getPath(const std::string& fileName)
-{
-	std::ifstream f(fileName, std::ios::in | std::ios::binary);
-
-	// ensure ifstream objects can throw exceptions:
-	f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	std::string fileContents;
-	f.seekg(0, std::ios::end);
-	std::streampos sz = f.tellg();
-	fileContents.reserve(sz);
-	f.seekg(0, std::ios::beg);
-
-	fileContents.assign(std::istreambuf_iterator<char>(f), 
-						std::istreambuf_iterator<char>());
-
-	return fileContents;
 }
 
 void Shader::loadShaders(const std::string& vertexShader,

@@ -57,6 +57,7 @@ struct OWENGINE_API OWUtils
 		BRIGHT_WHITE
 	};
 	static glm::vec4 colour(SolidColours colour);
+	static std::string nowAsString();
 	static bool nearlyEqual(Float a, Float b, Float epsilon)
 	{
 		// https://floating-point-gui.de/errors/comparison/

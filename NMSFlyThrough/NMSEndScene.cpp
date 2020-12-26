@@ -4,7 +4,7 @@
 #include <Core/GlobalSettings.h>
 #include <Helpers/Shader.h>
 #include <Renderables/TextBillboardDynamic.h>
-#include <Renderables/VertexSourceRenderer.h>
+#include <Renderables/SimpleModelRenderer.h>
 
 #include "NMSUserInput.h"
 
@@ -72,7 +72,7 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 	glm::vec4 color(0.5, 0.8f, 0.2f, 0);
 	mText->createText("G", sx, sy);
 	mText->colour(color, "textcolor");
-	mText->addRenderer(new VertexSourceRenderer());
+	mText->addRenderer(new SimpleModelRenderer());
 }
 
 void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),

@@ -8,7 +8,7 @@
 
 #include "BoundingBox.h"
 #include "Circle.h"
-#include "VertexSource.h"
+#include "SimpleModel.h"
 
 class TextBillboard;
 /*
@@ -30,8 +30,8 @@ private:
 	TextBillboard* mTextX;
 	TextBillboard* mTextY;
 	TextBillboard* mTextZ;
-	VertexSource mZeroPoint;
+	SimpleModel mZeroPoint;
 	Circle mCircle;
-	VertexSource mLines;
+	SimpleModel mLines;
 #pragma warning( pop )
 };

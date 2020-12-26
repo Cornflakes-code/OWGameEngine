@@ -9,7 +9,7 @@
 
 #define GLSL(src) "#version 330 core\n" #src
 
-std::map<std::experimental::filesystem::path, std::string> ShaderFactory::mLoadedFiles;
+ShaderFactory::ShaderCache ShaderFactory::mLoadedFiles;
 
 const std::string& ShaderFactory::getShader(const std::string& fileName)
 {
@@ -22,42 +22,47 @@ const std::string& ShaderFactory::getShader(const std::string& fileName)
 	//std::lock_guard<std::mutex> guard(mut);
 
 
-	std::experimental::filesystem::path p = 
-			ResourcePathFactory().appendPath(fileName, ResourcePathFactory::ResourceType::Shader);
-	std::map<std::experimental::filesystem::path,
-		std::string>::iterator it = mLoadedFiles.find(p);
-	if (it == mLoadedFiles.end())
+	std::experimental::filesystem::path path =
+		ResourcePathFactory().appendPath(fileName,
+			ResourcePathFactory::ResourceType::Shader);
+
+	ShaderCache::iterator iter = mLoadedFiles.begin();
+	while (iter != mLoadedFiles.end())
 	{
-		std::ifstream f(p, std::ios::in | std::ios::binary);
-
-		// ensure ifstream objects can throw exceptions:
-		f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-		// https://cpluspluspedia.com/en/tutorial/496/file-i-o
-		// https://stackoverflow.com/questions/1042940/writing-directly-to-stdstring-internal-buffers
-		// https://stackoverflow.com/questions/11149665/c-vector-that-doesnt-initialize-its-members?noredirect=1&lq=1
-		// https://stackoverflow.com/questions/17888569/how-can-i-switch-between-fstream-files-without-closing-them-simultaneous-output
-		std::string fileContents;
-		f.seekg(0, std::ios::end);
-		std::streampos sz = f.tellg();
-		fileContents.reserve(sz);
-		f.seekg(0, std::ios::beg);
-
-		// apparently read is a LOT faster than wholeFile.assign but 
-		// it does not read the whole file
-		fileContents.assign(std::istreambuf_iterator<char>(f),
-			std::istreambuf_iterator<char>());
-		//f.read(&(wholeFile[0]), sz);
-
-		if (!f.is_open())
-			throw NMSException(std::stringstream() <<
-				"Could not find Resource [" << p.string() << "].\n");
-		auto ret = mLoadedFiles.insert(
-			std::pair<std::experimental::filesystem::path,
-			std::string>(p, fileContents));
-		return ret.first->second;
+		if (std::experimental::filesystem::equivalent(iter->first, path))
+			break;
+		++iter;
 	}
-	return it->second;
+	if (iter != mLoadedFiles.end())
+	{
+		return iter->second;
+	}
+	std::ifstream f(path, std::ios::in | std::ios::binary);
+
+	// ensure ifstream objects can throw exceptions:
+	f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+	// https://cpluspluspedia.com/en/tutorial/496/file-i-o
+	// https://stackoverflow.com/questions/1042940/writing-directly-to-stdstring-internal-buffers
+	// https://stackoverflow.com/questions/11149665/c-vector-that-doesnt-initialize-its-members?noredirect=1&lq=1
+	// https://stackoverflow.com/questions/17888569/how-can-i-switch-between-fstream-files-without-closing-them-simultaneous-output
+	std::string fileContents;
+	f.seekg(0, std::ios::end);
+	std::streampos sz = f.tellg();
+	fileContents.reserve(sz);
+	f.seekg(0, std::ios::beg);
+
+	// apparently read is a LOT faster than wholeFile.assign but 
+	// it does not read the whole file
+	fileContents.assign(std::istreambuf_iterator<char>(f),
+		std::istreambuf_iterator<char>());
+	//f.read(&(wholeFile[0]), sz);
+
+	if (!f.is_open())
+		throw NMSException(std::stringstream() <<
+			"Could not find Resource [" << path.string() << "].\n");
+	auto ret = mLoadedFiles.insert({ path, fileContents });
+	return ret.first->second;
 }
 
 const std::string& ShaderFactory::boilerPlateVertexShader()

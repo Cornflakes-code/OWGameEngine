@@ -21,8 +21,8 @@
 #include <Helpers/GeometricShapes.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/TextBillboardFixed.h>
-#include <Renderables/InstanceSourceRenderer.h>
-#include <Renderables/VertexSourceRenderer.h>
+#include <Renderables/ParticlesRenderer.h>
+#include <Renderables/SimpleModelRenderer.h>
 
 NoMansSky::NoMansSky()
 	: mGridShader(new Shader("Lines.v.glsl", "Lines.f.glsl", ""))
@@ -88,7 +88,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	mStarRenderer.colours(instanceColours, 2, 1);
 
-	mStarRenderer.addRenderer(new InstanceSourceRenderer());
+	mStarRenderer.addRenderer(new ParticlesRenderer());
 #endif
 }
 
@@ -255,7 +255,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 					{ point.x, point.y, point.z }, "arial.ttf", fontHeight);
 			text->createText(elms[0], nice.x, nice.y);
 			text->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
-			text->addRenderer(new VertexSourceRenderer());
+			text->addRenderer(new SimpleModelRenderer());
 			mStarLabels.push_back(text);
 
 			mStarPositions.push_back({ point.x, point.y, point.z, point.w });
@@ -328,7 +328,7 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 	mStarRenderer.render(proj, view, model, nullptr, pointRender);
 	for (int i = 0; i < mStarLabels.size(); i++)
 	{
-		const VertexSource* sr = mStarLabels[i];
+		const SimpleModel* sr = mStarLabels[i];
 		sr->render(proj, view, model);
 	}
 #endif

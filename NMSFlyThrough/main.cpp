@@ -56,6 +56,7 @@ class MacroRecorder;
 
 extern OWENGINE_API GlobalSettings* globals;
 
+
 int main(int argc, char* argv[])
 {
 	try

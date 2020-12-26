@@ -22,6 +22,7 @@ public:
 		GLint level = 0;
 	};
 	Texture();
+	bool isValid() const { return mLocation != GL_INVALID_INDEX;  }
 	void init(unsigned char* data, int width, int height, const InitData& initData);
 	unsigned int location() const { return mLocation;  }
 	unsigned int imageUnit() const { return mImageUnit; }

@@ -13,12 +13,12 @@
 #include "../Helpers/CommonUtils.h"
 #include "../Helpers/ShaderFactory.h"
 
-#include "VertexSourceRenderer.h"
+#include "SimpleModelRenderer.h"
 
 #include "TextBillboardFixed.h"
 #include "TextBillboardDynamic.h"
 #include "Circle.h"
-#include "VertexSource.h"
+#include "SimpleModel.h"
 
 Axis::Axis()
 {}
@@ -53,10 +53,10 @@ void Axis::prepare(const AABB& world)
 		mTextY->colour({ 0.0, 1.0, 0.0, 1.0f }, "textcolor");
 		mTextZ->colour({ 0.0, 0.0, 1.0, 1.0f }, "textcolor");
 
-		mTextZero->addRenderer(new VertexSourceRenderer());
-		mTextX->addRenderer(new VertexSourceRenderer());
-		mTextY->addRenderer(new VertexSourceRenderer());
-		mTextZ->addRenderer(new VertexSourceRenderer());
+		mTextZero->addRenderer(new SimpleModelRenderer());
+		mTextX->addRenderer(new SimpleModelRenderer());
+		mTextY->addRenderer(new SimpleModelRenderer());
+		mTextZ->addRenderer(new SimpleModelRenderer());
 	}
 	{
 		ShaderFactory shaders;
@@ -69,11 +69,11 @@ void Axis::prepare(const AABB& world)
 		mLines.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
 		mLines.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK),
 					"colour");
-		mLines.addRenderer(new VertexSourceRenderer());
+		mLines.addRenderer(new SimpleModelRenderer());
 	}
 	{
 		mCircle.prepare();
-		mCircle.addRenderer(new VertexSourceRenderer());
+		mCircle.addRenderer(new SimpleModelRenderer());
 	}
 	{
 		//Shader* pointShader = new Shader("thebookofshaders.v.glsl",
@@ -90,7 +90,7 @@ void Axis::prepare(const AABB& world)
 		std::vector<glm::vec4> vv4;
 		vv4.push_back(v4);
 		mZeroPoint.vertices(vv4, 0, GL_POINTS);
-		mZeroPoint.addRenderer(new VertexSourceRenderer());
+		mZeroPoint.addRenderer(new SimpleModelRenderer());
 	}
 }
 

@@ -1,10 +1,10 @@
 #include "Vertices.h"
-#include "VertexRenderBase.h"
+#include "VerticesRenderer.h"
 
 #include "../Helpers/ErrorHandling.h"
 
 Vertices::Vertices(const glm::vec3& _initialPosition)
-:mInitialPosition(_initialPosition)
+: RenderableBase(_initialPosition)
 {}
 
 void Vertices::vertices(const std::vector<glm::vec3>& v,

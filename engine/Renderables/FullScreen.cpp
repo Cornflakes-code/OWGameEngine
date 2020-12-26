@@ -15,7 +15,7 @@
 
 FullScreen::FullScreen(const glm::vec3& initialPosition,
 					   Shader* _shader, const std::string& pvm)
-	: VertexSource(initialPosition)
+	: SimpleModel(initialPosition)
 {
 	shader(_shader, pvm);
 

@@ -61,8 +61,8 @@ private:
 	void processUniforms();
 	static int addShader(const std::string& sourceCode, 
 					unsigned int type, const std::string& errmsg);
-	static std::string readFile(const std::string& fileName);
-	static std::string getPath(const std::string& fileName);
+	static std::string readFile(const std::string& fileName, 
+								bool usePathFactory = true);
 	void attachShader(int shader);
 	void linkShaders(int vertexShader, int fragmentShader, int geomShader,
 		const std::vector<TransformFeedback>& feedbacks 

@@ -192,18 +192,20 @@
     <ClInclude Include="..\Renderables\BoundingBox.h" />
     <ClInclude Include="..\Renderables\Circle.h" />
     <ClInclude Include="..\Renderables\FullScreen.h" />
-    <ClInclude Include="..\Renderables\InstanceSource.h" />
-    <ClInclude Include="..\Renderables\InstanceSourceRenderer.h" />
-    <ClInclude Include="..\Renderables\Model.h" />
+    <ClInclude Include="..\Renderables\Mesh.h" />
+    <ClInclude Include="..\Renderables\MeshRenderer.h" />
     <ClInclude Include="..\Renderables\ModelRenderer.h" />
+    <ClInclude Include="..\Renderables\Particles.h" />
+    <ClInclude Include="..\Renderables\ParticlesRenderer.h" />
     <ClInclude Include="..\Renderables\Pyramid.h" />
     <ClInclude Include="..\Renderables\RenderableBase.h" />
+    <ClInclude Include="..\Renderables\RenderBase.h" />
+    <ClInclude Include="..\Renderables\SimpleModel.h" />
+    <ClInclude Include="..\Renderables\SimpleModelRenderer.h" />
     <ClInclude Include="..\Renderables\TextBillboardDynamic.h" />
     <ClInclude Include="..\Renderables\TextBillboardFixed.h" />
-    <ClInclude Include="..\Renderables\VertexRenderBase.h" />
-    <ClInclude Include="..\Renderables\VertexSource.h" />
     <ClInclude Include="..\Renderables\Vertices.h" />
-    <ClInclude Include="..\Renderables\VertexSourceRenderer.h" />
+    <ClInclude Include="..\Renderables\VerticesRenderer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OWEngine.h" />
   </ItemGroup>
@@ -244,20 +246,19 @@
     <ClCompile Include="..\Renderables\BoundingBox.cpp" />
     <ClCompile Include="..\Renderables\Circle.cpp" />
     <ClCompile Include="..\Renderables\FullScreen.cpp" />
-    <ClCompile Include="..\Renderables\InstanceSource.cpp" />
-    <ClCompile Include="..\Renderables\InstanceSourceRenderer.cpp" />
-    <ClCompile Include="..\Renderables\Model.cpp" />
-    <ClCompile Include="..\Renderables\ModelRenderer.cpp" />
+    <ClCompile Include="..\Renderables\Mesh.cpp" />
+    <ClCompile Include="..\Renderables\MeshRenderer.cpp" />
+    <ClCompile Include="..\Renderables\Particles.cpp" />
+    <ClCompile Include="..\Renderables\ParticlesRenderer.cpp" />
     <ClCompile Include="..\Renderables\Pyramid.cpp" />
     <ClCompile Include="..\Renderables\RenderableBase.cpp" />
+    <ClCompile Include="..\Renderables\Renderbase.cpp" />
+    <ClCompile Include="..\Renderables\SimpleModel.cpp" />
+    <ClCompile Include="..\Renderables\SimpleModelRenderer.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardDynamic.cpp" />
     <ClCompile Include="..\Renderables\TextBillboardFixed.cpp" />
-    <ClCompile Include="..\Renderables\VertexRenderBase.cpp" />
-    <ClCompile Include="..\Renderables\VertexRendererCompound.cpp" />
-    <ClCompile Include="..\Renderables\VertexSource.cpp" />
     <ClCompile Include="..\Renderables\Vertices.cpp" />
-    <ClCompile Include="..\Renderables\VertexSourceCompound.cpp" />
-    <ClCompile Include="..\Renderables\VertexSourceRenderer.cpp" />
+    <ClCompile Include="..\Renderables\VerticesRenderer.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>

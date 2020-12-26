@@ -4,6 +4,8 @@
 #include <fstream>
 #include <chrono>
 
+#include "CommonUtils.h"
+
 LogStream::ComposeBuffer LogStream::myBuffer;
 
 std::ofstream* gLogFile = nullptr;
@@ -13,17 +15,6 @@ LogStream::~LogStream()
 	//(*this) << std::flush; // does not work
 	myBuffer.flushBuffers();
 	//	(*gLogFile) << std::flush; // works but tacky
-}
-
-std::string nowAsString()
-{
-	std::time_t now_c
-		= std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	std::tm t;
-	localtime_s(&t, &now_c);
-	char buffer[100];
-	std::strftime(buffer, sizeof(buffer), "config_%H-%M-%S.json", &t);
-	return std::string(buffer);
 }
 
 std::ostream* LogStream::logFile() { return gLogFile; }
@@ -38,7 +29,7 @@ void LogStream::setLogFile(const std::experimental::filesystem::path& path)
 	// p.has_filename() only checks for trailing slash.
 	if (!p.has_extension())
 	{
-		p.append(nowAsString());
+		p.append(OWUtils::nowAsString());
 	}
 	gLogFile = new std::ofstream(p);
 	LogStream::linkStream();
@@ -50,7 +41,7 @@ std::streambuf* getLogBuffer()
 	{
 		std::experimental::filesystem::path p =
 			std::experimental::filesystem::current_path();
-		p.append(nowAsString());
+		p.append(OWUtils::nowAsString());
 		gLogFile = new std::ofstream(p);
 	}
 	return gLogFile->rdbuf();

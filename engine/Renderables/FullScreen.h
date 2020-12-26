@@ -2,14 +2,14 @@
 
 #include <glm/glm.hpp>
 #include "../Renderables//BoundingBox.h"
-#include "../Renderables/VertexSource.h"
+#include "../Renderables/SimpleModel.h"
 
 class Shader;
 /*
 	Temp class for investigating full screen sahders. Unlikely to survive
 	future development
 */
-class OWENGINE_API FullScreen: public VertexSource
+class OWENGINE_API FullScreen: public SimpleModel
 {
 #pragma warning( push )
 #pragma warning( disable : 4251 )

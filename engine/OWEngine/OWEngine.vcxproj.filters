@@ -126,9 +126,6 @@
     <ClInclude Include="..\Core\GlobalSettings.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderables\VertexSource.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderables\FullScreen.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
@@ -140,18 +137,6 @@
     </ClInclude>
     <ClInclude Include="..\Helpers\MoveTarget.h">
       <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\VertexRenderBase.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\VertexSourceRenderer.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\InstanceSource.h">
-      <Filter>Header Files\Renderables</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderables\InstanceSourceRenderer.h">
-      <Filter>Header Files\Renderables</Filter>
     </ClInclude>
     <ClInclude Include="..\Renderables\Vertices.h">
       <Filter>Header Files\Renderables</Filter>
@@ -180,7 +165,28 @@
     <ClInclude Include="..\Helpers\TextureFactory.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderables\Model.h">
+    <ClInclude Include="..\Renderables\RenderBase.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\SimpleModel.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\SimpleModelRenderer.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\ParticlesRenderer.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\Particles.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\VerticesRenderer.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\Mesh.h">
+      <Filter>Header Files\Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderables\MeshRenderer.h">
       <Filter>Header Files\Renderables</Filter>
     </ClInclude>
   </ItemGroup>
@@ -272,16 +278,7 @@
     <ClCompile Include="..\Core\GlobalSettings.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderables\VertexSource.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\FullScreen.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\VertexRendererCompound.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\VertexSourceCompound.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\GeometricShapes.cpp">
@@ -293,18 +290,6 @@
     <ClCompile Include="..\Helpers\MoveTarget.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderables\VertexSourceRenderer.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\VertexRenderBase.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\InstanceSourceRenderer.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\InstanceSource.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\Vertices.cpp">
       <Filter>Source Files\Renderables</Filter>
     </ClCompile>
@@ -314,17 +299,8 @@
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderables\Model.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderables\ModelRenderer.cpp">
-      <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderables\RenderableBase.cpp">
       <Filter>Source Files\Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Helpers\FontFactory.cpp">
-      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\ShaderFactory.cpp">
       <Filter>Source Files\Helpers</Filter>
@@ -337,6 +313,33 @@
     </ClCompile>
     <ClCompile Include="..\Helpers\TextureFactory.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\FontFactory.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\Renderbase.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\SimpleModel.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\SimpleModelRenderer.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\Particles.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\ParticlesRenderer.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\VerticesRenderer.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\Mesh.cpp">
+      <Filter>Source Files\Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderables\MeshRenderer.cpp">
+      <Filter>Source Files\Renderables</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

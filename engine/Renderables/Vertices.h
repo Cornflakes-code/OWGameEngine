@@ -15,7 +15,6 @@ class OWENGINE_API Vertices: public RenderableBase
 public:
 	Vertices(const glm::vec3& _initialPosition);
 	virtual ~Vertices() {}
-	glm::vec3 initialPosition() const { return mInitialPosition; }
 
 	void vertices(const std::vector<glm::vec3>& v,
 					unsigned int location,
@@ -26,15 +25,12 @@ public:
 protected:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	const glm::vec3 mInitialPosition;
 	std::vector<glm::vec3> mVec3;
 	std::vector<glm::vec4> mVec4;
 	unsigned int mVertexLoc = GL_INVALID_INDEX;
 	unsigned int mVertexMode = GL_INVALID_ENUM;
-	OWUtils::RenderCallbackType mRenderCallback = nullptr;
-	OWUtils::ResizeCallbackType mResizeCallback = nullptr;
 	AABB calcBounds() const override;
 #pragma warning( pop )
 private:
-	friend class VertexRenderBase;
+	friend class VerticesRenderer;
 };

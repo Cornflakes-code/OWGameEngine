@@ -13,7 +13,7 @@
 #include "../Helpers/ShaderFactory.h"
 
 Circle::Circle(const glm::vec3& initialPosition)
-	:VertexSource(initialPosition)
+	:SimpleModel(initialPosition)
 {
 	ShaderFactory shaders;
 	Shader* sh = new Shader();

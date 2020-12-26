@@ -17,7 +17,7 @@
 
 TextBillboard::TextBillboard(const glm::vec3& initialPosition,
 	const std::string& fontFileName, int fontHeight)
-	:VertexSource(initialPosition)
+	:SimpleModel(initialPosition)
 {
 	mFontData = FontFactory().loadFreeTypeFont(fontFileName, fontHeight);
 }

@@ -10,7 +10,8 @@
 #include <Renderables/BoundingBox.h>
 #include <Renderables/FullScreen.h>
 #include <Renderables/Circle.h>
-#include <Renderables/InstanceSource.h>
+#include <Renderables/Particles.h>
+#include <Renderables/Mesh.h>
 
 #include "NMSScene.h"
 /*
@@ -44,12 +45,13 @@ class Axis;
 
 class NMSSplashScene : public NMSScene
 {
-	InstanceSource mStarRenderer;
+	Particles mStarRenderer;
 	TextBillboard* mWelcomeText;
 	TextBillboard* mEnjoyText;
 	FullScreen mFullScreen;
 	Circle mCircle;
 	Axis* mAxis;
+	Mesh mCylinder;
 public:
 	NMSSplashScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::splashSceneName(); }

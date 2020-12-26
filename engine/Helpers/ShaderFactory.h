@@ -6,6 +6,8 @@
 
 class OWENGINE_API ShaderFactory
 {
+	typedef std::map<std::experimental::filesystem::path, 
+			std::string> ShaderCache;
 public:
 	const std::string& getShader(const std::string& fileName);
 	const std::string& boilerPlateVertexShader();
@@ -17,7 +19,7 @@ private:
 #pragma warning( disable : 4251 )
 	//std::mutex mut;
 	// A cache of accessed files with their contents stored as a std::string
-	static std::map<std::experimental::filesystem::path, std::string> mLoadedFiles;
+	static ShaderCache mLoadedFiles;
 #pragma warning( pop )
 };
 

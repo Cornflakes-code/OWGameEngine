@@ -17,8 +17,9 @@
 #include <Renderables/TextBillboardFixed.h>
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/Axis.h>
-#include <Renderables/VertexSourceRenderer.h>
-#include <Renderables/InstanceSourceRenderer.h>
+#include <Renderables/SimpleModelRenderer.h>
+#include <Renderables/MeshRenderer.h>
+#include <Renderables/ParticlesRenderer.h>
 
 #include "NMSUserInput.h"
 
@@ -128,7 +129,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mWelcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
 	mWelcomeText->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
 	mWelcomeText->scale(scale);
-	mWelcomeText->addRenderer(new VertexSourceRenderer());
+	mWelcomeText->addRenderer(new SimpleModelRenderer());
 
 	sps->mWelcomeMover.targetGeometry(mWelcomeText->bounds(), mWelcomeText->initialPosition());
 	sps->mWelcomeMover.direction(Compass::Rose[Compass::North] +
@@ -141,19 +142,19 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mEnjoyText->createText("Enjoy it while you can", nice.x, nice.y);
 	mEnjoyText->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
 	//mEnjoyText->scale(scale);
-	mEnjoyText->addRenderer(new VertexSourceRenderer());
+	mEnjoyText->addRenderer(new SimpleModelRenderer());
 	sps->mEnjoyMover.targetGeometry(mEnjoyText->bounds(), mEnjoyText->initialPosition());
 	sps->mEnjoyMover.direction(Compass::Rose[Compass::South] +
 							   Compass::Rose[Compass::West]);
 
 	mFullScreen.prepare(_world);
-	mFullScreen.addRenderer(new VertexSourceRenderer());
+	mFullScreen.addRenderer(new SimpleModelRenderer());
 
 	mAxis = new Axis();
 	mAxis->prepare(_world);
 
 	mCircle.prepare();
-	mCircle.addRenderer(new VertexSourceRenderer());
+	mCircle.addRenderer(new SimpleModelRenderer());
 
 	Shader* instanceShader = new Shader("instanced.v.glsl",
 							"instanced.f.glsl",
@@ -177,9 +178,13 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	mStarRenderer.colours(instanceColours, 2, 1);
-
-	mStarRenderer.addRenderer(new InstanceSourceRenderer());
+	mStarRenderer.addRenderer(new ParticlesRenderer());
+	Shader* modelShader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
+	mCylinder.shader(modelShader, "pvm");
+	mCylinder.readFiles("Cylinder.obj", "Bricks001_2K_Color.jpg");
+	mCylinder.addRenderer(new ModelRenderer());
 }
+
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view)
@@ -213,7 +218,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 		shader->setVector2f("u_mouse", v2);
 	};
 	mStarRenderer.render(proj, view, model, nullptr, pointRender);
-
+	mCylinder.render(proj, view, model, nullptr, nullptr);
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 
