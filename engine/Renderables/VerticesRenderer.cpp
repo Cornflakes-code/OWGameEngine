@@ -9,7 +9,7 @@
 VerticesRenderer::VerticesRenderer()
 {}
 
-void VerticesRenderer::checkBaseSourceForErrors(const Vertices* source)
+void VerticesRenderer::checkBaseSourceForErrors(const Vertices* source) const
 {
 	checkRenderBaseForErrors(source);
 	if (source->mVec3.size() == 0 && source->mVec4.size() == 0)

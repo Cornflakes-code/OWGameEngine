@@ -141,7 +141,7 @@ void SimpleModelRenderer::render(const SimpleModel* source,
 	}
 }
 
-void SimpleModelRenderer::checkSourceForErrors(const SimpleModel* source)
+void SimpleModelRenderer::checkSourceForErrors(const SimpleModel* source) const
 {
 	checkBaseSourceForErrors(source);
 	if (source->mRenderer == nullptr)

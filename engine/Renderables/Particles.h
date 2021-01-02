@@ -13,7 +13,7 @@ class OWENGINE_API Particles : public Vertices
 {
 public:
 	Particles();
-	void addRenderer(ParticlesRenderer* source);
+	void renderer(ParticlesRenderer* source);
 	void positions(const std::vector<glm::vec3>& _positions,
 					unsigned int location,
 					unsigned int divisor,

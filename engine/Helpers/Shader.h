@@ -16,7 +16,7 @@ public:
 	Shader(const std::string& vertexPath, const std::string& fragPath,
 		const std::string& geometryPath);
 	~Shader();
-	void readFiles(const std::string& vertexPath, const std::string& fragPath,
+	void create(const std::string& vertexPath, const std::string& fragPath,
 			const std::string& geometryPath);
 	void loadShaders(const std::string& vertexShader, 
 					 const std::string& fragShader,

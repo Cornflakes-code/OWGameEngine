@@ -24,6 +24,7 @@ public:
 	SimpleModelRenderer();
 	~SimpleModelRenderer();
 	void prepare(const SimpleModel* source);
+	virtual void checkSourceForErrors(const SimpleModel* source) const;
 	void render(const SimpleModel* vsb,
 		const glm::mat4& proj,
 		const glm::mat4& view,
@@ -32,7 +33,6 @@ public:
 		OWUtils::ResizeCallbackType resizeCb = nullptr) const;
 protected:
 private:
-	virtual void checkSourceForErrors(const SimpleModel* source);
 	unsigned int mVao = 0;
 	unsigned int mVbo = 0;
 	unsigned int mEbo = 0;

@@ -9,15 +9,15 @@
 
 #include "Mesh.h"
 
-ModelRenderer::ModelRenderer()
+MeshRenderer::MeshRenderer()
 {
 }
 
-ModelRenderer::~ModelRenderer()
+MeshRenderer::~MeshRenderer()
 {
 }
 
-void ModelRenderer::prepare(const Mesh* source)
+void MeshRenderer::prepare(const Mesh* source)
 {
 	checkSourceForErrors(source);
 	OWUtils::PolygonModeRIAA poly;
@@ -30,7 +30,7 @@ void ModelRenderer::prepare(const Mesh* source)
 	}
 	glBindVertexArray(mVao);
 
-	GLsizei vertexSize = sizeof(Mesh::Vertex);
+	GLsizei vertexSize = sizeof(MeshData::Vertex);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 	glBufferData(GL_ARRAY_BUFFER, vertexSize * source->vertices().size(),
@@ -79,7 +79,7 @@ void ModelRenderer::prepare(const Mesh* source)
 	glBindVertexArray(0);
 }
 
-void ModelRenderer::render(const Mesh* source,
+void MeshRenderer::render(const Mesh* source,
 	const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& model,
 	OWUtils::RenderCallbackType renderCb,
@@ -111,7 +111,7 @@ void ModelRenderer::render(const Mesh* source,
 		// https://www.reddit.com/r/opengl/comments/6gnc9x/trouble_with_framebuffer/
 		// This should be obtained from Mesh
 		// bind mTextureLoc to a texture image unit (usually GL_TEXTURE0).
-		for (const auto tex : source->textures())
+		for (const auto& tex : source->textures())
 		{
 			glActiveTexture(tex.imageUnit());
 			glBindTexture(tex.target(), tex.location());
@@ -147,11 +147,11 @@ void ModelRenderer::render(const Mesh* source,
 
 }
 
-void ModelRenderer::checkSourceForErrors(const Mesh* source)
+void MeshRenderer::checkSourceForErrors(const Mesh* source) const
 {
 	checkRenderBaseForErrors(source);
 	if (source->mRenderer == nullptr)
 		throw NMSLogicException("source->mRenderer must not be null");
-	if (!source->mData->vertices.size())
+	if (!source->mData.vertices.size())
 		throw NMSLogicException("model has no data");
 }

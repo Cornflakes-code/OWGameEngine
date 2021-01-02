@@ -54,7 +54,6 @@ const Texture& TextureFactory::getTexture(
 
 	int width, height, nrChannels;
 	bool flip = false;
-	bool transparent = false;
 	if (flip)
 	{
 		// tell stb_image.h to flip loaded texture's on the screenY-axis.
@@ -67,8 +66,12 @@ const Texture& TextureFactory::getTexture(
 	{
 		Texture texture;
 		Texture::InitData initData;
-
-		initData.internalFormat = transparent ? GL_RGBA : GL_RGB;
+		if (nrChannels == 1)
+			initData.internalFormat = GL_RED;
+		else if (nrChannels == 3)
+			initData.internalFormat = GL_RGB;
+		else if (nrChannels == 4)
+			initData.internalFormat = GL_RGBA;
 		initData.filter = GL_LINEAR;
 		initData.clamp = GL_CLAMP_TO_EDGE;
 		texture.init(data, width, height, initData);

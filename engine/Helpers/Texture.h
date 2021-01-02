@@ -27,11 +27,14 @@ public:
 	unsigned int location() const { return mLocation;  }
 	unsigned int imageUnit() const { return mImageUnit; }
 	unsigned int target() const { return mTarget; }
+	std::string samplerName() const { return mSamplerName; }
+	void samplerName(const std::string& newValue) { mSamplerName = newValue; }
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	unsigned int mLocation; // from glGenTextures
 	unsigned int mImageUnit; // GL_TEXTURE0 -> GL_TEXTUREN
 	unsigned int mTarget; // i.e. GL_TEXTURE_2D
+	std::string mSamplerName;
 #pragma warning( pop )
 };

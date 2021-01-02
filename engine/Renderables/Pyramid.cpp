@@ -51,7 +51,7 @@ void Pyramid::setUp()
 
 void Pyramid::renderCallback(
 	const glm::mat4& proj, const glm::mat4& view,
-	const glm::mat4& model, Shader* shader)
+	const glm::mat4& model, const Shader* shader)
 {
 	shader->use();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

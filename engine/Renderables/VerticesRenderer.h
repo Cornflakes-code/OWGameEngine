@@ -10,7 +10,7 @@ class OWENGINE_API VerticesRenderer: public RenderBase
 public:
 	VerticesRenderer();
 protected:
-	void checkBaseSourceForErrors(const Vertices* source);
+	void checkBaseSourceForErrors(const Vertices* source) const;
 	void setPVM(const Vertices* source,
 		const glm::mat4& proj,
 		const glm::mat4& view,

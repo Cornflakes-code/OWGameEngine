@@ -14,7 +14,7 @@
 #include "../Core/GlobalSettings.h"
 
 FullScreen::FullScreen(const glm::vec3& initialPosition,
-					   Shader* _shader, const std::string& pvm)
+					   const Shader* _shader, const std::string& pvm)
 	: SimpleModel(initialPosition)
 {
 	shader(_shader, pvm);
@@ -39,14 +39,14 @@ void FullScreen::prepare(const AABB& world)
 }
 
 void FullScreen::renderCallback(const glm::mat4& proj, const glm::mat4& view,
-	const glm::mat4& model, Shader* shader)
+	const glm::mat4& model, const Shader* shader)
 {
 	mShader->setVector2f("u_mouse", globals->pointingDevicePosition());
 	mShader->setFloat("u_time", globals->secondsSinceLoad());
 
 }
 
-void FullScreen::resizeCallback(Shader* shader,
+void FullScreen::resizeCallback(const Shader* shader,
 				OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 				float aspectRatio)
 {

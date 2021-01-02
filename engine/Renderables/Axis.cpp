@@ -53,10 +53,10 @@ void Axis::prepare(const AABB& world)
 		mTextY->colour({ 0.0, 1.0, 0.0, 1.0f }, "textcolor");
 		mTextZ->colour({ 0.0, 0.0, 1.0, 1.0f }, "textcolor");
 
-		mTextZero->addRenderer(new SimpleModelRenderer());
-		mTextX->addRenderer(new SimpleModelRenderer());
-		mTextY->addRenderer(new SimpleModelRenderer());
-		mTextZ->addRenderer(new SimpleModelRenderer());
+		mTextZero->renderer(new SimpleModelRenderer());
+		mTextX->renderer(new SimpleModelRenderer());
+		mTextY->renderer(new SimpleModelRenderer());
+		mTextZ->renderer(new SimpleModelRenderer());
 	}
 	{
 		ShaderFactory shaders;
@@ -69,11 +69,11 @@ void Axis::prepare(const AABB& world)
 		mLines.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
 		mLines.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK),
 					"colour");
-		mLines.addRenderer(new SimpleModelRenderer());
+		mLines.renderer(new SimpleModelRenderer());
 	}
 	{
 		mCircle.prepare();
-		mCircle.addRenderer(new SimpleModelRenderer());
+		mCircle.renderer(new SimpleModelRenderer());
 	}
 	{
 		//Shader* pointShader = new Shader("thebookofshaders.v.glsl",
@@ -90,7 +90,7 @@ void Axis::prepare(const AABB& world)
 		std::vector<glm::vec4> vv4;
 		vv4.push_back(v4);
 		mZeroPoint.vertices(vv4, 0, GL_POINTS);
-		mZeroPoint.addRenderer(new SimpleModelRenderer());
+		mZeroPoint.renderer(new SimpleModelRenderer());
 	}
 }
 
@@ -98,11 +98,11 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 				  const glm::mat4& model) const
 {
 	auto pointRender = [](const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, Shader* shader) {
+		const glm::mat4& model, const Shader* shader) {
 		shader->setVector2f("u_mouse", globals->pointingDevicePosition());
 		shader->setFloat("u_time", globals->secondsSinceLoad());
 	};
-	auto pointResizeRender = [](Shader* shader,
+	auto pointResizeRender = [](const Shader* shader,
 		OWUtils::ScaleByAspectRatioType scaler,
 		float aspectRatio) {
 		glm::vec2 vv = globals->physicalWindowSize();
@@ -119,7 +119,7 @@ void Axis::render(const glm::mat4& proj, const glm::mat4& view,
 	mTextZ->render(proj, view, model);
 	mCircle.render(proj, view, model);
 	mLines.render(proj, view, model, nullptr, [](const glm::mat4& proj, const glm::mat4& view,
-				const glm::mat4& model, Shader* shader) {
+				const glm::mat4& model, const Shader* shader) {
 				OWUtils::PolygonModeRIAA poly;
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			});

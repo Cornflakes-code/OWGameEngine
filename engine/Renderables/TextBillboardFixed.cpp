@@ -27,7 +27,7 @@ TextBillboardFixed::TextBillboardFixed(const glm::vec3& initialPosition,
 
 void TextBillboardFixed::renderCallback(
 		const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, Shader* shader)
+		const glm::mat4& model, const Shader* shader)
 {
 	glm::vec4 center = bounds().center();
 	glm::mat4 newModel =
@@ -35,7 +35,7 @@ void TextBillboardFixed::renderCallback(
 	shader->setVector3f("BillboardPos", newModel[3]);
 }
 
-void TextBillboardFixed::resizeCallback(Shader* shader,
+void TextBillboardFixed::resizeCallback(const Shader* shader,
 			OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 			float aspectRatio)
 {

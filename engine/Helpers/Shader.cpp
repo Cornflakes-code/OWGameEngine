@@ -25,7 +25,7 @@ Shader::Shader()
 Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
 	const std::string& geometryPath)
 {
-	readFiles(vertexPath, fragPath, geometryPath);
+	create(vertexPath, fragPath, geometryPath);
 }
 
 Shader::~Shader()
@@ -147,7 +147,7 @@ void Shader::loadShaders(const std::string& vertexShader,
 
 }
 
-void Shader::readFiles(const std::string& vertexPath,
+void Shader::create(const std::string& vertexPath,
 					   const std::string& fragPath,
 					   const std::string& geometryPath)
 {

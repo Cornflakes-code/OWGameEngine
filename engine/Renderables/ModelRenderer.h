@@ -9,17 +9,17 @@
 #include "../OWEngine/OWEngine.h"
 #include "RenderBase.h"
 
-class Mesh;
+class Model;
 
-class OWENGINE_API MeshRenderer : public RenderBase
+class OWENGINE_API ModelRenderer : public RenderBase
 {
 public:
-	MeshRenderer();
-	~MeshRenderer();
+	ModelRenderer();
+	~ModelRenderer();
 
-	void prepare(const Mesh* source);
-	virtual void checkSourceForErrors(const Mesh* source) const;
-	void render(const Mesh* source,
+	void prepare(const Model* source);
+	virtual void checkSourceForErrors(const Model* source) const;
+	void render(const Model* source,
 		const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,

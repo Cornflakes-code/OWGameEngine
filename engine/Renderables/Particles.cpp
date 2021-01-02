@@ -12,7 +12,7 @@ Particles::Particles()
 {
 }
 
-void Particles::addRenderer(ParticlesRenderer* source)
+void Particles::renderer(ParticlesRenderer* source)
 {
 	mRenderer = source;
 	mRenderer->prepare(this);

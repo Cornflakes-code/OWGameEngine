@@ -147,7 +147,7 @@ void GLApplication::enableCallbacks()
 		// initialize debug output 
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		GLuint ignore = { 131185 }; // NVidia telling us that a buffer was successfully created.
+//		GLuint ignore = { 131185 }; // NVidia telling us that a buffer was successfully created.
 //		int count = sizeof(ignore) / sizeof(GLuint);
 		glDebugMessageCallback(debugMessageCallback, nullptr);
 		// Does not seem to be working

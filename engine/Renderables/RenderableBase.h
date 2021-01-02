@@ -13,6 +13,7 @@ class OWENGINE_API RenderableBase
 public:
 	RenderableBase(const glm::vec3& _initialPosition)
 		: mInitialPosition(_initialPosition) {}
+	void initialPosition(const glm::vec3& _initialPosition) { mInitialPosition = _initialPosition; }
 	glm::vec3 initialPosition() const { return mInitialPosition; }
 	AABB bounds() const
 	{
@@ -29,9 +30,9 @@ public:
 	{ 
 		// Testing for name.size() is seriously tacky.
 		// Must be a better way !!
-		return mPVMName.size() < 3;
+		return mPVMName.size() > 2; // ie it has 'pvm'
 	}
-	void shader(Shader* newValue, const std::string& pvmName)
+	void shader(const Shader* newValue, const std::string& pvmName)
 	{
 		mShader = newValue;
 		mPVMName = pvmName;
@@ -46,11 +47,11 @@ protected:
 	void invalidateBounds() const { mBoundsValid = false; }
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	Shader* mShader = nullptr;
+	const Shader* mShader = nullptr;
 	std::string mPVMName;
 	OWUtils::RenderCallbackType mRenderCallback = nullptr;
 	OWUtils::ResizeCallbackType mResizeCallback = nullptr;
-	const glm::vec3 mInitialPosition;
+	glm::vec3 mInitialPosition;
 #pragma warning( pop )
 	virtual AABB calcBounds() const = 0;
 	friend class RenderBase;

@@ -26,7 +26,7 @@ TextBillboardDynamic::TextBillboardDynamic(const glm::vec3& initialPosition,
 
 void TextBillboardDynamic::renderCallback(
 			const glm::mat4& proj, const glm::mat4& view,
-			const glm::mat4& model, Shader* shader)
+			const glm::mat4& model, const Shader* shader)
 {
 	const glm::mat4 pv = proj * view;
 	mShader->use();
@@ -43,7 +43,7 @@ void TextBillboardDynamic::renderCallback(
 	mShader->setVector3f("BillboardPos", newModel[3]);
 }
 
-void TextBillboardDynamic::resizeCallback(Shader* shader,
+void TextBillboardDynamic::resizeCallback(const Shader* shader,
 	OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 					float aspectRatio)
 {

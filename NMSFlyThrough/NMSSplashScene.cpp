@@ -18,7 +18,7 @@
 #include <Renderables/TextBillboardDynamic.h>
 #include <Renderables/Axis.h>
 #include <Renderables/SimpleModelRenderer.h>
-#include <Renderables/MeshRenderer.h>
+#include <Renderables/ModelRenderer.h>
 #include <Renderables/ParticlesRenderer.h>
 
 #include "NMSUserInput.h"
@@ -129,7 +129,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mWelcomeText->createText("Welcome to reality.", 10 * nice.x, 10 * nice.y);
 	mWelcomeText->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
 	mWelcomeText->scale(scale);
-	mWelcomeText->addRenderer(new SimpleModelRenderer());
+	mWelcomeText->renderer(new SimpleModelRenderer());
 
 	sps->mWelcomeMover.targetGeometry(mWelcomeText->bounds(), mWelcomeText->initialPosition());
 	sps->mWelcomeMover.direction(Compass::Rose[Compass::North] +
@@ -142,19 +142,19 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mEnjoyText->createText("Enjoy it while you can", nice.x, nice.y);
 	mEnjoyText->colour({ 0.1, 0.9, 0.1, 1 }, "textcolor");
 	//mEnjoyText->scale(scale);
-	mEnjoyText->addRenderer(new SimpleModelRenderer());
+	mEnjoyText->renderer(new SimpleModelRenderer());
 	sps->mEnjoyMover.targetGeometry(mEnjoyText->bounds(), mEnjoyText->initialPosition());
 	sps->mEnjoyMover.direction(Compass::Rose[Compass::South] +
 							   Compass::Rose[Compass::West]);
 
 	mFullScreen.prepare(_world);
-	mFullScreen.addRenderer(new SimpleModelRenderer());
+	mFullScreen.renderer(new SimpleModelRenderer());
 
 	mAxis = new Axis();
 	mAxis->prepare(_world);
 
 	mCircle.prepare();
-	mCircle.addRenderer(new SimpleModelRenderer());
+	mCircle.renderer(new SimpleModelRenderer());
 
 	Shader* instanceShader = new Shader("instanced.v.glsl",
 							"instanced.f.glsl",
@@ -178,18 +178,22 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	mStarRenderer.colours(instanceColours, 2, 1);
-	mStarRenderer.addRenderer(new ParticlesRenderer());
+	mStarRenderer.renderer(new ParticlesRenderer());
 	Shader* modelShader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
 	mCylinder.shader(modelShader, "pvm");
-	mCylinder.readFiles("Cylinder.obj", "Bricks001_2K_Color.jpg");
-	mCylinder.addRenderer(new ModelRenderer());
+	mCylinder.create("Dice2.obj");
+//	mCylinder.create("Cylinder.obj", "Bricks001_2K_Color.jpg");
+	mCylinder.renderer(new ModelRenderer());
 }
 
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view)
 {
-//	const NMSSplashScenePhysics* sps 
+	const AABB& _world = world();
+	//glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
+	//					20.2f * _world.size().y / globals->physicalWindowSize().y };
+	//	const NMSSplashScenePhysics* sps 
 //			= dynamic_cast<const NMSSplashScenePhysics*>(state);
 	glm::mat4 model(1.0);
 //	mCircle.render(proj, view, model);
@@ -206,7 +210,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 //	mWelcomeText->render(proj, view, scaledModel, &sps->mWelcomeMover);
 //#endif
 	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), const glm::mat4& view,
-		const glm::mat4& OW_UNUSED(model), Shader* shader) {
+		const glm::mat4& OW_UNUSED(model), const Shader* shader) {
 		glm::vec3 CameraRight_worldspace =
 		{ view[0][0], view[1][0], view[2][0] };
 		shader->use();
@@ -218,7 +222,9 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 		shader->setVector2f("u_mouse", v2);
 	};
 	mStarRenderer.render(proj, view, model, nullptr, pointRender);
-	mCylinder.render(proj, view, model, nullptr, nullptr);
+	glm::vec3 scale = glm::vec3(10.0, 10.0, 10.0);
+	glm::mat4 scaledModel = glm::scale(model, scale);
+	mCylinder.render(proj, view, scaledModel, nullptr, nullptr);
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 

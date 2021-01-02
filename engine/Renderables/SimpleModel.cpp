@@ -7,7 +7,7 @@
 
 #include "SimpleModelRenderer.h"
 
-void SimpleModel::addRenderer(SimpleModelRenderer* source)
+void SimpleModel::renderer(SimpleModelRenderer* source)
 {
 	mRenderer = source;
 	mRenderer->prepare(this);

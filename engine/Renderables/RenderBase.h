@@ -9,7 +9,7 @@ class OWENGINE_API RenderBase
 public:
 	RenderBase();
 protected:
-	void checkRenderBaseForErrors(const RenderableBase* source);
+	void checkRenderBaseForErrors(const RenderableBase* source) const;
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
 	void callResizeCallback(const RenderableBase* source,
 		OWUtils::ResizeCallbackType resizeCb) const;

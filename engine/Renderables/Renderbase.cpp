@@ -32,7 +32,7 @@ glm::vec2 RenderBase::scaleByAspectRatio(const glm::vec2& toScale) const
 	return retval;
 }
 
-void RenderBase::checkRenderBaseForErrors(const RenderableBase* source)
+void RenderBase::checkRenderBaseForErrors(const RenderableBase* source) const
 {
 	if (source->mShader == nullptr)
 		throw NMSLogicException("source->mShader must not be null");

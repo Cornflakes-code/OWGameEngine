@@ -2,21 +2,16 @@
 #include <string>
 #include <map>
 #include <experimental/filesystem>
-#include "../Renderables/Mesh.h"
+#include "../Helpers/MeshData.h"
+#include "../Helpers/ModelData.h"
+
 
 class ModelFactory
 {
 	typedef std::map<std::experimental::filesystem::path, 
-		std::shared_ptr<Mesh::ModelData>> ModelCache;
+		std::shared_ptr<MeshData>> ModelCache;
 public:
 	ModelFactory();
-	std::shared_ptr<Mesh::ModelData>
-		create(const std::string& modelFileName,
-				 const std::string& textureFileName = std::string(""), 
-				 bool cache = true);
+	ModelData* create(const std::string& modelFileName, bool cache);
 private:
-	ModelCache::iterator loadModel(
-			const std::experimental::filesystem::path& path);
-	static ModelCache mLoadedFiles;
-
 };

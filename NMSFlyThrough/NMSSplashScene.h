@@ -11,7 +11,7 @@
 #include <Renderables/FullScreen.h>
 #include <Renderables/Circle.h>
 #include <Renderables/Particles.h>
-#include <Renderables/Mesh.h>
+#include <Renderables/Model.h>
 
 #include "NMSScene.h"
 /*
@@ -51,7 +51,7 @@ class NMSSplashScene : public NMSScene
 	FullScreen mFullScreen;
 	Circle mCircle;
 	Axis* mAxis;
-	Mesh mCylinder;
+	Model mCylinder;
 public:
 	NMSSplashScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::splashSceneName(); }

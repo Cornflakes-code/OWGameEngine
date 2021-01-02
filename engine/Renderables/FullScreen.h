@@ -16,12 +16,12 @@ class OWENGINE_API FullScreen: public SimpleModel
 #pragma warning( pop )
 public:
 	FullScreen(const glm::vec3& initialPosition, 
-				Shader* _shader, const std::string& pvm);
+			const Shader* _shader, const std::string& pvm);
 	void prepare(const AABB& world);
 protected:
 	void renderCallback(const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, Shader* shader);
-	void resizeCallback(Shader* shader,
+		const glm::mat4& model, const Shader* shader);
+	void resizeCallback(const Shader* shader,
 		OWUtils::ScaleByAspectRatioType scaleByAspectRatio,
 		float aspectRatio);
 };

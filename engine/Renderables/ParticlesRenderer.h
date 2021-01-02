@@ -15,6 +15,7 @@ class OWENGINE_API ParticlesRenderer: public VerticesRenderer
 public:
 	ParticlesRenderer();
 	void prepare(const Particles* source);
+	virtual void checkSourceForErrors(const Particles* source) const;
 	void render(const Particles* source,
 		const glm::mat4& proj,
 		const glm::mat4& view,
@@ -29,7 +30,5 @@ private:
 	// mVbo[2] The VBO containing the colors of the particles
 	unsigned int mVbo[3] = { 0, 0, 0 };
 	unsigned int mVao = 0;
-
-	virtual void checkSourceForErrors(const Particles* source);
 #pragma warning( pop )
 };

@@ -29,7 +29,7 @@ public:
 		:Vertices(initialPosition) {}
 	SimpleModel()
 		:SimpleModel(glm::vec3(0.0f, 0.0f, 0.0f)) {}
-	void addRenderer(SimpleModelRenderer* source);
+	void renderer(SimpleModelRenderer* source);
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,

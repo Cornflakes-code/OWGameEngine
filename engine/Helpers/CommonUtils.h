@@ -26,11 +26,11 @@ extern OWENGINE_API GlobalSettings* globals;
 struct OWENGINE_API OWUtils
 {
 	typedef std::function<void(const glm::mat4& proj, const glm::mat4& view,
-				const glm::mat4& model, Shader* shader)> RenderCallbackType;
+				const glm::mat4& model, const Shader* shader)> RenderCallbackType;
 
 	typedef std::function< glm::vec2(const glm::vec2)> ScaleByAspectRatioType;
 
-	typedef std::function<void(Shader* shader,
+	typedef std::function<void(const Shader* shader,
 					ScaleByAspectRatioType scaler,
 					float aspectRatio)> ResizeCallbackType;
 

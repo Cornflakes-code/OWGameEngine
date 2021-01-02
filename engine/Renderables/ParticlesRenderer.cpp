@@ -165,7 +165,7 @@ void ParticlesRenderer::render(const Particles* source,
 	}
 }
 
-void ParticlesRenderer::checkSourceForErrors(const Particles* source)
+void ParticlesRenderer::checkSourceForErrors(const Particles* source) const
 {
 	checkBaseSourceForErrors(source);
 	if (source->mVec3.size() == 0)

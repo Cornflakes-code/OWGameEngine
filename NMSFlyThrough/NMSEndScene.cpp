@@ -72,7 +72,7 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 	glm::vec4 color(0.5, 0.8f, 0.2f, 0);
 	mText->createText("G", sx, sy);
 	mText->colour(color, "textcolor");
-	mText->addRenderer(new SimpleModelRenderer());
+	mText->renderer(new SimpleModelRenderer());
 }
 
 void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
