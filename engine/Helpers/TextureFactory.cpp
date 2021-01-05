@@ -62,6 +62,7 @@ const Texture& TextureFactory::getTexture(
 
 	unsigned char *data = stbi_load(path.u8string().c_str(),
 								&width, &height, &nrChannels, 0);
+	bool isHdr = stbi_is_hdr(path.u8string().c_str());
 	if (data)
 	{
 		Texture texture;

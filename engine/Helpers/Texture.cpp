@@ -60,6 +60,7 @@ void Texture::init(unsigned char* data, int width, int height, const InitData& i
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	}
+//	glActiveTexture(0);
 }
 /*
 void Texture::addTexture(const std::string& texturePath, bool transparent, bool flip)

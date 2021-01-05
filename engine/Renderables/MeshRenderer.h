@@ -28,6 +28,6 @@ public:
 protected:
 private:
 	unsigned int mVao = 0;
-	unsigned int mVbo = 0;
+	unsigned int mVbo[2] = {0, 0};
 	unsigned int mEbo = 0;
 };

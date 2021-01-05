@@ -29,8 +29,8 @@ void SimpleModelRenderer::prepare(const SimpleModel* source)
 	glGenBuffers(1, &mVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 
-	source->mShader->use();
-	source->mShader->setVector4f(source->mColourName, source->mColour);
+	source->shader()->use();
+	source->shader()->setVector4f(source->mColourName, source->mColour);
 
 	if (!source->mIndices.empty())
 	{
@@ -85,11 +85,11 @@ void SimpleModelRenderer::render(const SimpleModel* source,
 				OWUtils::ResizeCallbackType resizeCb) const
 {
 	OWUtils::PolygonModeRIAA poly;
-	source->mShader->use();
+	source->shader()->use();
 	setPVM(source, proj, view, model);
 	if (!source->mColourName.empty())
 	{
-		source->mShader->setVector4f(source->mColourName, source->mColour);
+		source->shader()->setVector4f(source->mColourName, source->mColour);
 
 	}
 	glBindVertexArray(mVao);
@@ -99,15 +99,12 @@ void SimpleModelRenderer::render(const SimpleModel* source,
 		// https://community.khronos.org/t/what-is-a-texture-unit/63250
 		//
 		// https://www.reddit.com/r/opengl/comments/6gnc9x/trouble_with_framebuffer/
-		// This should be obtained from SimpleModel
-		// bind mTextureLoc to a texture image unit (usually GL_TEXTURE0).
-		for (auto t : source->mTextures)
+		for (const auto& tex : source->mTextures)
 		{
-			glActiveTexture(t.imageUnit());
-			glBindTexture(t.target(), t.location());
-			// associate sampler with textureImageUnit
-			source->mShader->setInteger("textureImageId", 
-									t.imageUnit() - GL_TEXTURE0);
+			glActiveTexture(tex.imageUnit());
+			glBindTexture(tex.target(), tex.location());
+			// associate sampler with name in shader
+			source->shader()->setInteger(tex.samplerName(), tex.imageUnit() - GL_TEXTURE0);
 		}
 	}
 	callResizeCallback(source, resizeCb);
@@ -135,8 +132,8 @@ void SimpleModelRenderer::render(const SimpleModel* source,
 		// clean up.
 		for (auto t : source->mTextures)
 		{
-			glActiveTexture(t.imageUnit());
-			glBindTexture(t.target(), 0);
+//			glActiveTexture(t.imageUnit());
+//			glBindTexture(t.target(), 0);
 		}
 	}
 }

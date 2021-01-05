@@ -23,7 +23,12 @@
 
 #include "NMSUserInput.h"
 
+#define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
+#define INCLUDE_ENJOY
+#define INCLUDE_XYZ_AXIS
+#define INCLUDE_STAR_RENDER
+#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
 
@@ -52,8 +57,10 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	mWelcomeMover.move(velocity);
 	mWelcomeMover.bounceIfCollide(mWindowBounds);
 #endif
+#ifdef INCLUDE_ENJOY
 	mEnjoyMover.move(velocity);
 	mEnjoyMover.bounceIfCollide(mWindowBounds);
+#endif
 }
 
 void NMSSplashScenePhysics::interpolateRatio(
@@ -137,6 +144,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 							Compass::Rose[Compass::In]);
 	sps->mWelcomeMover.setPosition(NMSScene::world().center());
 #endif
+#ifdef INCLUDE_ENJOY
 	mEnjoyText = new TextBillboardFixed(glm::vec3(0.0f, 0.0f, 0.0f),
 										"arial.ttf", 12);
 	mEnjoyText->createText("Enjoy it while you can", nice.x, nice.y);
@@ -146,21 +154,25 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	sps->mEnjoyMover.targetGeometry(mEnjoyText->bounds(), mEnjoyText->initialPosition());
 	sps->mEnjoyMover.direction(Compass::Rose[Compass::South] +
 							   Compass::Rose[Compass::West]);
-
+#endif
+#ifdef INCLUDE_FULLSCREEN
 	mFullScreen.prepare(_world);
 	mFullScreen.renderer(new SimpleModelRenderer());
+#endif
 
+#ifdef INCLUDE_XYZ_AXIS
 	mAxis = new Axis();
 	mAxis->prepare(_world);
-
 	mCircle.prepare();
 	mCircle.renderer(new SimpleModelRenderer());
+#endif
 
 	Shader* instanceShader = new Shader("instanced.v.glsl",
 							"instanced.f.glsl",
 		//					instanced.g.glsl
 		""
 	);
+#ifdef INCLUDE_STAR_RENDER
 	mStarRenderer.shader(instanceShader, "VP");
 	std::vector<glm::vec3> squareVertices 
 //		= GeometricShapes::rectangle(glm::vec2(1.0, 1.0), glm::vec2(-0.5, -0.5));
@@ -179,11 +191,14 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	mStarRenderer.colours(instanceColours, 2, 1);
 	mStarRenderer.renderer(new ParticlesRenderer());
+#endif
+#ifdef INCLUDE_IMPORTED_MODEL
 	Shader* modelShader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
 	mCylinder.shader(modelShader, "pvm");
-	mCylinder.create("Dice2.obj");
-//	mCylinder.create("Cylinder.obj", "Bricks001_2K_Color.jpg");
+//	mCylinder.create("Dice2.obj");
+	mCylinder.create("Cylinder1.obj");
 	mCylinder.renderer(new ModelRenderer());
+#endif
 }
 
 
@@ -191,24 +206,28 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view)
 {
 	const AABB& _world = world();
-	//glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
-	//					20.2f * _world.size().y / globals->physicalWindowSize().y };
-	//	const NMSSplashScenePhysics* sps 
-//			= dynamic_cast<const NMSSplashScenePhysics*>(state);
+	glm::vec2 scalex = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
+						20.2f * _world.size().y / globals->physicalWindowSize().y };
+		const NMSSplashScenePhysics* sps 
+			= dynamic_cast<const NMSSplashScenePhysics*>(state);
 	glm::mat4 model(1.0);
 //	mCircle.render(proj, view, model);
-//	mFullScreen.render(proj, view, model);
+#ifdef INCLUDE_FULLSCREEN
+	mFullScreen.render(proj, view, model);
+#endif
+#ifdef INCLUDE_XYZ_AXIS
 	mAxis->render(proj, view, model);
-//
-//	mEnjoyText->render(proj, view, model, &sps->mEnjoyMover);
-//#ifdef INCLUDE_WELCOME
-//	const AABB& _world = world();
-//	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
-//						20.2f * _world.size().y / globals->physicalWindowSize().y };
-//	//glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
-//	glm::mat4 scaledModel = model;
-//	mWelcomeText->render(proj, view, scaledModel, &sps->mWelcomeMover);
-//#endif
+#endif
+#ifdef INCLUDE_ENJOY
+	mEnjoyText->render(proj, view, model, &sps->mEnjoyMover);
+#endif
+#ifdef INCLUDE_WELCOME
+	glm::vec2 scale = { 20.2f * _world.size().x / globals->physicalWindowSize().x,
+						20.2f * _world.size().y / globals->physicalWindowSize().y };
+	//glm::mat4 scaledModel = glm::scale(model, glm::vec3(scale, 0.0));
+	glm::mat4 scaledModel = model;
+	mWelcomeText->render(proj, view, scaledModel, &sps->mWelcomeMover);
+#endif
 	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), const glm::mat4& view,
 		const glm::mat4& OW_UNUSED(model), const Shader* shader) {
 		glm::vec3 CameraRight_worldspace =
@@ -221,10 +240,14 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 		glm::vec2 v2 = globals->pointingDevicePosition();
 		shader->setVector2f("u_mouse", v2);
 	};
+#ifdef INCLUDE_STAR_RENDER
 	mStarRenderer.render(proj, view, model, nullptr, pointRender);
-	glm::vec3 scale = glm::vec3(10.0, 10.0, 10.0);
-	glm::mat4 scaledModel = glm::scale(model, scale);
-	mCylinder.render(proj, view, scaledModel, nullptr, nullptr);
+#endif
+#ifdef INCLUDE_IMPORTED_MODEL
+	glm::vec3 scaled = glm::vec3(10.0, 10.0, 10.0);
+	glm::mat4 scaledModel2 = glm::scale(model, scaled);
+	mCylinder.render(proj, view, scaledModel2, nullptr, nullptr);
+#endif
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 

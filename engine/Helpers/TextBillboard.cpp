@@ -31,10 +31,9 @@ void TextBillboard::createText(const std::string& text, float sx, float sy)
 {
 	mVec4 = mFontData->createText(text, sx, sy);
 	Texture tex = mFontData->texture();
-
 	// A bit dodgy because we only know this string because of knowledge of ALL 
 	// shaders in derived classes.
-	//tex.name = "textureImageId";
+	tex.samplerName("freddy");
 
 	texture(tex);
 }
