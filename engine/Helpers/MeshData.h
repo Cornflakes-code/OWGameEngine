@@ -9,17 +9,13 @@
 
 #include "../Helpers/Texture.h"
 
-#define MESH_HAS_NORMAL
-
 struct MeshData
 {
 	struct Vertex
 	{
 		glm::vec3 position;
 		glm::vec2 textureCoord;
-#ifdef MESH_HAS_NORMAL
 		glm::vec3 normal;
-#endif
 		//glm::vec3 tangent;
 		//glm::vec3 biTangent;
 		Vertex() {}

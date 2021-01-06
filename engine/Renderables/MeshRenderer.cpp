@@ -59,12 +59,11 @@ void MeshRenderer::prepare(const Mesh* source)
 	glVertexAttribPointer(xx, glmv2Size, GL_FLOAT, GL_FALSE, vertexSize, 
 			(GLvoid*)(glmv3Size * sizeof(float)));
 
-#ifdef MESH_HAS_NORMAL
 	// vertex normals
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, glmv3Size, GL_FLOAT, GL_FALSE, vertexSize, 
+	xx = source->shader()->getAttributeLocation("normal");
+	glEnableVertexAttribArray(xx);
+	glVertexAttribPointer(xx, glmv3Size, GL_FLOAT, GL_FALSE, vertexSize, 
 			(GLvoid*)(sizeof(float) * (glmv3Size + glmv2Size)));
-#endif
 	glBindVertexArray(0);
 #else
 	std::vector<glm::vec3> positions;
@@ -115,11 +114,9 @@ void MeshRenderer::prepare(const Mesh* source)
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[1]);
 	glVertexAttribPointer(xx, glmv2Size, GL_FLOAT, GL_FALSE, 0, 0);
 
-#ifdef MESH_HAS_NORMAL
 	// vertex normals
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, glmv3Size, GL_FLOAT, GL_FALSE, vertexSize, (GLvoid*)(glmv3Size + glmv2Size));
-#endif
 	//	glEnableVertexAttribArray(0);
 
 		// note that this is allowed, the call to glVertexAttribPointer 

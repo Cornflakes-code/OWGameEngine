@@ -2,7 +2,6 @@
 
 void MeshData::calcNormals()
 {
-#ifdef MESH_HAS_NORMAL
 	for (int i = 0; i < indices.size(); i += 3)
 	{
 		int i0 = indices[i];
@@ -21,5 +20,4 @@ void MeshData::calcNormals()
 
 	for (int i = 0; i < vertices.size(); i++)
 		vertices[i].normal = glm::normalize(vertices[i].normal);
-#endif
 }

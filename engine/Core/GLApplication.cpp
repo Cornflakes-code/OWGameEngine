@@ -297,10 +297,10 @@ static std::string severityAsString(GLenum severity)
 	std::string retval;
 	switch (severity)
 	{
-		case GL_DEBUG_SEVERITY_HIGH:         retval = "high"; break;
-		case GL_DEBUG_SEVERITY_MEDIUM:       retval = "medium"; break;
-		case GL_DEBUG_SEVERITY_LOW:          retval = "low"; break;
-		case GL_DEBUG_SEVERITY_NOTIFICATION: retval = "notification"; break;
+		case GL_DEBUG_SEVERITY_HIGH:         retval = "Severity: high"; break;
+		case GL_DEBUG_SEVERITY_MEDIUM:       retval = "Severity: medium"; break;
+		case GL_DEBUG_SEVERITY_LOW:          retval = "Severity: low"; break;
+		case GL_DEBUG_SEVERITY_NOTIFICATION: retval = "Severity: notification"; break;
 	}
 	return retval;
 }

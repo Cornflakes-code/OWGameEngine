@@ -66,11 +66,9 @@ void Mesh::create(aiMesh *mesh, const aiScene *scene)
 		vertex.position.y = mesh->mVertices[i].y;
 		vertex.position.z = mesh->mVertices[i].z;
 
-#ifdef MESH_HAS_NORMAL
 		vertex.normal.x = mesh->mNormals[i].x;
 		vertex.normal.y = mesh->mNormals[i].y;
 		vertex.normal.z = mesh->mNormals[i].z;
-#endif
 		if (mesh->mTextureCoords[0])
 		{
 			vertex.textureCoord.x = mesh->mTextureCoords[0][i].x;
@@ -92,7 +90,7 @@ void Mesh::create(aiMesh *mesh, const aiScene *scene)
 			mData.indices.push_back(face.mIndices[j]);
 	}
 
-	if (mesh->mMaterialIndex >= 0) 
+	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -100,7 +98,6 @@ void Mesh::create(aiMesh *mesh, const aiScene *scene)
 			loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", textype);
 		mData.textures.insert(mData.textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 	}
-
 	mData.indicesMode = GL_TRIANGLES;
 }
 

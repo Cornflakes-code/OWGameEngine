@@ -195,8 +195,8 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 #ifdef INCLUDE_IMPORTED_MODEL
 	Shader* modelShader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
 	mCylinder.shader(modelShader, "pvm");
-//	mCylinder.create("Dice2.obj");
-	mCylinder.create("Cylinder1.obj");
+	mCylinder.create("Dice2.obj");
+//	mCylinder.create("Cylinder1.obj");
 	mCylinder.renderer(new ModelRenderer());
 #endif
 }
