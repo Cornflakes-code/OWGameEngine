@@ -3,14 +3,15 @@
 #include <experimental/filesystem>
 
 #include <Core/GLApplication.h>
-#include <Core/SaveAndRestore.h>
 #include <Core/GlobalSettings.h>
+#include <Core/SaveAndRestore.h>
 
-#include <Helpers/Logger.h>
-#include <Helpers/ErrorHandling.h>
-#include <Helpers/ResourcePathFactory.h>
+#include <Core/ErrorHandling.h>
+#include <Core/Logger.h>
+#include <Core/LogStream.h>
+#include <Core/ResourcePathFactory.h>
+
 #include <Helpers/MacroRecorder.h>
-#include <Helpers/LogStream.h>
 
 #include <Cameras/CameraMazhar.h>
 #include <Cameras/CameraOW.h>

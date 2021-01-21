@@ -2,10 +2,9 @@
 #include <set>
 
 #include <Core/Camera.h>
-#include <Core/UserInput.h>
+#include <Core/ErrorHandling.h>
 #include <Core/ListenerHelper.h>
-
-#include "../Helpers/ErrorHandling.h"
+#include <Core/UserInput.h>
 
 #include "OW_Camera.h"
 

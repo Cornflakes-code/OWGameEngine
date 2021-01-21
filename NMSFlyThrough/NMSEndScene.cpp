@@ -2,11 +2,18 @@
 
 #include <Core/Camera.h>
 #include <Core/GlobalSettings.h>
+
 #include <Helpers/Shader.h>
-#include <Renderables/TextBillboardDynamic.h>
-#include <Renderables/SimpleModelRenderer.h>
+#include <Helpers/TextData.h>
+
+#include <Renderers/TextRendererDynamic.h>
 
 #include "NMSUserInput.h"
+
+void NMSEndScenePhysics::setup()
+{
+
+}
 
 void NMSEndScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
 {}
@@ -67,12 +74,10 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 {
 	const float sx = 2.0f / globals->physicalWindowSize().x;
 	const float sy = 2.0f / globals->physicalWindowSize().y;
-	mText = new TextBillboardDynamic(glm::vec3(0.0f, 0.0f, 0.0f), "Arial.ttf", 24);
-
-	glm::vec4 color(0.5, 0.8f, 0.2f, 0);
-	mText->createText("G", sx, sy);
-	mText->colour(color, "textcolor");
-	mText->renderer(new SimpleModelRenderer());
+	TextData td("G", sx, sy);
+	td.colour( { 0.5, 0.8f, 0.2f, 0 } );
+	mText = new TextRendererDynamic();
+	mText->setup(&td);
 }
 
 void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
@@ -86,7 +91,6 @@ void NMSEndScene::activate(const std::string& OW_UNUSED(previousScene),
 					ScenePhysicsState* OW_UNUSED(state),
 					Camera* OW_UNUSED(camera), unsigned int OW_UNUSED(callCount))
 {
-//	glBindVertexArray(text.VAO);
 }
 
 void NMSEndScene::deActivate(const std::string& OW_UNUSED(previousScene), 

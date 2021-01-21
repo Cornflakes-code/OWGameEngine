@@ -4,20 +4,19 @@
 #include <iostream>
 #include <sstream>
 
-#pragma warning( push )
-#pragma warning( disable : 4201 )
 #include <glm/gtc/type_ptr.hpp>
-#pragma warning( pop )
 
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
 
-#include "Logger.h"
-#include "ErrorHandling.h"
-#include "ShaderFactory.h"
-#include "CommonUtils.h"
 #include "../Core/GlobalSettings.h"
+
+#include "../Core/CommonUtils.h"
+#include "../Core/ErrorHandling.h"
+#include "../Core/Logger.h"
+
+#include "ShaderFactory.h"
 
 Shader::Shader()
 {}

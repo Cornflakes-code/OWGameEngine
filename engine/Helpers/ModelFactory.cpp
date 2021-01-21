@@ -5,21 +5,22 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "../Core/GlobalSettings.h"
-#include "../Helpers/ModelData.h"
-#include "../Renderables/Mesh.h"
-
-#include "LogStream.h"
-#include "Texture.h"
-#include "ResourcePathFactory.h"
 #include "stb/stb_image.h"
+
+#include "../Core/GlobalSettings.h"
+#include "../Core/LogStream.h"
+#include "../Core/ResourcePathFactory.h"
+
+#include "ModelData.h"
+#include "MeshDataHeavy.h"
+#include "Texture.h"
 
 ModelFactory::ModelFactory()
 {}
 
-ModelData* processNode(aiNode *node, const aiScene *scene);
+ModelData processNode(aiNode *node, const aiScene *scene);
 
-ModelData* ModelFactory::create(const std::string& modelFileName, bool cache)
+ModelData ModelFactory::create(const std::string& modelFileName, bool cache)
 {
 	std::experimental::filesystem::path modelPath =
 		ResourcePathFactory().appendPath(modelFileName,
@@ -34,31 +35,29 @@ ModelData* ModelFactory::create(const std::string& modelFileName, bool cache)
 		LogStream(LogStreamLevel::Info)
 			<< "Mesh load failed for model ["
 			<< modelPath << "] ASSIMP error [" << importer.GetErrorString() << "]";
-		return nullptr;
+		return ModelData();
 	}
-	ModelData* root = processNode(scene->mRootNode, scene);
-	root->parent = nullptr;
+	ModelData root = processNode(scene->mRootNode, scene);
 	return root;
 }
 
-ModelData* processNode(aiNode *node, const aiScene *scene)
+ModelData processNode(aiNode *node, const aiScene *scene)
 {
-	ModelData* retval = new ModelData;
+	ModelData retval;
 
 	// process all the node's meshes (if any)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
-		Mesh m;
-		m.create(scene->mMeshes[node->mMeshes[i]], scene);
-		retval->meshes.push_back(m);
+		MeshDataHeavy* m = new MeshDataHeavy();
+		m->create(scene->mMeshes[node->mMeshes[i]], scene);
+		retval.meshes.push_back(m);
 	}
 
 	// then do the same for each of its children
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
-		ModelData* child =  processNode(node->mChildren[i], scene);
-		child->parent = retval;
-		retval->children.push_back(child);
+		ModelData child = processNode(node->mChildren[i], scene);
+		retval.children.push_back(child);
 	}
 	return retval;
 }

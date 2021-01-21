@@ -3,8 +3,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
-#include "../Renderables/Vertices.h"
-#include "ErrorHandling.h"
+#include "../Core/ErrorHandling.h"
 
 MoveController::MoveController()
 {

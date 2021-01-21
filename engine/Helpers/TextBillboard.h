@@ -16,10 +16,10 @@
 #include "../Core/ListenerHelper.h"
 
 #include "../Helpers/CommonUtils.h"
-#include "../Renderables/BoundingBox.h"
+#include "../Helpers/BoundingBox.h"
+#include "../Helpers/MoveTarget.h"
 
 #include "../Renderables/SimpleModel.h"
-#include "../Helpers/MoveTarget.h"
 #include "FreeTypeFontAtlas.h"
 
 class Shader;

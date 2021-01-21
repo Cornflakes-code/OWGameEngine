@@ -2,7 +2,6 @@
 
 #include "NMSScene.h"
 
-class TextBillboard;
 
 /*
 	An implementation of a Scene for the NMS game.
@@ -12,6 +11,7 @@ struct NMSEndScenePhysics : public ScenePhysicsState
 {
 	NMSEndScenePhysics(const Scene* owner)
 		: ScenePhysicsState(owner) {}
+	void setup() override;
 	void variableTimeStep(OWUtils::Time::duration dt) override;
 	void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) override;
 	void interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
@@ -26,10 +26,11 @@ struct NMSEndScenePhysics : public ScenePhysicsState
 	float textPosition = 0.0;
 };
 
+class TextRenderer;
 
 class NMSEndScene : public NMSScene
 {
-	TextBillboard* mText;
+	TextRenderer* mText;
 public:
 	NMSEndScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::endSceneName(); }

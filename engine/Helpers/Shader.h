@@ -2,7 +2,9 @@
 #include <string>
 
 #include <json/single_include/nlohmann/json.hpp>
+
 #include <glm/glm.hpp>
+
 #include "../OWEngine/OWEngine.h"
 
 using json = nlohmann::json;
@@ -13,8 +15,8 @@ class OWENGINE_API Shader //: public ResourceSource
 {
 public:
 	Shader();
-	Shader(const std::string& vertexPath, const std::string& fragPath,
-		const std::string& geometryPath);
+	Shader(const std::string& vertexPath, const std::string& fragPath = "",
+		const std::string& geometryPath = "");
 	~Shader();
 	void create(const std::string& vertexPath, const std::string& fragPath,
 			const std::string& geometryPath);

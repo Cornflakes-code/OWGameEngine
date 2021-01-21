@@ -5,7 +5,7 @@
 
 #include "stb/stb_image.h"
 
-#include "ResourcePathFactory.h"
+#include "../Core/ResourcePathFactory.h"
 
 /*
 template<typename Q>
@@ -62,7 +62,7 @@ const Texture& TextureFactory::getTexture(
 
 	unsigned char *data = stbi_load(path.u8string().c_str(),
 								&width, &height, &nrChannels, 0);
-	bool isHdr = stbi_is_hdr(path.u8string().c_str());
+//	bool isHdr = stbi_is_hdr(path.u8string().c_str());
 	if (data)
 	{
 		Texture texture;

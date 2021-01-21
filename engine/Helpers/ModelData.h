@@ -3,17 +3,34 @@
 #include <string>
 #include <functional>
 
-class Mesh;
-class Shader;
+class RendererBase;
 struct ModelData;
-typedef std::function<void(ModelData* m)> navFunction;
+struct MeshDataHeavy;
 
 void testTraverse();
 
+struct ModelData;
+typedef std::function<void(ModelData* m)> navFunction;
+typedef std::function<void(const ModelData* m)> constNavFunction;
 struct ModelData
 {
-	ModelData* parent;
-	std::vector<ModelData*> children;
-	std::vector<Mesh> meshes;
-	void dfsTraverse(navFunction pfn);
+	std::vector<ModelData> children;
+	std::vector<RendererBase*> renderers;
+	std::vector<MeshDataHeavy*> meshes;
+	void traverse(navFunction pfn)
+	{
+		pfn(this);
+		for (auto& child : children)
+		{
+			child.traverse(pfn);
+		}
+	}
+	void traverse(constNavFunction pfn) const
+	{
+		pfn(this);
+		for (auto& child : children)
+		{
+			child.traverse(pfn);
+		}
+	}
 };

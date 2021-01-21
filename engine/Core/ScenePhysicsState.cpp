@@ -1,5 +1,5 @@
 #include "ScenePhysicsState.h"
 
-#include "../Helpers/ErrorHandling.h"
+#include "ErrorHandling.h"
 
 #include "Scene.h"

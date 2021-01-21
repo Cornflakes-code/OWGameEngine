@@ -1,10 +1,12 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <experimental/filesystem>
 
+#include <glm/glm.hpp>
+
 #include "../OWEngine/OWEngine.h"
-#include "../Helpers/CommonUtils.h"
+
+#include "CommonUtils.h"
 
 class SaveAndRestore;
 class Movie;
@@ -15,7 +17,7 @@ class Camera;
 class UserInput;
 /*
 	Wrapper singleton class providing const getter access to commonally 
-	needed global data.
+	needed const global data.
 	Initialised with User Config File settings and, in turn, initialises other classes
 	when they are added via various init() methods. A singleton class
 	constructed by GLApplication.

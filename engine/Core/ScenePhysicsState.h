@@ -2,7 +2,7 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "../Helpers/CommonUtils.h"
+#include "CommonUtils.h"
 
 #include "UserInput.h"
 
@@ -14,8 +14,9 @@ class Camera;
 	provides the base class for the static information and class ScenePhysicsState 
 	provides the base class for the dynamic information. Inspection of the Game Loop
 	in Movie.cpp will show that ScenePhysicsState is cloned and discarded
-	many times per Render Loop. Children of Class ScenePhysicsState will be heavy on 
-	functionality (lots of code) but low on state information.
+	many times per Render Loop so data should be minimised. Children of 
+	Class ScenePhysicsState should be heavy on  functionality (lots of code) 
+	but low on state information.
 */
 class OWENGINE_API ScenePhysicsState
 {
@@ -23,6 +24,7 @@ public:
 	ScenePhysicsState(const Scene* owner)
 		: mOwner(owner)
 	{}
+	virtual void setup() = 0;
 	virtual void copy(ScenePhysicsState* source) = 0;
 	virtual void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) = 0;
 	virtual bool processUserCommands(const UserInput::AnyInput& userInput, 

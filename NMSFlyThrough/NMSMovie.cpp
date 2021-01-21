@@ -1,11 +1,11 @@
 #include "NMSMovie.h"
 
-#include <Core/GLApplication.h>
-#include <Core/SaveAndRestore.h>
-#include <Core/GlobalSettings.h>
 #include <Core/Camera.h>
+#include <Core/ErrorHandling.h>
+#include <Core/GLApplication.h>
+#include <Core/GlobalSettings.h>
+#include <Core/SaveAndRestore.h>
 
-#include <Helpers/ErrorHandling.h>
 #include <Helpers/FreeTypeFontAtlas.h>
 
 #ifndef __gl_h_

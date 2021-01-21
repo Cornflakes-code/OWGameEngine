@@ -3,9 +3,9 @@
 #include <iostream>
 #include <fstream>
 
-#include "ResourcePathFactory.h"
-#include "ErrorHandling.h"
-#include "LogStream.h"
+#include "../Core/ResourcePathFactory.h"
+#include "../Core/ErrorHandling.h"
+#include "../Core/LogStream.h"
 
 FreeTypeFontAtlas FontFactory::mFreeType;
 std::vector<FontFactory::FreeTypeFont> FontFactory::mFreeTypes;

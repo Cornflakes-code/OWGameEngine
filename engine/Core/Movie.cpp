@@ -5,9 +5,9 @@
 
 #include <GLFW/glfw3.h>
 
-#include "../Helpers/ErrorHandling.h"
-#include "../Helpers/Logger.h"
-#include "../Helpers/LogStream.h"
+#include "ErrorHandling.h"
+#include "Logger.h"
+#include "LogStream.h"
 
 #include "Camera.h"
 #ifndef __gl_h_

@@ -1,4 +1,5 @@
 #include "GeometricShapes.h"
+
 #include <glm/gtc/constants.hpp>
 
 GeometricShapes::GeometricShapes()

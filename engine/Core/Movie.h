@@ -7,7 +7,8 @@
 #include <queue>
 
 #include "../OWEngine/OWEngine.h"
-#include "../Renderables/BoundingBox.h"
+
+#include "BoundingBox.h"
 
 #include "ScenePhysicsState.h"
 

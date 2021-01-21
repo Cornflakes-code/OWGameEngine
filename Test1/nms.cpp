@@ -17,11 +17,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 
-#include <Core/UserInput.h>
+#include <Core/ErrorHandling.h>
 #include <Core/GlobalSettings.h>
+#include <Core/UserInput.h>
 
 #include <Helpers/Shader.h>
-#include <Helpers/ErrorHandling.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);

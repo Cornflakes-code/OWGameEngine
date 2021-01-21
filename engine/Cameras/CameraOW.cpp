@@ -3,9 +3,10 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <GLFW/glfw3.h>
+
 #include "../Core/GlobalSettings.h"
-#include "../Helpers/Logger.h"
-#include "../Helpers/LogStream.h"
+#include "../Core/Logger.h"
+#include "../Core/LogStream.h"
 
 CameraOW::CameraOW()
 {

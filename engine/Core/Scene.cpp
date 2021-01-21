@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-#include "../Helpers/ErrorHandling.h"
+#include "ErrorHandling.h"
 
 Scene::Scene(const Movie* movie)
 	: mMovie(movie)
@@ -9,5 +9,6 @@ Scene::Scene(const Movie* movie)
 
 void Scene::setup(ScenePhysicsState* state)
 {
+	state->setup();
 	doSetup(state);
 }

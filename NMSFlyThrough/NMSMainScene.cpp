@@ -3,17 +3,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext/matrix_projection.hpp>
 
-#include <Core/GLApplication.h>
 #include <Core/Camera.h>
+#include <Core/ErrorHandling.h>
+#include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
-
-#include <Helpers/ErrorHandling.h>
-#include <Helpers/ResourcePathFactory.h>
-
-#include <Renderables/Axis.h>
+#include <Core/ResourcePathFactory.h>
 
 #include "NMSUserInput.h"
 #include "NoMansSkyStarMap.h"
+#include "NMSUtils.h"
+
+void NMSMainScenePhysics::setup()
+{
+
+}
 
 void NMSMainScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
 {}
@@ -89,16 +92,17 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 		= ResourcePathFactory().appendPath("NMSMap.txt", 
 				ResourcePathFactory::ResourceType::UnknownType);
 	mStarMap->setUp(p.string(), world());
-	mAxis = new Axis();
+
+	ModelData md = NMS::createAxisData(world());
+	mAxis.setup(&md);
 	
-	mAxis->prepare(world());
 }
 
 void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),
 						  const glm::mat4& proj, const glm::mat4& view)
 {
 	glm::mat4 model(1.0);
-	mAxis->render(proj, view, model);
+	mAxis.render(proj, view, model);
 	mStarMap->render(proj, view, model);
 }
 

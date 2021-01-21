@@ -6,23 +6,21 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
-#include <Renderables/BoundingBox.h>
-#include <Renderables/Particles.h>
-#include <Renderables/SimpleModel.h>
-
+#include <Core/BoundingBox.h>
 
 class Shader;
-
+class InstanceRenderer;
+class TextRenderer;
 /*
 	The NMS game is a simple fly through of Solar Systems visited while
 	playing the No Man's Sky game. Will be moved to a different repo in due course.
 */
 class NoMansSky
 {
-	Particles mStarRenderer;
+	InstanceRenderer* mStarRenderer;
 	std::vector<glm::vec3> mRandomMinorStars;
 	std::vector<glm::vec4> mStarPositions;
-	std::vector<SimpleModel*> mStarLabels;
+	std::vector<TextRenderer*> mStarLabels;
 	std::vector<glm::vec4> mStarColours;
 	std::vector<glm::vec3> mGrid;
 
@@ -32,10 +30,8 @@ class NoMansSky
 	void createGrid(const AABB& nmsSpace, 
 					const glm::u32vec3& gridSizes,
 					float scaleToWorld);
-	void createRandomVectors(const AABB& world,
-		std::vector<glm::vec3>& target,
-		unsigned int count,
-		float scaleToWorld);
+	std::vector<glm::vec3> createRandomVectors(const AABB& world,
+					unsigned int count, float scaleToWorld);
 	Shader* mGridShader;
 	Shader* mStarShader;
 

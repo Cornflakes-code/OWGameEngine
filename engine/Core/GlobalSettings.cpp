@@ -4,11 +4,11 @@
 #include <json/single_include/nlohmann/json.hpp>
 
 #include "UserInput.h"
-#include "../Helpers/ResourcePathFactory.h"
-#include "../Helpers/ErrorHandling.h"
-#include "../Helpers/LogStream.h"
-#include "../Core/Movie.h"
-#include "../Core/Camera.h"
+#include "ResourcePathFactory.h"
+#include "ErrorHandling.h"
+#include "LogStream.h"
+#include "Movie.h"
+#include "Camera.h"
 
 OWUtils::Time::time_point GlobalSettings::mLoadTime;
 extern OWENGINE_API GlobalSettings* globals;
@@ -274,7 +274,10 @@ void GlobalSettings::readFile(const std::experimental::filesystem::path& configF
 		{
 			j = json::parse(ifs);
 			// Not sure what to with 'version' atm
-			try { float version = j["Version"]; }
+			try 
+			{ 
+				float version = j["Version"]; 
+			}
 			catch (const std::exception& ex)
 			{
 				LogStream(LogStreamLevel::Error) << "cannot parse config file ['Version' not found]"

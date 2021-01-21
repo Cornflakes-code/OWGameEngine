@@ -1,7 +1,7 @@
 #include "NMSUserInput.h"
 
-#include <Helpers/ErrorHandling.h>
-#include <Helpers/CommonUtils.h>
+#include <Core/CommonUtils.h>
+#include <Core/ErrorHandling.h>
 
 std::string NMSUserInput::userInputToString(int value)
 {

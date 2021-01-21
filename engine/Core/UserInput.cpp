@@ -1,8 +1,8 @@
 #include "UserInput.h"
 
 #include "GLApplication.h"
-#include "../Helpers/ErrorHandling.h"
-#include "../Helpers/LogStream.h"
+#include "ErrorHandling.h"
+#include "LogStream.h"
 
 // AnyKey must be mapped to a non printable key
 int UserInput::AnyKey = 0;

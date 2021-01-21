@@ -10,6 +10,7 @@ struct OWENGINE_API QuitScenePhysics: public ScenePhysicsState
 {
 	QuitScenePhysics(const Scene* owner)
 		: ScenePhysicsState(owner) {}
+	void setup() override {}
 	void variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt)) override {}
 	void fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 					   OWUtils::Time::duration OW_UNUSED(dt)) override {}

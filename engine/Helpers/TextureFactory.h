@@ -5,7 +5,8 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "CommonUtils.h"
+#include "../Core/CommonUtils.h"
+
 #include "Texture.h"
 
 class OWENGINE_API TextureFactory

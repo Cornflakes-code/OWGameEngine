@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-#include "../Helpers/ErrorHandling.h"
+#include "../Core/ErrorHandling.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 

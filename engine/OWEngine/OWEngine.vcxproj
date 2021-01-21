@@ -76,6 +76,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\..\$(Platform)\$(Configuration)\engineobj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -85,12 +87,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\..\$(Platform)\$(Configuration)\engineobj\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;OWENGINE_EXPORTS;_WINDOWS;OWENGINE_DLL;GLAD_GLAPI_EXPORT_BUILD;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;OWENGINE_EXPORTS;_WINDOWS;OWENGINE_DLL;GLAD_GLAPI_EXPORT_BUILD;NOMINMAX;GLM_FORCE_SILENT_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4100;4275</DisableSpecificWarnings>
     </ClCompile>
@@ -143,7 +147,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;OWENGINE_EXPORTS;_WINDOWS;_USRDLL;GLAD_GLAPI_EXPORT_BUILD;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;OWENGINE_EXPORTS;_WINDOWS;_USRDLL;GLAD_GLAPI_EXPORT_BUILD;NOMINMAX;GLM_FORCE_SILENT_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4100;4275</DisableSpecificWarnings>
     </ClCompile>
@@ -156,116 +160,94 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Core\BoundingBox.h" />
     <ClInclude Include="..\Core\Camera.h" />
+    <ClInclude Include="..\Core\CommonUtils.h" />
+    <ClInclude Include="..\Core\ErrorHandling.h" />
     <ClInclude Include="..\Core\GLApplication.h" />
     <ClInclude Include="..\Core\GlobalSettings.h" />
     <ClInclude Include="..\Core\ListenerHelper.h" />
+    <ClInclude Include="..\Core\Logger.h" />
+    <ClInclude Include="..\Core\LogStream.h" />
     <ClInclude Include="..\Core\Movie.h" />
     <ClInclude Include="..\Core\QuitScene.h" />
+    <ClInclude Include="..\Core\ResourcePathFactory.h" />
     <ClInclude Include="..\Core\SaveAndRestore.h" />
     <ClInclude Include="..\Core\Scene.h" />
     <ClInclude Include="..\Core\ScenePhysicsState.h" />
     <ClInclude Include="..\Core\UserInput.h" />
     <ClInclude Include="..\glad\include\glad\glad.h" />
-    <ClInclude Include="..\Helpers\CommonUtils.h" />
-    <ClInclude Include="..\Helpers\ErrorHandling.h" />
+    <ClInclude Include="..\Helpers\BoundsCalculator.h" />
     <ClInclude Include="..\Helpers\FontFactory.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
     <ClInclude Include="..\Helpers\GeometricShapes.h" />
-    <ClInclude Include="..\Helpers\Logger.h" />
-    <ClInclude Include="..\Helpers\MacroRecorder.h" />
-    <ClInclude Include="..\Helpers\MeshData.h" />
+    <ClInclude Include="..\Helpers\MeshDataHeavy.h" />
+    <ClInclude Include="..\Helpers\MeshDataInstance.h" />
+    <ClInclude Include="..\Helpers\MeshDataLight.h" />
     <ClInclude Include="..\Helpers\ModelData.h" />
     <ClInclude Include="..\Helpers\ModelFactory.h" />
     <ClInclude Include="..\Helpers\MoveController.h" />
-    <ClInclude Include="..\Helpers\MoveTarget.h" />
     <ClInclude Include="..\Helpers\PhongShader.h" />
-    <ClInclude Include="..\Helpers\ResizeHelper.h" />
-    <ClInclude Include="..\Helpers\ResourcePathFactory.h" />
     <ClInclude Include="..\Helpers\Shader.h" />
-    <ClInclude Include="..\Helpers\LogStream.h" />
     <ClInclude Include="..\Helpers\ShaderFactory.h" />
-    <ClInclude Include="..\Helpers\TextBillboard.h" />
+    <ClInclude Include="..\Helpers\TextData.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
     <ClInclude Include="..\Helpers\TextureFactory.h" />
-    <ClInclude Include="..\Helpers\utils.h" />
-    <ClInclude Include="..\Renderables\Actor.h" />
-    <ClInclude Include="..\Renderables\Axis.h" />
-    <ClInclude Include="..\Renderables\BoundingBox.h" />
-    <ClInclude Include="..\Renderables\Circle.h" />
-    <ClInclude Include="..\Renderables\FullScreen.h" />
-    <ClInclude Include="..\Renderables\Mesh.h" />
-    <ClInclude Include="..\Renderables\MeshRenderer.h" />
-    <ClInclude Include="..\Renderables\Model.h" />
-    <ClInclude Include="..\Renderables\ModelRenderer.h" />
-    <ClInclude Include="..\Renderables\Particles.h" />
-    <ClInclude Include="..\Renderables\ParticlesRenderer.h" />
-    <ClInclude Include="..\Renderables\Pyramid.h" />
-    <ClInclude Include="..\Renderables\RenderableBase.h" />
-    <ClInclude Include="..\Renderables\RenderBase.h" />
-    <ClInclude Include="..\Renderables\SimpleModel.h" />
-    <ClInclude Include="..\Renderables\SimpleModelRenderer.h" />
-    <ClInclude Include="..\Renderables\TextBillboardDynamic.h" />
-    <ClInclude Include="..\Renderables\TextBillboardFixed.h" />
-    <ClInclude Include="..\Renderables\Vertices.h" />
-    <ClInclude Include="..\Renderables\VerticesRenderer.h" />
+    <ClInclude Include="..\Renderers\HeavyRenderer.h" />
+    <ClInclude Include="..\Renderers\InstanceRenderer.h" />
+    <ClInclude Include="..\Renderers\LightRenderer.h" />
+    <ClInclude Include="..\Renderers\Model.h" />
+    <ClInclude Include="..\Renderers\RendererBase.h" />
+    <ClInclude Include="..\Renderers\TextRenderer.h" />
+    <ClInclude Include="..\Renderers\TextRendererDynamic.h" />
+    <ClInclude Include="..\Renderers\TextRendererStatic.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OWEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
+    <ClCompile Include="..\Core\BoundingBox.cpp" />
     <ClCompile Include="..\Core\Camera.cpp" />
+    <ClCompile Include="..\Core\CommonUtils.cpp" />
+    <ClCompile Include="..\Core\ErrorHandling.cpp" />
     <ClCompile Include="..\Core\GLApplication.cpp" />
     <ClCompile Include="..\Core\GlobalSettings.cpp" />
     <ClCompile Include="..\Core\ListenerHelper.cpp" />
+    <ClCompile Include="..\Core\Logger.cpp" />
+    <ClCompile Include="..\Core\LogStream.cpp" />
     <ClCompile Include="..\Core\Movie.cpp" />
     <ClCompile Include="..\Core\QuitScene.cpp" />
+    <ClCompile Include="..\Core\ResourcePathFactory.cpp" />
     <ClCompile Include="..\Core\SaveAndRestore.cpp" />
     <ClCompile Include="..\Core\Scene.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
-    <ClCompile Include="..\Helpers\CommonUtils.cpp" />
-    <ClCompile Include="..\Helpers\ErrorHandling.cpp" />
+    <ClCompile Include="..\Helpers\BoundsCalculator.cpp" />
     <ClCompile Include="..\Helpers\FontFactory.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
     <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
-    <ClCompile Include="..\Helpers\Logger.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
-    <ClCompile Include="..\Helpers\MeshData.cpp" />
+    <ClCompile Include="..\Helpers\MeshDataHeavy.cpp" />
+    <ClCompile Include="..\Helpers\MeshDataInstance.cpp" />
+    <ClCompile Include="..\Helpers\MeshDataLight.cpp" />
     <ClCompile Include="..\Helpers\ModelData.cpp" />
     <ClCompile Include="..\Helpers\ModelFactory.cpp" />
     <ClCompile Include="..\Helpers\MoveController.cpp" />
-    <ClCompile Include="..\Helpers\MoveTarget.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
-    <ClCompile Include="..\Helpers\ResourcePathFactory.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
     <ClCompile Include="..\Helpers\ShaderFactory.cpp" />
     <ClCompile Include="..\Helpers\stb_image.cpp" />
-    <ClCompile Include="..\Helpers\LogStream.cpp" />
-    <ClCompile Include="..\Helpers\TextBillboard.cpp" />
+    <ClCompile Include="..\Helpers\TextData.cpp" />
     <ClCompile Include="..\Helpers\Texture.cpp" />
     <ClCompile Include="..\Helpers\TextureFactory.cpp" />
-    <ClCompile Include="..\Helpers\utils.cpp" />
-    <ClCompile Include="..\Renderables\Actor.cpp" />
-    <ClCompile Include="..\Renderables\Axis.cpp" />
-    <ClCompile Include="..\Renderables\BoundingBox.cpp" />
-    <ClCompile Include="..\Renderables\Circle.cpp" />
-    <ClCompile Include="..\Renderables\FullScreen.cpp" />
-    <ClCompile Include="..\Renderables\Mesh.cpp" />
-    <ClCompile Include="..\Renderables\MeshRenderer.cpp" />
-    <ClCompile Include="..\Renderables\Model.cpp" />
-    <ClCompile Include="..\Renderables\ModelRenderer.cpp" />
-    <ClCompile Include="..\Renderables\Particles.cpp" />
-    <ClCompile Include="..\Renderables\ParticlesRenderer.cpp" />
-    <ClCompile Include="..\Renderables\Pyramid.cpp" />
-    <ClCompile Include="..\Renderables\RenderableBase.cpp" />
-    <ClCompile Include="..\Renderables\Renderbase.cpp" />
-    <ClCompile Include="..\Renderables\SimpleModel.cpp" />
-    <ClCompile Include="..\Renderables\SimpleModelRenderer.cpp" />
-    <ClCompile Include="..\Renderables\TextBillboardDynamic.cpp" />
-    <ClCompile Include="..\Renderables\TextBillboardFixed.cpp" />
-    <ClCompile Include="..\Renderables\Vertices.cpp" />
-    <ClCompile Include="..\Renderables\VerticesRenderer.cpp" />
+    <ClCompile Include="..\Renderers\HeavyRenderer.cpp" />
+    <ClCompile Include="..\Renderers\InstanceRenderer.cpp" />
+    <ClCompile Include="..\Renderers\LightRenderer.cpp" />
+    <ClCompile Include="..\Renderers\Model.cpp" />
+    <ClCompile Include="..\Renderers\RendererBase.cpp" />
+    <ClCompile Include="..\Renderers\TextRenderer.cpp" />
+    <ClCompile Include="..\Renderers\TextRendererDynamic.cpp" />
+    <ClCompile Include="..\Renderers\TextRendererStatic.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>

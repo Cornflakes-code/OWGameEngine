@@ -1,8 +1,10 @@
 #include "NMSScene.h"
+
 #include <glm/glm.hpp>
 
 #include <Core/Camera.h>
-#include <Helpers/ErrorHandling.h>
+
+#include <Core/ErrorHandling.h>
 
 //float sc = 1.0;
 AABB NMSScene::mWorld = AABB(glm::vec4(-100, -100, -100, 0), glm::vec4(100, 100, 100, 1));

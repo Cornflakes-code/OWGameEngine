@@ -3,8 +3,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "ErrorHandling.h"
-#include "ResourcePathFactory.h"
+#include "../Core/ErrorHandling.h"
+#include "../Core/ResourcePathFactory.h"
 
 
 #define GLSL(src) "#version 330 core\n" #src

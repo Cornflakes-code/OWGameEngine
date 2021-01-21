@@ -3,17 +3,7 @@
 #include <string>
 #include <functional>
 
-#include "../Renderables/Mesh.h"
-#include "../Renderables/MeshRenderer.h"
 
-void ModelData::dfsTraverse(navFunction pfn)
-{
-	pfn(this);
-	for (auto child : children)
-	{
-		child->dfsTraverse(pfn);
-	}
-}
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // Test Code
 struct ModelData2;

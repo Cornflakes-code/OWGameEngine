@@ -13,16 +13,17 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <json/single_include/nlohmann/json.hpp>
 
+
+#include <Core/CommonUtils.h>
+#include <Core/ErrorHandling.h>
 #include <Core/GlobalSettings.h>
 
-#include <Helpers/ErrorHandling.h>
-#include <Helpers/Utils.h>
-#include <Helpers/Shader.h>
 #include <Helpers/GeometricShapes.h>
-#include <Renderables/TextBillboardDynamic.h>
-#include <Renderables/TextBillboardFixed.h>
-#include <Renderables/ParticlesRenderer.h>
-#include <Renderables/SimpleModelRenderer.h>
+#include <Helpers/Shader.h>
+#include <Helpers/TextData.h>
+
+#include <Renderers/InstanceRenderer.h>
+#include <Renderers/TextRendererStatic.h>
 
 NoMansSky::NoMansSky()
 	: mGridShader(new Shader("Lines.v.glsl", "Lines.f.glsl", ""))
@@ -34,13 +35,8 @@ NoMansSky::NoMansSky()
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 {
-
-
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
-
 	glGenVertexArrays(2, &mVao[0]);
-	
-
 	AABB NMSSize(glm::vec4(-0x7FF, -0x7F, -0x7FF, 1),
 				 glm::vec4(0x7FF, 0x7F, 0x7FF, 1));
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
@@ -63,21 +59,13 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 
 #ifdef DEBUG_STARS
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
-//	Shader* pointShader = new Shader("thebookofshaders.v.glsl",
-//		"solarSuns.f.glsl",
-//		"thebookofshaders_circle.g.glsl");
-	Shader* instanceShader = new Shader("instanced.v.glsl",
-		"instanced_snoise.f.glsl",
-		//"instanced.f.glsl",
-//					"instanced.g.glsl"
-					""
-					);
-	mStarRenderer.shader(instanceShader, "VP");
-	std::vector<glm::vec3> squareVertices 
+	MeshDataInstance mdi;
+	std::vector<glm::vec3> squareVertices
 		= GeometricShapes::rectangle(glm::vec2(1.0, 1.0), glm::vec2(-0.5, -0.5));
-	createRandomVectors(NMSSize, mRandomMinorStars, 50000, scaleNMStoWorld);
-	mStarRenderer.vertices(squareVertices, 0, GL_TRIANGLES);
-	mStarRenderer.positions(mRandomMinorStars, 1, 1, GL_POINTS);
+	mdi.vertices(squareVertices, GL_TRIANGLES, 0);
+	
+	mRandomMinorStars = createRandomVectors(NMSSize, 50000, scaleNMStoWorld);
+	mdi.positions(mRandomMinorStars, 1, 1);
 
 	std::vector<glm::vec4> instanceColours;
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
@@ -86,9 +74,22 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
-	mStarRenderer.colours(instanceColours, 2, 1);
-
-	mStarRenderer.renderer(new ParticlesRenderer());
+	mdi.colours(instanceColours, 1, 2);
+//#define FANCY_SHADER
+#ifdef FANCY_SHADER
+		Shader* instanceShader = new Shader("thebookofshaders.v.glsl",
+			"solarSuns.f.glsl",
+			"thebookofshaders_circle.g.glsl");
+#else
+	Shader* instanceShader = new Shader("instanced.v.glsl",
+		"instanced_snoise.f.glsl",
+		//"instanced.f.glsl",
+//					"instanced.g.glsl"
+""
+);
+#endif
+	mStarRenderer = new InstanceRenderer(instanceShader, "VP");
+	mStarRenderer->setup(&mdi);
 #endif
 }
 
@@ -148,13 +149,13 @@ void NoMansSky::loadStars(const std::string& fileName,
 			if (line[0] == '#')
 				continue;
 			glm::vec4 point(0);
-			std::vector<std::string> elms = split(line, ',');
+			std::vector<std::string> elms = OWUtils::split(line, ',');
 
 			if (elms.size() == 2)
 			{
-				std::vector<std::string> coords = split(elms[1], ':');
+				std::vector<std::string> coords = OWUtils::split(elms[1], ':');
 				for (auto& s : coords)
-					trim(s);
+					OWUtils::trim(s);
 				if (coords.size() == 5)
 				{
 					// Signal Booster: AAAA:XXXX:YYYY:ZZZZ:SSSS
@@ -250,15 +251,15 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
-
-			TextBillboard* text = new TextBillboardFixed(
-					{ point.x, point.y, point.z }, "arial.ttf", fontHeight);
-			text->createText(elms[0], nice.x, nice.y);
-			text->colour({ 0.0, 0.0, 0.0, 1.0f }, "textcolor");
-			text->renderer(new SimpleModelRenderer());
-			mStarLabels.push_back(text);
-
-			mStarPositions.push_back({ point.x, point.y, point.z, point.w });
+			//TextBillboard* text = new TextBillboardFixed( { point.x, point.y, point.z }, );
+			TextData td;
+			td.text(elms[0]);
+			td.font("arial.ttf", fontHeight);
+			td.colour({ 0.0, 0.0, 0.0, 1.0f });
+			td.spacing(nice.x, nice.y, { 1.0,1.0 }, TextData::Right);
+			TextRendererStatic* r = new TextRendererStatic();
+			r->setup(&td, glm::vec3(point.x, point.y, point.z));
+			mStarLabels.push_back(r);
 		}
 
 		myfile.close();
@@ -269,11 +270,10 @@ void NoMansSky::loadStars(const std::string& fileName,
 	}
 }
 
-void NoMansSky::createRandomVectors(const AABB& nmsSpace,
-				std::vector<glm::vec3>& target,
-				unsigned int count,
-				float scaleToWorld)
+std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
+					unsigned int count, float scaleToWorld)
 {
+	std::vector<glm::vec3> retval;
 	std::default_random_engine generator;
 	// 3 times std dev either side of mean.
 	float xstddev = nmsSpace.size().x * scaleToWorld / 6.0f;
@@ -296,8 +296,9 @@ void NoMansSky::createRandomVectors(const AABB& nmsSpace,
 
 	for (unsigned int i = 0; i < count; i++)
 	{
-		target.push_back({ x[i], y[i], z[i] });
+		retval.push_back({ x[i], y[i], z[i] });
 	}
+	return retval;
 }
 
 void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
@@ -325,10 +326,10 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 		glm::vec2 v2 = globals->pointingDevicePosition();
 		shader->setVector2f("u_mouse", v2);
 	};
-	mStarRenderer.render(proj, view, model, nullptr, pointRender);
+	mStarRenderer->render(proj, view, model, nullptr, pointRender);
 	for (int i = 0; i < mStarLabels.size(); i++)
 	{
-		const SimpleModel* sr = mStarLabels[i];
+		const TextRenderer* sr = mStarLabels[i];
 		sr->render(proj, view, model);
 	}
 #endif

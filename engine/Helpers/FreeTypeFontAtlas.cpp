@@ -10,8 +10,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "ErrorHandling.h"
-#include "LogStream.h"
+#include "../Core/ErrorHandling.h"
+#include "../Core/LogStream.h"
 
 const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
 		const std::experimental::filesystem::path& path, int fontHeight)

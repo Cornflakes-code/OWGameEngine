@@ -3,8 +3,11 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
+#include <Core/BoundingBox.h>
+
 #include <Helpers/Shader.h>
-#include <Renderables/BoundingBox.h>
+
+#include <Renderers/Model.h>
 
 #include "NMSScene.h"
 
@@ -19,6 +22,7 @@ struct NMSMainScenePhysics : public NMSWorldPhysicsState
 
 	glm::vec3 mCameraPosition = glm::vec3(-1.48475, 1.77853, -0.553399);
 	glm::vec3 mLookAt = glm::vec3(-0.799972, 1.20117, -0.10871);
+	void setup() override;
 	virtual void variableTimeStep(OWUtils::Time::duration dt) override;
 	virtual void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) override;
 	virtual void interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
@@ -38,8 +42,7 @@ class NMSMainScene : public NMSScene
 	AABB mWorldSpace;
 
 	NoMansSky* mStarMap;
-	Axis* mAxis;
-
+	Model mAxis;
 public:
 	NMSMainScene(const Movie* movie);
 	virtual std::string name() const final { return NMSScene::mainSceneName(); }

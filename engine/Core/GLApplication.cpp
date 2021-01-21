@@ -6,9 +6,9 @@ OWENGINE_API GlobalSettings* globals = nullptr;
 
 #include <algorithm>
 
-#include "../Helpers/ErrorHandling.h"
-#include "../Helpers/Logger.h"
-#include "../Helpers/LogStream.h"
+#include "ErrorHandling.h"
+#include "Logger.h"
+#include "LogStream.h"
 
 #include "SaveAndRestore.h"
 #include "GlobalSettings.h"

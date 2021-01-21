@@ -1,6 +1,8 @@
 #pragma once
+
 #include <Core/Scene.h>
-#include <Renderables/BoundingBox.h>
+
+#include <Core/BoundingBox.h>
 
 struct NMSWorldPhysicsState: public ScenePhysicsState
 {

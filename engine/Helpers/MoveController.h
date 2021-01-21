@@ -4,7 +4,7 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "../Renderables/BoundingBox.h"
+#include "../Core/BoundingBox.h"
 
 class OWENGINE_API MoveController
 {

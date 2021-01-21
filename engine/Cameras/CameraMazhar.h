@@ -2,7 +2,7 @@
 #include <set>
 
 #include "../Core/Camera.h"
-#include "../Helpers/ErrorHandling.h"
+#include "../Core/ErrorHandling.h"
 
 #include "Mazhar_Camera.h"
 
