@@ -17,14 +17,10 @@ class OWENGINE_API HeavyRenderer: public RendererBase
 public:
 	HeavyRenderer(Shader* shader, const std::string& pvm)
 		: RendererBase(shader, pvm) {}
-	void setup(MeshDataHeavy* data, unsigned int vertexMode, unsigned int vertexLocation = 0);
+	void setup(MeshDataHeavy* data, unsigned int vertexMode, 
+			unsigned int vertexLocation = 0);
 
-	virtual void render(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model,
-		const MoveController* mover = nullptr,
-		RenderCallbackType renderCb = nullptr,
-		ResizeCallbackType resizeCb = nullptr) const override;
+	virtual void doRender() const override;
 protected:
 	void validate() const;
 private:

@@ -31,7 +31,7 @@
 #define INCLUDE_WELCOME
 #define INCLUDE_ENJOY
 #define INCLUDE_XYZ_AXIS
-//#define INCLUDE_STAR_RENDER
+#define INCLUDE_STAR_RENDER
 #define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
@@ -277,13 +277,14 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	mEnjoyText->render(proj, view, sps->mEnjoyMover.translate(model));
 #endif
 
+#ifdef INCLUDE_STAR_RENDER
+	mStar->render(proj, view, model);
+#endif
+
 #ifdef INCLUDE_XYZ_AXIS
 	mAxis.render(proj, view, model);
 #endif
 
-#ifdef INCLUDE_STAR_RENDER
-	mStar->render(proj, view, model);
-#endif
 
 }
 

@@ -45,7 +45,7 @@ namespace NMS
 		{
 			TextRenderer* x = new TextRendererStatic();
 			td.text("X");
-			td.spacing(nice.x, nice.y, glm::vec2(scale, scale), TextData::Right);
+			td.spacing(nice.x, nice.y, glm::vec2(scale, scale), TextData::Center);
 			td.colour({ 1.0, 0.0, 0.0, 1.0f });
 			x->setup(&td, axisCoords[1]);
 			md.renderers.push_back(x);
@@ -76,11 +76,6 @@ namespace NMS
 		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
 		LightRenderer* lines = new LightRenderer(lineShader, "pvm");
 		lines->setup(&lineData, "colour");
-		lines->appendRenderCallback([](const glm::mat4& OW_UNUSED(proj), const glm::mat4& OW_UNUSED(view),
-			const glm::mat4& OW_UNUSED(model), const Shader* OW_UNUSED(shader)) {
-			OWUtils::PolygonModeRIAA poly;
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		});
 		md.renderers.push_back(lines);
 		return md;
 	}

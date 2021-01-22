@@ -44,14 +44,12 @@ void InstanceRenderer::setup(const MeshDataInstance* meshData)
 	validateBase();
 	mData.vertexMode = mData.vertexMode;
 	mData.vertexLocation = mData.vertexLocation;
-	OWUtils::PolygonModeRIAA poly;
 	glGenVertexArrays(1, &mVao);
 	glBindVertexArray(mVao);
 
 	glGenBuffers(3, &mVbo[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 
-	shader()->use();
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(mData.vertexLocation,
 		vertexSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -94,20 +92,8 @@ void InstanceRenderer::setup(const MeshDataInstance* meshData)
 	glBindVertexArray(0);
 }
 
-void InstanceRenderer::render(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4& model,
-	const MoveController* mover, RenderCallbackType renderCb,
-	ResizeCallbackType resizeCb) const
+void InstanceRenderer::doRender() const
 {
-	OWUtils::PolygonModeRIAA poly;
-	shader()->use();
-	callResizeCallback(resizeCb);
-	glm::mat4 p = proj;
-	glm::mat4 v = view;
-	glm::mat4 m = model;
-	callRenderCallback(p, v, m, renderCb);
-	setPVM(p, v, m);
-
 	glBindVertexArray(mVao);
 
 	// These functions are specific to glDrawArrays*Instanced*.
@@ -131,7 +117,7 @@ void InstanceRenderer::render(const glm::mat4& proj,
 	// for(i in ParticlesCount) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4),
 	// but faster.
 	glDrawArraysInstanced(mData.vertexMode, 0,
-		static_cast<GLsizei>(mData.verticesCount),
+			static_cast<GLsizei>(mData.verticesCount),
 			static_cast<GLsizei>(mData.positionCount));
 }
 

@@ -18,12 +18,7 @@ public:
 	InstanceRenderer(Shader* shader, const std::string& pvm)
 		: RendererBase(shader, pvm) {}
 	void setup(const MeshDataInstance* meshData);
-	virtual void render(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model,
-		const MoveController* mover = nullptr,
-		RenderCallbackType renderCb = nullptr,
-		ResizeCallbackType resizeCb = nullptr) const override;
+	void doRender() const override;
 private:
 	void validate(const MeshDataInstance* meshData) const;
 #pragma warning( push )

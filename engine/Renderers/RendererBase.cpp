@@ -96,3 +96,21 @@ void RendererBase::callRenderCallback(glm::mat4& proj, glm::mat4& view,
 		cb(proj, view, model, shader());
 	}
 }
+
+void RendererBase::render(const glm::mat4& proj,
+	const glm::mat4& view, const glm::mat4& model,
+	const MoveController* mover, RenderCallbackType renderCb,
+	ResizeCallbackType resizeCb) const
+{
+	OWUtils::PolygonModeRIAA temp1(mPolygonFace, mPolygonMode);
+	OWUtils::LineWidthRIAA temp2(mLineWidth);
+	shader()->use();
+	callResizeCallback(resizeCb);
+	glm::mat4 p = proj;
+	glm::mat4 v = view;
+	glm::mat4 m = model;
+	callRenderCallback(p, v, m, renderCb);
+	setPVM(p, v, m);
+
+	doRender();
+}

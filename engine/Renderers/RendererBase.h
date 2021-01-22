@@ -27,25 +27,34 @@ public:
 	
 	void appendRenderCallback(RenderCallbackType pfunc) { mRenderCallbacks.push_back(pfunc); }
 	void appendResizeCallback(ResizeCallbackType pfunc) { mResizeCallbacks.push_back(pfunc); }
-
-	virtual void render(const glm::mat4& proj,
+	void lineWidth(float width) { mLineWidth = width; }
+	void polygonMode(unsigned int face, unsigned int mode) 
+	{
+		mPolygonFace = face; mPolygonMode = mode; 
+	}
+	void render(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,
 		const MoveController* mover = nullptr,
 		RenderCallbackType renderCb = nullptr,
-		ResizeCallbackType resizeCb = nullptr) const = 0;
+		ResizeCallbackType resizeCb = nullptr) const;
 protected:
+	virtual void doRender() const = 0;
+	void validateBase() const;
+	const Shader* shader() const { return mShader; }
+private:
 	void setPVM(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model) const;
-	const Shader* shader() const { return mShader; }
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
-	void validateBase() const;
 	void callResizeCallback(ResizeCallbackType resizeCb) const;
 	void callRenderCallback(glm::mat4& proj, glm::mat4& view,
 		glm::mat4& model, RenderCallbackType renderCb) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+	float mLineWidth = -1.0f;
+	unsigned int mPolygonFace = UINT_MAX;
+	unsigned int mPolygonMode = UINT_MAX;
 
 private:
 	std::vector<RenderCallbackType> mRenderCallbacks;

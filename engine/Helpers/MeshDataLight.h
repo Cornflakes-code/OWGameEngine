@@ -42,8 +42,8 @@ private:
 		std::string shaderColourName;
 		glm::vec4 colour;
 
-		size_t verticesCount = UINT_MAX;
-		size_t indicesCount = UINT_MAX;
+		size_t verticesCount = 0;
+		size_t indicesCount = 0;
 		unsigned int vertexMode = UINT_MAX;
 		unsigned int vertexLocation = UINT_MAX;
 		unsigned int indicesMode = UINT_MAX;

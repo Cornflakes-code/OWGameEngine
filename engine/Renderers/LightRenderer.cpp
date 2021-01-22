@@ -32,7 +32,6 @@ void LightRenderer::setup(const MeshDataLight* meshData, const std::string& colo
 	validateBase();
 	mData.vertexMode = mData.vertexMode;
 	mData.vertexLocation = mData.vertexLocation;
-	OWUtils::PolygonModeRIAA poly;
 	glGenVertexArrays(1, &mVao);
 	glBindVertexArray(mVao);
 
@@ -93,28 +92,19 @@ void LightRenderer::setup(const std::vector<glm::vec4>& v,
 	setup(&mdl, "");
 }
 
-void LightRenderer::render(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4& model,
-		const MoveController* mover, RenderCallbackType renderCb,
-		ResizeCallbackType resizeCb) const
+void LightRenderer::doRender() const
 {
-	OWUtils::PolygonModeRIAA poly;
-	shader()->use();
-	callResizeCallback(resizeCb);
-	glm::mat4 p = proj;
-	glm::mat4 v = view;
-	glm::mat4 m = model;
-	callRenderCallback(p, v, m, renderCb);
-	setPVM(p, v, m);
 	if (!mData.shaderColourName.empty())
 	{
-		//shader()->setVector4f(mColourName, mColour);
+		shader()->setVector4f(mData.shaderColourName, mData.colour);
 	}
 
 	glBindVertexArray(mVao);
 	if (mData.indicesCount)
 	{
-		glDrawElements(mData.indicesMode, static_cast<GLsizei>(mData.indicesCount), GL_UNSIGNED_INT, 0);
+		glDrawElements(mData.indicesMode, 
+				static_cast<GLsizei>(mData.indicesCount), 
+				GL_UNSIGNED_INT, 0);
 	}
 	else
 	{

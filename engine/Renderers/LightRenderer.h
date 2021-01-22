@@ -21,12 +21,7 @@ public:
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
 	void setup(const std::vector<glm::vec4>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
-	virtual void render(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model,
-		const MoveController* mover = nullptr,
-		RenderCallbackType renderCb = nullptr,
-		ResizeCallbackType resizeCb = nullptr) const override;
+	virtual void doRender() const override;
 private:
 	void validate(const MeshDataLight* mdl);
 #pragma warning( push )

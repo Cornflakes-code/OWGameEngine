@@ -23,12 +23,7 @@ public:
 	void setup(const TextData* td, 
 				const glm::vec3& initialPosition = glm::vec3(0.0f, 0.0f, 0.0f));
 	AABB bounds() const { return mBounds; }
-	virtual void render(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model,
-		const MoveController* mover = nullptr,
-		RenderCallbackType renderCb = nullptr,
-		ResizeCallbackType resizeCb = nullptr) const override;
+	virtual void doRender() const override;
 protected:
 	virtual void doSetup(const TextData* td, const glm::vec3& initialPosition) = 0;
 #pragma warning( push )

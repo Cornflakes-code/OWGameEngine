@@ -61,19 +61,8 @@ void HeavyRenderer::setup(MeshDataHeavy* data, unsigned int vertexMode, unsigned
 	glBindVertexArray(0);
 }
 
-void HeavyRenderer::render(const glm::mat4& proj, const glm::mat4& view,
-	const glm::mat4& model, const MoveController* mover,
-	RenderCallbackType renderCb, ResizeCallbackType resizeCb) const
+void HeavyRenderer::doRender() const
 {
-	OWUtils::PolygonModeRIAA poly;
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	shader()->use();
-	callResizeCallback(resizeCb);
-	glm::mat4 p = proj;
-	glm::mat4 v = view;
-	glm::mat4 m = model;
-	callRenderCallback(p, v, m, renderCb);
-	setPVM(proj, view, model);
 	if (mData->textures.size())
 	{
 		// A nice explanation

@@ -8,6 +8,8 @@
 
 #include <Core/BoundingBox.h>
 
+#include <Renderers/LightRenderer.h>
+
 class Shader;
 class InstanceRenderer;
 class TextRenderer;
@@ -18,6 +20,7 @@ class TextRenderer;
 class NoMansSky
 {
 	InstanceRenderer* mStarRenderer;
+	LightRenderer mGridRenderer;
 	std::vector<glm::vec3> mRandomMinorStars;
 	std::vector<glm::vec4> mStarPositions;
 	std::vector<TextRenderer*> mStarLabels;
@@ -32,7 +35,6 @@ class NoMansSky
 					float scaleToWorld);
 	std::vector<glm::vec3> createRandomVectors(const AABB& world,
 					unsigned int count, float scaleToWorld);
-	Shader* mGridShader;
 	Shader* mStarShader;
 
 	GLuint mVao[2];

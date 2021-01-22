@@ -5,6 +5,9 @@
 
 #include "ErrorHandling.h"
 
+GLint OWUtils::PolygonModeRIAA::mOriginalMode;
+GLfloat OWUtils::LineWidthRIAA::mOriginalWidth;
+
 namespace Compass
 {
 	glm::vec4 Rose[NumDirections] = {

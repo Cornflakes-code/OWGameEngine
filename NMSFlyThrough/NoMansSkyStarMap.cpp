@@ -25,13 +25,13 @@
 #include <Renderers/InstanceRenderer.h>
 #include <Renderers/TextRendererStatic.h>
 
-NoMansSky::NoMansSky()
-	: mGridShader(new Shader("Lines.v.glsl", "Lines.f.glsl", ""))
-{
-}
-
 #define DEBUG_GRID
 #define DEBUG_STARS
+
+NoMansSky::NoMansSky()
+	: mGridRenderer(new Shader("Lines.v.glsl", "Lines.f.glsl", ""), "pvm")
+{
+}
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 {
@@ -42,19 +42,10 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
-	glBindVertexArray(mVao[0]);
-
-	GLuint vboGrid;
-	glGenBuffers(1, &vboGrid);
-	glBindBuffer(GL_ARRAY_BUFFER, vboGrid);
-	mGridShader->use();
-	GLuint location = mGridShader->getAttributeLocation("vPos");
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * mGrid.size(), 
-					mGrid.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glLineWidth(1.0f);
-	glEnableVertexAttribArray(location);
-	glBindVertexArray(0);
+	MeshDataLight gridData;
+	gridData.vertices(mGrid, GL_LINES, 0);
+	gridData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
+	mGridRenderer.setup(&gridData, "uColour");
 #endif
 
 #ifdef DEBUG_STARS
@@ -74,7 +65,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
-	mdi.colours(instanceColours, 1, 2);
+	mdi.colours(instanceColours, 2, 2);
 //#define FANCY_SHADER
 #ifdef FANCY_SHADER
 		Shader* instanceShader = new Shader("thebookofshaders.v.glsl",
@@ -305,12 +296,7 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 {
 	glm::mat4 pvm = proj * view * model;
 #ifdef DEBUG_GRID
-	mGridShader->use();
-	mGridShader->setMatrix4("pvm", pvm);
-	glBindVertexArray(mVao[0]);
-	mGridShader->setVector4f("uColour", { 0, 1.0, 0.5, 1 });
-	glDrawArrays(GL_LINES, 0, GLsizei(mGrid.size()));
-	glBindVertexArray(0);
+	mGridRenderer.render(proj, view, model);
 #endif
 
 #ifdef DEBUG_STARS

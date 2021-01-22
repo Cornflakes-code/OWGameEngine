@@ -95,39 +95,19 @@ void TextRenderer::setup(const TextData* td, const glm::vec3& initialPosition)
 	doSetup(td, initialPosition);
 }
 
-void TextRenderer::render(const glm::mat4& proj,
-	const glm::mat4& view,
-	const glm::mat4& model,
-	const MoveController* mover,
-	RenderCallbackType renderCb,
-	ResizeCallbackType resizeCb) const
+void TextRenderer::doRender() const
 {
-	if (mover)
-	{
-		//render(this, proj, view, mover->translate(model), renderCb, resizeCb);
-	}
-	else
-	{
-		OWUtils::PolygonModeRIAA poly;
-		shader()->use();
-		glm::mat4 p = proj;
-		glm::mat4 v = view;
-		glm::mat4 m = model;
-		callResizeCallback(resizeCb);
-		callRenderCallback(p, v, m, renderCb);
-		setPVM(p, v, m);
-		shader()->setVector4f("textcolor", mColour);
-		glBindVertexArray(mVao);
-		glActiveTexture(mTexture.imageUnit());
-		glBindTexture(mTexture.target(), mTexture.location());
-		// associate sampler with name in shader
-		//shader()->setInteger(mTexture.samplerName(), mTexture.imageUnit() - GL_TEXTURE0);
+	shader()->setVector4f("textcolor", mColour);
+	glBindVertexArray(mVao);
+	glActiveTexture(mTexture.imageUnit());
+	glBindTexture(mTexture.target(), mTexture.location());
+	// associate sampler with name in shader
+	//shader()->setInteger(mTexture.samplerName(), mTexture.imageUnit() - GL_TEXTURE0);
 
-		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mV4Size));
-		glBindVertexArray(0);
-		glActiveTexture(mTexture.imageUnit());
-		glBindTexture(mTexture.target(), 0);
-	}
+	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mV4Size));
+	glBindVertexArray(0);
+	glActiveTexture(mTexture.imageUnit());
+	glBindTexture(mTexture.target(), 0);
 }
 
 void TextRenderer::validate(const TextData* td) const

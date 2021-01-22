@@ -90,16 +90,57 @@ struct OWENGINE_API OWUtils
 
 	class OWENGINE_API PolygonModeRIAA
 	{
-		GLint polygonMode;
+		static GLint mOriginalMode;
+		bool mActive = true;
 	public:
-		PolygonModeRIAA()
+		PolygonModeRIAA(GLenum face, GLenum mode)
 		{
-			glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
+			mActive = (face != UINT_MAX && mode != UINT_MAX);
+			if (mActive)
+			{
+				static bool onceOnly = true;
+				if (onceOnly)
+				{
+					glGetIntegerv(GL_POLYGON_MODE, &mOriginalMode);
+					onceOnly = false;
+				}
+				glPolygonMode(face, mode);
+			}
 		}
 
 		~PolygonModeRIAA()
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+			if (mActive)
+				glPolygonMode(GL_FRONT_AND_BACK, mOriginalMode);
+		}
+	};
+
+	class OWENGINE_API LineWidthRIAA
+	{
+		static GLfloat mOriginalWidth;
+		bool mActive = true;
+	public:
+		LineWidthRIAA(float width)
+			: mActive(width >= 0)
+		{
+			
+			if (mActive)
+			{
+				static bool onceOnly = true;
+				if (onceOnly)
+				{
+					GLfloat params;
+					glGetFloatv(GL_LINE_WIDTH, &params);
+					onceOnly = false;
+				}
+				glLineWidth(width);
+			}
+		}
+
+		~LineWidthRIAA()
+		{
+			if (mActive)
+				glLineWidth(mOriginalWidth);
 		}
 	};
 };
