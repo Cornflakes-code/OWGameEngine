@@ -118,8 +118,7 @@ void NMSMainScene::activate(const std::string& OW_UNUSED(previousScene),
 	}
 }
 
-void NMSMainScene::deActivate(const std::string& OW_UNUSED(previousScene), 
-							  const Camera* camera, ScenePhysicsState* state)
+void NMSMainScene::deActivate(const Camera* camera, ScenePhysicsState* state)
 {
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	sp->mCameraPosition = camera->position();

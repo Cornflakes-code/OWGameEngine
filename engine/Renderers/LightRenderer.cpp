@@ -9,7 +9,7 @@
 
 #include "../Helpers/Shader.h"
 
-void LightRenderer::setup(const MeshDataLight* meshData, const std::string& colourName)
+void LightRenderer::setup(const MeshDataLight* meshData)
 {
 	const float* ff = nullptr;
 	unsigned int vertexSize = 0;
@@ -37,6 +37,7 @@ void LightRenderer::setup(const MeshDataLight* meshData, const std::string& colo
 
 	glGenBuffers(1, &mVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+	shader()->use();
 	if (!mData.shaderColourName.empty())
 	{
 		shader()->setVector4f(mData.shaderColourName, mData.colour);
@@ -50,7 +51,6 @@ void LightRenderer::setup(const MeshDataLight* meshData, const std::string& colo
 			sizeof(unsigned int) * static_cast<GLsizei>(meshData->mIndices.size()),
 			meshData->mIndices.data(), GL_STATIC_DRAW);
 	}
-	shader()->use();
 	glVertexAttribPointer(mData.vertexLocation,
 		vertexSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(mData.vertexLocation);
@@ -76,7 +76,7 @@ void LightRenderer::setup(const std::vector<glm::vec3>& v,
 	mdl.mRenderData.indicesMode = 0;
 	mdl.mRenderData.vertexMode = vertexMode;
 	mdl.mRenderData.vertexLocation = vertexLocation;
-	setup(&mdl, "");
+	setup(&mdl);
 }
 
 void LightRenderer::setup(const std::vector<glm::vec4>& v,
@@ -89,7 +89,7 @@ void LightRenderer::setup(const std::vector<glm::vec4>& v,
 	mdl.mRenderData.indicesMode = 0;
 	mdl.mRenderData.vertexMode = vertexMode;
 	mdl.mRenderData.vertexLocation = vertexLocation;
-	setup(&mdl, "");
+	setup(&mdl);
 }
 
 void LightRenderer::doRender() const

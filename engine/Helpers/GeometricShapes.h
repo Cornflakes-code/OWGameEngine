@@ -9,7 +9,6 @@
 class OWENGINE_API GeometricShapes
 {
 public:
-	GeometricShapes();
 	static std::vector<glm::vec2> circle(float radius, float arcRadians);
 	static std::vector<glm::vec2> torus(float innerRadius, 
 									float outerRadius, 
@@ -21,4 +20,7 @@ public:
 
 	static std::vector<glm::vec3> fibonacciSphere(int numPoints, float TAU);
 
+	static std::vector<glm::vec3> star(
+		float innerRadius, float outerRadius,
+		unsigned int numPoints);
 };

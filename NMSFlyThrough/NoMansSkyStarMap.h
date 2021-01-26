@@ -19,11 +19,12 @@ class TextRenderer;
 */
 class NoMansSky
 {
+	glm::vec2 mStarRadius;
 	InstanceRenderer* mStarRenderer;
 	LightRenderer mGridRenderer;
 	std::vector<glm::vec3> mRandomMinorStars;
 	std::vector<glm::vec4> mStarPositions;
-	std::vector<TextRenderer*> mStarLabels;
+	std::vector<TextRenderer*> mStarLabelRenderers;
 	std::vector<glm::vec4> mStarColours;
 	std::vector<glm::vec3> mGrid;
 
@@ -35,11 +36,6 @@ class NoMansSky
 					float scaleToWorld);
 	std::vector<glm::vec3> createRandomVectors(const AABB& world,
 					unsigned int count, float scaleToWorld);
-	Shader* mStarShader;
-
-	GLuint mVao[2];
-	GLuint mVboGridPos;
-	GLuint mVboGridCol;
 public:
 	NoMansSky();
 	void setUp(const std::string& fileName, const AABB& world);

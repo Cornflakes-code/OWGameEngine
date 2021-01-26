@@ -40,12 +40,13 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 
 	static AABB mWindowBounds;
 	static OWUtils::Float mSpeed;
-	TextData mWelcomeText;
-	TextData mEnjoyText;
+	TextData mWelcomeData;
+	TextData mEnjoyData;
 	MoveController mWelcomeMover;
 	MoveController mEnjoyMover;
-	std::vector<glm::vec4> mFullScreenVertices;
-	MeshDataInstance mStarVertices;
+	std::vector<glm::vec4> mFullScreenData;
+	MeshDataInstance mStarData;
+	glm::vec2 mStarRadius;
 	MeshDataHeavy* mCylinderData;
 };
 
@@ -58,7 +59,7 @@ class HeavyRenderer;
 class NMSSplashScene : public NMSScene
 {
 	LightRenderer* mFullScreen;
-	InstanceRenderer* mStar;
+	InstanceRenderer* mStarRenderer;
 	TextRenderer* mWelcomeText;
 	TextRenderer* mEnjoyText;
 	HeavyRenderer* mCylinder;
@@ -73,8 +74,7 @@ public:
 	void activate(const std::string& previousScene, 
 				  ScenePhysicsState* state,
 				  Camera* camera, unsigned int callCount) override;
-	void deActivate(const std::string& previousScene, 
-					const Camera* camera, 
+	void deActivate(const Camera* camera, 
 					ScenePhysicsState* state) override;
 private:
 };

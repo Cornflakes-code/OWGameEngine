@@ -27,6 +27,9 @@ void GLAPIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id,
 
 GLApplication::GLApplication(UserInput* ui)
 	:mUserInput(ui)
+	, mBackgroundColour({ 0.5, 0.5, 1, 1 })
+	, mPriorBackgroundColour(mBackgroundColour)
+	, mBackgroundColourMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 {
 }
 
@@ -118,6 +121,7 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder,
 
 void GLApplication::run(Movie* movie)
 {
+	backgroundColour(mBackgroundColour, mBackgroundColourMask);
 	movie->preRun();
 	movie->run(mUserInput, mWindow);
 	glfwDestroyWindow(mWindow);
@@ -357,6 +361,25 @@ void GLApplication::errorReporting(int error, const char* description)
 	LogStream(LogStreamLevel::Warning) << "GLFW ERROR: code [" << error
 		<< "] msg [" << description << "]";
 }
+
+glm::vec4 GLApplication::backgroundColour(
+			const glm::vec4& newValue, unsigned int clearMask)
+{
+	mPriorBackgroundColour = mBackgroundColour;
+	mBackgroundColour = newValue;
+	if (clearMask != UINT_MAX)
+		mBackgroundColourMask = clearMask;
+	glClearColor(newValue.r, newValue.g, newValue.b, newValue.a);
+	return mPriorBackgroundColour;
+}
+
+void GLApplication::restoreBackgroundColour()
+{
+	glClearColor(mPriorBackgroundColour.r, mPriorBackgroundColour.g,
+		mPriorBackgroundColour.b, mPriorBackgroundColour.a);
+	mPriorBackgroundColour = mBackgroundColour;
+}
+
 
 /*
 Unused Callbacks

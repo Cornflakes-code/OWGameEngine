@@ -3,9 +3,8 @@
 // Interpolated values from the vertex shaders
 // E:\Apps\OpenGL\ogl\tutorial18_billboards_and_particles
 // http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
-in vec2 UV;
 in vec4 particlecolor;
-
+in vec2 particleCenter;
 // Ouput data
 out vec4 colorOut;
 
@@ -13,6 +12,7 @@ out vec4 colorOut;
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform vec2 u_mouse;
+uniform float cutoffRadius;
 
 
 // YUV to RGB matrix
@@ -34,21 +34,18 @@ float random (vec2 st)
 
 void main()
 {
-	vec2 center = vec2(0.0, 0.0);
-    float R = 4.0;
-    float dist = distance(UV, center);
-    if (dist > R) {
+	float R = cutoffRadius * 2;
+	vec2 uv = particleCenter.xy - gl_FragCoord.xy;
+    if (length(uv) > R/1.5) {
+		//blend = 0;
        discard;
     }
+    vec2 st = uv * 0.5 / R;
+
     mat3 yuv2rgb_hack = mat3(1.0, 0.0, 1.0 - particlecolor.x,
                     1.0, -0.39465, -0.58060,
                     1.0, 2.03211, 0.0);
 
-    vec2 st = UV * 2;
-    // UV values goes from -1 to 1
-    // So we need to remap st (0.0 to 1.0)
-    //st -= 0.5;  // becomes -0.5 to 0.5
-    //st *= 2.0;  // becomes -1.0 to 1.0
 
     // we pass st as the y & z values of
     // a three dimensional vector to be
@@ -57,8 +54,7 @@ void main()
     colorOut = vec4(color.x, color.y, abs(sin(u_time)), 1.0);
 
     float rnd = random( st );
-    vec2 v2 = gl_FragCoord.xy/u_resolution.xy;
-    colorOut = vec4(rnd * (v2.x + v2.y), rnd, rnd, 1.0);
+    colorOut = vec4(rnd * (st.x + st.y), rnd, rnd, 1.0);
 
 }    
     //colorOut = vec4(UV.x * 4 * abs(cos(u_time)), UV.y * 4 * abs(cos(u_time)), abs(sin(u_time)), 1.0);

@@ -36,7 +36,6 @@ NoMansSky::NoMansSky()
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 {
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
-	glGenVertexArrays(2, &mVao[0]);
 	AABB NMSSize(glm::vec4(-0x7FF, -0x7F, -0x7FF, 1),
 				 glm::vec4(0x7FF, 0x7F, 0x7FF, 1));
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
@@ -45,14 +44,15 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	MeshDataLight gridData;
 	gridData.vertices(mGrid, GL_LINES, 0);
 	gridData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
-	mGridRenderer.setup(&gridData, "uColour");
+	mGridRenderer.setup(&gridData);
 #endif
 
 #ifdef DEBUG_STARS
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
 	MeshDataInstance mdi;
-	std::vector<glm::vec3> squareVertices
-		= GeometricShapes::rectangle(glm::vec2(1.0, 1.0), glm::vec2(-0.5, -0.5));
+	mStarRadius = { 4.0, 4.0 };
+	std::vector<glm::vec3> squareVertices =
+		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
 	mdi.vertices(squareVertices, GL_TRIANGLES, 0);
 	
 	mRandomMinorStars = createRandomVectors(NMSSize, 50000, scaleNMStoWorld);
@@ -66,14 +66,19 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	mdi.colours(instanceColours, 2, 2);
-//#define FANCY_SHADER
+
+#define FANCY_SHADER
+
 #ifdef FANCY_SHADER
-		Shader* instanceShader = new Shader("thebookofshaders.v.glsl",
-			"solarSuns.f.glsl",
-			"thebookofshaders_circle.g.glsl");
+//		Shader* instanceShader = new Shader("thebookofshaders.v.glsl",
+//			"solarSuns.f.glsl",
+//			"thebookofshaders_circle.g.glsl");
+		Shader* instanceShader = new Shader("instanced.v.glsl",
+			"glow.f.glsl",
+			"");
 #else
 	Shader* instanceShader = new Shader("instanced.v.glsl",
-		"instanced_snoise.f.glsl",
+		"glow.f.glsl",
 		//"instanced.f.glsl",
 //					"instanced.g.glsl"
 ""
@@ -250,7 +255,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 			td.spacing(nice.x, nice.y, { 1.0,1.0 }, TextData::Right);
 			TextRendererStatic* r = new TextRendererStatic();
 			r->setup(&td, glm::vec3(point.x, point.y, point.z));
-			mStarLabels.push_back(r);
+			mStarLabelRenderers.push_back(r);
 		}
 
 		myfile.close();
@@ -300,10 +305,11 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 #endif
 
 #ifdef DEBUG_STARS
-	auto pointRender = [](const glm::mat4& OW_UNUSED(proj), const glm::mat4& view,
-		const glm::mat4& OW_UNUSED(model), const Shader* shader) {
-		glm::vec3 CameraRight_worldspace =
-		{ view[0][0], view[1][0], view[2][0] };
+	glm::vec2 w = { 4.0, 4.0 };// sps->mStarRadius;
+	auto pointRender = [w](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
+		glm::mat4& OW_UNUSED(model), const Shader* shader)
+	{
+		glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
 		shader->use();
 		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
 		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
@@ -311,11 +317,12 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 		shader->setFloat("u_time", globals->secondsSinceLoad());
 		glm::vec2 v2 = globals->pointingDevicePosition();
 		shader->setVector2f("u_mouse", v2);
+		shader->setVector2f("u_resolution", w);
 	};
 	mStarRenderer->render(proj, view, model, nullptr, pointRender);
-	for (int i = 0; i < mStarLabels.size(); i++)
+	for (int i = 0; i < mStarLabelRenderers.size(); i++)
 	{
-		const TextRenderer* sr = mStarLabels[i];
+		const TextRenderer* sr = mStarLabelRenderers[i];
 		sr->render(proj, view, model);
 	}
 #endif

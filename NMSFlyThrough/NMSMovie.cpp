@@ -47,15 +47,6 @@ void NMSMovie::preRun()
 
 	this->add(s, new NMSEndScenePhysics(s), s->name() == activeScene);
 
-	// Here we set up for our star display
-	/*
-	create 3D grid.
-	create plane in center line of galaxy
-	identify current star
-	identify target star
-	create stars plus labels
-	create camera at current star looking a center of galaxy
-	*/
 	Camera* _camera = camera();
 	_camera->aspectRatio(globals->physicalWindowSize().x /
 						(1.0f * globals->physicalWindowSize().y));
@@ -72,7 +63,6 @@ void NMSMovie::preRun()
 	_camera->clipping(0.01f, 1200.0f);
 	_camera->FOV(glm::radians(45.0f));
 }
-
 
 void NMSMovie ::render(const ScenePhysicsState* state)
 {

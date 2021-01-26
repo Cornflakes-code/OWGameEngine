@@ -25,12 +25,18 @@ public:
 	RendererBase(Shader* shader, const std::string& pvm)
 		:mShader(shader), mPvm(pvm) {}
 	
+	// OpenGL state functions
 	void appendRenderCallback(RenderCallbackType pfunc) { mRenderCallbacks.push_back(pfunc); }
 	void appendResizeCallback(ResizeCallbackType pfunc) { mResizeCallbacks.push_back(pfunc); }
 	void lineWidth(float width) { mLineWidth = width; }
 	void polygonMode(unsigned int face, unsigned int mode) 
 	{
 		mPolygonFace = face; mPolygonMode = mode; 
+	}
+	void blendFunction(unsigned int sfactor, unsigned int dfactor)
+	{
+		mSfactor = sfactor;
+		mDfactor = dfactor;
 	}
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,
@@ -52,9 +58,16 @@ private:
 		glm::mat4& model, RenderCallbackType renderCb) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+	// OpenGL state variables. The default values are used as flags 
+	// in the various RIAA Utility classes in CommonUtils.h
+
 	float mLineWidth = -1.0f;
+
 	unsigned int mPolygonFace = UINT_MAX;
 	unsigned int mPolygonMode = UINT_MAX;
+
+	unsigned int mSfactor = UINT_MAX;
+	unsigned int mDfactor = UINT_MAX;
 
 private:
 	std::vector<RenderCallbackType> mRenderCallbacks;

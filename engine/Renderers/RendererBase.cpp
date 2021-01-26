@@ -104,6 +104,7 @@ void RendererBase::render(const glm::mat4& proj,
 {
 	OWUtils::PolygonModeRIAA temp1(mPolygonFace, mPolygonMode);
 	OWUtils::LineWidthRIAA temp2(mLineWidth);
+	OWUtils::BlendFuncRIAA temp3(mSfactor, mDfactor);
 	shader()->use();
 	callResizeCallback(resizeCb);
 	glm::mat4 p = proj;

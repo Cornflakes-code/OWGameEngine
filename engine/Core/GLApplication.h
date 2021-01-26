@@ -41,14 +41,22 @@ public:
 	void onDebugMessageCallback(GLenum source, GLenum type, GLuint id,
 		GLenum severity, GLsizei length,
 		const GLchar *message, const void *userParam);
+	glm::vec4 backgroundColour(const glm::vec4& newValue, unsigned int clearMask = UINT_MAX);
+	void restoreBackgroundColour();
+	void clearBuffers()
+	{
+		glClear(mBackgroundColourMask);
+	}
 
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	GLFWwindow* mWindow;
+	GLFWwindow* mWindow = nullptr;
 	glm::ivec2 mFrameBuffer = glm::ivec2(0);
 	glm::ivec2 mWindowSize = glm::ivec2(0);
-
+	glm::vec4 mBackgroundColour;
+	glm::vec4 mPriorBackgroundColour;
+	unsigned int mBackgroundColourMask;
 	// GLApplication knows nothing about logical commands. UserInput translates physical 
 	// commands to logical commands. UserInput could be subclassed to handle different
 	// types of physical systems.

@@ -39,6 +39,6 @@ public:
 		const glm::mat4& proj, const glm::mat4& view) override;
 	void activate(const std::string& previousScene, ScenePhysicsState* state, 
 				  Camera* camera, unsigned int callCount) override;
-	void deActivate(const std::string& previousScene, const Camera* camera, ScenePhysicsState* state) override;
+	void deActivate(const Camera* camera, ScenePhysicsState* state) override;
 };
 

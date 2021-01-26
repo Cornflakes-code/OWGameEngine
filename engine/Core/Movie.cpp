@@ -100,6 +100,7 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 
 	//processTimeStep(lcs, currentScene()->logic()->current, t, std::chrono::milliseconds(0));
 	std::string nextSceneName;
+
 	while (!glfwWindowShouldClose(glfwWindow))
 	{
 		mLogger->update_fps_counter(glfwWindow);
@@ -109,11 +110,8 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 		currentTime = newTime;
 		if (frameTime > clamp)
 			frameTime = clamp;
-
 		accumulator += frameTime;
-
-		glClearColor(0.5, 0.5, 1, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		globals->application()->clearBuffers();
 		while (accumulator >= dt)
 		{
 			mCurrent->logic.copyCurrentToPrevious();
@@ -192,6 +190,10 @@ void Movie::makeCurrent(const std::string& newSceneName)
 
 void Movie::makeCurrent(LoopControlStruct* lcs)
 {
+	if (mCurrent)
+	{
+		mCurrent->scene->deActivate(camera(), mCurrent->logic.current);
+	}
 	mPrevious = mCurrent;
 	mCurrent = lcs;
 	if (!mCurrent->setupCalled)

@@ -41,8 +41,7 @@ void QuitScene::activate(const std::string& OW_UNUSED(previousScene),
 	movie()->close();
 }
 
-void QuitScene::deActivate(const std::string& OW_UNUSED(previousScene),
-						   const Camera* OW_UNUSED(camera),
+void QuitScene::deActivate(const Camera* OW_UNUSED(camera),
 						   ScenePhysicsState* OW_UNUSED(state))
 {
 }

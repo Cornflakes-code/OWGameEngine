@@ -93,21 +93,7 @@ struct OWENGINE_API OWUtils
 		static GLint mOriginalMode;
 		bool mActive = true;
 	public:
-		PolygonModeRIAA(GLenum face, GLenum mode)
-		{
-			mActive = (face != UINT_MAX && mode != UINT_MAX);
-			if (mActive)
-			{
-				static bool onceOnly = true;
-				if (onceOnly)
-				{
-					glGetIntegerv(GL_POLYGON_MODE, &mOriginalMode);
-					onceOnly = false;
-				}
-				glPolygonMode(face, mode);
-			}
-		}
-
+		PolygonModeRIAA(GLenum face, GLenum mode);
 		~PolygonModeRIAA()
 		{
 			if (mActive)
@@ -120,27 +106,25 @@ struct OWENGINE_API OWUtils
 		static GLfloat mOriginalWidth;
 		bool mActive = true;
 	public:
-		LineWidthRIAA(float width)
-			: mActive(width >= 0)
-		{
-			
-			if (mActive)
-			{
-				static bool onceOnly = true;
-				if (onceOnly)
-				{
-					GLfloat params;
-					glGetFloatv(GL_LINE_WIDTH, &params);
-					onceOnly = false;
-				}
-				glLineWidth(width);
-			}
-		}
-
+		LineWidthRIAA(float width);
 		~LineWidthRIAA()
 		{
 			if (mActive)
 				glLineWidth(mOriginalWidth);
+		}
+	};
+
+	class OWENGINE_API BlendFuncRIAA
+	{
+		static GLenum mSfactor;
+		static GLenum mDfactor;
+		bool mActive = true;
+	public:
+		BlendFuncRIAA(GLenum sfactor, GLenum dfactor);
+		~BlendFuncRIAA()
+		{
+			if (mActive)
+				glBlendFunc(mSfactor, mDfactor);
 		}
 	};
 };

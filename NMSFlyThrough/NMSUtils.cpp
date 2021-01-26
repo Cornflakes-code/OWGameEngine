@@ -71,11 +71,11 @@ namespace NMS
 			shaders.boilerPlateGeometryShader());
 
 		MeshDataLight lineData;
-		//lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE), "colour");
+		lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
 		lineData.vertices(axisCoords, GL_LINES);
 		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
 		LightRenderer* lines = new LightRenderer(lineShader, "pvm");
-		lines->setup(&lineData, "colour");
+		lines->setup(&lineData);
 		md.renderers.push_back(lines);
 		return md;
 	}

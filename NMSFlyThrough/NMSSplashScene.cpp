@@ -27,12 +27,12 @@
 #include "NMSUtils.h"
 #include "NMSUserInput.h"
 
-#define INCLUDE_FULLSCREEN
-#define INCLUDE_WELCOME
-#define INCLUDE_ENJOY
+//#define INCLUDE_FULLSCREEN
+//#define INCLUDE_WELCOME
+//#define INCLUDE_ENJOY
 #define INCLUDE_XYZ_AXIS
 #define INCLUDE_STAR_RENDER
-#define INCLUDE_IMPORTED_MODEL
+//#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
 
@@ -119,28 +119,30 @@ void NMSSplashScenePhysics::setup()
 	mSpeed = _world.size().x / 10.0f;
 
 #ifdef INCLUDE_FULLSCREEN
-	mFullScreenVertices.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
+	mFullScreenData.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
 #endif
 #ifdef INCLUDE_STAR_RENDER
-	std::vector<glm::vec3> squareVertices =
-		GeometricShapes::rectangle(glm::vec2(8.00, 8.0), glm::vec2(-4, -4));
-	mStarVertices.vertices(squareVertices, GL_TRIANGLES, 0);
+	mStarRadius = { 10.0, 10.0 };
+	std::vector<glm::vec3> vertices = 
+//		GeometricShapes::star(mStarRadius.x/5.0f, mStarRadius.x/3.3f, 15);
+	GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
+	mStarData.vertices(vertices, GL_TRIANGLES, 0);
 
 	std::vector<glm::vec3> starPositions;
 	starPositions.push_back({ 0,0,0 });
 	starPositions.push_back({ 100,0,0 });
 	starPositions.push_back({ 0,100,0 });
 	starPositions.push_back({ 0,0,100 });
-	mStarVertices.positions(starPositions, 1, 1);
+	mStarData.positions(starPositions, 1, 1);
 
 	std::vector<glm::vec4> instanceColours;
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BLUE));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::GREEN));
+	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
 	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
-	mStarVertices.colours(instanceColours, 1, 2);
+	mStarData.colours(instanceColours, 1, 2);
 #endif
 
 	int fontHeight = 24;
@@ -150,17 +152,17 @@ void NMSSplashScenePhysics::setup()
 #ifdef INCLUDE_WELCOME
 	glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
-	mWelcomeText.font("arial.ttf", fontHeight);
-	mWelcomeText.colour({ 0.0, 0.0, 0.0, 1.0f });
-	mWelcomeText.spacing(10 * nice.x, 10 * nice.y, scale);
-	mWelcomeText.text("Welcome to reality.");
+	mWelcomeData.font("arial.ttf", fontHeight);
+	mWelcomeData.colour({ 0.0, 0.0, 0.0, 1.0f });
+	mWelcomeData.spacing(10 * nice.x, 10 * nice.y, scale);
+	mWelcomeData.text("Welcome to reality.");
 #endif
 
 #ifdef INCLUDE_ENJOY
-	mEnjoyText.font("arial.ttf", fontHeight);
-	mEnjoyText.colour({ 0.1, 0.9, 0.1, 1 });
-	mEnjoyText.spacing(nice.x, nice.y, scale);
-	mEnjoyText.text("Enjoy it while you can");
+	mEnjoyData.font("arial.ttf", fontHeight);
+	mEnjoyData.colour({ 0.1, 0.9, 0.1, 1 });
+	mEnjoyData.spacing(nice.x, nice.y, scale);
+	mEnjoyData.text("Enjoy it while you can");
 #endif
 
 #ifdef INCLUDE_IMPORTED_MODEL
@@ -182,7 +184,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 
 #ifdef INCLUDE_WELCOME
 	mWelcomeText = new TextRendererDynamic();
-	mWelcomeText->setup(&sps->mWelcomeText, glm::vec3(0));
+	mWelcomeText->setup(&sps->mWelcomeData, glm::vec3(0));
 
 	sps->mWelcomeMover.setPosition(NMSScene::world().center());
 	sps->mWelcomeMover.targetGeometry(mWelcomeText->bounds(), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -192,7 +194,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 #endif
 #ifdef INCLUDE_ENJOY
 	mEnjoyText = new TextRendererStatic();
-	mEnjoyText->setup(&sps->mEnjoyText, glm::vec3(0));
+	mEnjoyText->setup(&sps->mEnjoyData, glm::vec3(0));
 
 	sps->mEnjoyMover.setPosition(NMSScene::world().center());
 	sps->mEnjoyMover.targetGeometry(mEnjoyText->bounds(), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -214,20 +216,24 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 			"thebookofshaders.f.glsl",
 			"thebookofshaders_square.g.glsl"),
 		"pvm");
-	mFullScreen->setup(sps->mFullScreenVertices, GL_POINTS);
+	mFullScreen->setup(sps->mFullScreenData, GL_POINTS);
 #endif
 
 #ifdef INCLUDE_STAR_RENDER
 	Shader* starShader = new Shader("instanced.v.glsl",
+		//"glow.f.glsl",
+		//"oneLight.f.glsl",
+		//"lightInSmoke.f.glsl"
 		"instanced.f.glsl",
-		//					instanced.g.glsl
-		""
+		""// instanced.g.glsl
 	);
-	mStar = new InstanceRenderer(starShader, "VP");
-	mStar->appendRenderCallback([](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
-		glm::mat4& OW_UNUSED(model), const Shader* shader) {
-		glm::vec3 CameraRight_worldspace =
-		{ view[0][0], view[1][0], view[2][0] };
+	mStarRenderer = new InstanceRenderer(starShader, "VP");
+	glm::vec2 w = sps->mStarRadius;
+
+	auto pointRender = [w](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
+		glm::mat4& OW_UNUSED(model), const Shader* shader)
+	{
+		glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
 		shader->use();
 		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
 		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
@@ -235,8 +241,14 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		shader->setFloat("u_time", globals->secondsSinceLoad());
 		glm::vec2 v2 = globals->pointingDevicePosition();
 		shader->setVector2f("u_mouse", v2);
-	});
-	mStar->setup(&sps->mStarVertices);
+		shader->setVector2f("u_resolution", glm::vec2(w));
+	};
+
+	//mStarRenderer->appendRenderCallback(pointRender);
+	mStarRenderer->setup(&sps->mStarData);
+	starShader->setFloat("cutoffRadius", w.x, true);
+	//mStarRenderer->blendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	mStarRenderer->blendFunction(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 }
 
@@ -278,14 +290,27 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 #endif
 
 #ifdef INCLUDE_STAR_RENDER
-	mStar->render(proj, view, model);
+//	glm::vec2 w = sps->mStarRadius;
+	glm::vec2 w = globals->physicalWindowSize();
+	auto pointRender = [w](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
+		glm::mat4& OW_UNUSED(model), const Shader* shader)
+	{
+		glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
+		shader->use();
+		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
+		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
+		shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
+		shader->setFloat("u_time", globals->secondsSinceLoad());
+		glm::vec2 v2 = globals->pointingDevicePosition();
+		shader->setVector2f("u_mouse", v2);
+		shader->setVector2f("u_resolution", w);
+	};
+	mStarRenderer->render(proj, view, model, nullptr, pointRender);
 #endif
 
 #ifdef INCLUDE_XYZ_AXIS
 	mAxis.render(proj, view, model);
 #endif
-
-
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 
@@ -293,11 +318,12 @@ void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene),
 							  Camera* OW_UNUSED(camera), 
 							  unsigned int OW_UNUSED(callCount))
 {
+	//globals->application()->backgroundColour(glm::vec4(0, 0, 0, 0));
 }
 
-void NMSSplashScene::deActivate(const std::string& OW_UNUSED(previousScene),
-							const Camera* OW_UNUSED(camera), 
-							ScenePhysicsState* OW_UNUSED(state))
+void NMSSplashScene::deActivate(const Camera* OW_UNUSED(camera), 
+								ScenePhysicsState* OW_UNUSED(state))
 {
+	globals->application()->restoreBackgroundColour();
 }
 

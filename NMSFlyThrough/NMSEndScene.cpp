@@ -93,8 +93,7 @@ void NMSEndScene::activate(const std::string& OW_UNUSED(previousScene),
 {
 }
 
-void NMSEndScene::deActivate(const std::string& OW_UNUSED(previousScene), 
-							 const Camera* OW_UNUSED(camera), 
+void NMSEndScene::deActivate(const Camera* OW_UNUSED(camera), 
 							 ScenePhysicsState* OW_UNUSED(state))
 {
 }

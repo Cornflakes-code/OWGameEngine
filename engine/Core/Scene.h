@@ -41,8 +41,7 @@ public:
 
 	// Scene has been paged out. Scene may never come back so an 
 	// opportunity to free resources maybe?
-	virtual void deActivate(const std::string& previousScene, 
-					const Camera* camera, ScenePhysicsState* state) = 0;
+	virtual void deActivate(const Camera* camera, ScenePhysicsState* state) = 0;
 	void setup(ScenePhysicsState* state);
 
 	void cumulativeTime(const OWUtils::Time::duration& t) { mCumulativeTime = t; }

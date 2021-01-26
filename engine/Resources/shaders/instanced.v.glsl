@@ -2,14 +2,15 @@
 
 // Input vertex data, different for all executions of this shader.
 // E:\Apps\OpenGL\ogl\tutorial18_billboards_and_particles
+// file:///E:/Apps/OpenGL/ogl/tutorial18_billboards_and_particles/Billboard.vertexshader
 // http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
 
 layout(location = 0) in vec3 squareVertices;
-layout(location = 1) in vec4 xyzs; // Position of the center of the particule and size of the square
-layout(location = 2) in vec4 color; // Position of the center of the particule and size of the square
+layout(location = 1) in vec4 xyzs; // Position of the center of the particle
+layout(location = 2) in vec4 color;
 
-// Output data ; will be interpolated for each fragment.
-out vec2 UV;
+// Output data will be interpolated for each fragment.
+out vec2 particleCenter;
 out vec4 particlecolor;
 
 // Values that stay constant for the whole mesh.
@@ -31,8 +32,11 @@ void main()
 	// Output position of the vertex
 	gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
 
-//    vec2 ndcPos = gl_Position.xy / gl_Position.w;
-//    UV = u_resolution * (ndcPos * 0.5 + 0.5);
-    UV = squareVertices.xy;
+    vec2 ndcPos = gl_Position.xy / gl_Position.w;
+    //UV = u_resolution * (ndcPos * 0.5 + 0.5);
+
+	vec4 temp = VP * vec4(xyzs.xyz, 1.0f);
+	vec2 tempPos = temp.xy / temp.w;
+	particleCenter = u_resolution * (tempPos * 0.5 + 0.5);
 	particlecolor = color;
 }

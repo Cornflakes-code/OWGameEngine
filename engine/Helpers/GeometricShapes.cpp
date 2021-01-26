@@ -2,10 +2,6 @@
 
 #include <glm/gtc/constants.hpp>
 
-GeometricShapes::GeometricShapes()
-{
-}
-
 std::vector<glm::vec2> GeometricShapes::circle(float radius, float arcRadians)
 {
 	std::vector<glm::vec2> retval;
@@ -100,3 +96,30 @@ std::vector<glm::vec3> GeometricShapes::fibonacciSphere(int numPoints, float TAU
 	return retVal;
 }
 
+std::vector<glm::vec3> GeometricShapes::star(float innerRadius, float outerRadius,
+								unsigned int numPoints)
+{
+	std::vector<glm::vec3> retval;
+	const float incr = glm::two_pi<float>() / numPoints;
+	float angle1 = 0;
+	float angle2 = angle1 + incr / 2.0;
+	float angle3 = angle2 + incr / 2.0;
+
+	for (unsigned int i = 0; i < numPoints; i++)
+	{
+		// iterate counter clockwise to create points
+
+		// Do the triangles that form the star points
+		retval.push_back(glm::vec3(innerRadius * glm::sin(angle1), innerRadius * glm::cos(angle1), 0));
+		retval.push_back(glm::vec3(outerRadius * glm::sin(angle2), outerRadius * glm::cos(angle2), 0));
+		retval.push_back(glm::vec3(innerRadius * glm::sin(angle3), innerRadius * glm::cos(angle3), 0));
+		// Do the triangles that form the body of the star
+		retval.push_back(glm::vec3(innerRadius * glm::sin(angle3), innerRadius * glm::cos(angle3), 0));
+		retval.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+		retval.push_back(glm::vec3(innerRadius * glm::sin(angle1), innerRadius * glm::cos(angle1), 0));
+		angle1 += incr;
+		angle2 += incr;
+		angle3 += incr;
+	}
+	return retval;
+}
