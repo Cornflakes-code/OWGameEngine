@@ -42,7 +42,7 @@ int NMSUserInput::userCommand(const UserInput::UserCommandCallbackData& data)
 	{
 		if (iter->first.userCommand == data.key)
 		{
-			if (iter->first.keyMod == InputMods::NoMod && data.mods == 0)
+			if (iter->first.keyMod == InputMod::NoMod && data.mods == 0)
 				return iter->second;
 			if (iter->first.keyMod & data.mods)
 				return iter->second;

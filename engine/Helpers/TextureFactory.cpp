@@ -9,17 +9,17 @@
 
 /*
 template<typename Q>
-typename std::map<std::experimental::filesystem::path, Q>::const_iterator
-findStoredPath(const std::map<std::experimental::filesystem::path, Q>& ss,
+typename std::map<std::filesystem::path, Q>::const_iterator
+findStoredPath(const std::map<std::filesystem::path, Q>& ss,
 	const std::string& fileName, ResourcePathFactory::ResourceType rt)
 {
-	std::experimental::filesystem::path path =
+	std::filesystem::path path =
 		ResourcePathFactory().appendPath(fileName, rt);
 
 	auto iter = ss.begin();
 	while (iter != ss.end())
 	{
-		if (std::experimental::filesystem::equivalent(iter->first, path))
+		if (std::filesystem::equivalent(iter->first, path))
 			break;
 		++iter;
 	}
@@ -31,19 +31,19 @@ TextureFactory::TextureCache TextureFactory::mLoadedFiles;
 
 const Texture& TextureFactory::getTexture(const std::string& fileName)
 {
-	std::experimental::filesystem::path path =
+	std::filesystem::path path =
 		ResourcePathFactory().appendPath(fileName,
 			ResourcePathFactory::ResourceType::Texture);
 	return getTexture(path);
 }
 
 const Texture& TextureFactory::getTexture(
-		const std::experimental::filesystem::path& path)
+		const std::filesystem::path& path)
 {
 	auto iter = mLoadedFiles.begin();
 	while (iter != mLoadedFiles.end())
 	{
-		if (std::experimental::filesystem::equivalent(iter->first, path))
+		if (std::filesystem::equivalent(iter->first, path))
 			break;
 		++iter;
 	}
@@ -60,7 +60,7 @@ const Texture& TextureFactory::getTexture(
 		stbi_set_flip_vertically_on_load(true);
 	}
 
-	unsigned char *data = stbi_load(path.u8string().c_str(),
+	unsigned char *data = stbi_load(path.string().c_str(),
 								&width, &height, &nrChannels, 0);
 //	bool isHdr = stbi_is_hdr(path.u8string().c_str());
 	if (data)

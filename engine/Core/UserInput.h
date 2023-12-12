@@ -48,11 +48,16 @@ public:
 		OptionsScreen,
 		Accept,
 		WindowResize,
-		WindowClose,
-		NumBaseCommands
+		WindowClose
 	};
-
-	enum InputMods
+	enum InputAction
+	{
+		Release = 0,
+		Press = 1,
+		Repeat = 2,
+		NoAction = 3
+	};
+	enum InputMod
 	{
 		NoMod = 0x0,
 		Shift = 0x0001,
@@ -62,11 +67,55 @@ public:
 		CapsLock = 0x00010,
 		NumLock = 0x00020
 	};
+	struct UserCommandCallbackData
+	{
+		InputAction action;
+		int key;
+		int mods;
+		int userCommand;
+	};
+
+	enum PointingDeviceAction
+	{
+		LeftMouseButtonClick,
+		RightMouseButtonClick,
+		MiddleMouseButtonClick,
+		LeftMouseButtonDrag,
+		RightMouseButtonDrag,
+		MouseMove,
+		Unknown
+	};
+	enum class AnyInputType
+	{
+		Pointing,
+		KeyPress,
+		CodePoint
+	};
+	struct PointingDeviceCallbackData
+	{
+		glm::vec3 pos;
+		int mods;
+		PointingDeviceAction action;
+	};
+	struct AnyInput
+	{
+		AnyInputType inputType;
+		PointingDeviceCallbackData mouseInput;
+		UserCommandCallbackData keyInput;
+	};
+	static BaseUserCommand to_BaseUserCommand(const std::string& s);
+	static InputMod to_InputMod(const std::string& s);
+private:
+	static std::map<BaseUserCommand, std::string> mBaseUserCommandMap;
+	void createBaseUserCommandMap();
+
+	static std::map<InputMod, std::string> mInputModsMap;
+	void createInputModMap();
 
 	struct BaseKeyMapping
 	{
 		int userCommand;
-		InputMods keyMod;
+		InputMod keyMod;
 
 		friend bool operator<(const BaseKeyMapping& lhs, const BaseKeyMapping& rhs)
 		{
@@ -81,49 +130,14 @@ public:
 			return lhs.userCommand < rhs.userCommand;
 		}
 	};
-	struct UserCommandCallbackData
-	{
-		int action;
-		int key;
-		int mods;
-		int userCommand;
-	};
-
-	enum class PointingDeviceAction
-	{
-		LeftMouseButtonClick,
-		RightMouseButtonClick,
-		MiddleMouseButtonClick,
-		LeftMouseButtonDrag,
-		RightMouseButtonDrag,
-		MouseMove,
-		Unknown
-	};
-	struct PointingDeviceCallbackData
-	{
-		glm::vec3 pos;
-		int mods;
-		PointingDeviceAction action;
-	};
-	enum class AnyInputType
-	{
-		Pointing,
-		KeyPress,
-		CodePoint
-	};
-	struct AnyInput
-	{
-		AnyInputType inputType;
-		PointingDeviceCallbackData mouseInput;
-		UserCommandCallbackData keyInput;
-	};
 
 	typedef std::function<void(const UserCommandCallbackData&)> UserCommandCallbackType;
 	typedef std::function<void(const PointingDeviceCallbackData&)> PointingDeviceCallbackType;
 	typedef std::function<void(void* window, glm::ivec2 dimensions)> WindowResizeCallbackType;
-	UserInput();
 
 	void init(GLApplication* app);
+public:
+	UserInput();
 	void addUserCommandListener(UserCommandCallbackType cb,
 		const ListenerHelper* helper = nullptr)
 	{ 

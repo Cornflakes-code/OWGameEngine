@@ -62,19 +62,19 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		std::experimental::filesystem::path exePath;
+		std::filesystem::path exePath;
 		if (argc)
 		{
 			exePath = argv[0];
 			LogStream::setLogFile(exePath);
-			std::experimental::filesystem::path configFileName = exePath.filename();
+			std::filesystem::path configFileName = exePath.filename();
 			configFileName.replace_extension("json");
 			exePath.remove_filename();
+			exePath += configFileName;
 			ResourcePathFactory paths;
 			paths.addPath(exePath, ResourcePathFactory::ResourceType::UnknownType);
-			paths.addPath(std::experimental::filesystem::current_path(),
+			paths.addPath(std::filesystem::current_path(),
 						ResourcePathFactory::ResourceType::UnknownType);
-			exePath.append(configFileName);
 		}
 		// Config file is 'path of exe/exename.json'
 		globals = new GlobalSettings(exePath);

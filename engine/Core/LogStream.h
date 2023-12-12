@@ -3,7 +3,7 @@
 #include <ostream>
 #include <string>
 #include <functional>
-#include <experimental/filesystem>
+#include <filesystem>
 
 #include "../OWEngine/OWEngine.h"
 
@@ -58,7 +58,7 @@ public:
 	}
 	~LogStream();
 	static std::ostream* logFile();
-	static void setLogFile(const std::experimental::filesystem::path& path);
+	static void setLogFile(const std::filesystem::path& path);
 	static void closeLogFile();
 private:
 	static void linkStream();

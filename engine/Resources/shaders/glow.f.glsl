@@ -16,12 +16,12 @@ uniform vec2 u_resolution;
 
 void main()
 {
-	float R = cutoffRadius*2;
+	float R = cutoffRadius*4.5;
 	float blend = 0.7;
 	vec2 uv = particleCenter.xy - gl_FragCoord.xy;
-    if (length(uv) > R/1.5) {
+    if (length(uv) > R) {
 		//blend = 0;
-       discard;
+       //discard;
     }
 	// uv already centered around the origen, now make it between -0.5 and 0.5
     uv *= 0.5 / R;
@@ -38,7 +38,7 @@ void main()
     //**********        Radius       **********
     
     // Dampen the glow to control the radius
-    dist *= 0.1;
+    dist *= 0.7;
     //**********       Intensity     **********
     
     // Raising the result to a power allows us to change the glow fade behaviour

@@ -25,12 +25,14 @@
 #include <Renderers/InstanceRenderer.h>
 #include <Renderers/TextRendererStatic.h>
 
-#define DEBUG_GRID
+//#define DEBUG_GRID
 #define DEBUG_STARS
 
 NoMansSky::NoMansSky()
 	: mGridRenderer(new Shader("Lines.v.glsl", "Lines.f.glsl", ""), "pvm")
 {
+	mStarRadius = glm::vec2(0, 0);
+	mStarRenderer = 0;
 }
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
@@ -52,39 +54,59 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	MeshDataInstance mdi;
 	mStarRadius = { 4.0, 4.0 };
 	std::vector<glm::vec3> squareVertices =
-		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
+		GeometricShapes::star(mStarRadius.x / 5.0f, mStarRadius.x / 3.3f, 15);
+//		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
 	mdi.vertices(squareVertices, GL_TRIANGLES, 0);
-	
-	mRandomMinorStars = createRandomVectors(NMSSize, 50000, scaleNMStoWorld);
+
+	const int numStars = 5000;
+	mRandomMinorStars = createRandomVectors(NMSSize, numStars, scaleNMStoWorld);
+	std::vector<glm::vec3> starPositions;
+	starPositions.push_back({ 0,0,0 });
+	starPositions.push_back({ 100,0,0 });
+	starPositions.push_back({ 0,100,0 });
+	starPositions.push_back({ 0,0,100 });
+
+
 	mdi.positions(mRandomMinorStars, 1, 1);
 
+	const int numColours = 4;
+	const int numColourIterations = ceil( numStars * 1.0 / numColours);
 	std::vector<glm::vec4> instanceColours;
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::GREEN));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA));
-	instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
-	mdi.colours(instanceColours, 2, 2);
+	for (int i = 0; i < numColourIterations; i++)
+	{
+		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BLUE));
+		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::GREEN));
+		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
+		//instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
+		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::MAGENTA));
+		//instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
+	}
+	mdi.colours(instanceColours, instanceColours.size(), 2);
 
-#define FANCY_SHADER
-
-#ifdef FANCY_SHADER
-//		Shader* instanceShader = new Shader("thebookofshaders.v.glsl",
-//			"solarSuns.f.glsl",
-//			"thebookofshaders_circle.g.glsl");
-		Shader* instanceShader = new Shader("instanced.v.glsl",
-			"glow.f.glsl",
-			"");
-#else
-	Shader* instanceShader = new Shader("instanced.v.glsl",
-		"glow.f.glsl",
-		//"instanced.f.glsl",
-//					"instanced.g.glsl"
-""
-);
+	Shader* starShader = nullptr;
+#define SHADERX 2
+#if SHADERX == 1
+	starShader = new Shader("thebookofshaders.v.glsl",
+		"solarSuns.f.glsl",
+		"thebookofshaders_circle.g.glsl");
+#
+#elif SHADERX == 2
+	starShader = new Shader(
+		"instanced.v.glsl",
+		"glow.f.glsl");
+#elif SHADERX == 3
+	starShader = new Shader(
+		"oneLight.f.glsl",
+		"lightInSmoke.f.glsl"
+		"instanced.f.glsl");
+#elif SHADERX == 4
+	starShader = new Shader(
+		"instanced.v.glsl",
+		"twinklyStars.f.glsl");
 #endif
-	mStarRenderer = new InstanceRenderer(instanceShader, "VP");
+	
+	starShader->setFloat("cutoffRadius", mStarRadius.x, true);
+	mStarRenderer = new InstanceRenderer(starShader, "VP");
 	mStarRenderer->setup(&mdi);
 #endif
 }
@@ -120,11 +142,6 @@ void NoMansSky::createGrid(const AABB& nmsSpace,
 			}
 		}
 	}
-}
-
-float normalise(float value, float max)
-{
-	return float(2.0 * value / max - 1.0);
 }
 
 void NoMansSky::loadStars(const std::string& fileName,
@@ -297,7 +314,8 @@ std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
 	return retval;
 }
 
-void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+void NoMansSky::render(const glm::mat4& proj, 
+					const glm::mat4& view, const glm::mat4& model)
 {
 	glm::mat4 pvm = proj * view * model;
 #ifdef DEBUG_GRID
@@ -305,7 +323,7 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 #endif
 
 #ifdef DEBUG_STARS
-	glm::vec2 w = { 4.0, 4.0 };// sps->mStarRadius;
+	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
 		glm::mat4& OW_UNUSED(model), const Shader* shader)
 	{
@@ -318,12 +336,15 @@ void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, const glm::
 		glm::vec2 v2 = globals->pointingDevicePosition();
 		shader->setVector2f("u_mouse", v2);
 		shader->setVector2f("u_resolution", w);
+		// Colours are set via mdi.colours
+		//shader->setVector4f("color", OWUtils::colour(OWUtils::SolidColours::YELLOW));
 	};
 	mStarRenderer->render(proj, view, model, nullptr, pointRender);
+
 	for (int i = 0; i < mStarLabelRenderers.size(); i++)
 	{
 		const TextRenderer* sr = mStarLabelRenderers[i];
-		sr->render(proj, view, model);
+//		sr->render(proj, view, model);
 	}
 #endif
 }

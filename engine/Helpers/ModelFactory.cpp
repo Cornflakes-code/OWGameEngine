@@ -22,12 +22,12 @@ ModelData processNode(aiNode *node, const aiScene *scene);
 
 ModelData ModelFactory::create(const std::string& modelFileName, bool cache)
 {
-	std::experimental::filesystem::path modelPath =
+	std::filesystem::path modelPath =
 		ResourcePathFactory().appendPath(modelFileName,
 			ResourcePathFactory::ResourceType::Model);
 
 	Assimp::Importer importer;
-	const aiScene *scene = importer.ReadFile(modelPath.u8string().c_str(),
+	const aiScene *scene = importer.ReadFile(modelPath.string(),
 		aiProcess_Triangulate | aiProcess_ConvertToLeftHanded); // | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

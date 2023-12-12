@@ -19,13 +19,13 @@ LogStream::~LogStream()
 
 std::ostream* LogStream::logFile() { return gLogFile; }
 
-void LogStream::setLogFile(const std::experimental::filesystem::path& path)
+void LogStream::setLogFile(const std::filesystem::path& path)
 {
 	if (gLogFile)
 	{
 		delete gLogFile;
 	}
-	std::experimental::filesystem::path p = path;
+	std::filesystem::path p = path;
 	// p.has_filename() only checks for trailing slash.
 	if (!p.has_extension())
 	{
@@ -39,8 +39,8 @@ std::streambuf* getLogBuffer()
 {
 	if (!gLogFile)
 	{
-		std::experimental::filesystem::path p =
-			std::experimental::filesystem::current_path();
+		std::filesystem::path p =
+			std::filesystem::current_path();
 		p.append(OWUtils::nowAsString());
 		gLogFile = new std::ofstream(p);
 	}

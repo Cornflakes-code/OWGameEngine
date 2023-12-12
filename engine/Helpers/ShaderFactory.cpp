@@ -22,14 +22,14 @@ const std::string& ShaderFactory::getShader(const std::string& fileName)
 	//std::lock_guard<std::mutex> guard(mut);
 
 
-	std::experimental::filesystem::path path =
+	std::filesystem::path path =
 		ResourcePathFactory().appendPath(fileName,
 			ResourcePathFactory::ResourceType::Shader);
 
 	ShaderCache::iterator iter = mLoadedFiles.begin();
 	while (iter != mLoadedFiles.end())
 	{
-		if (std::experimental::filesystem::equivalent(iter->first, path))
+		if (std::filesystem::equivalent(iter->first, path))
 			break;
 		++iter;
 	}

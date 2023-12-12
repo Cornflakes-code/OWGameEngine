@@ -13,7 +13,7 @@
 OWUtils::Time::time_point GlobalSettings::mLoadTime;
 extern OWENGINE_API GlobalSettings* globals;
 
-GlobalSettings::GlobalSettings(const std::experimental::filesystem::path& configFile)
+GlobalSettings::GlobalSettings(const std::filesystem::path& configFile)
 {
 	if (globals)
 		throw NMSException("GlobalSettings ctor called a second time");
@@ -73,11 +73,11 @@ struct ConfigFileStruct
 	struct KeyMapping
 	{
 		std::string key;
-		std::vector<UserInput::InputMods> mods;
+		int mods;
 		UserInput::BaseUserCommand logical;
 	};
 
-	std::string version;
+	std::string version = "0.0";
 	std::vector<Directory> directories;
 
 	OpenGL openGL = {
@@ -192,11 +192,18 @@ void from_json(const json& j, ConfigFileStruct::Camera& d)
 	j.at("FOV").get_to(d.fov);
 }
 
-void to_json(json& j, const ConfigFileStruct::KeyMapping& d)
+void to_json(json& j, ConfigFileStruct::KeyMapping& d)
 {
+	std::string s = j.dump(4);
+	std::vector<std::string> mods;
 	j = json{ {"Key", d.key},
-			{"Mods", d.mods},
+			{"Mods", mods},
 			{"Logical", d.logical} };
+	for (auto& var: mods)
+	{
+		UserInput::InputMod im = UserInput::to_InputMod(var);
+		d.mods |= (int)im;
+	}
 }
 
 void from_json(const json& j, ConfigFileStruct::KeyMapping& d)
@@ -206,16 +213,23 @@ void from_json(const json& j, ConfigFileStruct::KeyMapping& d)
 	j.at("Logical").get_to(d.logical);
 }
 
-void to_json(json& j, const ConfigFileStruct& d)
+void to_json(json& j, ConfigFileStruct& d)
 {
-	j = json{ {"Directories", d.directories},
-			{"OpenGL", d.openGL},
-			{"PointingDevices", d.pointingDevices},
-			{"KeyMapping", d.keyMap} };
+//	j = json{ {"Directories", d.directories},
+//			{"OpenGL", d.openGL},
+//			{"PointingDevices", d.pointingDevices},
+//			{"KeyMapping", d.keyMap} };
 }
 
 void from_json(const json& j, ConfigFileStruct& d)
 {
+	try { j.at("Version").get_to(d.version); }
+	catch (const std::exception& ex)
+	{
+		d.version = "0.0";
+		LogStream(LogStreamLevel::Error) << "Cannot parse config file Version"
+			<< "Exception [" << ex.what() << "]\n";
+	}
 	try { j.at("Directories").get_to(d.directories); }
 	catch (const std::exception& ex)
 	{
@@ -257,9 +271,10 @@ void from_json(const json& j, ConfigFileStruct& d)
 	}
 }
 
-void GlobalSettings::readFile(const std::experimental::filesystem::path& configFile)
+void GlobalSettings::readFile(const std::filesystem::path& configFile)
 {
 	json j;
+	float version = 0;
 	if (!configFile.empty())
 	{
 		std::ifstream ifs(configFile);
@@ -276,7 +291,7 @@ void GlobalSettings::readFile(const std::experimental::filesystem::path& configF
 			// Not sure what to with 'version' atm
 			try 
 			{ 
-				float version = j["Version"]; 
+				version = j["Version"]; 
 			}
 			catch (const std::exception& ex)
 			{
@@ -287,6 +302,7 @@ void GlobalSettings::readFile(const std::experimental::filesystem::path& configF
 	}
 
 	gConfigFile = j.get<ConfigFileStruct>();
+	gConfigFile.version = std::to_string(version);
 	physicalWindowSize({ gConfigFile.openGL.window.size.x,
 						gConfigFile.openGL.window.size.y });
 }

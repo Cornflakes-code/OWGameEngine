@@ -3,7 +3,7 @@
 #include <istream>
 #include <mutex>
 #include <set>
-#include <experimental/filesystem>
+#include <filesystem>
 
 #include <json/single_include/nlohmann/json.hpp>
 
@@ -21,9 +21,9 @@ public:
 	{
 		Shader, Font, Texture, Model, SaveFile, UnknownType
 	};
-	void addPath(const std::experimental::filesystem::path& path, 
+	void addPath(const std::filesystem::path& path, 
 				 ResourceType key = ResourceType::UnknownType);
-	std::experimental::filesystem::path appendPath(
+	std::filesystem::path appendPath(
 					const std::string& fileName, ResourceType key);
 	static std::string toString(ResourceType rt);
 	static ResourcePathFactory::ResourceType
@@ -33,6 +33,6 @@ private:
 #pragma warning( disable : 4251 )
 	// A map of file paths to search. Each ResourceType can have many paths and 
 	// the same path can exist for multiple ResourceType.
-	static std::map<ResourceType, std::set<std::experimental::filesystem::path>> mResourcePaths;
+	static std::map<ResourceType, std::set<std::filesystem::path>> mResourcePaths;
 #pragma warning( pop )
 };

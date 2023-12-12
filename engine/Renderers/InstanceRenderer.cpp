@@ -78,12 +78,31 @@ void InstanceRenderer::setup(const MeshDataInstance* meshData)
 		mData.colourLocation, // must match the layout in the shader.
 		4, // size : r + g + b + a => 4
 		GL_FLOAT, // type
-		GL_TRUE, // normalized? *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+		GL_TRUE, // normalized? *** YES, this means that the 
+				 // unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
 		0, // stride
 		(void*)0 // array buffer offset
 	);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * meshData->mInstanceColours.size(),
 		meshData->mInstanceColours.data(), GL_STREAM_DRAW);
+
+	// These functions are specific to glDrawArrays*Instanced*.
+	// The first parameter is the attribute buffer we're talking about.
+	// The second parameter is the "rate at which generic vertex attributes 
+	// advance when rendering multiple instances"
+	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
+
+	// particles vertices : always reuse the same vertices -> 0
+	glVertexAttribDivisor(mData.vertexLocation, 0);
+
+	// positions : one per quad (its center) -> 1
+//	glVertexAttribDivisor(mData.positionLocation, mData.positionDivisor);
+	glVertexAttribDivisor(mData.positionLocation, 1);
+
+	// color : 
+	//glVertexAttribDivisor(mData.colourLocation, mData.colourDivisor);
+ 	glVertexAttribDivisor(mData.colourLocation, 1);
+
 
 	// You can unbind the VAO afterwards so other VAO calls won't 
 	// accidentally modify this VAO, but this rarely happens. Modifying other
@@ -95,21 +114,6 @@ void InstanceRenderer::setup(const MeshDataInstance* meshData)
 void InstanceRenderer::doRender() const
 {
 	glBindVertexArray(mVao);
-
-	// These functions are specific to glDrawArrays*Instanced*.
-	// The first parameter is the attribute buffer we're talking about.
-	// The second parameter is the "rate at which generic vertex attributes 
-	// advance when rendering multiple instances"
-	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
-
-	// particles vertices : always reuse the same 3 vertices -> 0
-	glVertexAttribDivisor(mData.vertexLocation, 0);
-
-	// positions : one per quad (its center) -> 1
-	glVertexAttribDivisor(mData.positionLocation, mData.positionDivisor);
-
-	// color : 
-	glVertexAttribDivisor(mData.colourLocation, mData.colourDivisor);
 
 	// Draw the particles !
 	// This draws many times a small triangle_strip (which looks like a quad).

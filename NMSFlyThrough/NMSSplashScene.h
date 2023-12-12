@@ -58,11 +58,11 @@ class HeavyRenderer;
 
 class NMSSplashScene : public NMSScene
 {
-	LightRenderer* mFullScreen;
-	InstanceRenderer* mStarRenderer;
-	TextRenderer* mWelcomeText;
-	TextRenderer* mEnjoyText;
-	HeavyRenderer* mCylinder;
+	LightRenderer* mFullScreen = 0;
+	InstanceRenderer* mStarRenderer = 0;
+	TextRenderer* mWelcomeText = 0;
+	TextRenderer* mEnjoyText = 0;
+	HeavyRenderer* mCylinder = 0;
 	Model mAxis;
 public:
 	NMSSplashScene(const Movie* movie);

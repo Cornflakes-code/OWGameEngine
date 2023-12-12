@@ -2,7 +2,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <experimental/filesystem>
+#include <filesystem>
 
 #include <glm/glm.hpp>
 
@@ -64,7 +64,7 @@ public:
 				unsigned int maxRowWidth, int fontHeight) const;
 	};
 	const FontDetails* loadFont(
-				const std::experimental::filesystem::path& path,
+				const std::filesystem::path& path,
 				int fontHeight);
 #pragma warning( pop )
 private:
@@ -72,7 +72,7 @@ private:
 #pragma warning( disable : 4251 )
 	struct LoadedFace
 	{
-		LoadedFace(const std::experimental::filesystem::path& path, 
+		LoadedFace(const std::filesystem::path& path, 
 					int fontHeight);
 		LoadedFace() {}
 		FT_FaceRec_* face;
@@ -80,6 +80,6 @@ private:
 		unsigned int maxRowWidth;
 		void debugData(std::ostream& out, unsigned int fontHeight);
 	};
-	std::map<std::experimental::filesystem::path, LoadedFace> mFonts;
+	std::map<std::filesystem::path, LoadedFace> mFonts;
 #pragma warning( pop )
 };

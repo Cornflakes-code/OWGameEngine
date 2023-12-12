@@ -100,10 +100,10 @@ std::vector<glm::vec3> GeometricShapes::star(float innerRadius, float outerRadiu
 								unsigned int numPoints)
 {
 	std::vector<glm::vec3> retval;
-	const float incr = glm::two_pi<float>() / numPoints;
-	float angle1 = 0;
-	float angle2 = angle1 + incr / 2.0;
-	float angle3 = angle2 + incr / 2.0;
+	const double incr = glm::two_pi<float>() / numPoints;
+	double angle1 = 0;
+	double angle2 = angle1 + incr / 2.0;
+	double angle3 = angle2 + incr / 2.0;
 
 	for (unsigned int i = 0; i < numPoints; i++)
 	{

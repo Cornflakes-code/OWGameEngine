@@ -14,12 +14,12 @@
 #include "../Core/LogStream.h"
 
 const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
-		const std::experimental::filesystem::path& path, int fontHeight)
+		const std::filesystem::path& path, int fontHeight)
 {
 	auto iter = mFonts.begin();
 	while (iter != mFonts.end())
 	{
-		if (std::experimental::filesystem::equivalent(iter->first, path))
+		if (std::filesystem::equivalent(iter->first, path))
 			break;
 		++iter;
 	}
@@ -42,7 +42,7 @@ const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
 }
 
 FreeTypeFontAtlas::LoadedFace::LoadedFace(
-		const std::experimental::filesystem::path& path, int fontHeight)
+		const std::filesystem::path& path, int fontHeight)
 	: maxRowWidth(512) // Nothing really magical about 512
 {
 	FT_Library ft;

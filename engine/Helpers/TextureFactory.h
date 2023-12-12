@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include <experimental/filesystem>
+#include <filesystem>
 
 
 #include "../OWEngine/OWEngine.h"
@@ -11,11 +11,11 @@
 
 class OWENGINE_API TextureFactory
 {
-	typedef std::map<std::experimental::filesystem::path, Texture> TextureCache;
+	typedef std::map<std::filesystem::path, Texture> TextureCache;
 public:
 	const Texture& getTexture(const std::string& fileName);
 	const Texture& getTexture(
-			const std::experimental::filesystem::path& path);
+			const std::filesystem::path& path);
 private:
 	void initTexture(
 		const Texture& tb, int width, int height, GLint filter,

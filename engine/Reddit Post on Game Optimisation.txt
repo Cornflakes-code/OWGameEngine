@@ -1,0 +1,43 @@
+https://www.reddit.com/r/explainlikeimfive/comments/133cqji/eli5_how_people_on_opposite_sides_of_the_earth/
+
+Something I haven’t seen mentioned is that beyond internet speed, game developers use various tricks to help as much as possible.
+
+One thing is that most games transmit the bare minimum required amount of information to the server. Your system isn’t giving the server a full rundown of everything you’re seeing in-game; it’s strictly telling it your actions, and it’s able to describe those actions in an extremely efficient shorthand.
+
+The second thing is that there is some amount of predictive calculations that these games can do ahead of time before you commit some action. Not enough to predict the future of everything you’ll do, just enough to kind of get a head start, in between your direct inputs. It’s kind of just like filling in the blanks or finishing someone’s sentences. This can further cut down on the amount of raw data that needs to be transmitted.
+>>>>>>>>>>>>>>>>>
+I'm glad this is at the top, because it's at the heart of it.
+
+The server running the game is the only true version of the gamestate. The individuals playing the game are each essentially playing in separate proxy gamestates, with their actions being reported to the server. The server then determines the result of those actions (in conjunction with the reports from other players) and sends these results to the individual proxies.
+
+This is why in some games you'll see something "miss" but calculate a hit anyway. Although the local proxy simulated a miss, the server has a different account of events and overrides the local outcome.
+>>>>>>>>>>>>>>>>>
+
+Burning CashTake My Energy
+
+Game servers actually "roll back" the game quite often.
+
+It keeps a record of the last, say, 60 frames (one second).
+
+In the absence of any information, it assumes you've "done" something (i.e. continued walking, continued firing, etc.).
+
+When a user's packet comes in it has a timestamp of when the user did something. The server "rolls back" the game to that point, works out what would have happened if you HAD fired at that precise moment you said you did, and then replays all the other actions forward (i.e. did you click quick enough to actually kill the guy who the server assumed had killed you?).
+
+The timestamps are synchronised by the game client at both ends and continue running all the time, so your computer is actually keeping a pretty accurate account of when you actually moved left or clicked the mouse, even if that information gets to the server later.
+
+Every time another packet comes into the server, it rolls back a small portion, then replays with the new information - redoing all the physics and everything else. All while everyone is still playing the game. Constantly. Every frame.
+
+Now, if a message comes in too late, then the server just disregards it. But otherwise that's what's it doing. And that's why sometimes you SWEAR you clicked and killed the guy on your screen - and maybe you did. But the server's the only true copy of the game, so by the time it catches up with what EVERYONE was doing at that precise moment you fired, the server has a completely different view of the game compared to your computer. That's why the game sometimes "jerks" a tiny amount... that's it updating your "client" computer with what actually happened.
+
+And that's how a less-than-ideal ping is still playable. The server doesn't care how slow you were to tell it what you did (with a certain limit). It still acts on your actions of the microsecond you actually took them, and "rewrites history" of that short period of time if it needs to.
+
+In theory it opens up a hole to cheat in, but practically speaking it's almost impossible to cheat in that aspect (in a thousand other ways, yes) because you'd still have to predict what was going to happen. The server knows what it's told your client and what it hasn't, so it can pick up on some suspicious activity. Plus it would only help in this manner in those down-to-the-microsecond conflicts between you dying and the other guy dying, and only sometimes.
+
+Additionally, computer games often "rollback" the game even in single-player. It's how most physics engines operate. If two objects (the player and a wall, say) are moving towards each other, in a 3D open world, the chances of them not touching at all one frame and then the next frame touching EXACTLY on the edge are miniscule. What actually happens is the physics engine applies physics to the whole frame. At that point you are quite likely to be slightly "inside" the wall. Then it detects that, backtracks and works out when you actually hit the wall (which is going to be some portion of the way through the frame's 1/60th of a second, but how much?), and then updates the physics with the rest of that 1/60th of a second. So maybe you rebound ever-so-slightly. The amount you rebound would depend on your speed, the speed of the wall if it's moving, the angle, etc. And what if you were going fast enough (e.g. a car racing game) that your rebound made you hit another object? That gets re-run too. Maybe that tyre that was untouched in the original physics simulation actually starts being hit and bouncing across the road behind your opponents. And if they're AI or multiplayer opponents? That means re-running part of their frames too.
+
+Computers are fast enough to "re-run" a lot of the physics of the entire game world several times in that 1/60th of a second that it takes to update the screen. But in the early days they weren't. And you would see this especially in fast-paced games when collisions occurred. That's because those collisions meant re-runs of the frame, possibly several times, for all the objects involved in the collision. Nobody remember early demolition-derby type games where if a lot of cars were close and hit each other, the frame rate would drop? That's it re-running all the collisions and not having time to do so properly. Now, with GPU acceleration of physics and fast processors and graphics cards, it's pretty much unnoticeable.
+
+But everything you see in a physics or multiplayer game is being re-run several times between frames under certain circumstances. It's rewriting that history several times in a brief moment, maybe ever-so-slightly every single frame in fact. It's done fast enough for you not to notice, and well enough that you don't see huge disconnects between what you thought happened and what actually happened, and it "evens up" the game slightly in respect of people with slow connections. You can still "ping-out", because the computer says "Nah, that was too long ago, I can't do anything about that now", but you're all "pinging-out" to some extent every single frame. Only the server and a client connected directly to it would be fast enough to avoid ALL re-runs of the game engine. And you can still sometimes "clip into" scenery and objects you're not supposed to be able to - especially if you're moving very fast.
+
+But the server's rewriting the game history all the time, and you're basically playing 32-player play-by-mail chess, and depending on when your "move" that you posted arrives at the server depends on what it has to replay and how much that changes the game world.
+1.3k

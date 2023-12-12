@@ -105,14 +105,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 		}
 		if (input == NMSUserInput::BaseUserCommand::Accept)
 		{
-			if (true)//userInput.keyInput.mods == UserInput::InputMods::Shift)
-			{
-				nextScene = NMSScene::mainSceneName();
-			}
-			else
-			{
-				nextScene = NMSScene::mainSceneName();
-			}
+			nextScene = NMSScene::mainSceneName();
 			return true;
 		}
 	}
@@ -169,7 +162,7 @@ void NMSSplashScenePhysics::setup()
 	mEnjoyData.font("arial.ttf", fontHeight);
 	mEnjoyData.colour({ 0.1, 0.9, 0.1, 1 });
 	mEnjoyData.spacing(nice.x, nice.y, scale);
-	mEnjoyData.text("Enjoy it while you can");
+	mEnjoyData.text("Enjoy it while you can Julie Bailey");
 #endif
 
 #ifdef INCLUDE_IMPORTED_MODEL

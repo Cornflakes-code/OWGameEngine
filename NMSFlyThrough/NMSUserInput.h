@@ -11,7 +11,7 @@ class NMSUserInput : public UserInput
 public:
 	enum NMSUserCommand
 	{
-		Up = UserInput::BaseUserCommand::NumBaseCommands,
+		Up,
 		Down,
 		Left,
 		Right,
@@ -26,7 +26,7 @@ private:
 	struct NMSKeyMapping
 	{
 		int userCommand;
-		InputMods keyMod;
+		InputMod keyMod;
 		friend bool operator<(const NMSKeyMapping& lhs, const NMSKeyMapping& rhs)
 		{
 			if (lhs.userCommand == rhs.userCommand)
@@ -36,8 +36,8 @@ private:
 	};
 	std::map<NMSKeyMapping, NMSUserCommand> mNMSKeyMapping;
 public:
-
-	void addKeyMapping(int key, InputMods mod, NMSUserCommand action)
+	NMSUserInput() {}
+	void addKeyMapping(int key, InputMod mod, NMSUserCommand action)
 	{
 		mNMSKeyMapping[{key, mod}] = action;
 	}

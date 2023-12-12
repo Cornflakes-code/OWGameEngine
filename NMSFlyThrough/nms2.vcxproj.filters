@@ -64,6 +64,9 @@
     <ClCompile Include="NMSUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NMSRopeScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h">
@@ -100,6 +103,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NMSRopeScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

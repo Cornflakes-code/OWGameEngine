@@ -7,7 +7,7 @@
 #include "LogStream.h"
 
 std::map<ResourcePathFactory::ResourceType, 
-	std::set<std::experimental::filesystem::path>> ResourcePathFactory::mResourcePaths;
+	std::set<std::filesystem::path>> ResourcePathFactory::mResourcePaths;
 
 std::string ResourcePathFactory::toString(ResourceType rt)
 {
@@ -36,17 +36,17 @@ ResourcePathFactory::ResourceType
 		<< "Unknown ResourceType [" << rt << "]/n");
 }
 
-void ResourcePathFactory::addPath(const std::experimental::filesystem::path& path, ResourceType key)
+void ResourcePathFactory::addPath(const std::filesystem::path& path, ResourceType key)
 {
 	std::pair<std::map<ResourcePathFactory::ResourceType,
-			std::set<std::experimental::filesystem::path>>::iterator, bool> iter;
+			std::set<std::filesystem::path>>::iterator, bool> iter;
 	iter.first = mResourcePaths.find(key);
 	if (iter.first == mResourcePaths.end())
 	{
 		std::pair<std::map<
 			std::string, 
-			std::set<std::experimental::filesystem::path>>::iterator, bool> it;
-		std::set<std::experimental::filesystem::path> newSet;
+			std::set<std::filesystem::path>>::iterator, bool> it;
+		std::set<std::filesystem::path> newSet;
 		newSet.insert(path);
 		mResourcePaths[key] = newSet;
 	}
@@ -57,7 +57,7 @@ void ResourcePathFactory::addPath(const std::experimental::filesystem::path& pat
 	}
 }
 
-std::experimental::filesystem::path 
+std::filesystem::path 
 ResourcePathFactory::appendPath(const std::string& fileName, ResourceType key)
 {
 	// First search for a set of paths identified by the key. If that is not found 
@@ -78,25 +78,25 @@ ResourcePathFactory::appendPath(const std::string& fileName, ResourceType key)
 		// now search for the file in every found path.
 	for (auto& p : it->second)
 	{
-		std::experimental::filesystem::path p1 = p / fileName;
-		if (std::experimental::filesystem::is_regular_file(p1))
+		std::filesystem::path p1 = p / fileName;
+		if (std::filesystem::is_regular_file(p1))
 		{
 			return p1;
 		}			
 	}
 	// It may be a fully qualified path anyway.
-	if (std::experimental::filesystem::is_regular_file(fileName))
+	if (std::filesystem::is_regular_file(fileName))
 	{
 		return fileName;
 	}
-	std::experimental::filesystem::path p1 = fileName;
+	std::filesystem::path p1 = fileName;
 
 	p1.remove_filename();
-	if (!std::experimental::filesystem::is_directory(p1))
+	if (!std::filesystem::is_directory(p1))
 	{
 		p1 = fileName;
-//		const std::experimental::filesystem::path p2 
-//			= std::experimental::filesystem::u8path(p1.string());
+//		const std::filesystem::path p2 
+//			= std::filesystem::u8path(p1.string());
 		std::stringstream ss;
 		//ss.imbue(std::locale());
 		ss << "Fatal Error: Directory ["
@@ -108,6 +108,6 @@ ResourcePathFactory::appendPath(const std::string& fileName, ResourceType key)
 	throw NMSException(std::stringstream() 
 			<< "Fatal Error: File ["
 			<< fileName << "] not found in directories:\n");
-	return std::experimental::filesystem::path();
+	return std::filesystem::path();
 }
 

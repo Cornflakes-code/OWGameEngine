@@ -6,35 +6,95 @@
 
 // AnyKey must be mapped to a non printable key
 int UserInput::AnyKey = 0;
+std::map<UserInput::BaseUserCommand, std::string> UserInput::mBaseUserCommandMap;
+std::map<UserInput::InputMod, std::string> UserInput::mInputModsMap;
 
 UserInput::UserInput()
 {
-	// Key mapping taken from keymapping for Elit Dangerous at
+	// Key mapping taken from keymapping for Elite Dangerous at
 	// https://guides.gamepressure.com/elitedangerous/guide.asp?ID=29578
 	//
 	// The aim is for the camera to fly like a spaceship. Left and right are the 
 	// strafing options and may be removed. Yaw, Pitch and forward/back provide 
 	// the main movement
-	mBaseKeyMapping[{GLFW_KEY_W, InputMods::NoMod}] = BaseUserCommand::POVForward;
-	mBaseKeyMapping[{GLFW_KEY_S, InputMods::NoMod}] = BaseUserCommand::POVBack;
+	mBaseKeyMapping[{GLFW_KEY_W, InputMod::NoMod}] = BaseUserCommand::POVForward;
+	mBaseKeyMapping[{GLFW_KEY_S, InputMod::NoMod}] = BaseUserCommand::POVBack;
 
-	mBaseKeyMapping[{GLFW_KEY_A, InputMods::NoMod}] = BaseUserCommand::POVYawLeft;
-	mBaseKeyMapping[{GLFW_KEY_D, InputMods::NoMod}] = BaseUserCommand::POVYawRight;
+	mBaseKeyMapping[{GLFW_KEY_A, InputMod::NoMod}] = BaseUserCommand::POVYawLeft;
+	mBaseKeyMapping[{GLFW_KEY_D, InputMod::NoMod}] = BaseUserCommand::POVYawRight;
 
-	mBaseKeyMapping[{GLFW_KEY_A, InputMods::Shift}] = BaseUserCommand::POVLeft;
-	mBaseKeyMapping[{GLFW_KEY_D, InputMods::Shift}] = BaseUserCommand::POVRight;
+	mBaseKeyMapping[{GLFW_KEY_A, InputMod::Shift}] = BaseUserCommand::POVLeft;
+	mBaseKeyMapping[{GLFW_KEY_D, InputMod::Shift}] = BaseUserCommand::POVRight;
 
-	mBaseKeyMapping[{GLFW_KEY_E, InputMods::NoMod}] = BaseUserCommand::POVPitchDown;
-	mBaseKeyMapping[{GLFW_KEY_Q, InputMods::NoMod}] = BaseUserCommand::POVPitchUp;
+	mBaseKeyMapping[{GLFW_KEY_E, InputMod::NoMod}] = BaseUserCommand::POVPitchDown;
+	mBaseKeyMapping[{GLFW_KEY_Q, InputMod::NoMod}] = BaseUserCommand::POVPitchUp;
 
-	mBaseKeyMapping[{GLFW_KEY_Q, InputMods::Shift}] = BaseUserCommand::POVRollAntiClockwise;
-	mBaseKeyMapping[{GLFW_KEY_E, InputMods::Shift}] = BaseUserCommand::POVRollClockwise;
+	mBaseKeyMapping[{GLFW_KEY_Q, InputMod::Shift}] = BaseUserCommand::POVRollAntiClockwise;
+	mBaseKeyMapping[{GLFW_KEY_E, InputMod::Shift}] = BaseUserCommand::POVRollClockwise;
 
-	mBaseKeyMapping[{GLFW_KEY_F5, InputMods::NoMod}] = BaseUserCommand::Save;
-	mBaseKeyMapping[{GLFW_KEY_F6, InputMods::NoMod}] = BaseUserCommand::Restore;
-	mBaseKeyMapping[{GLFW_KEY_F7, InputMods::NoMod}] = BaseUserCommand::RecordingStart;
-	mBaseKeyMapping[{GLFW_KEY_ESCAPE, InputMods::NoMod}] = BaseUserCommand::OptionsScreen;
-	mBaseKeyMapping[{GLFW_KEY_SPACE, InputMods::NoMod}] = BaseUserCommand::Accept;
+	mBaseKeyMapping[{GLFW_KEY_F5, InputMod::NoMod}] = BaseUserCommand::Save;
+	mBaseKeyMapping[{GLFW_KEY_F6, InputMod::NoMod}] = BaseUserCommand::Restore;
+	mBaseKeyMapping[{GLFW_KEY_F7, InputMod::NoMod}] = BaseUserCommand::RecordingStart;
+	mBaseKeyMapping[{GLFW_KEY_ESCAPE, InputMod::NoMod}] = BaseUserCommand::OptionsScreen;
+	mBaseKeyMapping[{GLFW_KEY_SPACE, InputMod::NoMod}] = BaseUserCommand::Accept;
+	createBaseUserCommandMap();
+	createInputModMap();
+}
+
+void UserInput::createBaseUserCommandMap()
+{
+	mBaseUserCommandMap.emplace(BaseUserCommand::NoCommand, "NoCommand");
+	mBaseUserCommandMap.emplace(BaseUserCommand::Save, "Save");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVForward, "POVForward");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVBack, "POVBack");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVLeft, "POVLeft");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVRight, "POVRight");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVPitchDown, "POVPitchDown");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVPitchUp, "POVPitchUp");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVYawLeft, "POVYawLeft");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVYawRight, "POVYawRight");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVRollClockwise, "POVRollClockwise");
+	mBaseUserCommandMap.emplace(BaseUserCommand::POVRollAntiClockwise, "POVRollAntiClockwise");
+	mBaseUserCommandMap.emplace(BaseUserCommand::Restore, "Restore");
+	mBaseUserCommandMap.emplace(BaseUserCommand::RecordingStart, "RecordingStart");
+	mBaseUserCommandMap.emplace(BaseUserCommand::RecordingEnd, "RecordingEnd");
+	mBaseUserCommandMap.emplace(BaseUserCommand::PlaybackStart, "PlaybackStart");
+	mBaseUserCommandMap.emplace(BaseUserCommand::PlaybackEnd, "PlaybackEnd");
+	mBaseUserCommandMap.emplace(BaseUserCommand::OptionsScreen, "OptionsScreen");
+	mBaseUserCommandMap.emplace(BaseUserCommand::Accept, "Accept");
+	mBaseUserCommandMap.emplace(BaseUserCommand::WindowResize, "WindowResize");
+	mBaseUserCommandMap.emplace(BaseUserCommand::WindowClose, "WindowClose");
+}
+
+void UserInput::createInputModMap()
+{
+	mInputModsMap.emplace(InputMod::Alt, "Alt");
+	mInputModsMap.emplace(InputMod::CapsLock, "CapsLock");
+	mInputModsMap.emplace(InputMod::Ctrl, "Ctrl");
+	mInputModsMap.emplace(InputMod::NoMod, "NoMod");
+	mInputModsMap.emplace(InputMod::NumLock, "NumLock");
+	mInputModsMap.emplace(InputMod::Shift, "Shift");
+	mInputModsMap.emplace(InputMod::Super, "Super");
+}
+
+UserInput::BaseUserCommand UserInput::to_BaseUserCommand(const std::string& s)
+{
+	for (auto& x : mBaseUserCommandMap)
+	{
+		if (x.second == s)
+			return x.first;
+	}
+	return UserInput::BaseUserCommand::NoCommand;
+}
+
+UserInput::InputMod UserInput::to_InputMod(const std::string& s)
+{
+	for (auto& x : mInputModsMap)
+	{
+		if (x.second == s)
+			return x.first;
+	}
+	return UserInput::InputMod::NoMod;
 }
 
 void UserInput::init(GLApplication* app)
@@ -94,6 +154,8 @@ void UserInput::keyboard(unsigned int codepoint,
 		// If you wish to offer regular text input, set a character callback.
 		// https://www.glfw.org/docs/3.3/input_guide.html
 		// https://www.glfw.org/docs/3.0/group__input.html
+		if (key < 32)
+			return;
 	}
 	else
 	{
@@ -101,7 +163,7 @@ void UserInput::keyboard(unsigned int codepoint,
 			return;
 		LogStream(LogStreamLevel::Info) << "data.key["
 			<< data.key << "] action[" << action << "]\n";
-		data.action = action;
+		data.action = InputAction(action);
 		data.key = key;
 		data.mods = mods;
 		data.userCommand = userCommand(data);
@@ -121,7 +183,7 @@ int UserInput::userCommand(const UserCommandCallbackData& data)
 	{
 		if (iter->first.userCommand == data.key)
 		{
-			if (iter->first.keyMod == InputMods::NoMod && data.mods == 0)
+			if (iter->first.keyMod == InputMod::NoMod && data.mods == 0)
 				return iter->second;
 			if (iter->first.keyMod & data.mods)
 				return iter->second;
@@ -134,7 +196,7 @@ int UserInput::userCommand(const UserCommandCallbackData& data)
 void UserInput::windowResize(void* window, const glm::ivec2& widthHeight)
 {
 	UserCommandCallbackData data;
-	data.action = 0;
+	data.action = InputAction::NoAction;
 	data.key = 0;
 	data.mods = 0;
 	data.userCommand = UserInput::WindowResize;
@@ -181,7 +243,7 @@ void UserInput::removeWindowResizeListener(const ListenerHelper* helper)
 void UserInput::closeWindow(void* window)
 {
 	UserCommandCallbackData data;
-	data.action = 0;
+	data.action = UserInput::NoAction;
 	data.key = 0;
 	data.mods = 0;
 	data.userCommand = UserInput::WindowClose;
