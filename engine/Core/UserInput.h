@@ -26,7 +26,7 @@ class OWENGINE_API UserInput
 {
 public:
 	static int AnyKey;
-	enum BaseUserCommand
+	enum LogicalOperator
 	{
 		NoCommand,
 		Save,
@@ -46,9 +46,11 @@ public:
 		PlaybackStart,
 		PlaybackEnd,
 		OptionsScreen,
+		RopeScreen,
 		Accept,
 		WindowResize,
-		WindowClose
+		WindowClose,
+		Special1, Special2, Special3, Special4, Special5, Special6
 	};
 	enum InputAction
 	{
@@ -72,7 +74,7 @@ public:
 		InputAction action;
 		int key;
 		int mods;
-		int userCommand;
+		LogicalOperator userCommand;
 	};
 
 	enum PointingDeviceAction
@@ -85,7 +87,7 @@ public:
 		MouseMove,
 		Unknown
 	};
-	enum class AnyInputType
+	enum AnyInputType
 	{
 		Pointing,
 		KeyPress,
@@ -103,43 +105,55 @@ public:
 		PointingDeviceCallbackData mouseInput;
 		UserCommandCallbackData keyInput;
 	};
-	static BaseUserCommand to_BaseUserCommand(const std::string& s);
-	static InputMod to_InputMod(const std::string& s);
 private:
-	static std::map<BaseUserCommand, std::string> mBaseUserCommandMap;
-	void createBaseUserCommandMap();
+	std::map<LogicalOperator, std::string> mLogicalOperatorStringMap;
+	void createLogicalOperatorStringMap();
 
-	static std::map<InputMod, std::string> mInputModsMap;
-	void createInputModMap();
+	std::map<InputMod, std::string> mInputModsStringMap;
+	void createInputModStringMap();
 
+	// https://www.glfw.org/docs/3.3/group__keys.html#gaa06a712e6202661fc03da5bdb7b6e545
+	std::map<std::string, int> mKeyCodeMap;
+	void createKeyCodeMap();
+
+	LogicalOperator to_LogicalOperator(const std::string& s);
+	InputMod to_InputMod(const std::string& s);
+	void addMapping(UserInput::LogicalOperator buc, const std::string& s);
+
+/*
 	struct BaseKeyMapping
 	{
-		int userCommand;
+		char key;
 		InputMod keyMod;
 
 		friend bool operator<(const BaseKeyMapping& lhs, const BaseKeyMapping& rhs)
 		{
-			if (lhs.userCommand == rhs.userCommand)
+			if (lhs.key == rhs.key)
 				return lhs.keyMod < rhs.keyMod;
-			return lhs.userCommand < rhs.userCommand;
+			return lhs.key < rhs.key;
 		}
 	};
 
 	struct cmpByBaseUserCommand {
 		bool operator()(const BaseKeyMapping& lhs, const BaseKeyMapping& rhs) const {
-			return lhs.userCommand < rhs.userCommand;
+			return lhs.key < rhs.key;
 		}
 	};
+*/
 
 	typedef std::function<void(const UserCommandCallbackData&)> UserCommandCallbackType;
 	typedef std::function<void(const PointingDeviceCallbackData&)> PointingDeviceCallbackType;
 	typedef std::function<void(void* window, glm::ivec2 dimensions)> WindowResizeCallbackType;
 
 	void init(GLApplication* app);
+protected:
+	void addKey(int keyCode, int mods, UserInput::LogicalOperator lo);
 public:
 	UserInput();
+	virtual void addKeyMapping(const std::string& key, const std::vector<std::string>& mods, 
+		const std::string& logicalOperator);
 	void addUserCommandListener(UserCommandCallbackType cb,
-		const ListenerHelper* helper = nullptr)
+	const ListenerHelper* helper = nullptr)
 	{ 
 		mUserCommandCallbacks.push_back({ cb, helper ? helper->mUniqueId : 0 });
 	}
@@ -162,13 +176,13 @@ public:
 
 
 protected:
-	virtual int userCommand(const UserCommandCallbackData& data);
+	virtual LogicalOperator userCommand(const UserCommandCallbackData& data);
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	glm::ivec2 mFrameBuffer = glm::ivec2(0);
 	glm::ivec2 mWindowSize = glm::ivec2(0);
-	std::map<BaseKeyMapping, BaseUserCommand> mBaseKeyMapping;
+	std::map<std::pair<int, int>, LogicalOperator> mBaseKeyMapping;
 	std::vector< std::pair<UserCommandCallbackType, size_t>> mUserCommandCallbacks;
 	std::vector<std::pair<PointingDeviceCallbackType, size_t>> mPointingDeviceCallbacks;
 	std::vector<std::pair<WindowResizeCallbackType, size_t>> mWindowResizeCallbacks;

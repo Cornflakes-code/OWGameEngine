@@ -26,7 +26,8 @@ class UserInput;
 class OWENGINE_API GlobalSettings
 {
 public:
-	GlobalSettings(const std::filesystem::path& configFile);
+	GlobalSettings();
+	void loadSettings(const std::filesystem::path& configFile);
 	// convenience methods. If the host exe does not create GLApplication then
 	// these may be invalid.
 	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
@@ -60,9 +61,9 @@ public:
 	// Setters. Quick and dirty applications do not need to call all of these
 	//  Linkage stills applies so you need to include OWEngine.dll.
 	void configAndSet(SaveAndRestore* sr, Movie* m, MacroRecorder* mr,
-		Logger* log, Camera* c, GLApplication* app, UserInput* ui);
+		Logger* log, Camera* c, GLApplication* app);
+	void configAndSet(UserInput* ui);
 private:
-	void readFile(const std::filesystem::path& configFile);
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	const MacroRecorder* mRecorder = nullptr;

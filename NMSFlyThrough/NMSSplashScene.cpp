@@ -26,6 +26,7 @@
 
 #include "NMSUtils.h"
 #include "NMSUserInput.h"
+#include "NMSRopeScene.h"
 
 #define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
@@ -98,14 +99,19 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	{
 		// Keyboard
 		int input = userInput.keyInput.userCommand;
-		if (input == NMSUserInput::BaseUserCommand::OptionsScreen)
+		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
 		{
 			nextScene = Scene::quitSceneName();
 			return true;
 		}
-		if (input == NMSUserInput::BaseUserCommand::Accept)
+		if (input == NMSUserInput::LogicalOperator::RopeScreen)
 		{
-			if (true)//userInput.keyInput.mods == UserInput::InputMods::Shift)
+			nextScene = Scene::quitSceneName();
+			return true;
+		}
+		if (input == NMSUserInput::LogicalOperator::Accept)
+		{
+			if ((userInput.keyInput.mods | UserInput::InputMod::Shift) != 0)
 			{
 				nextScene = NMSScene::mainSceneName();
 			}

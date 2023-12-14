@@ -2,6 +2,7 @@
 
 #include <Core/CommonUtils.h>
 #include <Core/ErrorHandling.h>
+#include <GLFW/glfw3.h>
 
 std::string NMSUserInput::userInputToString(int value)
 {
@@ -27,21 +28,28 @@ std::string NMSUserInput::userInputToString(int value)
 	default:
 		throw NMSException(std::stringstream() << "Bad User Input pushed [" << value << "]\n");
 	}
+} 
+void NMSUserInput::addKeyMapping(const std::string& key, const std::vector<std::string>& mods,
+		const std::string& logicalOperator)
+{
+	UserInput::addKeyMapping(key, mods, logicalOperator);
+	addKey(GLFW_KEY_LEFT_BRACKET, 0, UserInput::LogicalOperator::OptionsScreen);
+	addKey(GLFW_KEY_RIGHT_BRACKET, 0, UserInput::LogicalOperator::RopeScreen);
 }
 
-int NMSUserInput::userCommand(const UserInput::UserCommandCallbackData& data)
+UserInput::LogicalOperator NMSUserInput::userCommand(const UserInput::UserCommandCallbackData& data)
 {
 	// Base class key mapping takes priority
-	int retval = UserInput::userCommand(data);
-	if (retval != BaseUserCommand::NoCommand)
+	UserInput::LogicalOperator retval = UserInput::userCommand(data);
+	if (retval != LogicalOperator::NoCommand)
 		return retval;
-
+/*
 	auto iter = mNMSKeyMapping.begin();
 	std::map<NMSKeyMapping, NMSUserCommand>::iterator anykeyFound = mNMSKeyMapping.end();
 	while (iter != mNMSKeyMapping.end())
 	{
 		if (iter->first.userCommand == data.key)
-		{
+		{ 
 			if (iter->first.keyMod == InputMod::NoMod && data.mods == 0)
 				return iter->second;
 			if (iter->first.keyMod & data.mods)
@@ -56,5 +64,12 @@ int NMSUserInput::userCommand(const UserInput::UserCommandCallbackData& data)
 	}
 	if (anykeyFound != mNMSKeyMapping.end())
 		return anykeyFound->first.userCommand;
-	return BaseUserCommand::NoCommand;
+*/
+	return LogicalOperator::NoCommand;
 }
+
+NMSUserInput::NMSUserInput()
+{
+
+}
+

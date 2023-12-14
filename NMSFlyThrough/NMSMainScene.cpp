@@ -65,9 +65,9 @@ bool NMSMainScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 	else
 	{
 		// Keyboard
-		NMSUserInput::BaseUserCommand input 
-			= (NMSUserInput::BaseUserCommand) userInput.keyInput.userCommand;
-		if (input == NMSUserInput::BaseUserCommand::OptionsScreen)
+		NMSUserInput::LogicalOperator input 
+			= (NMSUserInput::LogicalOperator) userInput.keyInput.userCommand;
+		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
 		{
 			nextScene = NMSScene::endSceneName();
 			return true;
@@ -98,7 +98,7 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	
 }
 
-void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),
+void NMSMainScene::render(const ScenePhysicsState* state,
 						  const glm::mat4& proj, const glm::mat4& view)
 {
 	const NMSMainScenePhysics* sps

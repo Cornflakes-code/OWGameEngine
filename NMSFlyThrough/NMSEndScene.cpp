@@ -50,12 +50,12 @@ bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInpu
 		// Keyboard
 		NMSUserInput::NMSUserCommand input = 
 			(NMSUserInput::NMSUserCommand) userInput.keyInput.userCommand;
-		if (input == NMSUserInput::BaseUserCommand::OptionsScreen)
+		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
 		{
 			nextScene = Scene::quitSceneName();
 			return true;
 		}
-		else if (input == NMSUserInput::BaseUserCommand::Accept)
+		else if (input == NMSUserInput::LogicalOperator::Accept)
 		{
 			nextScene = Scene::previousSceneTag();
 			return true;

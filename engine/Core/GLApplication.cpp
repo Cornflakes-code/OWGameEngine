@@ -91,7 +91,7 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder,
 
 		// mFrameBufferSize and mWindowSize may differ. See:
 		// (https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates)
-
+		globals->configAndSet(ui);
 		globals->mLogger->log_gl_params();
 		enableCallbacks();
 		try
@@ -174,10 +174,12 @@ void GLApplication::enableCallbacks()
 		pointer->onKeyPressCallback(window, key, scancode, action, mods);
 	});
 
+	/*
 	glfwSetCharCallback(mWindow, [](GLFWwindow* window, unsigned int scancode) {
 		auto pointer = reinterpret_cast<GLApplication*>(glfwGetWindowUserPointer(window));
 		pointer->onCharCallback(window, scancode);
 	});
+	*/
 
 	glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, int button, int action, int mods) {
 		auto pointer = reinterpret_cast<GLApplication*>(glfwGetWindowUserPointer(window));

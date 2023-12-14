@@ -13,12 +13,11 @@
 OWUtils::Time::time_point GlobalSettings::mLoadTime;
 extern OWENGINE_API GlobalSettings* globals;
 
-GlobalSettings::GlobalSettings(const std::filesystem::path& configFile)
+GlobalSettings::GlobalSettings()
 {
 	if (globals)
 		throw NMSException("GlobalSettings ctor called a second time");
 	mLoadTime = OWUtils::Time::now();
-	readFile(configFile);
 }
 
 float GlobalSettings::secondsSinceLoad()
@@ -73,8 +72,8 @@ struct ConfigFileStruct
 	struct KeyMapping
 	{
 		std::string key;
-		int mods;
-		UserInput::BaseUserCommand logical;
+		std::vector<std::string> mods;
+		std::string logical;
 	};
 
 	std::string version = "0.0";
@@ -91,9 +90,7 @@ struct ConfigFileStruct
 	};
 	Camera camera;
 
-	std::vector<KeyMapping> keyMap{
-
-	};
+	std::vector<KeyMapping> keyMap{};
 };
 ConfigFileStruct gConfigFile;
 
@@ -194,20 +191,15 @@ void from_json(const json& j, ConfigFileStruct::Camera& d)
 
 void to_json(json& j, ConfigFileStruct::KeyMapping& d)
 {
-	std::string s = j.dump(4);
-	std::vector<std::string> mods;
 	j = json{ {"Key", d.key},
-			{"Mods", mods},
+			{"Mods", d.mods},
 			{"Logical", d.logical} };
-	for (auto& var: mods)
-	{
-		UserInput::InputMod im = UserInput::to_InputMod(var);
-		d.mods |= (int)im;
-	}
 }
 
 void from_json(const json& j, ConfigFileStruct::KeyMapping& d)
 {
+	std::string test = j.dump(4);
+	std::vector<std::string> mods;
 	j.at("Key").get_to(d.key);
 	j.at("Mods").get_to(d.mods);
 	j.at("Logical").get_to(d.logical);
@@ -223,13 +215,6 @@ void to_json(json& j, ConfigFileStruct& d)
 
 void from_json(const json& j, ConfigFileStruct& d)
 {
-	try { j.at("Version").get_to(d.version); }
-	catch (const std::exception& ex)
-	{
-		d.version = "0.0";
-		LogStream(LogStreamLevel::Error) << "Cannot parse config file Version"
-			<< "Exception [" << ex.what() << "]\n";
-	}
 	try { j.at("Directories").get_to(d.directories); }
 	catch (const std::exception& ex)
 	{
@@ -269,12 +254,18 @@ void from_json(const json& j, ConfigFileStruct& d)
 		LogStream(LogStreamLevel::Error) << "Cannot parse config file KeyMapping"
 			<< "Exception [" << ex.what() << "]\n";
 	}
+	try { j.at("Version").get_to(d.version); }
+	catch (const std::exception& ex)
+	{
+		d.version = "0.0";
+		LogStream(LogStreamLevel::Error) << "Cannot parse config file Version"
+			<< "Exception [" << ex.what() << "]\n";
+	}
 }
 
-void GlobalSettings::readFile(const std::filesystem::path& configFile)
+void GlobalSettings::loadSettings(const std::filesystem::path& configFile)
 {
 	json j;
-	float version = 0;
 	if (!configFile.empty())
 	{
 		std::ifstream ifs(configFile);
@@ -287,28 +278,25 @@ void GlobalSettings::readFile(const std::filesystem::path& configFile)
 		}
 		else
 		{
-			j = json::parse(ifs);
-			// Not sure what to with 'version' atm
-			try 
+			try
 			{ 
-				version = j["Version"]; 
+				j = json::parse(ifs);
 			}
 			catch (const std::exception& ex)
 			{
-				LogStream(LogStreamLevel::Error) << "cannot parse config file ['Version' not found]"
+				LogStream(LogStreamLevel::Error) << "cannot parse config file"
 					<< "Exception [" << ex.what() << "]\n";
 			}
 		}
 	}
 
 	gConfigFile = j.get<ConfigFileStruct>();
-	gConfigFile.version = std::to_string(version);
 	physicalWindowSize({ gConfigFile.openGL.window.size.x,
 						gConfigFile.openGL.window.size.y });
 }
 
 void GlobalSettings::configAndSet(SaveAndRestore* sr, Movie* mov, MacroRecorder* mr,
-	Logger* log, Camera* cam, GLApplication* app, UserInput* OW_UNUSED(ui))
+	Logger* log, Camera* cam, GLApplication* app)
 {
 	mSaveAndRestore = sr;
 
@@ -331,6 +319,13 @@ void GlobalSettings::configAndSet(SaveAndRestore* sr, Movie* mov, MacroRecorder*
 	{
 		paths.addPath(d.directory, d.resType);
 	}
-
 	mApplication = app;
+}
+
+void GlobalSettings::configAndSet(UserInput* ui)
+{
+	for (auto& var : gConfigFile.keyMap)
+	{
+		ui->addKeyMapping(var.key, var.mods, var.logical);
+	}
 }

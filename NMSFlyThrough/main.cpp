@@ -77,16 +77,17 @@ int main(int argc, char* argv[])
 						ResourcePathFactory::ResourceType::UnknownType);
 		}
 		// Config file is 'path of exe/exename.json'
-		globals = new GlobalSettings(exePath);
+		globals = new GlobalSettings;
 		SaveAndRestore sr;
 		MacroRecorder recorder;
 		Logger logger;
 		NMSUserInput ui;
 		CameraOW camera;
+		globals->loadSettings(exePath);
 		GLApplication app(&ui);
 		NMSMovie nms(&camera, &logger);
 		globals->configAndSet(&sr, &nms, &recorder,
-							&logger, &camera, &app, &ui);
+							&logger, &camera, &app);
 		app.init(&nms, &ui, &recorder, &sr, &camera);
 		app.run(&nms);
 	}

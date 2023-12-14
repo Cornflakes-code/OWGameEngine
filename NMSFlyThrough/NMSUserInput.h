@@ -36,12 +36,9 @@ private:
 	};
 	std::map<NMSKeyMapping, NMSUserCommand> mNMSKeyMapping;
 public:
-	NMSUserInput() {}
-	void addKeyMapping(int key, InputMod mod, NMSUserCommand action)
-	{
-		mNMSKeyMapping[{key, mod}] = action;
-	}
+	NMSUserInput();
+	void addKeyMapping(const std::string& key, const std::vector<std::string>& mods, const std::string& logicalOperator) override;
 	std::string userInputToString(int value) override;
 protected:
-	int userCommand(const UserInput::UserCommandCallbackData& data) override;
+	LogicalOperator userCommand(const UserInput::UserCommandCallbackData& data) override;
 };

@@ -1,5 +1,5 @@
 {
-  "Version": 1.1,
+  "Version": "1.1",
   "Directories": [
     {
       "Directory": "../../engine/Resources/Shaders",
@@ -64,12 +64,8 @@
   "KeyMapping": [
     {
       "Key": "w",
-      "Mods": [
-        "Shift",
-        "Focus",
-        "Mustang"
-      ],
-      "Logical": "Forward"
+      "Mods": [],
+      "Logical": "POVForward"
     },
     {
       "Key": "a",
@@ -78,14 +74,25 @@
         "Focus",
         "Mustang"
       ],
-      "Logical": "Forward"
+      "Logical": "POVLeft"
     },
     {
-      "name": "Fiat",
-      "models": [
-        "500",
-        "Panda"
-      ]
+      "Key": "s",
+      "Mods": [
+        "Shift",
+        "Focus",
+        "Mustang"
+      ],
+      "Logical": "POVBack"
+    },
+    {
+      "Key": "d",
+      "Mods": [
+        "Shift",
+        "Focus",
+        "Mustang"
+      ],
+      "Logical": "POVRight"
     }
   ]
 }

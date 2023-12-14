@@ -6,11 +6,10 @@
 
 // AnyKey must be mapped to a non printable key
 int UserInput::AnyKey = 0;
-std::map<UserInput::BaseUserCommand, std::string> UserInput::mBaseUserCommandMap;
-std::map<UserInput::InputMod, std::string> UserInput::mInputModsMap;
 
 UserInput::UserInput()
 {
+	/*
 	// Key mapping taken from keymapping for Elite Dangerous at
 	// https://guides.gamepressure.com/elitedangerous/guide.asp?ID=29578
 	//
@@ -37,64 +36,116 @@ UserInput::UserInput()
 	mBaseKeyMapping[{GLFW_KEY_F7, InputMod::NoMod}] = BaseUserCommand::RecordingStart;
 	mBaseKeyMapping[{GLFW_KEY_ESCAPE, InputMod::NoMod}] = BaseUserCommand::OptionsScreen;
 	mBaseKeyMapping[{GLFW_KEY_SPACE, InputMod::NoMod}] = BaseUserCommand::Accept;
-	createBaseUserCommandMap();
-	createInputModMap();
+	*/
+	createLogicalOperatorStringMap();
+	createInputModStringMap();
 }
 
-void UserInput::createBaseUserCommandMap()
+void UserInput::addMapping(UserInput::LogicalOperator buc, const std::string& s)
 {
-	mBaseUserCommandMap.emplace(BaseUserCommand::NoCommand, "NoCommand");
-	mBaseUserCommandMap.emplace(BaseUserCommand::Save, "Save");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVForward, "POVForward");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVBack, "POVBack");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVLeft, "POVLeft");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVRight, "POVRight");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVPitchDown, "POVPitchDown");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVPitchUp, "POVPitchUp");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVYawLeft, "POVYawLeft");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVYawRight, "POVYawRight");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVRollClockwise, "POVRollClockwise");
-	mBaseUserCommandMap.emplace(BaseUserCommand::POVRollAntiClockwise, "POVRollAntiClockwise");
-	mBaseUserCommandMap.emplace(BaseUserCommand::Restore, "Restore");
-	mBaseUserCommandMap.emplace(BaseUserCommand::RecordingStart, "RecordingStart");
-	mBaseUserCommandMap.emplace(BaseUserCommand::RecordingEnd, "RecordingEnd");
-	mBaseUserCommandMap.emplace(BaseUserCommand::PlaybackStart, "PlaybackStart");
-	mBaseUserCommandMap.emplace(BaseUserCommand::PlaybackEnd, "PlaybackEnd");
-	mBaseUserCommandMap.emplace(BaseUserCommand::OptionsScreen, "OptionsScreen");
-	mBaseUserCommandMap.emplace(BaseUserCommand::Accept, "Accept");
-	mBaseUserCommandMap.emplace(BaseUserCommand::WindowResize, "WindowResize");
-	mBaseUserCommandMap.emplace(BaseUserCommand::WindowClose, "WindowClose");
+	mLogicalOperatorStringMap.emplace(buc, s);
 }
 
-void UserInput::createInputModMap()
+void UserInput::createLogicalOperatorStringMap()
 {
-	mInputModsMap.emplace(InputMod::Alt, "Alt");
-	mInputModsMap.emplace(InputMod::CapsLock, "CapsLock");
-	mInputModsMap.emplace(InputMod::Ctrl, "Ctrl");
-	mInputModsMap.emplace(InputMod::NoMod, "NoMod");
-	mInputModsMap.emplace(InputMod::NumLock, "NumLock");
-	mInputModsMap.emplace(InputMod::Shift, "Shift");
-	mInputModsMap.emplace(InputMod::Super, "Super");
+	addMapping(LogicalOperator::NoCommand, "NoCommand");
+	addMapping(LogicalOperator::Save, "Save");
+	addMapping(LogicalOperator::POVForward, "POVForward");
+	addMapping(LogicalOperator::POVBack, "POVBack");
+	addMapping(LogicalOperator::POVLeft, "POVLeft");
+	addMapping(LogicalOperator::POVRight, "POVRight");
+	addMapping(LogicalOperator::POVPitchDown, "POVPitchDown");
+	addMapping(LogicalOperator::POVPitchUp, "POVPitchUp");
+	addMapping(LogicalOperator::POVYawLeft, "POVYawLeft");
+	addMapping(LogicalOperator::POVYawRight, "POVYawRight");
+	addMapping(LogicalOperator::POVRollClockwise, "POVRollClockwise");
+	addMapping(LogicalOperator::POVRollAntiClockwise, "POVRollAntiClockwise");
+	addMapping(LogicalOperator::Restore, "Restore");
+	addMapping(LogicalOperator::RecordingStart, "RecordingStart");
+	addMapping(LogicalOperator::RecordingEnd, "RecordingEnd");
+	addMapping(LogicalOperator::PlaybackStart, "PlaybackStart");
+	addMapping(LogicalOperator::PlaybackEnd, "PlaybackEnd");
+	addMapping(LogicalOperator::OptionsScreen, "OptionsScreen");
+	addMapping(LogicalOperator::RopeScreen, "RopeScreen");
+	addMapping(LogicalOperator::Accept, "Accept");
+	addMapping(LogicalOperator::WindowResize, "WindowResize");
+	addMapping(LogicalOperator::WindowClose, "WindowClose");
+	addMapping(LogicalOperator::WindowClose, "WindowClose");
+	addMapping(LogicalOperator::Special1, "Special1");
+	addMapping(LogicalOperator::Special2, "Special2");
+	addMapping(LogicalOperator::Special3, "Special3");
+	addMapping(LogicalOperator::Special4, "Special4");
+	addMapping(LogicalOperator::Special5, "Special5");
+	addMapping(LogicalOperator::Special6, "Special6");
 }
 
-UserInput::BaseUserCommand UserInput::to_BaseUserCommand(const std::string& s)
+void UserInput::createInputModStringMap()
 {
-	for (auto& x : mBaseUserCommandMap)
+	mInputModsStringMap.emplace(InputMod::Alt, "Alt");
+	mInputModsStringMap.emplace(InputMod::CapsLock, "CapsLock");
+	mInputModsStringMap.emplace(InputMod::Ctrl, "Ctrl");
+	mInputModsStringMap.emplace(InputMod::NoMod, "NoMod");
+	mInputModsStringMap.emplace(InputMod::NumLock, "NumLock");
+	mInputModsStringMap.emplace(InputMod::Shift, "Shift");
+	mInputModsStringMap.emplace(InputMod::Super, "Super");
+}
+
+void UserInput::createKeyCodeMap()
+{
+	if (mKeyCodeMap.size() == 0)
+	{
+		for (int i = GLFW_KEY_UNKNOWN + 1; i < GLFW_KEY_LAST; i++)
+		{
+			const char* ss = glfwGetKeyName(i, 0);
+			if (ss)
+			{
+				std::string s = ss;
+				if (s != "")
+					mKeyCodeMap[s] = i;
+			}
+		}
+	}
+}
+
+UserInput::LogicalOperator UserInput::to_LogicalOperator(const std::string& s)
+{
+	for (auto& x : mLogicalOperatorStringMap)
 	{
 		if (x.second == s)
 			return x.first;
 	}
-	return UserInput::BaseUserCommand::NoCommand;
+	return UserInput::LogicalOperator::NoCommand;
 }
 
 UserInput::InputMod UserInput::to_InputMod(const std::string& s)
 {
-	for (auto& x : mInputModsMap)
+	for (auto& x : mInputModsStringMap)
 	{
 		if (x.second == s)
 			return x.first;
 	}
 	return UserInput::InputMod::NoMod;
+}
+
+void UserInput::addKey(int keyCode, int mods, UserInput::LogicalOperator lo)
+{
+	// First in gets it. This assumes that user preferences is stored first.
+	if (mBaseKeyMapping.find({ keyCode, mods }) == mBaseKeyMapping.end())
+		mBaseKeyMapping[{keyCode, mods}] = lo;
+}
+
+void UserInput::addKeyMapping(const std::string& key, const std::vector<std::string>& mods, 
+							const std::string& logicalOperator)
+{
+	createKeyCodeMap();
+	int glfwKey = mKeyCodeMap[key];
+	int m = 0;
+	for (auto& var : mods)
+	{
+		UserInput::InputMod im = to_InputMod(var);
+		m |= (int)im;
+	}
+	addKey(glfwKey, m, to_LogicalOperator(logicalOperator));
 }
 
 void UserInput::init(GLApplication* app)
@@ -146,7 +197,7 @@ void UserInput::cursorPosition(void* window, double x, double y)
 
 
 void UserInput::keyboard(unsigned int codepoint,
-						int key, int OW_UNUSED(scancode), int action, int mods)
+						int key, int scancode, int action, int mods)
 {
 	UserCommandCallbackData data;
 	if (codepoint)
@@ -167,7 +218,7 @@ void UserInput::keyboard(unsigned int codepoint,
 		data.key = key;
 		data.mods = mods;
 		data.userCommand = userCommand(data);
-		if (data.userCommand == BaseUserCommand::NoCommand)
+		if (data.userCommand == LogicalOperator::NoCommand)
 			return;
 		for (auto& cb : mUserCommandCallbacks)
 		{
@@ -176,21 +227,21 @@ void UserInput::keyboard(unsigned int codepoint,
 	}
 }
 
-int UserInput::userCommand(const UserCommandCallbackData& data)
+UserInput::LogicalOperator UserInput::userCommand(const UserCommandCallbackData& data)
 {
 	auto iter = mBaseKeyMapping.begin();
 	while (iter != mBaseKeyMapping.end())
 	{
-		if (iter->first.userCommand == data.key)
+		if (iter->first.first == data.key)
 		{
-			if (iter->first.keyMod == InputMod::NoMod && data.mods == 0)
+			if (iter->first.second == InputMod::NoMod && data.mods == 0)
 				return iter->second;
-			if (iter->first.keyMod & data.mods)
+			if (iter->first.second & data.mods)
 				return iter->second;
 		}
 		++iter;
 	}
-	return BaseUserCommand::NoCommand; 
+	return LogicalOperator::NoCommand; 
 }
 
 void UserInput::windowResize(void* window, const glm::ivec2& widthHeight)

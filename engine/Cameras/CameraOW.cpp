@@ -35,28 +35,28 @@ bool CameraOW::processInput(UserInput::AnyInput input, float seconds)
 */
 static bool isDirectionKey(int key)
 {
-	return key == UserInput::BaseUserCommand::POVForward ||
-		key == UserInput::BaseUserCommand::POVBack ||
-		key == UserInput::BaseUserCommand::POVLeft ||
-		key == UserInput::BaseUserCommand::POVRight;
+	return key == UserInput::LogicalOperator::POVForward ||
+		key == UserInput::LogicalOperator::POVBack ||
+		key == UserInput::LogicalOperator::POVLeft ||
+		key == UserInput::LogicalOperator::POVRight;
 }
 
 static bool isYawKey(int key)
 {
-	return key == UserInput::BaseUserCommand::POVYawRight ||
-		key == UserInput::BaseUserCommand::POVYawLeft;
+	return key == UserInput::LogicalOperator::POVYawRight ||
+		key == UserInput::LogicalOperator::POVYawLeft;
 }
 
 static bool isPitchKey(int key)
 {
-	return key == UserInput::BaseUserCommand::POVPitchUp ||
-		key == UserInput::BaseUserCommand::POVPitchDown;
+	return key == UserInput::LogicalOperator::POVPitchUp ||
+		key == UserInput::LogicalOperator::POVPitchDown;
 }
 
 static bool isRollKey(int key)
 {
-	return key == UserInput::BaseUserCommand::POVRollClockwise ||
-		key == UserInput::BaseUserCommand::POVRollAntiClockwise;
+	return key == UserInput::LogicalOperator::POVRollClockwise ||
+		key == UserInput::LogicalOperator::POVRollAntiClockwise;
 }
 
 typedef std::function<bool(int)> KeyTest;
@@ -146,34 +146,34 @@ void CameraOW::doProcessKeyboardInput(int userCommand, float seconds)
 {
 	switch (userCommand)
 	{
-	case UserInput::BaseUserCommand::POVForward:
+	case UserInput::LogicalOperator::POVForward:
 		mCurrent->move(OW_Camera::CameraDirection::FORWARD, seconds);
 		break;
-	case UserInput::BaseUserCommand::POVBack:
+	case UserInput::LogicalOperator::POVBack:
 		mCurrent->move(OW_Camera::CameraDirection::BACK, seconds);
 		break;
-	case UserInput::BaseUserCommand::POVLeft:
+	case UserInput::LogicalOperator::POVLeft:
 		mCurrent->move(OW_Camera::CameraDirection::LEFT, seconds);
 		break;
-	case UserInput::BaseUserCommand::POVRight:
+	case UserInput::LogicalOperator::POVRight:
 		mCurrent->move(OW_Camera::CameraDirection::RIGHT, seconds);
 		break;
-	case UserInput::BaseUserCommand::POVPitchDown:
+	case UserInput::LogicalOperator::POVPitchDown:
 		pitch(glm::radians(-1.0f));
 		break;
-	case UserInput::BaseUserCommand::POVPitchUp:
+	case UserInput::LogicalOperator::POVPitchUp:
 		pitch(glm::radians(1.0f));
 		break;
-	case UserInput::BaseUserCommand::POVYawRight:
+	case UserInput::LogicalOperator::POVYawRight:
 		yaw(glm::radians(-1.0f));
 		break;
-	case UserInput::BaseUserCommand::POVYawLeft:
+	case UserInput::LogicalOperator::POVYawLeft:
 		yaw(glm::radians(1.0f));
 		break;
-	case UserInput::BaseUserCommand::POVRollClockwise:
+	case UserInput::LogicalOperator::POVRollClockwise:
 		mCurrent->roll(glm::radians(-1.0f));
 		break;
-	case UserInput::BaseUserCommand::POVRollAntiClockwise:
+	case UserInput::LogicalOperator::POVRollAntiClockwise:
 		mCurrent->roll(glm::radians(1.0f));
 		break;
 	default:
