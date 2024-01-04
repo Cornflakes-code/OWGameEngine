@@ -45,7 +45,7 @@ class NMSMainScene : public NMSScene
 	Model mAxis;
 public:
 	NMSMainScene(const Movie* movie);
-	virtual std::string name() const final { return NMSScene::mainSceneName(); }
+	std::string name() const { return "Main"; }
 	void doSetup(ScenePhysicsState* state) override;
 	virtual void render(const ScenePhysicsState* state,
 		const glm::mat4& proj, const glm::mat4& view) override;

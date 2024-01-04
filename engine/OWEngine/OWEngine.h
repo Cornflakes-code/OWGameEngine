@@ -13,3 +13,10 @@
 #else
 #       define OW_UNUSED(x)
 #endif
+
+#if _WIN32 || _WIN64
+#if _WIN64
+#else
+#define NOMINMAX
+#endif
+#endif

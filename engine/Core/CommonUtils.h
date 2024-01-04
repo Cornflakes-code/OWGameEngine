@@ -1,4 +1,6 @@
 #pragma once
+#include "../OWEngine/OWEngine.h"
+
 
 #include <chrono>
 #include <vector>
@@ -10,9 +12,6 @@
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
-
-#include "../OWEngine/OWEngine.h"
-
 
 /*
 	Usefull functionality that needs a place to live. Bit of a mess atm

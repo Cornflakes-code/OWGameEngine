@@ -1,4 +1,6 @@
 #pragma once
+#include "../OWEngine/OWEngine.h"
+
 #include <string>
 #include <map>
 #include <vector>
@@ -9,8 +11,6 @@
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
-
-#include "../OWEngine/OWEngine.h"
 
 #include "Texture.h"
 /*

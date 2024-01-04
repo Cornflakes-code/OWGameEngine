@@ -1,4 +1,6 @@
 #pragma once
+#include "../OWEngine/OWEngine.h"
+
 #include <functional>
 #include <iostream>
 #include <filesystem>
@@ -10,8 +12,6 @@
 #endif
 
 #include <GLFW/glfw3.h>
-
-#include "../OWEngine/OWEngine.h"
 
 #include "ListenerHelper.h"
 

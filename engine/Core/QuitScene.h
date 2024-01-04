@@ -33,7 +33,9 @@ class QuitScene : public Scene
 	// It will be the last scene loaded and can (not must!) be overridden to clear resource.
 public:
 	QuitScene(const Movie* movie);
-	virtual std::string name() const final { return quitSceneName(); }
+	std::string name() const {
+		return Scene::finalSceneName();
+	}
 	void doSetup(ScenePhysicsState* state) override;
 	virtual void render(const ScenePhysicsState* state,
 		const glm::mat4& proj, const glm::mat4& view) override;

@@ -67,6 +67,21 @@
     <ClCompile Include="NMSRopeScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ropes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rope_interface_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rope_interface_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rope_quick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h">
@@ -106,6 +121,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSRopeScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ropes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rope_interface_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rope_interface_test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rope_quick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

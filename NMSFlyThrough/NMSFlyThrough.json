@@ -68,31 +68,42 @@
       "Logical": "POVForward"
     },
     {
-      "Key": "a",
-      "Mods": [
-        "Shift",
-        "Focus",
-        "Mustang"
-      ],
-      "Logical": "POVLeft"
-    },
-    {
       "Key": "s",
-      "Mods": [
-        "Shift",
-        "Focus",
-        "Mustang"
-      ],
+      "Mods": [],
       "Logical": "POVBack"
     },
     {
+      "Key": "a",
+      "Mods": [],
+      "Logical": "POVLeft"
+    },
+    {
       "Key": "d",
+      "Mods": [],
+      "Logical": "POVRight"
+    },
+    {
+      "Key": "q",
+      "Mods": [],
+      "Logical": "POVYawLeft"
+    },
+    {
+      "Key": "e",
+      "Mods": [],
+      "Logical": "POVYawRight"
+    },
+    {
+      "Key": "r",
+      "Mods": [],
+      "Logical": "Special1"
+    },
+    {
+      "Key": "z",
       "Mods": [
         "Shift",
         "Focus",
         "Mustang"
       ],
-      "Logical": "POVRight"
-    }
-  ]
+      "Logical": "Special1"
+    }  ]
 }

@@ -61,6 +61,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -104,6 +105,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>$(Platform)\$(Configuration)\NMSobj\</IntDir>
+    <ManagedAssembly>true</ManagedAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -124,10 +126,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;GLM_FORCE_SILENT_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(ProjectDir)$(ProjectName).json" "$(TargetDir)\$(ProjectName).json"
@@ -190,7 +196,7 @@ del /q "$(TargetDir)\config*.json"
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype.lib;RCRopeEx2_x64.dll;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(ProjectDir)$(ProjectName).json" "$(TargetDir)\$(ProjectName).json"
@@ -221,6 +227,11 @@ del /q "$(TargetDir)\config*.json"
     <ClCompile Include="NMSUserInput.cpp" />
     <ClCompile Include="NMSUtils.cpp" />
     <ClCompile Include="NoMansSkyStarMap.cpp" />
+    <ClCompile Include="PolygonBuilder.cpp" />
+    <ClCompile Include="Ropes.cpp" />
+    <ClCompile Include="rope_interface_test.cpp" />
+    <ClCompile Include="rope_interface_utils.cpp" />
+    <ClCompile Include="rope_quick.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\Cameras\CameraMazhar.h" />
@@ -236,6 +247,11 @@ del /q "$(TargetDir)\config*.json"
     <ClInclude Include="NMSUserInput.h" />
     <ClInclude Include="NMSUtils.h" />
     <ClInclude Include="NoMansSkyStarMap.h" />
+    <ClInclude Include="PolygonBuilder.h" />
+    <ClInclude Include="Ropes.h" />
+    <ClInclude Include="rope_interface_test.h" />
+    <ClInclude Include="rope_interface_utils.h" />
+    <ClInclude Include="rope_quick.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\engine\OWEngine\OWEngine.vcxproj">

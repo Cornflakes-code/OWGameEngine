@@ -33,7 +33,7 @@ class NMSEndScene : public NMSScene
 	TextRenderer* mText;
 public:
 	NMSEndScene(const Movie* movie);
-	virtual std::string name() const final { return NMSScene::endSceneName(); }
+	std::string name() const { return "The End"; }
 	void doSetup(ScenePhysicsState* state) override;
 	virtual void render(const ScenePhysicsState* state,
 		const glm::mat4& proj, const glm::mat4& view) override;

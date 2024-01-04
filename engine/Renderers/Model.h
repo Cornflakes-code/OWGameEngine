@@ -1,4 +1,5 @@
 #pragma once
+#include "../OWEngine/OWEngine.h"
 
 #include <vector>
 #include <functional>
@@ -9,8 +10,6 @@
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
-
-#include "../OWEngine/OWEngine.h"
 
 #include "../Core/CommonUtils.h"
 #include "../Core/ErrorHandling.h"

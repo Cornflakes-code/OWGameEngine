@@ -66,8 +66,7 @@ class NMSSplashScene : public NMSScene
 	Model mAxis;
 public:
 	NMSSplashScene(const Movie* movie);
-	virtual std::string name() const final 
-		{ return NMSScene::splashSceneName(); }
+	std::string name() const { return "Splash"; }
 	void doSetup(ScenePhysicsState* state) override;
 	virtual void render(const ScenePhysicsState* state,
 		const glm::mat4& proj, const glm::mat4& view) override;

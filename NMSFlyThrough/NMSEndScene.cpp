@@ -48,16 +48,14 @@ bool NMSEndScenePhysics::processUserCommands(const UserInput::AnyInput& userInpu
 	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
 	{
 		// Keyboard
-		NMSUserInput::NMSUserCommand input = 
-			(NMSUserInput::NMSUserCommand) userInput.keyInput.userCommand;
-		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
+		if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::OptionsScreen)
 		{
-			nextScene = Scene::quitSceneName();
+			nextScene = Scene::finalSceneName();
 			return true;
 		}
-		else if (input == NMSUserInput::LogicalOperator::Accept)
+		else if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::Accept)
 		{
-			nextScene = Scene::previousSceneTag();
+			nextScene = Scene::previousSceneName();
 			return true;
 		}
 	}

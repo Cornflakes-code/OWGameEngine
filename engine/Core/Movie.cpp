@@ -165,7 +165,7 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 void Movie::makeCurrent(const std::string& newSceneName)
 {
 	std::string safeSceneName = newSceneName;
-	if (newSceneName == Scene::previousSceneTag())
+	if (newSceneName == Scene::previousSceneName())
 	{
 		if (mPrevious)
 		{
@@ -173,14 +173,14 @@ void Movie::makeCurrent(const std::string& newSceneName)
 		}
 		else
 		{
-			safeSceneName = Scene::quitSceneName();
+			safeSceneName = Scene::finalSceneName();
 		}
 	}
 	auto it = mScenes.find(safeSceneName);
 	if (it == mScenes.end())
 	{
 		mIsRunning = false;
-		safeSceneName = Scene::quitSceneName();
+		safeSceneName = Scene::finalSceneName();
 		LogStream(LogStreamLevel::LogicError) << "Unknown Scene Name [" << newSceneName
 			<< "] passed to makeCurrent()\n";
 	}
@@ -239,14 +239,21 @@ void Movie::add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent)
 
 void Movie::pushUserInput(const UserInput::AnyInput& userInput)
 {
+	// TODO: inefficient. Used for debugging
 	if (mUserInput.empty())
 	{
-		mUserInput.push(userInput);
+		if (userInput.inputType == UserInput::InputAction::Press)
+			mUserInput.push(userInput);
+		else
+			mUserInput.push(userInput);
 	}
 	else
 	{
 //		UserInput::AnyInput& front = mUserInput.front();
-		mUserInput.push(userInput);
+		if (userInput.inputType == UserInput::InputAction::Press)
+			mUserInput.push(userInput);
+//		else
+//			mUserInput.push(userInput);
 	}
 }
 

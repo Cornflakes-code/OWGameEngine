@@ -15,6 +15,7 @@
 #include "NMSSplashScene.h"
 #include "NMSEndScene.h"
 #include "NMSMainScene.h"
+#include "NMSRopeScene.h"
 
 NMSMovie::NMSMovie(Camera* _camera, Logger* logger)
 	: Movie("NMS", _camera, logger)
@@ -46,6 +47,11 @@ void NMSMovie::preRun()
 	s = new NMSEndScene(this);
 
 	this->add(s, new NMSEndScenePhysics(s), s->name() == activeScene);
+
+	s = new NMSRopeScene(this);
+
+	this->add(s, new NMSRopeScenePhysics(s), s->name() == activeScene);
+
 
 	Camera* _camera = camera();
 	_camera->aspectRatio(globals->physicalWindowSize().x /

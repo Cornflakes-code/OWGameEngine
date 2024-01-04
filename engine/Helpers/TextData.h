@@ -22,10 +22,6 @@ public:
 		: mText(s)
 		, mX(sx)
 		, mY(sy)
-		, mFontFileName("arial.ttf")
-		, mFontHeight(12)
-		, mScale(glm::vec2({ 1.0, 1.0 }))
-		, mColour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK))
 		, mModified(true)
 	{
 	}
@@ -70,13 +66,13 @@ public:
 	glm::vec2 scale() const { return mScale; }
 private:
 	std::string mText;
-	std::string mFontFileName;
-	glm::vec4 mColour;
-	glm::vec2 mScale;
-	unsigned int mReferencePos;
-	float mX;
-	float mY;
-	int mFontHeight;
+	std::string mFontFileName = "arial.ttf";
+	glm::vec4 mColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK);
+	glm::vec2 mScale = glm::vec2({ 1.0, 1.0 });
+	unsigned int mReferencePos = PositionType(PositionType::Center & 0xC);
+	float mX = 0.0f;
+	float mY = 0.0f;
+	int mFontHeight = 12;
 	bool mModified = false;
 	friend class TextRenderer;
 };

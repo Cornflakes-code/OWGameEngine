@@ -12,6 +12,7 @@
 #include "NMSUserInput.h"
 #include "NoMansSkyStarMap.h"
 #include "NMSUtils.h"
+#include "NMSEndScene.h"
 
 void NMSMainScenePhysics::setup()
 {
@@ -65,11 +66,9 @@ bool NMSMainScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 	else
 	{
 		// Keyboard
-		NMSUserInput::LogicalOperator input 
-			= (NMSUserInput::LogicalOperator) userInput.keyInput.userCommand;
-		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
+		if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::OptionsScreen)
 		{
-			nextScene = NMSScene::endSceneName();
+			nextScene = Scene::finalSceneName();
 			return true;
 		}
 	}

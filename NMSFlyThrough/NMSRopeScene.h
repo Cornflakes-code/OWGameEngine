@@ -1,7 +1,9 @@
 #pragma once
 
 #include "NMSScene.h"
-
+#include "PolygonBuilder.h"
+#include <Helpers/TextData.h>
+#include <Renderers/Model.h>
 
 /*
 	An implementation of a Scene for the NMS game.
@@ -9,6 +11,8 @@
 */
 struct NMSRopeScenePhysics : public ScenePhysicsState
 {
+	TextData mTextData;
+	std::vector<Floats> mVectors;
 	NMSRopeScenePhysics(const Scene* owner)
 		: ScenePhysicsState(owner) {}
 	void setup() override;
@@ -30,10 +34,12 @@ class TextRenderer;
 
 class NMSRopeScene : public NMSScene
 {
-	TextRenderer* mText;
+	TextRenderer* mText = nullptr;
+	Model mAxis;
+	Model mCircles;
 public:
 	NMSRopeScene(const Movie* movie);
-	virtual std::string name() const final { return "Ropes"; }
+	std::string name() const { return "Rope"; }
 	void doSetup(ScenePhysicsState* state) override;
 	virtual void render(const ScenePhysicsState* state,
 		const glm::mat4& proj, const glm::mat4& view) override;

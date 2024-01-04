@@ -98,26 +98,26 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
 	{
 		// Keyboard
-		int input = userInput.keyInput.userCommand;
+		NMSUserInput::LogicalOperator input = userInput.keyInput.userCommand;
 		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
 		{
-			nextScene = Scene::quitSceneName();
+			nextScene = Scene::finalSceneName();
 			return true;
 		}
 		if (input == NMSUserInput::LogicalOperator::RopeScreen)
 		{
-			nextScene = Scene::quitSceneName();
+			nextScene = NMSRopeScene(nullptr).name();
 			return true;
 		}
 		if (input == NMSUserInput::LogicalOperator::Accept)
 		{
 			if ((userInput.keyInput.mods | UserInput::InputMod::Shift) != 0)
 			{
-				nextScene = NMSScene::mainSceneName();
+				nextScene = NMSScene::finalSceneName();
 			}
 			else
 			{
-				nextScene = NMSScene::mainSceneName();
+				nextScene = NMSScene::finalSceneName();
 			}
 			return true;
 		}

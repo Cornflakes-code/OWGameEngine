@@ -324,7 +324,7 @@ void GLApplication::onDebugMessageCallback(GLenum source, GLenum type, GLuint id
 		<< "Message: " << message << "\n";
 }
 
-void debugMessageCallback(GLenum source, GLenum type, GLuint id,
+void GLAPIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id,
 	GLenum severity, GLsizei length, const GLchar *message,
 	const void *userParam)
 {
@@ -346,7 +346,7 @@ void debugMessageCallback(GLenum source, GLenum type, GLuint id,
 	}
 }
 
-void error_callback(int error, const char* description)
+void GLAPIENTRY error_callback(int error, const char* description)
 {
 	// https://github.com/Polytonic/Glitter
 	if (hackForErrorCallback)
