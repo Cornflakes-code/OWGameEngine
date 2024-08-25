@@ -41,7 +41,7 @@ private:
 	struct RenderData
 	{
 		std::string shaderColourName;
-		glm::vec4 colour;
+		glm::vec4 colour = {0, 0, 0, 0};
 
 		size_t verticesCount = 0;
 		size_t indicesCount = 0;

@@ -57,7 +57,9 @@ class MacroRecorder;
 
 extern OWENGINE_API GlobalSettings* globals;
 
+// https://www.gamedeveloper.com/programming/behavior-trees-for-ai-how-they-work
 
+// https://www.gamedeveloper.com/design/decision-modeling-and-optimization-in-game-design-part-1-introduction
 int main(int argc, char* argv[])
 {
 	try

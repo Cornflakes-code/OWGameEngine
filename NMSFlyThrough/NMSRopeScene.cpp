@@ -24,24 +24,59 @@ void NMSRopeScenePhysics::setup()
 {
 	const AABB& _world = NMSScene::world();
 	int fontHeight = 24;
-	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
+	mNiceSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());
-	glm::vec2 scale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
+	mNiceScale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
 						5.2f * _world.size().y / globals->physicalWindowSize().y };
 
-	mTextData.text("Ropes.");
-	mTextData.font("arial.ttf", fontHeight);
-	mTextData.colour({ 0.0, 0.0, 0.0, 1.0f });
-	mTextData.spacing(10 * nice.x, 10 * nice.y, scale);
+	Rope::initRopes();
+	mTextData.set("Ropes", fontHeight, mNiceSpacing * 10.0f, mNiceScale);
+	drawRope(_world);
+}
 
-	createRopes();
-
+void NMSRopeScenePhysics::drawRope(const AABB& _world)
+{
 	mVectors.clear();
 	glm::vec2 ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
 
-	PolygonBuilder* pb = drawRope(9239, ropeZoom.x, ropeZoom.y);
-	pb->getAllFloats(mVectors);
+	PolygonBuilder* pb = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y);
+	std::vector<PolygonId> polygonIds;
+	pb->getAllFloats(mVectors, polygonIds);
+	for (const PolygonId& p : polygonIds)
+	{
+		TextData td;
+		td.set(std::to_string(p.id), 10, mNiceSpacing * 10.0f, mNiceScale);
+		mPolygonTextData.push_back(std::pair(td, p.pos));
+	}
+/*
+	std::for_each(mVectors.begin(), mVectors.end(),
+		[&mMinValuex, &mMaxValuex](const auto& v)
+		{
+			std::for_each(v.begin(), v.end())
+		}
+	for (Floats& row : mVectors)
+	{
+		std::for_each(row.begin(), row.end())
+			[&mMinValuex](const auto& elm)
+			{
+
+			}
+		for (glm::vec3& pt : row)
+		{
+
+
+		}
+	}
+*/
+	Floats temp;
+	for (Floats& row : mVectors) 
+	{
+		std::pair<glm::vec3, glm::vec3> minMax = PolygonBuilder::boundingBox(row);
+		temp.push_back(minMax.first);
+		temp.push_back(minMax.second);
+	}
+	mMinMax = PolygonBuilder::boundingBox(temp);
 }
 
 void NMSRopeScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
@@ -85,9 +120,8 @@ bool NMSRopeScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 		}
 		else if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::Special1)
 		{
-			mVectors.clear();
-			PolygonBuilder* pb = drawRope(9239, 5, 5);
-			pb->getAllFloats(mVectors);
+			const AABB& _world = NMSScene::world();
+			drawRope(_world);
 			return true;
 		}
 		else if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::OptionsScreen)
@@ -136,6 +170,12 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 		lines->setup(&lineData);
 		md.renderers.push_back(lines);
 	}
+	for (const std::pair<TextData, glm::vec3>& td : sps->mPolygonTextData)
+	{
+		TextRendererDynamic* t = new TextRendererDynamic();
+		t->setup(&(td.first), td.second);
+		mPolyLabels.push_back(t);
+	}
 	mCircles.setup(&md);
 }
 
@@ -144,14 +184,34 @@ void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),
 {
 	glm::mat4 model(1.0f);
 	mText->render(proj, view, model);
+	for (auto& t : mPolyLabels)
+	{
+		t->render(proj, view, model);
+	}
 	mAxis.render(proj, view, model);
 	mCircles.render(proj, view, model);
 }
 
 void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
-	ScenePhysicsState* OW_UNUSED(state),
-	Camera* OW_UNUSED(camera), unsigned int OW_UNUSED(callCount))
+	ScenePhysicsState* state,
+	Camera* camera, unsigned int callCount)
 {
+	NMSRopeScenePhysics* sp = dynamic_cast<NMSRopeScenePhysics*>(state);
+	if (!callCount)
+	{
+		glm::vec3 extent(sp->mMinMax.second.x - sp->mMinMax.first.x,
+			sp->mMinMax.second.y - sp->mMinMax.first.y,
+			sp->mMinMax.second.z - sp->mMinMax.first.z);
+
+		glm::vec3 center((sp->mMinMax.second.x + sp->mMinMax.first.x) / 2.0f,
+			(sp->mMinMax.second.y + sp->mMinMax.first.y) / 2.0f,
+			(sp->mMinMax.second.z + sp->mMinMax.first.z) / 2.0f);
+		center.z = 200;
+		camera->position(center);
+		center.z = 0;
+		camera->lookAt(center);
+		//camera->FOV(glm::radians(45.0f));
+	}
 }
 
 void NMSRopeScene::deActivate(const Camera* OW_UNUSED(camera),

@@ -96,9 +96,9 @@ public:
 	{
 		return current->processUserCommands(userInput, nextScene, camera);
 	}
-	ScenePhysicsState* current;
-	ScenePhysicsState* previous;
-	ScenePhysicsState* tempRenderTarget;
+	ScenePhysicsState* current = nullptr;
+	ScenePhysicsState* previous = nullptr;
+	ScenePhysicsState* tempRenderTarget = nullptr;
 private:
 	bool mInterpolateAsVariableTimeStep = true;
 };

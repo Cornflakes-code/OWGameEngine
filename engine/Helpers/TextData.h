@@ -26,6 +26,16 @@ public:
 	{
 	}
 
+	void set(const std::string& s, int height,
+		const glm::vec2& _spacing, const glm::vec2& scale,
+		const std::string& f = "arial.ttf",
+		const glm::vec4& col = { 0.0, 0.0, 0.0, 1.0f })
+	{
+		text(s);
+		font(f, height);
+		colour(col);
+		spacing(_spacing.x, _spacing.y, scale);
+	}
 	void font(const std::string& fontFileName, int fontHeight)
 	{
 		mFontFileName = fontFileName;

@@ -74,7 +74,7 @@ private:
 	{
 		LoadedFace(const std::filesystem::path& path, 
 					int fontHeight);
-		LoadedFace() {}
+		LoadedFace():face(nullptr), maxRowWidth(0){}
 		FT_FaceRec_* face;
 		std::map<int, FontDetails> fontDimensions;
 		unsigned int maxRowWidth;

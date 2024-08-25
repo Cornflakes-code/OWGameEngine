@@ -11,11 +11,24 @@
 */
 struct NMSRopeScenePhysics : public ScenePhysicsState
 {
+	glm::vec2 mNiceSpacing = { 0,0 };
+	glm::vec2 mNiceScale = { 0,0 };
 	TextData mTextData;
+	std::pair<glm::vec3, glm::vec3> mMinMax = 
+	{
+		glm::vec3(std::numeric_limits<float>::min(),
+				std::numeric_limits<float>::min(),
+				std::numeric_limits<float>::min()),
+		glm::vec3(std::numeric_limits<float>::max(),
+				std::numeric_limits<float>::max(),
+				std::numeric_limits<float>::max())
+	};
 	std::vector<Floats> mVectors;
+	std::vector<std::pair<TextData, glm::vec3>> mPolygonTextData;
 	NMSRopeScenePhysics(const Scene* owner)
 		: ScenePhysicsState(owner) {}
 	void setup() override;
+	void drawRope(const AABB& _world);
 	void variableTimeStep(OWUtils::Time::duration dt) override;
 	void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) override;
 	void interpolateRatio(const ScenePhysicsState* previousState, double multPrev,
@@ -35,6 +48,7 @@ class TextRenderer;
 class NMSRopeScene : public NMSScene
 {
 	TextRenderer* mText = nullptr;
+	std::vector<TextRenderer*> mPolyLabels;
 	Model mAxis;
 	Model mCircles;
 public:

@@ -28,10 +28,10 @@ protected:
 	virtual void doSetup(const TextData* td, const glm::vec3& initialPosition) = 0;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	glm::vec4 mColour;
+	glm::vec4 mColour = glm::vec4();
 	Texture mTexture;
 	AABB mBounds;
-	size_t mV4Size;
+	size_t mV4Size = 0;
 	unsigned int mVao = 0;
 	unsigned int mVbo = 0;
 #pragma warning( pop )

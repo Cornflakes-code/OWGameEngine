@@ -106,16 +106,32 @@
     <LinkIncremental>true</LinkIncremental>
     <IntDir>$(Platform)\$(Configuration)\NMSobj\</IntDir>
     <ManagedAssembly>true</ManagedAssembly>
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(Platform)\$(Configuration)\NMSobj\</IntDir>
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebugInfo|Win32'">
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebugInfo|x64'">
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -127,6 +143,7 @@
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +169,7 @@ del /q "$(TargetDir)\config*.json"
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,6 +187,7 @@ del /q "$(TargetDir)\config*.json"
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -254,6 +273,9 @@ del /q "$(TargetDir)\config*.json"
     <ClInclude Include="rope_quick.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\RopeCAD\current\Source\CSharpRopeCADDev\RCRopeEx2\RCRopeEx2.csproj">
+      <Project>{9c60dea7-da81-4f17-af7c-1f48a30f78d4}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\engine\OWEngine\OWEngine.vcxproj">
       <Project>{29989fc3-099a-4eb5-8455-dd116af78e11}</Project>
     </ProjectReference>

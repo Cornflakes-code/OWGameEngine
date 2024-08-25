@@ -32,7 +32,7 @@ AABB::AABB()
 AABB AABB::calcBounds(const std::vector<glm::vec4>& v)
 {
 	// Note: No depth value: default to 0;
-	const float _max = std::numeric_limits<float>::max();
+	static constexpr float _max = std::numeric_limits<float>::max();
 	glm::vec4 minPoint(_max, _max, 0, 1);
 	glm::vec4 maxPoint(-_max, -_max, 0, 1);
 

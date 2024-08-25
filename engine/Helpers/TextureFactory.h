@@ -17,6 +17,14 @@ public:
 	const Texture& getTexture(
 			const std::filesystem::path& path);
 private:
+	/*
+		https ://www.reddit.com/r/cpp_questions/comments/1bcy8w1/what_is_this_code_doing/
+		class TextureHolder
+		{
+			private:
+			std::map<Textures::ID, std::unique_ptr<sf::Texture>> mTextureMap;
+		};
+	*/ 
 	void initTexture(
 		const Texture& tb, int width, int height, GLint filter,
 		unsigned char* data, GLenum internalFormat, GLint level, 

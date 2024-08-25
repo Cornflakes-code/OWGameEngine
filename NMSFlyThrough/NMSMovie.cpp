@@ -50,14 +50,11 @@ void NMSMovie::preRun()
 
 	s = new NMSRopeScene(this);
 
-	this->add(s, new NMSRopeScenePhysics(s), s->name() == activeScene);
-
-
 	Camera* _camera = camera();
 	_camera->aspectRatio(globals->physicalWindowSize().x /
-						(1.0f * globals->physicalWindowSize().y));
+		(1.0f * globals->physicalWindowSize().y));
 	_camera->moveScale(NMSScene::world().size().x / 1.0f);
-	
+
 	const glm::vec3& wmax = NMSScene::world().maxPoint();
 	float scale = 1.5f;
 	_camera->position({ scale * wmax.x, scale * wmax.y, scale * wmax.z });
@@ -68,6 +65,8 @@ void NMSMovie::preRun()
 
 	_camera->clipping(0.01f, 1200.0f);
 	_camera->FOV(glm::radians(45.0f));
+
+	this->add(s, new NMSRopeScenePhysics(s), s->name() == activeScene);
 }
 
 void NMSMovie ::render(const ScenePhysicsState* state)

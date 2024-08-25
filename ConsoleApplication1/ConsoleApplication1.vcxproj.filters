@@ -27,6 +27,9 @@
     <ClCompile Include="..\NMSFlyThrough\rope_quick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\NMSFlyThrough\PolygonBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\NMSFlyThrough\rope_interface_utils.h">

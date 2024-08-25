@@ -24,7 +24,7 @@ bool initQuickExterns()
 	quick_start = (Quick_start)GetProcAddress(h, "quick_start");
 	if (quick_start == nullptr)
 		return false;
-	std::string connectionString = "Data Source=NEXUS\\ROPECAD;Initial Catalog=RopeCAD;MultipleActiveResultSets=True;Integrated Security=True";
+	std::string connectionString = "Data Source=NEXUS\\ROPECAD;Initial Catalog=RopeCAD;MultipleActiveResultSets=True;Integrated Security=True;Encrypt=False;TrustServerCertificate=True";
 	RopeBuf* buffer = nullptr;
 	RopeBuf* p = toRemoteString(connectionString, buffer);
 	pRCDefaults = quick_start(p);
