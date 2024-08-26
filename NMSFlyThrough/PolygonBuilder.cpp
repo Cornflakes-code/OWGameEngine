@@ -40,48 +40,40 @@ std::pair<glm::vec3, glm::vec3> PolygonBuilder::boundingBox(const Floats& points
 
 void PolygonBuilder::populate(RopeBuf* buffer)
 {
-	//typedef std::vector<xyz> Floats;
-	//std::vector<std::pair<Floats, PolyType>> mValues;
 	RopeBuf* p = buffer;
-	int numPolys = *((int*)(p));
-	p += 1;
-	int jfw = *((int*)(p));
+	int numPolys = *((int*)(p++));
+	int jfw = *((int*)(p++));
 	for (int i = 0; i < numPolys; i++)
 	{
-		p += 1;
+		RopeBuf* elm = (RopeBuf*)(*p++);
 		PolygonBuilder pb;
-		RopeBuf* elm = (RopeBuf*)(*p);
 		pb.populate(elm);
 		mPolygons.push_back(pb);
 	}
-	p += 1;
-	int numFloats = (int)(*p);
-	for (int i = 0; i < numFloats; i++)
+
+	int numPolygons = (int)(*p++);
+	for (int i = 0; i < numPolygons; i++)
 	{
-		p += 1;
-		RopeBuf* pf = (RopeBuf*)(*p);
+		float zdepth = *((float*)p++);
+		RopeBuf* pf = (RopeBuf*)(*p++);
 		Floats ff;
-		getFloats(ff, pf);
-		p += 1;
-		PolyType pt = (PolyType)(*p);
-		p += 1; // read zed here
-		p += 1;
-		int id = (int)(*p);
+		getFloats(ff, pf, zdepth);
+		PolyType pt = (PolyType)(*p++);
+		int id = (int)(*p++);
 		ValueType vt(ff, pt, id);
 		mValues.push_back(vt);
 	}
 }
 
-void PolygonBuilder::getFloats(Floats& ff, RopeBuf* floatBuf)
+void PolygonBuilder::getFloats(Floats& ff, RopeBuf* floatBuf, float zdepth)
 {
-	int numFloats = (int)(*floatBuf);
-	floatBuf += 1;// sizeof(RopeBuf);
+	int numFloats = (int)(*floatBuf++);
 	float* f = (float*)(floatBuf);
 	for (int i = 0; i < numFloats; i += 2)
 	{
-		float x = *f;  f += 1;// sizeof(float);
-		float y = *f;  f += 1;//sizeof(float);
-		const float z = 0;
+		float x = *f++;
+		float y = *f++;
+		float z = zdepth;
 		ff.push_back({ x, y, z });
 	}
 }

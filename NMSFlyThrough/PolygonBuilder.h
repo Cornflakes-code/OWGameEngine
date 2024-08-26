@@ -34,7 +34,7 @@ class PolygonBuilder
 
 	std::vector<PolygonBuilder> mPolygons;
 	std::vector<ValueType> mValues;
-	void getFloats(Floats& f, RopeBuf* floatBuf);
+	void getFloats(Floats& f, RopeBuf* floatBuf, float zdepth);
 public:
 	static std::pair<glm::vec3, glm::vec3> boundingBox(const Floats& points);
 	static glm::vec3 center(const glm::vec3& p1, const glm::vec3& p2);
