@@ -5,5 +5,5 @@
 namespace Rope
 {
 	bool initRopes();
-	PolygonBuilder* drawRope(int ropeNum, int width, int height);
+	PolygonBuilder* drawRope(int ropeNum, int width, int height, int numDepthLayers);
 }

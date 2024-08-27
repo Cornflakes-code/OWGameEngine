@@ -23,7 +23,7 @@ struct NMSRopeScenePhysics : public ScenePhysicsState
 				std::numeric_limits<float>::max(),
 				std::numeric_limits<float>::max())
 	};
-	std::vector<Floats> mVectors;
+	PolygonBuilder* mPolyBuilder = nullptr;
 	std::vector<std::pair<TextData, glm::vec3>> mPolygonTextData;
 	NMSRopeScenePhysics(const Scene* owner)
 		: ScenePhysicsState(owner) {}

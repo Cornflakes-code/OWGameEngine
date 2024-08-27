@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RCRopeEx2", "..\..\RopeCAD\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "..\..\OpenGL\Glitter\Build\Glitter\Vendor\assimp\code\assimp.vcxproj", "{CF5FAF9F-32D0-38DE-80F9-D5CE12A52691}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{3BC106B5-F411-4407-A9F8-9440190A6CCA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -195,38 +193,6 @@ Global
 		{CF5FAF9F-32D0-38DE-80F9-D5CE12A52691}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
 		{CF5FAF9F-32D0-38DE-80F9-D5CE12A52691}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|Win32
 		{CF5FAF9F-32D0-38DE-80F9-D5CE12A52691}.RelWithDebInfo|x86.Build.0 = RelWithDebInfo|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|Any CPU.Build.0 = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|Win32.Build.0 = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|x64.ActiveCfg = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|x64.Build.0 = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|x86.ActiveCfg = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Debug|x86.Build.0 = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|Any CPU.ActiveCfg = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|Any CPU.Build.0 = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|Win32.ActiveCfg = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|Win32.Build.0 = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|x64.ActiveCfg = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|x64.Build.0 = Debug|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|x86.ActiveCfg = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.MinSizeRel|x86.Build.0 = Debug|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|Any CPU.ActiveCfg = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|Any CPU.Build.0 = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|Win32.ActiveCfg = Release|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|Win32.Build.0 = Release|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|x64.ActiveCfg = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|x64.Build.0 = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|x86.ActiveCfg = Release|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.Release|x86.Build.0 = Release|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|Any CPU.ActiveCfg = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|Any CPU.Build.0 = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|Win32.Build.0 = Release|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|x64.ActiveCfg = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|x64.Build.0 = Release|x64
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|x86.ActiveCfg = Release|Win32
-		{3BC106B5-F411-4407-A9F8-9440190A6CCA}.RelWithDebInfo|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

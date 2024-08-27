@@ -14,10 +14,10 @@ bool Rope::initRopes()
 	return ok;
 }
 
-PolygonBuilder* Rope::drawRope(int ropeNum, int width, int height)
+PolygonBuilder* Rope::drawRope(int ropeNum, int width, int height, int numDepthLayers)
 {
-	RopeBuf* pointSourceBuffer = calcQuickRope(ropeNum, width, height);
+	RopeBuf* pointSourceBuffer = calcQuickRope(ropeNum, width, height, numDepthLayers);
 	PolygonBuilder* pb = new PolygonBuilder();
-	pb->populate(pointSourceBuffer);
+	pb->get(pointSourceBuffer);
 	return pb;
 }

@@ -31,9 +31,9 @@ bool initQuickExterns()
 	return pRCDefaults != nullptr;
 }
 
-RopeBuf* calcQuickRope(int ropeNum, int width, int height)
+RopeBuf* calcQuickRope(int ropeNum, int width, int height, int numDepthLayers)
 {
-	return quick_draw_int(ropeNum, width, height);
+	return quick_draw_int(ropeNum, width, height, numDepthLayers);
 }
 
 bool testQuickExterns()
@@ -44,9 +44,9 @@ bool testQuickExterns()
 		//RopeBuf* con = toRemoteString("6x19(9//9//1)//P", rb);
 		//RopeBuf* con = toRemoteString("7x7 WRC", rb);
 		//result = quick_draw(con);
-		RopeBuf* pDrawStructure = quick_draw_int(9239, 5, 5);
+		RopeBuf* pDrawStructure = quick_draw_int(9239, 5, 5, 0);
 		PolygonBuilder pb;
-		pb.populate(pDrawStructure);
+		pb.get(pDrawStructure);
 	}
 	return true;
 }

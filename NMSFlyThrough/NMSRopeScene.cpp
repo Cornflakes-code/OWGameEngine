@@ -36,18 +36,16 @@ void NMSRopeScenePhysics::setup()
 
 void NMSRopeScenePhysics::drawRope(const AABB& _world)
 {
-	mVectors.clear();
+	delete mPolyBuilder;
 	glm::vec2 ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
 
-	PolygonBuilder* pb = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y);
-	std::vector<PolygonId> polygonIds;
-	pb->getAllFloats(mVectors, polygonIds);
-	for (const PolygonId& p : polygonIds)
+	mPolyBuilder = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y, 10);
+	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
 		TextData td;
-		td.set(std::to_string(p.id), 10, mNiceSpacing * 10.0f, mNiceScale);
-		mPolygonTextData.push_back(std::pair(td, p.pos));
+		td.set(std::to_string(si.id), 10, mNiceSpacing * 10.0f, mNiceScale);
+		mPolygonTextData.push_back(std::pair(td, si.pos));
 	}
 /*
 	std::for_each(mVectors.begin(), mVectors.end(),
@@ -69,14 +67,7 @@ void NMSRopeScenePhysics::drawRope(const AABB& _world)
 		}
 	}
 */
-	Floats temp;
-	for (Floats& row : mVectors) 
-	{
-		std::pair<glm::vec3, glm::vec3> minMax = PolygonBuilder::boundingBox(row);
-		temp.push_back(minMax.first);
-		temp.push_back(minMax.second);
-	}
-	mMinMax = PolygonBuilder::boundingBox(temp);
+	mMinMax = mPolyBuilder->bounds();
 }
 
 void NMSRopeScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
@@ -161,14 +152,17 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 		shaders.boilerPlateGeometryShader());
 
 	std::vector<glm::vec3> coords;
-	for (auto& val : sps->mVectors)
+	for (auto& wire : sps->mPolyBuilder->slices())
 	{
-		MeshDataLight lineData;
-		lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
-		lineData.vertices(val, GL_LINES);
-		LightRenderer* lines = new LightRenderer(lineShader, "pvm");
-		lines->setup(&lineData);
-		md.renderers.push_back(lines);
+		for (auto& polygon : wire)
+		{
+			MeshDataLight lineData;
+			lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
+			lineData.vertices(polygon, GL_LINES);
+			LightRenderer* lines = new LightRenderer(lineShader, "pvm");
+			lines->setup(&lineData);
+			md.renderers.push_back(lines);
+		}
 	}
 	for (const std::pair<TextData, glm::vec3>& td : sps->mPolygonTextData)
 	{
