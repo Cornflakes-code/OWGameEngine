@@ -40,33 +40,13 @@ void NMSRopeScenePhysics::drawRope(const AABB& _world)
 	glm::vec2 ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
 
-	mPolyBuilder = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y, 10);
+	mPolyBuilder = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y, 30);
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
 		TextData td;
 		td.set(std::to_string(si.id), 10, mNiceSpacing * 10.0f, mNiceScale);
 		mPolygonTextData.push_back(std::pair(td, si.pos));
 	}
-/*
-	std::for_each(mVectors.begin(), mVectors.end(),
-		[&mMinValuex, &mMaxValuex](const auto& v)
-		{
-			std::for_each(v.begin(), v.end())
-		}
-	for (Floats& row : mVectors)
-	{
-		std::for_each(row.begin(), row.end())
-			[&mMinValuex](const auto& elm)
-			{
-
-			}
-		for (glm::vec3& pt : row)
-		{
-
-
-		}
-	}
-*/
 	mMinMax = mPolyBuilder->bounds();
 }
 
@@ -142,28 +122,9 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 	mText = new TextRendererDynamic();
 	mText->setup(&(sps->mTextData), glm::vec3(0));
 
-	ModelData md;
+	ModelData md = NMS::createRopeLines(sps->mPolyBuilder->slices());
 	mAxis.setup(&md);
 
-	ShaderFactory shaders;
-	Shader* lineShader = new Shader();
-	lineShader->loadShaders(shaders.boilerPlateVertexShader(),
-		shaders.boilerPlateFragmentShader(),
-		shaders.boilerPlateGeometryShader());
-
-	std::vector<glm::vec3> coords;
-	for (auto& wire : sps->mPolyBuilder->slices())
-	{
-		for (auto& polygon : wire)
-		{
-			MeshDataLight lineData;
-			lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
-			lineData.vertices(polygon, GL_LINES);
-			LightRenderer* lines = new LightRenderer(lineShader, "pvm");
-			lines->setup(&lineData);
-			md.renderers.push_back(lines);
-		}
-	}
 	for (const std::pair<TextData, glm::vec3>& td : sps->mPolygonTextData)
 	{
 		TextRendererDynamic* t = new TextRendererDynamic();
@@ -200,7 +161,7 @@ void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
 		glm::vec3 center((sp->mMinMax.second.x + sp->mMinMax.first.x) / 2.0f,
 			(sp->mMinMax.second.y + sp->mMinMax.first.y) / 2.0f,
 			(sp->mMinMax.second.z + sp->mMinMax.first.z) / 2.0f);
-		center.z = 200;
+		center.z = -200;
 		camera->position(center);
 		center.z = 0;
 		camera->lookAt(center);

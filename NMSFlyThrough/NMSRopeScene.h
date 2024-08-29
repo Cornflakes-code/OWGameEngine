@@ -49,6 +49,7 @@ class NMSRopeScene : public NMSScene
 {
 	TextRenderer* mText = nullptr;
 	std::vector<TextRenderer*> mPolyLabels;
+
 	Model mAxis;
 	Model mCircles;
 public:

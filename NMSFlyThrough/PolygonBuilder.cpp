@@ -3,50 +3,13 @@
 #include <Core/ErrorHandling.h>
 #include <Core/LogStream.h>
 #include <Core/CommonUtils.h>
-
-glm::vec3 PolygonBuilder::center(const glm::vec3& p1, const glm::vec3& p2)
-{
-	return glm::vec3 ((p1.x + p2.x) / 2.0f,
-					(p1.y + p2.y) / 2.0f,
-					(p1.z + p2.z) / 2.0f);
-}
-
-std::pair<glm::vec3, glm::vec3> PolygonBuilder::boundingBox(const std::vector<glm::vec3>& points)
-{
-	std::pair<glm::vec3, glm::vec3> retval =
-	{
-		glm::vec3(std::numeric_limits<float>::max(),
-				std::numeric_limits<float>::max(),
-				std::numeric_limits<float>::max()),
-		glm::vec3(std::numeric_limits<float>::min(),
-				std::numeric_limits<float>::min(),
-				std::numeric_limits<float>::min())
-	};
-	for (const glm::vec3& pt : points)
-	{
-		if (pt.x < retval.first.x)
-			retval.first.x = pt.x;
-		if (pt.x > retval.second.x)
-			retval.second.x = pt.x;
-
-		if (pt.y < retval.first.y)
-			retval.first.y = pt.y;
-		if (pt.y > retval.second.y)
-			retval.second.y = pt.y;
-
-		if (pt.z < retval.first.z)
-			retval.first.z = pt.z;
-		if (pt.z > retval.second.z)
-			retval.second.z = pt.z;
-	}
-	return retval;
-}
+#include "NMSUtils.h"
 
 void PolygonBuilder::clear()
 {
-	const float fmin = std::numeric_limits<float>::min();
 	const float fmax = std::numeric_limits<float>::max();
-	mMinMax = { {fmax, fmax, fmax}, {fmin, fmin, fmin} };
+	const float fmin = -std::numeric_limits<float>::max();
+	mMinMax = { {fmin, fmin, fmin}, {fmax, fmax, fmax} };
 	mAllPolygons = std::vector<std::vector<std::vector<glm::vec3>>>();
 	mAllSliceLabels = std::vector<SliceId>();
 }
@@ -72,13 +35,13 @@ void PolygonBuilder::get(RopeBuf* buffer)
 		std::vector<std::vector<glm::vec3>> layer;
 		for (int i = 0; i < wire.size(); i++)
 		{
-			if (i == 0)
+			if (true)//i == 0) // Only label the first layer
+
 			{
-				// Only label the first layer
-				std::pair<glm::vec3, glm::vec3> sliceBounds = PolygonBuilder::boundingBox(wire[0].f);
+				std::pair<glm::vec3, glm::vec3> sliceBounds = NMS::boundingBox(wire[i].f);
 				SliceId si;
-				si.id = wire[0].id;
-				si.pos = center(sliceBounds.first, sliceBounds.second);
+				si.id = wire[i].id;
+				si.pos = NMS::center(sliceBounds.first, sliceBounds.second);
 				mAllSliceLabels.push_back(si);
 
 				if (!boundsFound)
@@ -104,10 +67,12 @@ void getPoints(std::vector<glm::vec3>& ff, RopeBuf* floatBuf, float zdepth)
 	{
 		float x = *f++;
 		float y = *f++;
-		float z = -zdepth;
+		float z = zdepth * 10;
 		ff.push_back({ x, y, z });
 	}
 }
+
+bool found701 = false;
 
 // The buffer structure is determined by rope.cs
 void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSlice>>& allWires)
@@ -121,6 +86,8 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 		doPopulate(elm, allWires); // Recurse into the data structure
 	}
 
+	if (found701)
+		return;
 	int numPolygons = (int)(*p++);
 	for (int i = 0; i < numPolygons; i++)
 	{
@@ -130,6 +97,9 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 		getPoints(points, pf, zdepth);
 		PolyType pt = (PolyType)(*p++);
 		int id = (int)(*p++);
+//		if (id < 8000 || id > 9000)
+//			continue;
+		//found701 = true;
 		WireSlice vt(points, pt, id);
 		if (OWUtils::isEqual(zdepth, 0))
 		{

@@ -42,8 +42,6 @@ private:
 	void clear();
 	void doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSlice>>& allWires);
 public:
-	static std::pair<glm::vec3, glm::vec3> boundingBox(const std::vector<glm::vec3>& points);
-	static glm::vec3 center(const glm::vec3& p1, const glm::vec3& p2);
 	virtual ~PolygonBuilder()
 	{
 		clear();
