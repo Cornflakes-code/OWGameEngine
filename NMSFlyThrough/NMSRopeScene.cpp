@@ -39,8 +39,12 @@ void NMSRopeScenePhysics::drawRope(const AABB& _world)
 	delete mPolyBuilder;
 	glm::vec2 ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
-
-	mPolyBuilder = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y, 30);
+	/*
+	* 30822 - simple
+	* 29081 - strand for core
+	* 9239 - Original used for testing
+	*/
+	mPolyBuilder = Rope::drawRope(30822, ropeZoom.x, ropeZoom.y, 30);
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
 		TextData td;
@@ -125,6 +129,7 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 	ModelData md = NMS::createRopeLines(sps->mPolyBuilder->slices());
 	mAxis.setup(&md);
 
+
 	for (const std::pair<TextData, glm::vec3>& td : sps->mPolygonTextData)
 	{
 		TextRendererDynamic* t = new TextRendererDynamic();
@@ -132,6 +137,7 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 		mPolyLabels.push_back(t);
 	}
 	mCircles.setup(&md);
+
 }
 
 void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),

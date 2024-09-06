@@ -115,7 +115,7 @@ namespace NMS
 		return retval;
 	}
 
-	ModelData createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& slices)
+	ModelData createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 	{
 		int fontHeight = 12;
 		glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
@@ -129,34 +129,72 @@ namespace NMS
 			shaders.boilerPlateFragmentShader(),
 			shaders.boilerPlateGeometryShader());
 
+		OWUtils::SolidColours colours[] =
+		{
+			OWUtils::SolidColours::GREEN,
+			OWUtils::SolidColours::RED,
+			OWUtils::SolidColours::BLUE,
+			OWUtils::SolidColours::CYAN,
+			OWUtils::SolidColours::MAGENTA,
+			OWUtils::SolidColours::YELLOW
+		};
+		int colourIndex = 0;
 		// Prepare the wire cross sections
 		ModelData md;
 		std::vector<glm::vec3> coords;
-		for (auto& wire : slices)
+		for (auto& slice : threeDWires)
 		{
-			for (auto& polygon : wire)
+			for (auto& polygon : slice)
 			{
 				MeshDataLight lineData;
-				lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
+				lineData.colour(OWUtils::colour(colours[colourIndex]), "colour");
 				lineData.vertices(polygon, GL_LINE_LOOP);
 				LightRenderer* lines = new LightRenderer(lineShader, "pvm");
 				lines->setup(&lineData);
 				md.renderers.push_back(lines);
 			}
+			//colourIndex++; if (colourIndex > 5) colourIndex = 0;
 		}
-		for (std::vector<std::vector<glm::vec3>>& wire : slices)
+		/*
+		*/
+		bool drawCenters = false;
+		bool drawSurface = true;
+		int numLayers = threeDWires.size();
+		int numWiresInEachLayer = threeDWires[0].size();
+		int numPointsPerSlice = threeDWires[0][0].size() - 4;
+		std::vector< std::vector<glm::vec3>> lines;
+		const size_t numWires = threeDWires[0].size();
+		for (int eachWire = 0; eachWire < numWiresInEachLayer; eachWire++)
 		{
-			if (wire.size() < 2)
-				continue;
-			std::vector<glm::vec3> line;
-			
-			for (std::vector<glm::vec3>& slice : wire)
+			if (drawCenters)
 			{
-				line.push_back(NMS::center(slice));
+				std::vector<glm::vec3> line;
+				for (int layer = 0; layer < numLayers; layer++)
+				{
+					std::vector<glm::vec3>& slice = threeDWires[layer][eachWire];
+					line.push_back(NMS::center(slice));
+				}
+				lines.push_back(line);
 			}
+			if (drawSurface)
+			{
+				for (int pointsPerSlice = 0; pointsPerSlice < numPointsPerSlice; pointsPerSlice++)
+				{
+					std::vector<glm::vec3> line;
+					for (int layer = 0; layer < numLayers; layer++)
+					{
+						glm::vec3 pt = threeDWires[layer][eachWire][pointsPerSlice];
+						line.push_back(pt);
+					}
+					lines.push_back(line);
+				}
+			}
+		}
+		for (std::vector<glm::vec3>& aLine : lines)
+		{
 			MeshDataLight lineData;
 			lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED), "colour");
-			lineData.vertices(line, GL_LINE_STRIP);
+			lineData.vertices(aLine, GL_LINE_STRIP);
 			//		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
 			LightRenderer* lines = new LightRenderer(lineShader, "pvm");
 			lines->setup(&lineData);

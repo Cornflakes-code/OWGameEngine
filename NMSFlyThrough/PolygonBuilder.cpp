@@ -88,8 +88,8 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 
 	if (found701)
 		return;
-	int numPolygons = (int)(*p++);
-	for (int i = 0; i < numPolygons; i++)
+	int numValues = (int)(*p++);
+	for (int i = 0; i < numValues; i++)
 	{
 		float zdepth = *((float*)p++);
 		RopeBuf* pf = (RopeBuf*)(*p++);
@@ -97,10 +97,24 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 		getPoints(points, pf, zdepth);
 		PolyType pt = (PolyType)(*p++);
 		int id = (int)(*p++);
-//		if (id < 8000 || id > 9000)
+
+//		if (!((id == 2055) || (id == 2002) || (id == 1000) || (id == 0)))
 //			continue;
 		//found701 = true;
 		WireSlice vt(points, pt, id);
+		static float zOldDepth = std::numeric_limits<float>::max();
+		if (zdepth != zOldDepth)
+		{
+			zOldDepth = zdepth;
+			std::vector<WireSlice> temp;
+			temp.push_back(vt);
+			allWires.push_back(temp);
+		}
+		else
+		{
+			allWires.back().push_back(vt);
+		}
+		/*
 		if (OWUtils::isEqual(zdepth, 0))
 		{
 			// The zero depth element is always the first polygon for a new wire
@@ -117,6 +131,7 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 					<< zdepth << "].\n");
 			allWires.back().push_back(vt);
 		}
+*/
 	}
 }
 
