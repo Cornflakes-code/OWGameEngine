@@ -11,9 +11,9 @@ class OWENGINE_API ShaderFactory
 			std::string> ShaderCache;
 public:
 	const std::string& getShader(const std::string& fileName);
-	const std::string& boilerPlateVertexShader();
-	const std::string& boilerPlateFragmentShader();
-	const std::string& boilerPlateGeometryShader();
+	static const std::string& boilerPlateVertexShader();
+	static const std::string& boilerPlateFragmentShader();
+	static const std::string& boilerPlateGeometryShader();
 
 private:
 #pragma warning( push )

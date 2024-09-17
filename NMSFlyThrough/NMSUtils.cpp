@@ -123,11 +123,16 @@ namespace NMS
 
 		float scale = 1.0;
 
-		ShaderFactory shaders;
+		ShaderFactory shaders; 
 		Shader* lineShader = new Shader();
 		lineShader->loadShaders(shaders.boilerPlateVertexShader(),
 			shaders.boilerPlateFragmentShader(),
 			shaders.boilerPlateGeometryShader());
+
+		Shader* wireShader = new Shader();
+		wireShader->loadShaders("Wires.v.glsl",
+								"Wires.f.glsl",
+								shaders.boilerPlateGeometryShader());
 
 		OWUtils::SolidColours colours[] =
 		{
@@ -146,8 +151,9 @@ namespace NMS
 		{
 			for (auto& polygon : slice)
 			{
-				MeshDataLight lineData;
-				lineData.colour(OWUtils::colour(colours[colourIndex]), "colour");
+				MeshDataLight lineData; 
+				lineData.colour(OWUtils::colour(OWUtils::SolidColours::YELLOW), "colour");
+				//lineData.colour(OWUtils::colour(colours[colourIndex]), "colour");
 				lineData.vertices(polygon, GL_LINE_LOOP);
 				LightRenderer* lines = new LightRenderer(lineShader, "pvm");
 				lines->setup(&lineData);
@@ -158,11 +164,13 @@ namespace NMS
 		/*
 		*/
 		bool drawCenters = false;
-		bool drawSurface = true;
+		bool drawLines = false;
+		bool drawSurfaces = true;
 		int numLayers = threeDWires.size();
 		int numWiresInEachLayer = threeDWires[0].size();
 		int numPointsPerSlice = threeDWires[0][0].size() - 4;
 		std::vector< std::vector<glm::vec3>> lines;
+		std::vector< std::vector<glm::vec3>> surfaces;
 		const size_t numWires = threeDWires[0].size();
 		for (int eachWire = 0; eachWire < numWiresInEachLayer; eachWire++)
 		{
@@ -176,29 +184,66 @@ namespace NMS
 				}
 				lines.push_back(line);
 			}
-			if (drawSurface)
+			if (drawLines)
 			{
-				for (int pointsPerSlice = 0; pointsPerSlice < numPointsPerSlice; pointsPerSlice++)
+				for (int pointOnPoly = 0; pointOnPoly < numPointsPerSlice; pointOnPoly++)
 				{
 					std::vector<glm::vec3> line;
 					for (int layer = 0; layer < numLayers; layer++)
 					{
-						glm::vec3 pt = threeDWires[layer][eachWire][pointsPerSlice];
+						glm::vec3 pt = threeDWires[layer][eachWire][pointOnPoly];
 						line.push_back(pt);
 					}
 					lines.push_back(line);
 				}
 			}
+			if (drawSurfaces)
+			{
+				//std::vector<glm::vec3> triAnglePointIndices;
+				for (int pointOnPoly = 0; pointOnPoly < numPointsPerSlice-1; pointOnPoly++)
+				{
+					std::vector<glm::vec3> triAnglePoints;
+					for (int layer = 0; layer < (numLayers - 1); layer++)
+					{
+						// Setup for GL_TRIANGLESTRIP // https://stackoverflow.com/questions/20394727/gl-triangle-strip-vs-gl-triangle-fan
+						glm::vec3 pt = threeDWires[layer][eachWire][pointOnPoly]; // A
+						triAnglePoints.push_back(pt);
+						pt = threeDWires[layer][eachWire][pointOnPoly+1]; // B
+						triAnglePoints.push_back(pt);
+						pt = threeDWires[layer+1][eachWire][pointOnPoly]; // C
+						triAnglePoints.push_back(pt);
+						pt = threeDWires[layer+1][eachWire][pointOnPoly+1]; // D
+						triAnglePoints.push_back(pt);
+					}
+					surfaces.push_back(triAnglePoints);
+				}
+			}
 		}
-		for (std::vector<glm::vec3>& aLine : lines)
+		if (drawSurfaces)
 		{
-			MeshDataLight lineData;
-			lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED), "colour");
-			lineData.vertices(aLine, GL_LINE_STRIP);
-			//		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
-			LightRenderer* lines = new LightRenderer(lineShader, "pvm");
-			lines->setup(&lineData);
-			md.renderers.push_back(lines);
+			for (std::vector<glm::vec3>& aLine : surfaces)
+			{
+				MeshDataLight lineData;
+				lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE), "colour");
+				lineData.vertices(aLine, GL_TRIANGLE_STRIP);
+				//		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
+				LightRenderer* lines = new LightRenderer(wireShader, "pvm");
+				lines->setup(&lineData);
+				md.renderers.push_back(lines);
+			}
+		}
+		if (drawLines)
+		{
+			for (std::vector<glm::vec3>& aLine : lines)
+			{
+				MeshDataLight lineData;
+				lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED), "colour");
+				lineData.vertices(aLine, GL_LINE_STRIP);
+				//		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
+				LightRenderer* lines = new LightRenderer(lineShader, "pvm");
+				lines->setup(&lineData);
+				md.renderers.push_back(lines);
+			}
 		}
 		return md;
 	}

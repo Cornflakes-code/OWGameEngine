@@ -162,6 +162,9 @@
     <ClInclude Include="..\Core\ResourcePathFactory.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="LightSource.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -295,6 +298,9 @@
     </ClCompile>
     <ClCompile Include="..\Core\ResourcePathFactory.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="LightSource.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

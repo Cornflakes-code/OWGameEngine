@@ -60,6 +60,13 @@ extern OWENGINE_API GlobalSettings* globals;
 // https://www.gamedeveloper.com/programming/behavior-trees-for-ai-how-they-work
 
 // https://www.gamedeveloper.com/design/decision-modeling-and-optimization-in-game-design-part-1-introduction
+
+/*
+ to remove command window
+ https://stackoverflow.com/questions/5995433/removing-console-window-for-glut-freeglut-glfw
+ set Linker->System->SubSystem to "Windows (/SUBSYSTEM:WINDOWS)" instead of "Console (/SUBSYSTEM:CONSOLE)"
+ set Linker->All Options->Entry Point = 'mainCRTStartup'
+*/
 int main(int argc, char* argv[])
 {
 	try

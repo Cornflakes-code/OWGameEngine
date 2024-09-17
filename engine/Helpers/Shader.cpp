@@ -104,8 +104,8 @@ int Shader::addShader(const std::string& sourceCode, unsigned int type,
 	return shader;
 }
 
-std::string Shader::readFile(const std::string& fileName, 
-							 bool usePathFactory)
+std::string readFile(const std::string& fileName,
+							 bool usePathFactory = true)
 {
 	if (fileName.empty())
 		return "";
@@ -136,13 +136,23 @@ std::string Shader::readFile(const std::string& fileName,
 	}
 }
 
-void Shader::loadShaders(const std::string& vertexShader,
-						 const std::string& fragShader,
-						 const std::string& geometryShader)
+std::string getShaderCode(const std::string& s)
 {
-	linkShaders(addVertexShader(vertexShader),
-				addFragmentShader(fragShader),
-				addGeometryShader(geometryShader));
+	if (!s.size())
+		return "";
+	if (s[0] == '#')
+		return s;
+	else
+		return readFile(s);
+}
+
+void Shader::loadShaders(const std::string& vertexShader,
+	const std::string& fragShader,
+	const std::string& geometryShader)
+{
+	linkShaders(addVertexShader(getShaderCode(vertexShader)),
+		addFragmentShader(getShaderCode(fragShader)),
+		addGeometryShader(getShaderCode(geometryShader)));
 
 }
 
@@ -152,9 +162,9 @@ void Shader::create(const std::string& vertexPath,
 {
 	try
 	{
-		loadShaders(readFile(vertexPath),
-				readFile(fragPath),
-				readFile(geometryPath));
+		loadShaders(getShaderCode(vertexPath),
+					getShaderCode(fragPath),
+					getShaderCode(geometryPath));
 	}
 	catch (const NMSLogicException& e)
 	{

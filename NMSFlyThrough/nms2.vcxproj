@@ -165,6 +165,8 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(ProjectDir)$(ProjectName).json" "$(TargetDir)\$(ProjectName).json"

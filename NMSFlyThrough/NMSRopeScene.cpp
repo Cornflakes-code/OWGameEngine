@@ -44,7 +44,7 @@ void NMSRopeScenePhysics::drawRope(const AABB& _world)
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	mPolyBuilder = Rope::drawRope(30822, ropeZoom.x, ropeZoom.y, 30);
+	mPolyBuilder = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y, 30);
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
 		TextData td;

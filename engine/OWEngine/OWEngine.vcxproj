@@ -232,6 +232,7 @@
     <ClInclude Include="..\Renderers\TextRendererDynamic.h" />
     <ClInclude Include="..\Renderers\TextRendererStatic.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="LightSource.h" />
     <ClInclude Include="OWEngine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -279,6 +280,7 @@
     <ClCompile Include="..\Renderers\TextRendererDynamic.cpp" />
     <ClCompile Include="..\Renderers\TextRendererStatic.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="LightSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\OpenGL\Glitter\Build\Glitter\Vendor\assimp\code\assimp.vcxproj">
