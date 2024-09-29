@@ -15,8 +15,8 @@ struct MeshDataHeavy;
 class OWENGINE_API HeavyRenderer: public RendererBase
 {
 public:
-	HeavyRenderer(Shader* shader, const std::string& pvm)
-		: RendererBase(shader, pvm) {}
+	HeavyRenderer(Shader* shader)
+		: RendererBase(shader) {}
 	void setup(MeshDataHeavy* data, unsigned int vertexMode, 
 			unsigned int vertexLocation = 0);
 

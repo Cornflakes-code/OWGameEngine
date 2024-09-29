@@ -24,15 +24,16 @@ static std::string toString(NMSErrorLevel err)
 	}
 }
 
-std::string glCheckError_(GLenum errorCode)
+std::string glCheckError_(unsigned int errorCode)
 {
-	switch (errorCode)
+	switch (static_cast<GLenum>(errorCode))
 	{
+	//case GL_NO_ERROR:						return "No Error";
 	case GL_INVALID_ENUM:                  return "INVALID_ENUM";
 	case GL_INVALID_VALUE:                 return "INVALID_VALUE";
 	case GL_INVALID_OPERATION:             return "INVALID_OPERATION";
-//		case GL_STACK_OVERFLOW:                return "STACK_OVERFLOW";
-//		case GL_STACK_UNDERFLOW:               return "STACK_UNDERFLOW";
+	case GL_STACK_OVERFLOW:                return "STACK_OVERFLOW";
+	case GL_STACK_UNDERFLOW:               return "STACK_UNDERFLOW";
 	case GL_OUT_OF_MEMORY:                 return "OUT_OF_MEMORY";
 	case GL_INVALID_FRAMEBUFFER_OPERATION: return "INVALID_FRAMEBUFFER_OPERATION";
 	default: return "Unknown OpenGL Error";

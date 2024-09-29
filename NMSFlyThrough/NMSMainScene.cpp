@@ -98,13 +98,14 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 }
 
 void NMSMainScene::render(const ScenePhysicsState* state,
-						  const glm::mat4& proj, const glm::mat4& view)
+						  const glm::mat4& proj, const glm::mat4& view, 
+						const glm::vec3& cameraPos)
 {
 	const NMSMainScenePhysics* sps
 		= dynamic_cast<const NMSMainScenePhysics*>(state);
 	glm::mat4 model(1.0);
-	mAxis.render(proj, view, model);
-	mStarMap->render(proj, view, model);
+	mAxis.render(proj, view, model, cameraPos);
+	mStarMap->render(proj, view, model, cameraPos);
 }
 
 void NMSMainScene::activate(const std::string& OW_UNUSED(previousScene), 

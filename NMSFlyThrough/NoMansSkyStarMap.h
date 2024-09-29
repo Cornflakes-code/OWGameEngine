@@ -21,7 +21,7 @@ class NoMansSky
 {
 	glm::vec2 mStarRadius;
 	InstanceRenderer* mStarRenderer;
-	LightRenderer mGridRenderer;
+	LightRenderer* mGridRenderer = nullptr;
 	std::vector<glm::vec3> mRandomMinorStars;
 	std::vector<glm::vec4> mStarPositions;
 	std::vector<TextRenderer*> mStarLabelRenderers;
@@ -39,6 +39,8 @@ class NoMansSky
 public:
 	NoMansSky();
 	void setUp(const std::string& fileName, const AABB& world);
-	void render(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model);
-	void readSaveFile(const std::string& saveFileMeta, const std::string& saveFile);
+	void render(const glm::mat4& proj, const glm::mat4& view, 
+			const glm::mat4& model, const glm::vec3& cameraPos);
+	void readSaveFile(const std::string& saveFileMeta, 
+			const std::string& saveFile);
 };

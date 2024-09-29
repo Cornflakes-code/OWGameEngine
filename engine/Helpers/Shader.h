@@ -2,6 +2,7 @@
 #include "../OWEngine/OWEngine.h"
 
 #include <string>
+#include <map>
 
 #include <json/single_include/nlohmann/json.hpp>
 
@@ -13,11 +14,28 @@ using json = nlohmann::json;
 */
 class OWENGINE_API Shader //: public ResourceSource
 {
+	enum class StandardUniforms
+	{
+		PVM,
+		Projection,
+		View,
+		Model,
+		CameraPosition
+	};
+	std::map<StandardUniforms, std::string> mUniforms;
 public:
 	Shader();
 	Shader(const std::string& vertexPath, const std::string& fragPath = "",
 		const std::string& geometryPath = "");
 	~Shader();
+	void setStandardUniformNames(const std::string& pvm,
+		const std::string& projection = "",
+		const std::string& view = "",
+		const std::string& model = "",
+		const std::string& cameraPos = "");
+	void setStandardUniformValues(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4& model,
+		const glm::vec3& cameraPos);
 	void create(const std::string& vertexPath, const std::string& fragPath,
 			const std::string& geometryPath);
 	void loadShaders(const std::string& vertexShader, 

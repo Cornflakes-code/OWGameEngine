@@ -54,4 +54,5 @@ private:
 	std::vector<unsigned int> mIndices;
 	RenderData mRenderData;
 	friend class LightRenderer;
+	friend class VAOBuffer;
 };

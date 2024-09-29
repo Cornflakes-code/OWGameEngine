@@ -29,8 +29,10 @@
 #define DEBUG_STARS
 
 NoMansSky::NoMansSky()
-	: mGridRenderer(new Shader("Lines.v.glsl", "Lines.f.glsl", ""), "pvm")
 {
+	Shader* shader = new Shader("Lines.v.glsl", "Lines.f.glsl", "");
+	shader->setStandardUniformNames("pvm");
+	mGridRenderer = new LightRenderer(shader);
 	mStarRadius = glm::vec2(0, 0);
 	mStarRenderer = 0;
 }
@@ -46,7 +48,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	MeshDataLight gridData;
 	gridData.vertices(mGrid, GL_LINES, 0);
 	gridData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
-	mGridRenderer.setup(&gridData);
+	mGridRenderer->setup(&gridData);
 #endif
 
 #ifdef DEBUG_STARS
@@ -106,7 +108,8 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 #endif
 	
 	starShader->setFloat("cutoffRadius", mStarRadius.x, true);
-	mStarRenderer = new InstanceRenderer(starShader, "VP");
+	starShader->setStandardUniformNames("VP");
+	mStarRenderer = new InstanceRenderer(starShader);
 	mStarRenderer->setup(&mdi);
 #endif
 }
@@ -314,18 +317,22 @@ std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
 	return retval;
 }
 
-void NoMansSky::render(const glm::mat4& proj, 
-					const glm::mat4& view, const glm::mat4& model)
+void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, 
+	const glm::mat4& model, const glm::vec3& cameraPos)
 {
 	glm::mat4 pvm = proj * view * model;
 #ifdef DEBUG_GRID
-	mGridRenderer.render(proj, view, model);
+	mGridRenderer->render(proj, view, model);
 #endif
 
 #ifdef DEBUG_STARS
 	glm::vec2 w = globals->physicalWindowSize();
-	auto pointRender = [w](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
-		glm::mat4& OW_UNUSED(model), const Shader* shader)
+	auto pointRender = [w](
+		const glm::mat4& OW_UNUSED(proj),
+		const glm::mat4& view,
+		const glm::mat4& OW_UNUSED(model),
+		const glm::vec3& OW_UNUSED(cameraPos),
+		const Shader* shader)
 	{
 		glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
 		shader->use();
@@ -339,7 +346,7 @@ void NoMansSky::render(const glm::mat4& proj,
 		// Colours are set via mdi.colours
 		//shader->setVector4f("color", OWUtils::colour(OWUtils::SolidColours::YELLOW));
 	};
-	mStarRenderer->render(proj, view, model, nullptr, pointRender);
+	mStarRenderer->render(proj, view, model, cameraPos, nullptr, pointRender);
 
 	for (int i = 0; i < mStarLabelRenderers.size(); i++)
 	{

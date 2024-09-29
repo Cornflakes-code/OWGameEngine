@@ -29,7 +29,8 @@ void QuitScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 
 
 void QuitScene::render(const ScenePhysicsState* OW_UNUSED(state),
-	const glm::mat4& OW_UNUSED(proj), const glm::mat4& OW_UNUSED(view))
+	const glm::mat4& OW_UNUSED(proj), const glm::mat4& OW_UNUSED(view),
+	const glm::vec3& OW_UNUSED(cameraPos))
 {
 }
 

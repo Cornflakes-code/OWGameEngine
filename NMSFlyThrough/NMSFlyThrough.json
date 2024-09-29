@@ -69,8 +69,18 @@
     },
     {
       "Key": "s",
+      "Mods": ["Shift"],
+      "Logical": "POVPitchUp"
+    },
+    {
+      "Key": "s",
       "Mods": [],
       "Logical": "POVBack"
+    },
+    {
+      "Key": "w",
+      "Mods": ["Shift"],
+      "Logical": "POVPitchDown"
     },
     {
       "Key": "a",

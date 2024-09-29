@@ -50,14 +50,18 @@ class NMSRopeScene : public NMSScene
 	TextRenderer* mText = nullptr;
 	std::vector<TextRenderer*> mPolyLabels;
 
-	Model mAxis;
+	Model mWireLines;
+	Model mWireEnds;
+	Model mWireSurfaces;
+	Model mLight;
 	Model mCircles;
 public:
 	NMSRopeScene(const Movie* movie);
 	std::string name() const { return "Rope"; }
 	void doSetup(ScenePhysicsState* state) override;
 	virtual void render(const ScenePhysicsState* state,
-		const glm::mat4& proj, const glm::mat4& view) override;
+		const glm::mat4& proj, const glm::mat4& view,
+		const glm::vec3& cameraPos) override;
 	void activate(const std::string& previousScene, ScenePhysicsState* state,
 		Camera* camera, unsigned int callCount) override;
 	void deActivate(const Camera* camera, ScenePhysicsState* state) override;

@@ -14,8 +14,8 @@
 class OWENGINE_API LightRenderer : public RendererBase
 {
 public:
-	LightRenderer(Shader* shader, const std::string& pvm)
-		: RendererBase(shader, pvm) {}
+	LightRenderer(Shader* shader)
+		: RendererBase(shader) {}
 	void setup(const MeshDataLight* meshData);
 	void setup(const std::vector<glm::vec3>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
@@ -30,8 +30,8 @@ private:
 	// mVbo[0] The VBO containing the triangles to draw
 	// mVbo[1] The VBO containing the positions of the particles
 	// mVbo[2] The VBO containing the colors of the particles
-	unsigned int mVao = 0;
-	unsigned int mVbo = 0;
-	unsigned int mEbo = 0;	
+	unsigned int mVao = std::numeric_limits<unsigned int>::max();
+	unsigned int mVbo = std::numeric_limits<unsigned int>::max();
+	unsigned int mEbo = std::numeric_limits<unsigned int>::max();
 #pragma warning( pop )
 };

@@ -87,6 +87,9 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 
 	// Multi threaded render loop
 	// http://blog.slapware.eu/game-engine/programming/multithreaded-renderloop-part1/
+
+	// http://gameprogrammingpatterns.com/game-loop.html
+	// https://docs.unity3d.com/Manual/ExecutionOrder.html
 	int hz = 1000 / 60;
 
 	// Need to code some feedback to ensure that logic.fixedUpdate does not take longer than dt.
@@ -213,7 +216,8 @@ void Movie::render(const ScenePhysicsState* state)
 	mCamera->update();
 	glm::mat4 projection = mCamera->projection();
 	glm::mat4 view = mCamera->view();
-	mCurrent->scene->render(state, projection, view);
+	glm::vec3 pos = mCamera->position();
+	mCurrent->scene->render(state, projection, view, pos);
 }
 
 void Movie::add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent)

@@ -231,6 +231,7 @@
     <ClInclude Include="..\Renderers\TextRenderer.h" />
     <ClInclude Include="..\Renderers\TextRendererDynamic.h" />
     <ClInclude Include="..\Renderers\TextRendererStatic.h" />
+    <ClInclude Include="..\Renderers\VAOBuffer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="OWEngine.h" />
@@ -279,6 +280,7 @@
     <ClCompile Include="..\Renderers\TextRenderer.cpp" />
     <ClCompile Include="..\Renderers\TextRendererDynamic.cpp" />
     <ClCompile Include="..\Renderers\TextRendererStatic.cpp" />
+    <ClCompile Include="..\Renderers\VAOBuffer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="LightSource.cpp" />
   </ItemGroup>

@@ -44,6 +44,12 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	return bounds;
 }
 
+TextRenderer::TextRenderer(Shader* sh, const std::string& pvm)
+	: RendererBase(sh)
+{
+	shader()->setStandardUniformNames(pvm);
+}
+
 void TextRenderer::setup(const TextData* td, const glm::vec3& initialPosition)
 {
 	validate(td);

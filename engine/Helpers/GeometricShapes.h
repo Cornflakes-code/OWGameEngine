@@ -19,7 +19,7 @@ public:
 		int numHoroSegments, int numVertSegments, float TAU);
 
 	static std::vector<glm::vec3> fibonacciSphere(int numPoints, float TAU);
-
+	static std::vector<glm::vec3> cube(const glm::vec3& position = glm::vec3(0, 0, 0), const glm::vec3& scale = glm::vec3(100, 100, 100));
 	static std::vector<glm::vec3> star(
 		float innerRadius, float outerRadius,
 		unsigned int numPoints);

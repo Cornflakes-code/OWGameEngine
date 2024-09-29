@@ -94,3 +94,15 @@ const std::string& ShaderFactory::boilerPlateGeometryShader()
 	static std::string s = "";
 	return s;
 }
+const std::string& ShaderFactory::boilerPlateLightShader()
+{
+	static std::string s =
+		GLSL(
+			out vec4 FragColor;
+	void main()
+	{
+		FragColor = vec4(1.0); // set all 4 vector values to 1.0
+	});
+	return s;
+}
+

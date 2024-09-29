@@ -44,7 +44,7 @@ void NMSRopeScenePhysics::drawRope(const AABB& _world)
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	mPolyBuilder = Rope::drawRope(9239, ropeZoom.x, ropeZoom.y, 30);
+	mPolyBuilder = Rope::drawRope(30822, ropeZoom.x, ropeZoom.y, 30);
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
 		TextData td;
@@ -126,31 +126,58 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 	mText = new TextRendererDynamic();
 	mText->setup(&(sps->mTextData), glm::vec3(0));
 
-	ModelData md = NMS::createRopeLines(sps->mPolyBuilder->slices());
-	mAxis.setup(&md);
+	ModelData md1;
+	RendererBase* ls = NMS::createLightSource(glm::vec3(160.0f, 60.0f, -50.0f));
+	//RendererBase* ls = NMS::createLightSource(glm::vec3(60.0f, 60.0f, -150.0f));
+	ls->prepare();
+	md1.renderers.push_back(ls);
+	mLight.setup(&md1);
+	ls->prepare();
 
-
-	for (const std::pair<TextData, glm::vec3>& td : sps->mPolygonTextData)
+	ModelData md2 = NMS::createRopeLines(sps->mPolyBuilder->slices());
+	ModelData md3 = NMS::createRopeSurfaces(sps->mPolyBuilder->slices());
+	ModelData md4 = NMS::createRopeEnds(sps->mPolyBuilder->slices());
+	mWireLines.append(&md2);
+	mWireSurfaces.append(&md3);
+	mWireEnds.append(&md4);
+	bool addLabels = true;
+	if (addLabels)
 	{
-		TextRendererDynamic* t = new TextRendererDynamic();
-		t->setup(&(td.first), td.second);
-		mPolyLabels.push_back(t);
+		for (const std::pair<TextData, glm::vec3>& td : sps->mPolygonTextData)
+		{
+			TextRendererDynamic* t = new TextRendererDynamic();
+			t->setup(&(td.first), td.second);
+			mPolyLabels.push_back(t);
+		}
 	}
-	mCircles.setup(&md);
-
 }
 
 void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),
-	const glm::mat4& proj, const glm::mat4& view)
+	const glm::mat4& proj, const glm::mat4& view,
+	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	mText->render(proj, view, model);
+	mText->render(proj, view, model, cameraPos);
 	for (auto& t : mPolyLabels)
 	{
-		t->render(proj, view, model);
+		t->render(proj, view, model, cameraPos);
 	}
-	mAxis.render(proj, view, model);
-	mCircles.render(proj, view, model);
+	mLight.render(proj, view, model, cameraPos);
+	mWireLines.render(proj, view, model, cameraPos);
+	auto pointRender = [](
+		const glm::mat4& OW_UNUSED(proj),
+		const glm::mat4& OW_UNUSED(view),
+		const glm::mat4& OW_UNUSED(model),
+		const glm::vec3& cameraPos,
+		const Shader* shader)
+	{
+		shader->use();
+		shader->setVector4f("lightColor", OWUtils::colour(OWUtils::SolidColours::BLUE));
+		shader->setVector4f("objectColor", glm::vec4(0.90f, 0.91f, 0.98f, 1.0f));
+		shader->setVector3f("viewLightPos", cameraPos);
+		};
+	mWireSurfaces.render(proj, view, model, cameraPos, nullptr, pointRender);
+	mWireEnds.render(proj, view, model, cameraPos);
 }
 
 void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),

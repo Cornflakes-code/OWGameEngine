@@ -12,14 +12,17 @@
 TextRendererDynamic::TextRendererDynamic()
 	: TextRenderer(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""), 
 					"VP")
-{}
+{
+	shader()->setStandardUniformNames("VP");
+}
 
 void TextRendererDynamic::doSetup(const TextData* td, const glm::vec3& initialPosition)
 {
 	glm::vec3 position = glm::vec3(mBounds.center()) + initialPosition;
 
-	appendRenderCallback([position](glm::mat4& proj, glm::mat4& view,
-									glm::mat4& model, const Shader* shader)
+	appendRenderCallback([position](const glm::mat4& proj, const glm::mat4& view,
+									const glm::mat4& model, const glm::vec3& cameraPos,
+									const Shader* shader)
 	{
 		glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
 		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);

@@ -156,6 +156,55 @@ void Shader::loadShaders(const std::string& vertexShader,
 
 }
 
+void Shader::setStandardUniformNames(const std::string& pvm,
+	const std::string& projection,
+	const std::string& view,
+	const std::string& model,
+	const std::string& cameraPos)
+{
+	if (pvm != "")
+		mUniforms[StandardUniforms::PVM] = pvm;
+	if (projection != "")
+		mUniforms[StandardUniforms::Projection] = projection;
+	if (view != "")
+		mUniforms[StandardUniforms::View] = view;
+	if (model != "")
+		mUniforms[StandardUniforms::Model] = model;
+	if (cameraPos != "")
+		mUniforms[StandardUniforms::CameraPosition] = cameraPos;
+}
+
+void Shader::setStandardUniformValues(const glm::mat4& proj,
+	const glm::mat4& view, const glm::mat4& model,
+	const glm::vec3& cameraPos)
+{
+	if (mUniforms.find(StandardUniforms::PVM) != mUniforms.end())
+	{
+		std::string pvm = mUniforms[StandardUniforms::PVM];
+		if (pvm.size() < 3)
+		{
+			setMatrix4(pvm, proj * view);
+		}
+		else
+		{
+			setMatrix4(pvm, proj * view * model);
+		}
+	}
+	if (mUniforms.find(StandardUniforms::Projection) != mUniforms.end())
+		setMatrix4(mUniforms[StandardUniforms::Projection], proj);
+
+	if (mUniforms.find(StandardUniforms::View) != mUniforms.end())
+		setMatrix4(mUniforms[StandardUniforms::View], view);
+
+	if (mUniforms.find(StandardUniforms::Model) != mUniforms.end())
+	{
+		setMatrix4(mUniforms[StandardUniforms::Model], model);
+	}
+
+	if (mUniforms.find(StandardUniforms::CameraPosition) != mUniforms.end())
+		setVector3f(mUniforms[StandardUniforms::CameraPosition], cameraPos);
+}
+
 void Shader::create(const std::string& vertexPath,
 					   const std::string& fragPath,
 					   const std::string& geometryPath)

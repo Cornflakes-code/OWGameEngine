@@ -48,7 +48,8 @@ public:
 	OWUtils::Time::duration cumulativeTime() const { return mCumulativeTime; }
 
 	virtual void render(const ScenePhysicsState* state,
-						const glm::mat4& proj, const glm::mat4& view) = 0;
+						const glm::mat4& proj, const glm::mat4& view,
+						const glm::vec3& cameraPos) = 0;
 	const Movie* movie() const { return mMovie; }
 protected:
 	Scene(const Movie* movie);

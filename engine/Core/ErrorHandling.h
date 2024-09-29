@@ -55,7 +55,7 @@ public:
 
 #ifdef DEBUG_OPENGL
 void OWENGINE_API debugCheckGLError(const char *file, int line);
-
+std::string OWENGINE_API glCheckError_(unsigned int errorCode);
 #define checkGLError() debugCheckGLError(__FILE__, __LINE__)
 #else
 #define checkGLError()

@@ -216,7 +216,9 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 #endif
 
 #ifdef INCLUDE_IMPORTED_MODEL
-	mCylinder = new HeavyRenderer(new Shader("meshTest.v.glsl", "meshTest.f.glsl", ""), "pvm");
+	Shader* shader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
+	shader->setStandardUniformNames("pvm");
+	mCylinder = new HeavyRenderer(shader);
 	mCylinder->setup(sps->mCylinderData, GL_TRIANGLES, 0);
 #endif
 #ifdef INCLUDE_XYZ_AXIS
@@ -224,11 +226,11 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mAxis.setup(&md);
 #endif
 #ifdef INCLUDE_FULLSCREEN
-	mFullScreen = new LightRenderer(
-		new Shader("thebookofshaders.v.glsl",
-			"thebookofshaders.f.glsl",
-			"thebookofshaders_square.g.glsl"),
-		"pvm");
+	Shader* sh = new Shader("thebookofshaders.v.glsl",
+		"thebookofshaders.f.glsl",
+		"thebookofshaders_square.g.glsl");
+	sh->setStandardUniformNames("pvm");
+	mFullScreen = new LightRenderer(sh);
 	mFullScreen->setup(sps->mFullScreenData, GL_POINTS);
 #endif
 
@@ -241,8 +243,9 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		//"instanced.f.glsl",
 		""// instanced.g.glsl
 	);
+	starShader->setStandardUniformNames("VP");
 	glm::vec2 w = sps->mStarRadius;
-	mStarRenderer = new InstanceRenderer(starShader, "VP");
+	mStarRenderer = new InstanceRenderer(starShader);
 
 	auto pointRender = [w](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
 		glm::mat4& OW_UNUSED(model), const Shader* shader)
@@ -266,15 +269,18 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 }
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
-							const glm::mat4& proj, const glm::mat4& view)
+							const glm::mat4& proj, const glm::mat4& view,
+							const glm::vec3& cameraPos)
 {
 	const NMSSplashScenePhysics* sps
 		= dynamic_cast<const NMSSplashScenePhysics*>(state);
 	glm::mat4 model(1.0);
 #ifdef INCLUDE_FULLSCREEN
-	auto fullScreenRender = [](glm::mat4& OW_UNUSED(proj),
-		glm::mat4& OW_UNUSED(view),
-		glm::mat4& OW_UNUSED(model),
+	auto fullScreenRender = [](
+		const glm::mat4& OW_UNUSED(proj),
+		const glm::mat4& OW_UNUSED(view),
+		const glm::mat4& OW_UNUSED(model),
+		const glm::vec3& OW_UNUSED(cameraPos),
 		const Shader* shader)
 	{
 		shader->setVector2f("u_mouse", globals->pointingDevicePosition());
@@ -287,25 +293,29 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 		glm::vec2 vv = globals->physicalWindowSize();
 		shader->setVector2f("u_resolution", vv);
 	};
-	mFullScreen->render(proj, view, model, 
+	mFullScreen->render(proj, view, model, cameraPos,
 					nullptr, fullScreenRender, fullScreenResize);
 #endif
 #ifdef INCLUDE_IMPORTED_MODEL
 	glm::vec3 scaled = glm::vec3(10.0, 10.0, 10.0);
 	glm::mat4 scaledModel2 = glm::scale(model, scaled);
-	mCylinder->render(proj, view, scaledModel2, nullptr, nullptr);
+	mCylinder->render(proj, view, scaledModel2, cameraPos, nullptr, nullptr);
 #endif
 #ifdef INCLUDE_WELCOME
-	mWelcomeText->render(proj, view, sps->mWelcomeMover.translate(model));
+	mWelcomeText->render(proj, view, sps->mWelcomeMover.translate(model), cameraPos);
 #endif
 #ifdef INCLUDE_ENJOY
-	mEnjoyText->render(proj, view, sps->mEnjoyMover.translate(model));
+	mEnjoyText->render(proj, view, sps->mEnjoyMover.translate(model), cameraPos);
 #endif
 
 #ifdef INCLUDE_STAR_RENDER
 	glm::vec2 w = globals->physicalWindowSize();
-	auto pointRender = [w](glm::mat4& OW_UNUSED(proj), glm::mat4& view,
-		glm::mat4& OW_UNUSED(model), const Shader* shader)
+	auto pointRender = [w](
+		const glm::mat4& OW_UNUSED(proj), 
+		const glm::mat4& view,
+		const glm::mat4& OW_UNUSED(model), 
+		const glm::vec3& OW_UNUSED(cameraPos), 
+		const Shader* shader)
 	{
 		glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
 		shader->use();
@@ -317,11 +327,11 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 		shader->setVector2f("u_mouse", v2);
 		shader->setVector2f("u_resolution", w);
 	};
-	mStarRenderer->render(proj, view, model, nullptr, pointRender);
+	mStarRenderer->render(proj, view, model, cameraPos, nullptr, pointRender);
 #endif
 
 #ifdef INCLUDE_XYZ_AXIS
-	mAxis.render(proj, view, model);
+	mAxis.render(proj, view, model, cameraPos);
 #endif
 }
 

@@ -68,7 +68,8 @@ LightSource::LightSource()
     shader->loadShaders(lightSourceVertexShader(),
         ShaderFactory::boilerPlateFragmentShader(),
         ShaderFactory::boilerPlateGeometryShader());
-    mLightSource = new LightRenderer(shader, "pvm");
+    shader->setStandardUniformNames("pvm");
+    mLightSource = new LightRenderer(shader);
 }
 
 LightSource::~LightSource()

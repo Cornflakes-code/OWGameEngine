@@ -10,8 +10,6 @@ void RendererBase::validateBase() const
 {
 	if (mShader == nullptr)
 		throw NMSLogicException("RendererBase::mShader must be set");
-	if (mPvm.empty())
-		throw NMSLogicException("pvm shader variable must have a name");
 }
 
 float RendererBase::aspectRatio() const
@@ -39,27 +37,6 @@ glm::vec2 RendererBase::scaleByAspectRatio(const glm::vec2& toScale) const
 	return retval;
 }
 
-void RendererBase::setPVM(const glm::mat4& proj,
-						const glm::mat4& view,
-						const glm::mat4& model) const
-{
-	if (!mPvm.empty())
-	{
-		// Testing for name.size() is seriously tacky.
-		// Must be a better way !!
-		if (mPvm.size() < 3)
-		{
-			glm::mat4 pvm = proj * view;
-			mShader->setMatrix4(mPvm, pvm);
-		}
-		else
-		{
-			glm::mat4 pvm = proj * view * model;
-			mShader->setMatrix4(mPvm, pvm);
-		}
-	}
-}
-
 void RendererBase::callResizeCallback(ResizeCallbackType resizeCb) const
 {
 	if (mFirstTimeRender || globals->aspectRatioChanged())
@@ -82,24 +59,26 @@ void RendererBase::callResizeCallback(ResizeCallbackType resizeCb) const
 	}
 }
 
-void RendererBase::callRenderCallback(glm::mat4& proj, glm::mat4& view, 
-	glm::mat4& model, RenderCallbackType renderCb) const
+void RendererBase::callRenderCallback(const glm::mat4& proj, const glm::mat4& view,
+	const glm::mat4& model, const glm::vec3& cameraPos, RenderCallbackType renderCb) const
 {
 	// Allow callers and derived classes to override the callback
 	shader()->use();
 	if (renderCb)
 	{
-		renderCb(proj, view, model, shader());
+		renderCb(proj, view, model, cameraPos, shader());
 	}
 	for (auto& cb : mRenderCallbacks)
 	{
-		cb(proj, view, model, shader());
+		cb(proj, view, model, cameraPos, shader());
 	}
 }
 
 void RendererBase::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& model,
-	const MoveController* mover, RenderCallbackType renderCb,
+	const glm::vec3& cameraPos,
+	MoveController* mover, 
+	RenderCallbackType renderCb,
 	ResizeCallbackType resizeCb) const
 {
 	OWUtils::PolygonModeRIAA temp1(mPolygonFace, mPolygonMode);
@@ -107,11 +86,8 @@ void RendererBase::render(const glm::mat4& proj,
 	OWUtils::BlendFuncRIAA temp3(mSfactor, mDfactor);
 	shader()->use();
 	callResizeCallback(resizeCb);
-	glm::mat4 p = proj;
-	glm::mat4 v = view;
-	glm::mat4 m = model;
-	callRenderCallback(p, v, m, renderCb);
-	setPVM(p, v, m);
+	mShader->setStandardUniformValues(proj, view, model, cameraPos);
+	callRenderCallback(proj, view, model, cameraPos, renderCb);
 
 	doRender();
 }

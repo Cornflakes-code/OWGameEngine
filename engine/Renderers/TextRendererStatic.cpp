@@ -16,8 +16,8 @@ void TextRendererStatic::doSetup(const TextData* td, const glm::vec3& initialPos
 {
 	glm::vec3 position = glm::vec3(mBounds.center()) + initialPosition;
 
-	appendRenderCallback([position](glm::mat4& proj, glm::mat4& view,
-		glm::mat4& model, const Shader* shader)
+	appendRenderCallback([position](const glm::mat4& proj, const glm::mat4& view,
+		const glm::mat4& model, const glm::vec3& cameraPos, const Shader* shader)
 	{
 		glm::mat4 newModel =
 			glm::translate(model, position);

@@ -165,6 +165,9 @@
     <ClInclude Include="LightSource.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Renderers\VAOBuffer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -301,6 +304,9 @@
     </ClCompile>
     <ClCompile Include="LightSource.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderers\VAOBuffer.cpp">
+      <Filter>Source Files\Renderers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

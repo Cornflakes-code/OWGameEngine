@@ -10,8 +10,9 @@
 #include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
 #include <Helpers/TextData.h>
-
+#include <Helpers/GeometricShapes.h>
 #include <Renderers/LightRenderer.h>
+#include <Renderers/VAOBuffer.h>
 #include <Renderers/TextRendererStatic.h>
 
 namespace NMS
@@ -68,12 +69,12 @@ namespace NMS
 		lineShader->loadShaders(shaders.boilerPlateVertexShader(),
 			shaders.boilerPlateFragmentShader(),
 			shaders.boilerPlateGeometryShader());
-
+		lineShader->setStandardUniformNames("pvm");
 		MeshDataLight lineData;
 		lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
 		lineData.vertices(axisCoords, GL_LINES);
 		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
-		LightRenderer* lines = new LightRenderer(lineShader, "pvm");
+		LightRenderer* lines = new LightRenderer(lineShader);
 		lines->setup(&lineData);
 		md.renderers.push_back(lines);
 		return md;
@@ -115,35 +116,15 @@ namespace NMS
 		return retval;
 	}
 
-	ModelData createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+	ModelData createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 	{
-		int fontHeight = 12;
-		glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
-			fontHeight, globals->camera()->aspectRatio());
-
-		float scale = 1.0;
-
-		ShaderFactory shaders; 
+		ShaderFactory shaders;
 		Shader* lineShader = new Shader();
 		lineShader->loadShaders(shaders.boilerPlateVertexShader(),
 			shaders.boilerPlateFragmentShader(),
 			shaders.boilerPlateGeometryShader());
+		lineShader->setStandardUniformNames("pvm");
 
-		Shader* wireShader = new Shader();
-		wireShader->loadShaders("Wires.v.glsl",
-								"Wires.f.glsl",
-								shaders.boilerPlateGeometryShader());
-
-		OWUtils::SolidColours colours[] =
-		{
-			OWUtils::SolidColours::GREEN,
-			OWUtils::SolidColours::RED,
-			OWUtils::SolidColours::BLUE,
-			OWUtils::SolidColours::CYAN,
-			OWUtils::SolidColours::MAGENTA,
-			OWUtils::SolidColours::YELLOW
-		};
-		int colourIndex = 0;
 		// Prepare the wire cross sections
 		ModelData md;
 		std::vector<glm::vec3> coords;
@@ -151,24 +132,35 @@ namespace NMS
 		{
 			for (auto& polygon : slice)
 			{
-				MeshDataLight lineData; 
-				lineData.colour(OWUtils::colour(OWUtils::SolidColours::YELLOW), "colour");
-				//lineData.colour(OWUtils::colour(colours[colourIndex]), "colour");
+				MeshDataLight lineData;
+				lineData.colour(OWUtils::colour(OWUtils::SolidColours::RED), "colour");
 				lineData.vertices(polygon, GL_LINE_LOOP);
-				LightRenderer* lines = new LightRenderer(lineShader, "pvm");
+				LightRenderer* lines = new LightRenderer(lineShader);
 				lines->setup(&lineData);
 				md.renderers.push_back(lines);
 			}
-			//colourIndex++; if (colourIndex > 5) colourIndex = 0;
+			break;
 		}
-		/*
-		*/
+		return md;
+	}
+
+	ModelData createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+	{
+		ShaderFactory shaders; 
+		Shader* lineShader = new Shader();
+		lineShader->loadShaders(shaders.boilerPlateVertexShader(),
+			shaders.boilerPlateFragmentShader(),
+			shaders.boilerPlateGeometryShader());
+		lineShader->setStandardUniformNames("pvm");
+
+		ModelData md;
+
 		bool drawCenters = false;
-		bool drawLines = false;
-		bool drawSurfaces = true;
+		bool drawLines = true;
+
 		int numLayers = threeDWires.size();
 		int numWiresInEachLayer = threeDWires[0].size();
-		int numPointsPerSlice = threeDWires[0][0].size() - 4;
+		int numPointsPerSlice = threeDWires[0][0].size() + 10;
 		std::vector< std::vector<glm::vec3>> lines;
 		std::vector< std::vector<glm::vec3>> surfaces;
 		const size_t numWires = threeDWires[0].size();
@@ -191,45 +183,15 @@ namespace NMS
 					std::vector<glm::vec3> line;
 					for (int layer = 0; layer < numLayers; layer++)
 					{
-						glm::vec3 pt = threeDWires[layer][eachWire][pointOnPoly];
-						line.push_back(pt);
+						if (pointOnPoly < threeDWires[layer][eachWire].size())
+						{
+							glm::vec3 pt = threeDWires[layer][eachWire][pointOnPoly];
+							line.push_back(pt);
+						}
 					}
-					lines.push_back(line);
+					if (line.size())	
+						lines.push_back(line);
 				}
-			}
-			if (drawSurfaces)
-			{
-				//std::vector<glm::vec3> triAnglePointIndices;
-				for (int pointOnPoly = 0; pointOnPoly < numPointsPerSlice-1; pointOnPoly++)
-				{
-					std::vector<glm::vec3> triAnglePoints;
-					for (int layer = 0; layer < (numLayers - 1); layer++)
-					{
-						// Setup for GL_TRIANGLESTRIP // https://stackoverflow.com/questions/20394727/gl-triangle-strip-vs-gl-triangle-fan
-						glm::vec3 pt = threeDWires[layer][eachWire][pointOnPoly]; // A
-						triAnglePoints.push_back(pt);
-						pt = threeDWires[layer][eachWire][pointOnPoly+1]; // B
-						triAnglePoints.push_back(pt);
-						pt = threeDWires[layer+1][eachWire][pointOnPoly]; // C
-						triAnglePoints.push_back(pt);
-						pt = threeDWires[layer+1][eachWire][pointOnPoly+1]; // D
-						triAnglePoints.push_back(pt);
-					}
-					surfaces.push_back(triAnglePoints);
-				}
-			}
-		}
-		if (drawSurfaces)
-		{
-			for (std::vector<glm::vec3>& aLine : surfaces)
-			{
-				MeshDataLight lineData;
-				lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE), "colour");
-				lineData.vertices(aLine, GL_TRIANGLE_STRIP);
-				//		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
-				LightRenderer* lines = new LightRenderer(wireShader, "pvm");
-				lines->setup(&lineData);
-				md.renderers.push_back(lines);
 			}
 		}
 		if (drawLines)
@@ -240,12 +202,108 @@ namespace NMS
 				lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED), "colour");
 				lineData.vertices(aLine, GL_LINE_STRIP);
 				//		lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
-				LightRenderer* lines = new LightRenderer(lineShader, "pvm");
+				LightRenderer* lines = new LightRenderer(lineShader);
 				lines->setup(&lineData);
 				md.renderers.push_back(lines);
 			}
 		}
 		return md;
+	}
+
+	ModelData createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+	{
+		Shader* wireShader = new Shader();
+		wireShader->loadShaders("Wires.v.glsl",
+			"Wires.f.glsl",
+			ShaderFactory::boilerPlateGeometryShader());
+		wireShader->setStandardUniformNames("", "projection", "view", "model");
+
+		// Prepare the wire cross sections
+		ModelData md;
+		std::vector<unsigned int> indexBuffer;
+		int numLayers = threeDWires.size();
+		int numWiresInEachLayer = threeDWires[0].size();
+		int numPointsPerSlice = threeDWires[0][0].size();
+		std::vector< std::vector<glm::vec3>> lines;
+		const size_t numWires = threeDWires[0].size();
+		std::vector<glm::vec3> triAnglePoints;
+		glm::vec3 normal = { 1.0, 1.0, 1.0 };
+		for (int eachWire = 0; eachWire < numWiresInEachLayer; eachWire++)
+		{
+			//std::vector<glm::vec3> triAnglePointIndices;
+			for (int pointOnPoly = 0; pointOnPoly < numPointsPerSlice; pointOnPoly++)
+			{
+				for (int layer = 0; layer < (numLayers - 1); layer++)
+				{
+					// Setup for GL_TRIANGLESTRIP // https://stackoverflow.com/questions/20394727/gl-triangle-strip-vs-gl-triangle-fan
+					int ct = triAnglePoints.size();
+					int firstWire = pointOnPoly;
+					if (firstWire >= threeDWires[layer][eachWire].size())
+						firstWire = threeDWires[layer][eachWire].size() - 1;
+					glm::vec3 pt = threeDWires[layer][eachWire][firstWire]; // A
+					triAnglePoints.push_back(pt);
+					//triAnglePoints.push_back(normal);
+
+					int secondWire = firstWire + 1;
+					if (secondWire >= threeDWires[layer][eachWire].size())
+						secondWire = 0;
+					pt = threeDWires[layer][eachWire][secondWire]; // B
+					triAnglePoints.push_back(pt);
+					//triAnglePoints.push_back(normal);
+
+					if (firstWire >= threeDWires[layer+1][eachWire].size())
+						firstWire = threeDWires[layer+1][eachWire].size() - 1;
+					if (secondWire >= threeDWires[layer+1][eachWire].size())
+						secondWire = 0;
+					pt = threeDWires[layer + 1][eachWire][firstWire]; // C
+					triAnglePoints.push_back(pt);
+					//triAnglePoints.push_back(normal);
+
+					pt = threeDWires[layer + 1][eachWire][secondWire]; // D
+					triAnglePoints.push_back(pt);
+					//triAnglePoints.push_back(normal);
+
+					indexBuffer.push_back(0 + ct); // ABC
+					indexBuffer.push_back(1 + ct); // ABC
+					indexBuffer.push_back(2 + ct); // ABC
+
+					indexBuffer.push_back(1 + ct); // BDC
+					indexBuffer.push_back(3 + ct); // BDC
+					indexBuffer.push_back(2 + ct); // BDC
+				}
+			}
+		}
+		VAOBuffer* vao = new VAOBuffer(wireShader);
+		MeshDataLight lineData;
+		//lineData.vertices(triAnglePoints, GL_TRIANGLE_STRIP);
+		lineData.vertices(triAnglePoints, GL_TRIANGLES);
+		lineData.indices(indexBuffer, GL_TRIANGLES);
+		vao->add(&lineData);
+		vao->prepare();
+		md.renderers.push_back(vao);
+		return md;
+	}
+	RendererBase* createLightSource(const glm::vec3& position)
+	{
+		/*
+		* An alternate way to draw spheres with triangles is at:
+		* http://www.songho.ca/opengl/gl_sphere.html
+		*/
+		Shader* sh = new Shader();
+		sh->loadShaders(
+			"sphere.v.glsl",
+			"sphere.f.glsl",
+			ShaderFactory::boilerPlateGeometryShader());
+		sh->setStandardUniformNames("pvm", "perspective", "view", "model", "camPos");
+
+		sh->setVector3f("sphereCenter", position, true);
+		MeshDataLight lineData;
+		std::vector<glm::vec3> vertices = GeometricShapes::cube(position);
+		lineData.vertices(vertices, GL_TRIANGLES);
+
+		VAOBuffer* vao = new VAOBuffer(sh);
+		vao->add(&lineData);
+		return vao;
 	}
 }
 

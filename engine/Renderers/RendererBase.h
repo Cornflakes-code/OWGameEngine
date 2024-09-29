@@ -13,8 +13,9 @@ class Shader;
 class OWENGINE_API RendererBase
 {
 public:
-	typedef std::function<void(glm::mat4& proj, glm::mat4& view,
-					glm::mat4& model, const Shader* shader)> RenderCallbackType;
+	typedef std::function<void(const glm::mat4& proj, const glm::mat4& view,
+					const glm::mat4& model, const glm::vec3& cameraPos,
+					const Shader* shader)> RenderCallbackType;
 
 	typedef std::function<glm::vec2(const glm::vec2)> ScaleByAspectRatioType;
 
@@ -22,8 +23,8 @@ public:
 					ScaleByAspectRatioType scaler,
 					float aspectRatio)> ResizeCallbackType;
 
-	RendererBase(Shader* shader, const std::string& pvm)
-		:mShader(shader), mPvm(pvm) {}
+	RendererBase(Shader* shader)
+		:mShader(shader) {}
 	
 	// OpenGL state functions
 	void appendRenderCallback(RenderCallbackType pfunc) { mRenderCallbacks.push_back(pfunc); }
@@ -38,24 +39,27 @@ public:
 		mSfactor = sfactor;
 		mDfactor = dfactor;
 	}
+	virtual void prepare()
+	{}
+
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,
-		const MoveController* mover = nullptr,
+		const glm::vec3& cameraPos,
+		MoveController* mover = nullptr,
 		RenderCallbackType renderCb = nullptr,
 		ResizeCallbackType resizeCb = nullptr) const;
+	const Shader* shader() const { return mShader; }
 protected:
+	Shader* shader() { return mShader; }
 	virtual void doRender() const = 0;
 	void validateBase() const;
-	const Shader* shader() const { return mShader; }
 private:
-	void setPVM(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model) const;
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
 	void callResizeCallback(ResizeCallbackType resizeCb) const;
-	void callRenderCallback(glm::mat4& proj, glm::mat4& view,
-		glm::mat4& model, RenderCallbackType renderCb) const;
+	void callRenderCallback(const glm::mat4& proj, const glm::mat4& view,
+							const glm::mat4& model, const glm::vec3& cameraPos,
+							RenderCallbackType renderCb) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	// OpenGL state variables. The default values are used as flags 
@@ -73,7 +77,6 @@ private:
 	std::vector<RenderCallbackType> mRenderCallbacks;
 	std::vector<ResizeCallbackType> mResizeCallbacks;
 	Shader* mShader;
-	std::string mPvm;
 	// After scene::setup it is Ok to modify Renderers
 	// but only for efficiency reasons. Modifications
 	// cannot change what is happenning else the game 

@@ -15,8 +15,8 @@
 class OWENGINE_API InstanceRenderer: public RendererBase
 {
 public:
-	InstanceRenderer(Shader* shader, const std::string& pvm)
-		: RendererBase(shader, pvm) {}
+	InstanceRenderer(Shader* shader)
+		: RendererBase(shader) {}
 	void setup(const MeshDataInstance* meshData);
 	void doRender() const override;
 private:

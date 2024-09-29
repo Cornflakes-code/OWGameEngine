@@ -31,22 +31,17 @@ class MoveController;
 class OWENGINE_API Model
 {
 public:
-	typedef std::function<void(const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, const ModelData& m)> RenderCallbackType;
-
 	typedef std::function<glm::vec2(const glm::vec2)> ScaleByAspectRatioType;
 
-	typedef std::function<void(const Shader* shader,
-		ScaleByAspectRatioType scaler,
-		float aspectRatio)> ResizeCallbackType;
-
+	void append(ModelData* md);
 	void setup(ModelData* md);
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,
-		const MoveController* mover = nullptr,
-		RenderCallbackType renderCb = nullptr,
-		ResizeCallbackType resizeCb = nullptr) const;
+		const glm::vec3& cameraPos,
+		MoveController* mover = nullptr,
+		RendererBase::RenderCallbackType renderCb = nullptr,
+		RendererBase::ResizeCallbackType resizeCb = nullptr) const;
 private:
 	ModelData mRootNode;
 };

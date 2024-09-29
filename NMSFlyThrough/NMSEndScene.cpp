@@ -79,10 +79,11 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 }
 
 void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
-	const glm::mat4& proj, const glm::mat4& view)
+	const glm::mat4& proj, const glm::mat4& view,
+	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	mText->render(proj, view, model);
+	mText->render(proj, view, model, cameraPos);
 }
 
 void NMSEndScene::activate(const std::string& OW_UNUSED(previousScene),

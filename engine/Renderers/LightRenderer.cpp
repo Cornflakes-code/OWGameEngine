@@ -32,15 +32,10 @@ void LightRenderer::setup(const MeshDataLight* meshData)
 	validateBase();
 	mData.vertexMode = mData.vertexMode;
 	mData.vertexLocation = mData.vertexLocation;
-	// Allocate and assign a Vertex Array Object to our handle
 	glGenVertexArrays(1, &mVao);
-	// Bind our Vertex Array Object as the current used object
 	glBindVertexArray(mVao);
 
-	// Allocate and assign Vertex Buffer Object to our handle
 	glGenBuffers(1, &mVbo);
-
-	// Bind our VBO as being the active buffer and storing vertex attributes(coordinates)
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 	shader()->use();
 	if (!mData.shaderColourName.empty())
@@ -56,10 +51,8 @@ void LightRenderer::setup(const MeshDataLight* meshData)
 			sizeof(unsigned int) * static_cast<GLsizei>(meshData->mIndices.size()),
 			meshData->mIndices.data(), GL_STATIC_DRAW);
 	}
-	// Specify that our coordinate data is going into location <mData.vertexLocation>, and contains 'vertexSize' floats per vertex
 	glVertexAttribPointer(mData.vertexLocation,
 		vertexSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	// Enable attribute index 0 <mData.vertexLocation> as being used
 	glEnableVertexAttribArray(mData.vertexLocation);
 	glBufferData(GL_ARRAY_BUFFER,
 		mData.verticesCount * vertexSize * sizeof(float), ff, GL_STATIC_DRAW);

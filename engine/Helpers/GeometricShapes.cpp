@@ -123,3 +123,34 @@ std::vector<glm::vec3> GeometricShapes::star(float innerRadius, float outerRadiu
 	}
 	return retval;
 }
+
+std::vector<glm::vec3> GeometricShapes::cube(const glm::vec3& position, const glm::vec3& scale)
+{
+	float dx = scale.x;
+	float dy = scale.y;
+	float dz = scale.z;
+	std::vector<glm::vec3> vertices = {
+		{-0.5f * dx, -0.5f * dy, -0.5f * dz}, { 0.5f * dx, -0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy, -0.5f * dz},
+		{ 0.5f * dx,  0.5f * dy, -0.5f * dz}, {-0.5f * dx,  0.5f * dy, -0.5f * dz}, {-0.5f * dx, -0.5f * dy, -0.5f * dz},
+
+		{-0.5f * dx, -0.5f * dy,  0.5f * dz}, { 0.5f * dx, -0.5f * dy,  0.5f * dz}, { 0.5f * dx,  0.5f * dy,  0.5f * dz},
+		{ 0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx, -0.5f * dy,  0.5f * dz},
+
+		{-0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy, -0.5f * dz}, {-0.5f * dx, -0.5f * dy, -0.5f * dz},
+		{-0.5f * dx, -0.5f * dy, -0.5f * dz}, {-0.5f * dx, -0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy,  0.5f * dz},
+
+		{ 0.5f * dx,  0.5f * dy,  0.5f * dz}, { 0.5f * dx,  0.5f * dy, -0.5f * dz}, { 0.5f * dx, -0.5f * dy, -0.5f * dz},
+		{ 0.5f * dx, -0.5f * dy, -0.5f * dz}, { 0.5f * dx, -0.5f * dy,  0.5f * dz}, { 0.5f * dx,  0.5f * dy,  0.5f * dz},
+
+		{-0.5f * dx, -0.5f * dy, -0.5f * dz}, { 0.5f * dx, -0.5f * dy, -0.5f * dz}, { 0.5f * dx, -0.5f * dy,  0.5f * dz},
+		{ 0.5f * dx, -0.5f * dy,  0.5f * dz}, {-0.5f * dx, -0.5f * dy,  0.5f * dz}, {-0.5f * dx, -0.5f * dy, -0.5f * dz},
+
+		{-0.5f * dx,  0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy,  0.5f * dz},
+		{ 0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy, -0.5f * dz}
+	};
+	for (glm::vec3& v : vertices)
+	{
+		v = v + position;
+	}
+	return vertices;
+}

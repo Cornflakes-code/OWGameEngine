@@ -14,7 +14,7 @@ public:
 	static const std::string& boilerPlateVertexShader();
 	static const std::string& boilerPlateFragmentShader();
 	static const std::string& boilerPlateGeometryShader();
-
+	static const std::string& boilerPlateLightShader();
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
