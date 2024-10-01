@@ -100,7 +100,9 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 
 		//		if (!((id == 2055) || (id == 2002) || (id == 1000) || (id == 0)))
 		//			continue;
-		//if (!(id == 1001))
+		//if (!(id == 2056)) // complex rope
+		//	continue;
+		//if (!(id == 1001)) // simple rope
 		//	continue;
 		//found701 = true;
 		WireSlice vt(points, pt, id);
