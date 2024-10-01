@@ -31,6 +31,11 @@ public:
 		mRenderData.colour = colour;
 		mRenderData.shaderColourName = shaderColourName;
 	}
+	// Can be GL_POINT, GL_LINE or GL_FILL
+	void polygonMode(unsigned int mode) 
+	{
+		mRenderData.mPolygonMode_mode = mode;
+	}
 	void indices(const std::vector<unsigned int> _indices, unsigned int indicesMode)
 	{
 		mIndices = _indices;
@@ -48,6 +53,7 @@ private:
 		unsigned int vertexMode = UINT_MAX;
 		unsigned int vertexLocation = UINT_MAX;
 		unsigned int indicesMode = UINT_MAX;
+		unsigned int mPolygonMode_mode = UINT_MAX;
 	};
 	std::vector<glm::vec3> mVec3;
 	std::vector<glm::vec4> mVec4;

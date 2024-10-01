@@ -17,11 +17,6 @@ class Shader;
 class OWENGINE_API VAOBuffer : public RendererBase
 {
 public:
-	struct VertexStruct
-	{
-		glm::vec3 position;
-		glm::vec3 normal;
-	};
 	VAOBuffer(Shader* shader);
 	void add(const MeshDataLight* meshData);
 	void add(const std::vector<glm::vec3>& v,

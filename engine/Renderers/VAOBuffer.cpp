@@ -94,6 +94,13 @@ void VAOBuffer::prepare()
 		throw NMSLogicException("VAOBuffer::prepare cannot have both vec4 and vec3 arrays.");
 	if (mVec4.size() == 0 && mVec3.size() == 0)
 		return;
+	if (mData[0].mPolygonMode_mode == UINT_MAX)
+		mData[0].mPolygonMode_mode = GL_FILL;
+
+	// Check for common error
+	if (mData[0].mPolygonMode_mode == GL_LINES)
+		mData[0].mPolygonMode_mode = GL_LINE;
+
 	validateBase();
 	if (mVao == std::numeric_limits<unsigned int>::max())
 		glGenVertexArrays(1, &mVao);
@@ -123,10 +130,13 @@ void VAOBuffer::prepare()
 	}
 	else
 	{
-		// Youtube vidioe explaning glVertexAttribPointer
+		// Youtube video explaning glVertexAttribPointer
 		// https://www.youtube.com/watch?v=kQOwkG15dYo
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0); //mData.vertexLocation);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		// Positions
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(3 * sizeof(float)));
 		glBufferData(GL_ARRAY_BUFFER, mVec3.size() * 3 * sizeof(float), mVec3.data(), GL_STATIC_DRAW);
 	}
 	if (mDrawType == RenderType::DRAW_PRIMITIVE)
@@ -153,6 +163,8 @@ void VAOBuffer::prepare()
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't 
 	// unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
+	if (!mIndices.empty())
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //Unbind the index buffer AFTER the vao has been unbound
 }
 
 void VAOBuffer::doRender() const
@@ -165,6 +177,7 @@ void VAOBuffer::doRender() const
 	}
 
 	glBindVertexArray(mVao);
+	glPolygonMode(GL_FRONT_AND_BACK, mData[0].mPolygonMode_mode);
 	if (mDrawType == RenderType::DRAW_PRIMITIVE)
 	{
 		// FPS = 27/28
@@ -182,10 +195,7 @@ void VAOBuffer::doRender() const
 		{
 			if (mIndices.size())
 			{
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
-				glDrawElements(rd.indicesMode,
-					static_cast<GLsizei>(rd.indicesCount),
-					GL_UNSIGNED_INT, 0);
+				glDrawElements(rd.indicesMode, static_cast<GLsizei>(rd.indicesCount), GL_UNSIGNED_INT, 0);
 			}
 			else
 			{

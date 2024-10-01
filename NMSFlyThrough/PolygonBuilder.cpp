@@ -98,8 +98,10 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 		PolyType pt = (PolyType)(*p++);
 		int id = (int)(*p++);
 
-//		if (!((id == 2055) || (id == 2002) || (id == 1000) || (id == 0)))
-//			continue;
+		//		if (!((id == 2055) || (id == 2002) || (id == 1000) || (id == 0)))
+		//			continue;
+		//if (!(id == 1001))
+		//	continue;
 		//found701 = true;
 		WireSlice vt(points, pt, id);
 		static float zOldDepth = std::numeric_limits<float>::max();

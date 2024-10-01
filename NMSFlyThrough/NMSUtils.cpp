@@ -210,6 +210,27 @@ namespace NMS
 		return md;
 	}
 
+	glm::vec3 centerOfPolygon(const std::vector<glm::vec3>& polygon)
+	{
+		glm::vec3 firstPolyCoord = polygon[0];
+		glm::vec3 oppositePolyCoord = polygon[(polygon.size() - 1) / 2];
+		glm::vec3 midpoint = (firstPolyCoord + oppositePolyCoord) * 0.5f;
+		return midpoint;
+	}
+	
+	static unsigned int append(std::vector<glm::vec3>& v, const glm::vec3& p)
+	{
+		v.emplace_back(p);
+		v.emplace_back(glm::vec3(0, 0, 0));// normal placeholder
+		return v.size() - 2;
+	}
+
+	static unsigned int safeWrap(const std::vector<unsigned int>& vv, unsigned int ndx)
+	{
+		unsigned int p = ndx >= vv.size() ? 0 : ndx;
+		return vv[p];
+	}
+
 	ModelData createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 	{
 		Shader* wireShader = new Shader();
@@ -221,58 +242,262 @@ namespace NMS
 		// Prepare the wire cross sections
 		ModelData md;
 		std::vector<unsigned int> indexBuffer;
+		// The number of layers for each wire does not change
 		int numLayers = threeDWires.size();
-		int numWiresInEachLayer = threeDWires[0].size();
-		int numPointsPerSlice = threeDWires[0][0].size();
+		int numWires = threeDWires[0].size();
 		std::vector< std::vector<glm::vec3>> lines;
-		const size_t numWires = threeDWires[0].size();
 		std::vector<glm::vec3> triAnglePoints;
-		glm::vec3 normal = { 1.0, 1.0, 1.0 };
-		for (int eachWire = 0; eachWire < numWiresInEachLayer; eachWire++)
+		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
+		/*
+		* For each wire mirror the structure of threeDWires, but populate
+		* with the indices of the corresponding point pushed back into triAnglePoints.
+		*/
+		std::vector<std::vector<std::vector<unsigned int>>> tempWireIndices(threeDWires.size());
+
+		// Remember the centroid of each wire end
+		std::vector<std::vector<unsigned int>> centroidIndex(numWires, std::vector<unsigned int>(2, 0));
+		for (int i = 0; i < threeDWires.size(); i++)
 		{
-			//std::vector<glm::vec3> triAnglePointIndices;
-			for (int pointOnPoly = 0; pointOnPoly < numPointsPerSlice; pointOnPoly++)
+			tempWireIndices[i] = std::vector<std::vector<unsigned int>>(threeDWires[i].size());
+			for (int j = 0; j < threeDWires[i].size(); j++)
 			{
-				for (int layer = 0; layer < (numLayers - 1); layer++)
+				tempWireIndices[i][j] = std::vector<unsigned int> (threeDWires[i][j].size());
+			}
+		}
+
+		for (int eachWire = 0; eachWire < threeDWires[0].size(); eachWire++)
+		{
+			/*
+			* Find the rough centroids of the first and last polygon slices
+				(layer == 0 and layer == numLayers - 1) respectively. We use these to
+			* triangulate the surfaces of the end points.
+			*/
+			centroidIndex[eachWire][0] = append(triAnglePoints, 
+											centerOfPolygon(threeDWires[0][eachWire]));
+
+			// Center of the bottom slice
+			centroidIndex[eachWire][1] = append(triAnglePoints, 
+											centerOfPolygon(threeDWires[numLayers - 1][eachWire]));
+			for (int layer = 0; layer < numLayers; layer++)
+			{
+				for (int pointOnPoly = 0; pointOnPoly < threeDWires[layer][eachWire].size(); pointOnPoly++)
 				{
-					// Setup for GL_TRIANGLESTRIP // https://stackoverflow.com/questions/20394727/gl-triangle-strip-vs-gl-triangle-fan
-					int ct = triAnglePoints.size();
-					int firstWire = pointOnPoly;
-					if (firstWire >= threeDWires[layer][eachWire].size())
-						firstWire = threeDWires[layer][eachWire].size() - 1;
-					glm::vec3 pt = threeDWires[layer][eachWire][firstWire]; // A
-					triAnglePoints.push_back(pt);
-					//triAnglePoints.push_back(normal);
-
-					int secondWire = firstWire + 1;
-					if (secondWire >= threeDWires[layer][eachWire].size())
-						secondWire = 0;
-					pt = threeDWires[layer][eachWire][secondWire]; // B
-					triAnglePoints.push_back(pt);
-					//triAnglePoints.push_back(normal);
-
-					if (firstWire >= threeDWires[layer+1][eachWire].size())
-						firstWire = threeDWires[layer+1][eachWire].size() - 1;
-					if (secondWire >= threeDWires[layer+1][eachWire].size())
-						secondWire = 0;
-					pt = threeDWires[layer + 1][eachWire][firstWire]; // C
-					triAnglePoints.push_back(pt);
-					//triAnglePoints.push_back(normal);
-
-					pt = threeDWires[layer + 1][eachWire][secondWire]; // D
-					triAnglePoints.push_back(pt);
-					//triAnglePoints.push_back(normal);
-
-					indexBuffer.push_back(0 + ct); // ABC
-					indexBuffer.push_back(1 + ct); // ABC
-					indexBuffer.push_back(2 + ct); // ABC
-
-					indexBuffer.push_back(1 + ct); // BDC
-					indexBuffer.push_back(3 + ct); // BDC
-					indexBuffer.push_back(2 + ct); // BDC
+					unsigned int ndx = append(triAnglePoints, threeDWires[layer][eachWire][pointOnPoly]);
+					tempWireIndices[layer][eachWire][pointOnPoly] = ndx;
 				}
 			}
 		}
+		// Now build the triangles
+		for (int eachWire = 0; eachWire < threeDWires[0].size(); eachWire++)
+		{
+			for (int layer = 0; layer < numLayers; layer++)
+			{
+				unsigned int polySize = threeDWires[layer][eachWire].size();
+				for (int pointOnPoly = 0; pointOnPoly < polySize; pointOnPoly++)
+				{
+					if (layer < (numLayers - 1))
+					{
+						if (layer == 0)
+						{
+							// Form a triangle on the flat surface of the endpoint
+							indexBuffer.push_back(tempWireIndices[layer][eachWire][pointOnPoly]);
+							indexBuffer.push_back(centroidIndex[eachWire][0]);
+							indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1));
+						}
+						// Now for the triangles down the side of the wire
+						indexBuffer.push_back(tempWireIndices[layer][eachWire][pointOnPoly]);
+						indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly+1));
+						indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly));
+
+						indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly));
+						indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1));
+						indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly + 1));
+
+						// The next layers polygon may have more points than this layer.
+						if ((pointOnPoly + 1 == polySize) && (pointOnPoly + 1 < tempWireIndices[layer + 1][eachWire].size()))
+						{
+							unsigned int a = pointOnPoly + 1;
+							while (a < tempWireIndices[layer + 1][eachWire].size())
+							{
+								indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly+1));
+								indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], a + 1));
+								indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], a));
+								a++;
+							}
+						}
+					}
+					else if (layer == (numLayers - 1))
+					{
+						// Only form a triangle on the flat surface of the endpoint
+						indexBuffer.push_back(tempWireIndices[layer][eachWire][pointOnPoly]);
+						indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1));
+						indexBuffer.push_back(centroidIndex[eachWire][1]);
+					}
+				}
+			}
+		}
+
+		VAOBuffer* vao = new VAOBuffer(wireShader);
+		MeshDataLight lineData;
+		//lineData.vertices(triAnglePoints, GL_TRIANGLE_STRIP);
+		lineData.vertices(triAnglePoints, GL_TRIANGLES);
+		lineData.indices(indexBuffer, GL_TRIANGLES);
+		lineData.polygonMode(GL_LINE);
+		vao->add(&lineData);
+		vao->prepare();
+		md.renderers.push_back(vao);
+		return md;
+	}
+	
+	static glm::vec3 safeWrap(const std::vector<glm::vec3>& vv, unsigned int ndx)
+	{
+		unsigned int p = ndx >= vv.size() ? 0 : ndx;
+		return vv[p];
+	}
+
+	ModelData createRopeSurfacesOld(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+	{
+		Shader* wireShader = new Shader();
+		wireShader->loadShaders("Wires.v.glsl",
+			"Wires.f.glsl",
+			ShaderFactory::boilerPlateGeometryShader());
+		wireShader->setStandardUniformNames("", "projection", "view", "model");
+
+		// Prepare the wire cross sections
+		ModelData md;
+		std::vector<unsigned int> indexBuffer;
+		// The number of layers for each wire does not change
+		int numLayers = threeDWires.size();
+
+		std::vector< std::vector<glm::vec3>> lines;
+		std::vector<glm::vec3> triAnglePoints;
+		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
+		if (true)
+		{
+			for (int eachWire = 0; eachWire < threeDWires[0].size(); eachWire++)
+			{
+				/*
+				* Find the rough centers of the first and last polygon slices 
+				  (layer == 0 and layer == numLayers - 1) repsectively. We use these to 
+				* triangulate the surfaces of the end points.
+				*/
+				glm::vec3 topMidpoint = centerOfPolygon(threeDWires[0][eachWire]);
+				unsigned int topMidPointBufferIndex = append(triAnglePoints, topMidpoint);
+
+				// Center of the bottom slice
+				glm::vec3 bottomMidpoint = centerOfPolygon(threeDWires[numLayers - 1][eachWire]);
+				unsigned int bottomMidPointBufferIndex = append(triAnglePoints, bottomMidpoint);
+				for (int layer = 0; layer < numLayers; layer++)
+				{
+					for (int pointOnPoly = 0; pointOnPoly < threeDWires[layer][eachWire].size(); pointOnPoly++)
+					{
+						if (layer < (numLayers - 1))
+						{
+							if (layer == 0)
+							{
+								// Form a triangle on the flat surface of the endpoint
+								unsigned int ndx00 = append(triAnglePoints, threeDWires[layer][eachWire][pointOnPoly]);
+								indexBuffer.push_back(ndx00);
+								indexBuffer.push_back(topMidPointBufferIndex);
+								unsigned int ndx01 = append(triAnglePoints, safeWrap(threeDWires[layer][eachWire], pointOnPoly+1));
+								indexBuffer.push_back(ndx01);
+
+								// Now for the triangles down the side of the wire
+								indexBuffer.push_back(ndx00);
+								indexBuffer.push_back(ndx01);
+								unsigned int ndx10 = append(triAnglePoints, safeWrap(threeDWires[layer+1][eachWire], pointOnPoly));
+								indexBuffer.push_back(ndx10);
+
+								indexBuffer.push_back(ndx10);
+								indexBuffer.push_back(ndx01);
+								unsigned int ndx11 = append(triAnglePoints, safeWrap(threeDWires[layer + 1][eachWire], pointOnPoly+1));
+								indexBuffer.push_back(ndx11);
+							}
+							else if (false)
+							{
+								// Now for the triangles down the side of the wire
+								unsigned int ndx00 = append(triAnglePoints, threeDWires[layer][eachWire][pointOnPoly]);
+								indexBuffer.push_back(ndx00);
+								unsigned int ndx01 = append(triAnglePoints, safeWrap(threeDWires[layer][eachWire], pointOnPoly + 1));
+								indexBuffer.push_back(ndx01);
+								unsigned int ndx10 = append(triAnglePoints, safeWrap(threeDWires[layer + 1][eachWire], pointOnPoly));
+								indexBuffer.push_back(ndx10);
+
+								indexBuffer.push_back(ndx10);
+								indexBuffer.push_back(ndx01);
+								unsigned int ndx11 = append(triAnglePoints, safeWrap(threeDWires[layer + 1][eachWire], pointOnPoly+1));
+								indexBuffer.push_back(ndx11);
+							}
+						}
+						else if (false && (layer == (numLayers - 1)))
+						{
+							// Only form a triangle on the flat surface of the endpoint
+							unsigned int ndx00 = append(triAnglePoints, threeDWires[layer][eachWire][pointOnPoly]);
+							indexBuffer.push_back(ndx00);
+							unsigned int ndx01 = append(triAnglePoints, safeWrap(threeDWires[layer][eachWire], pointOnPoly+1));
+							indexBuffer.push_back(ndx01);
+							indexBuffer.push_back(bottomMidPointBufferIndex);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			// This changes
+			int numPointsPerSlice = threeDWires[0][0].size();
+			for (int eachWire = 0; eachWire < threeDWires[0].size(); eachWire++)
+			{
+				for (int pointOnPoly = 0; pointOnPoly < numPointsPerSlice; pointOnPoly++)
+				{
+					for (int layer = 0; layer < (numLayers - 1); layer++)
+					{
+						// Setup for GL_TRIANGLESTRIP (now outdated)
+						// https://stackoverflow.com/questions/20394727/gl-triangle-strip-vs-gl-triangle-fan
+						int ct = triAnglePoints.size();
+						int vCount = 2;
+						int firstWire = pointOnPoly;
+						if (firstWire >= threeDWires[layer][eachWire].size())
+							firstWire = threeDWires[layer][eachWire].size() - 1;
+						glm::vec3 pt = threeDWires[layer][eachWire][firstWire]; // A
+						triAnglePoints.push_back(pt);
+						if (vCount > 1)
+							triAnglePoints.push_back(normal);
+
+						int secondWire = firstWire + 1;
+						if (secondWire >= threeDWires[layer][eachWire].size())
+							secondWire = 0;
+						pt = threeDWires[layer][eachWire][secondWire]; // B
+						triAnglePoints.push_back(pt);
+						if (vCount > 1)
+							triAnglePoints.push_back(normal);
+
+						if (firstWire >= threeDWires[layer + 1][eachWire].size())
+							firstWire = threeDWires[layer + 1][eachWire].size() - 1;
+						if (secondWire >= threeDWires[layer + 1][eachWire].size())
+							secondWire = 0;
+						pt = threeDWires[layer + 1][eachWire][firstWire]; // C
+						triAnglePoints.push_back(pt);
+						if (vCount > 1)
+							triAnglePoints.push_back(normal);
+
+						pt = threeDWires[layer + 1][eachWire][secondWire]; // D
+						triAnglePoints.push_back(pt);
+						if (vCount > 1)
+							triAnglePoints.push_back(normal);
+
+						indexBuffer.push_back(0 * vCount + ct); // ABC
+						indexBuffer.push_back(1 * vCount + ct); // ABC
+						indexBuffer.push_back(2 * vCount + ct); // ABC
+
+						indexBuffer.push_back(1 * vCount + ct); // BDC
+						indexBuffer.push_back(3 * vCount + ct); // BDC
+						indexBuffer.push_back(2 * vCount + ct); // BDC
+					}
+				}
+			}
+		}
+
 		VAOBuffer* vao = new VAOBuffer(wireShader);
 		MeshDataLight lineData;
 		//lineData.vertices(triAnglePoints, GL_TRIANGLE_STRIP);
@@ -283,6 +508,7 @@ namespace NMS
 		md.renderers.push_back(vao);
 		return md;
 	}
+	
 	RendererBase* createLightSource(const glm::vec3& position)
 	{
 		/*
@@ -303,6 +529,7 @@ namespace NMS
 
 		VAOBuffer* vao = new VAOBuffer(sh);
 		vao->add(&lineData);
+		vao->prepare();
 		return vao;
 	}
 }

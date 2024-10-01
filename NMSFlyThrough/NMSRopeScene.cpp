@@ -44,7 +44,7 @@ void NMSRopeScenePhysics::drawRope(const AABB& _world)
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	mPolyBuilder = Rope::drawRope(30822, ropeZoom.x, ropeZoom.y, 30);
+	mPolyBuilder = Rope::drawRope(30822, ropeZoom.x, ropeZoom.y, 45);
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
 		TextData td;
@@ -132,12 +132,11 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 	ls->prepare();
 	md1.renderers.push_back(ls);
 	mLight.setup(&md1);
-	ls->prepare();
 
 	ModelData md2 = NMS::createRopeLines(sps->mPolyBuilder->slices());
 	ModelData md3 = NMS::createRopeSurfaces(sps->mPolyBuilder->slices());
 	ModelData md4 = NMS::createRopeEnds(sps->mPolyBuilder->slices());
-	mWireLines.append(&md2);
+	//mWireLines.append(&md2);
 	mWireSurfaces.append(&md3);
 	mWireEnds.append(&md4);
 	bool addLabels = true;
@@ -173,7 +172,7 @@ void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),
 	{
 		shader->use();
 		shader->setVector4f("lightColor", OWUtils::colour(OWUtils::SolidColours::BLUE));
-		shader->setVector4f("objectColor", glm::vec4(0.90f, 0.91f, 0.98f, 1.0f));
+		shader->setVector4f("objectColor", glm::vec4(0.90f, 0.91f, 0.98f, 1.0f)); // silver
 		shader->setVector3f("viewLightPos", cameraPos);
 		};
 	mWireSurfaces.render(proj, view, model, cameraPos, nullptr, pointRender);

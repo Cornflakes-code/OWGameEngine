@@ -14,7 +14,7 @@ typedef std::function<void(ModelData* m)> navFunction;
 typedef std::function<void(const ModelData* m)> constNavFunction;
 struct ModelData
 {
-	const RendererBase* renderer(int index) const
+	const RendererBase* renderer(int /*index*/) const
 	{
 		return renderers[0];
 	}

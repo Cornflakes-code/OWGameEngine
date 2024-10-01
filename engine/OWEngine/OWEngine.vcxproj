@@ -208,6 +208,7 @@
     <ClInclude Include="..\Core\UserInput.h" />
     <ClInclude Include="..\glad\include\glad\glad.h" />
     <ClInclude Include="..\Helpers\BoundsCalculator.h" />
+    <ClInclude Include="..\Helpers\ComputeNormals.h" />
     <ClInclude Include="..\Helpers\FontFactory.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
     <ClInclude Include="..\Helpers\GeometricShapes.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
     <ClCompile Include="..\Helpers\BoundsCalculator.cpp" />
+    <ClCompile Include="..\Helpers\ComputeNormals.cpp" />
     <ClCompile Include="..\Helpers\FontFactory.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
     <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
