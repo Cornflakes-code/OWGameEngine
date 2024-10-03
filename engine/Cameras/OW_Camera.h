@@ -115,6 +115,7 @@ public:
 	}
 	void pitch(float radians)
 	{
+		radians *= mMoveScale / 200.0f; // 200 is a bit arbitary. Sort of equal to base velocity
 		glm::vec3 _right = right();
 		mDirection  = glm::normalize(glm::rotate(mDirection, -radians, _right));
 		mUp = glm::normalize(glm::rotate(mUp, -radians, _right));
@@ -122,11 +123,13 @@ public:
 
 	void roll(float radians)
 	{
+		radians *= mMoveScale / 200.0f;
 		mUp = glm::normalize(glm::rotate(mUp, radians, mDirection));
 	}
 
 	void yaw(float radians)
 	{
+		radians *= mMoveScale / 200.0f;
 		mDirection = glm::normalize(glm::rotate(mDirection, radians, mUp));
 	}
 

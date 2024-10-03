@@ -13,7 +13,7 @@ uniform vec4 objectColor;
 void main()
 {
     // ambient
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.9;
     vec3 ambient = ambientStrength * lightColor.xyz;
     
      // diffuse 
@@ -23,7 +23,7 @@ void main()
     vec3 diffuse = diff * lightColor.xyz;
     
     // specular
-    float specularStrength = 0.5;
+    float specularStrength = 0.4;
     vec3 viewDir = normalize(-FragPos); // the viewer is always at (0,0,0) in view-space, so viewDir is (0,0,0) - Position => -Position
     vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);

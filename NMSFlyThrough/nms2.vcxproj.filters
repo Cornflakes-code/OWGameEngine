@@ -82,6 +82,9 @@
     <ClCompile Include="PolygonBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RopeNormaliser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h">
@@ -136,6 +139,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PolygonBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RopeNormaliser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

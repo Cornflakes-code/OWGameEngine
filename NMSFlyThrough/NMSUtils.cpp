@@ -1,4 +1,5 @@
 #include "NMSUtils.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
@@ -14,6 +15,8 @@
 #include <Renderers/LightRenderer.h>
 #include <Renderers/VAOBuffer.h>
 #include <Renderers/TextRendererStatic.h>
+
+#include "RopeNormaliser.h"
 
 namespace NMS
 {
@@ -146,7 +149,7 @@ namespace NMS
 
 	ModelData createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 	{
-		ShaderFactory shaders; 
+		ShaderFactory shaders;
 		Shader* lineShader = new Shader();
 		lineShader->loadShaders(shaders.boilerPlateVertexShader(),
 			shaders.boilerPlateFragmentShader(),
@@ -188,7 +191,7 @@ namespace NMS
 							line.push_back(pt);
 						}
 					}
-					if (line.size())	
+					if (line.size())
 						ropeLines.push_back(line);
 				}
 			}
@@ -212,22 +215,22 @@ namespace NMS
 	glm::vec3 centerOfPolygon(const std::vector<glm::vec3>& polygon)
 	{
 		glm::vec3 firstPolyCoord = polygon[0];
-		glm::vec3 oppositePolyCoord = polygon[(polygon.size() - 1) / 2];
+		glm::vec3 oppositePolyCoord = polygon[polygon.size() / 2];
 		glm::vec3 midpoint = (firstPolyCoord + oppositePolyCoord) * 0.5f;
 		return midpoint;
 	}
-	
+
 	static unsigned int append(std::vector<glm::vec3>& v, const glm::vec3& p)
 	{
 		v.emplace_back(p);
-		v.emplace_back(glm::vec3(0, 0, 0));// normal placeholder
+		v.emplace_back(glm::vec3(0.0f));// placeholder for normal values
 		return static_cast<unsigned int>(v.size()) - 2;
 	}
 
 	static unsigned int safeWrap(const std::vector<unsigned int>& vv, size_t ndx)
 	{
-		size_t i = ndx >= vv.size() ? 0 : ndx;
-		return vv[i];
+		int i = static_cast<int>(ndx) - static_cast<int>(vv.size());
+		return i < 0 ? vv[ndx] : vv[i];
 	}
 
 	ModelData createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
@@ -240,30 +243,34 @@ namespace NMS
 
 		// Prepare the wire cross sections
 		ModelData md;
-		std::vector<unsigned int> indexBuffer;
-		// The number of layers for each wire does not change
 		size_t numLayers = threeDWires.size();
+
+		// The number of wires for each layer is the same
 		size_t numWires = threeDWires[0].size();
-		std::vector< std::vector<glm::vec3>> lines;
+		// This holds the points that go to the gpu
 		std::vector<glm::vec3> triAnglePoints;
-		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
+
 		/*
 		* For each wire mirror the structure of threeDWires, but populate
 		* with the indices of the corresponding point pushed back into triAnglePoints.
 		*/
 		std::vector<std::vector<std::vector<unsigned int>>> tempWireIndices(threeDWires.size());
-
-		// Remember the centroid of each wire end
-		std::vector<std::vector<unsigned int>> centroidIndex(numWires, std::vector<unsigned int>(2, 0));
 		for (int i = 0; i < threeDWires.size(); i++)
 		{
 			tempWireIndices[i] = std::vector<std::vector<unsigned int>>(threeDWires[i].size());
 			for (int j = 0; j < threeDWires[i].size(); j++)
 			{
-				tempWireIndices[i][j] = std::vector<unsigned int> (threeDWires[i][j].size());
+				tempWireIndices[i][j] = std::vector<unsigned int>(threeDWires[i][j].size());
+				for (unsigned int pointOnPoly = 0; pointOnPoly < threeDWires[i][j].size(); pointOnPoly++)
+				{
+					unsigned int ndx = append(triAnglePoints, threeDWires[i][j][pointOnPoly]);
+					tempWireIndices[i][j][pointOnPoly] = ndx;
+				}
 			}
 		}
 
+		// Remember the centroid of each wire end so we can draw triangles on the ends.
+		std::vector<std::vector<unsigned int>> centroidIndex(numWires, std::vector<unsigned int>(2, 0));
 		// Populate the indice vectors
 		for (int eachWire = 0; eachWire < threeDWires[0].size(); eachWire++)
 		{
@@ -272,28 +279,21 @@ namespace NMS
 				(layer == 0 and layer == numLayers - 1) respectively. We use these to
 			* triangulate the surfaces of the end points.
 			*/
-			centroidIndex[eachWire][0] = append(triAnglePoints, 
-											centerOfPolygon(threeDWires[0][eachWire]));
+			centroidIndex[eachWire][0] = append(triAnglePoints,
+				centerOfPolygon(threeDWires[0][eachWire]));
 
 			// Center of the bottom slice
-			centroidIndex[eachWire][1] = append(triAnglePoints, 
-											centerOfPolygon(threeDWires[numLayers - 1][eachWire]));
-			for (int layer = 0; layer < numLayers; layer++)
-			{
-				for (int pointOnPoly = 0; pointOnPoly < threeDWires[layer][eachWire].size(); pointOnPoly++)
-				{
-					unsigned int ndx = append(triAnglePoints, threeDWires[layer][eachWire][pointOnPoly]);
-					tempWireIndices[layer][eachWire][pointOnPoly] = ndx;
-				}
-			}
+			centroidIndex[eachWire][1] = append(triAnglePoints,
+				centerOfPolygon(threeDWires[numLayers - 1][eachWire]));
 		}
 
+		RopeNormaliser rn(&triAnglePoints);
 		// Now build the triangles
-		for (int eachWire = 0; eachWire < threeDWires[0].size(); eachWire++)
+		for (int eachWire = 0; eachWire < tempWireIndices[0].size(); eachWire++)
 		{
 			for (int layer = 0; layer < numLayers; layer++)
 			{
-				size_t polySize = threeDWires[layer][eachWire].size();
+				size_t polySize = tempWireIndices[layer][eachWire].size();
 				for (size_t pointOnPoly = 0; pointOnPoly < polySize; pointOnPoly++)
 				{
 					if (layer < (numLayers - 1))
@@ -301,28 +301,35 @@ namespace NMS
 						if (layer == 0)
 						{
 							// Form a triangle on the flat surface of the endpoint
-							indexBuffer.push_back(tempWireIndices[layer][eachWire][pointOnPoly]);
-							indexBuffer.push_back(centroidIndex[eachWire][0]);
-							indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1));
+							rn.appendTriangle(
+								centroidIndex[eachWire][0],
+								safeWrap(tempWireIndices[layer][eachWire], pointOnPoly),
+								safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1));
 						}
 						// Now for the triangles down the side of the wire
-						indexBuffer.push_back(tempWireIndices[layer][eachWire][pointOnPoly]);
-						indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly+1));
-						indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly));
+						rn.appendTriangle(
+							safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1),
+							safeWrap(tempWireIndices[layer][eachWire], pointOnPoly),
+							safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly));
 
-						indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly));
-						indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1));
-						indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly + 1));
+						rn.appendTriangle(
+							safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1),
+							safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly),
+							safeWrap(tempWireIndices[layer + 1][eachWire], pointOnPoly + 1));
 
 						// The next layers polygon may have more points than this layer.
-						if ((pointOnPoly + 1 == polySize) && (pointOnPoly + 1 < tempWireIndices[layer + 1][eachWire].size()))
+						// If we are the lasy point in this layer and the next layer has 
+						// more points then fill the gaps.
+						if ((pointOnPoly + 1 == polySize) &&
+							(pointOnPoly + 1 < tempWireIndices[layer + 1][eachWire].size()))
 						{
 							size_t a = pointOnPoly + 1;
 							while (a < tempWireIndices[layer + 1][eachWire].size())
 							{
-								indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly+1));
-								indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], a + 1));
-								indexBuffer.push_back(safeWrap(tempWireIndices[layer + 1][eachWire], a));
+								rn.appendTriangle(
+									safeWrap(tempWireIndices[layer + 1][eachWire], a + 1),
+									safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1),
+									safeWrap(tempWireIndices[layer + 1][eachWire], a));
 								a++;
 							}
 						}
@@ -330,26 +337,37 @@ namespace NMS
 					else if (layer == (numLayers - 1))
 					{
 						// Now form triangles on the flat surface of the end of the wire.
-						indexBuffer.push_back(tempWireIndices[layer][eachWire][pointOnPoly]);
-						indexBuffer.push_back(safeWrap(tempWireIndices[layer][eachWire], pointOnPoly + 1));
-						indexBuffer.push_back(centroidIndex[eachWire][1]);
+						rn.appendTriangle(
+							safeWrap(
+								tempWireIndices[layer][eachWire], pointOnPoly + 1),
+							tempWireIndices[layer][eachWire][pointOnPoly],
+							centroidIndex[eachWire][1]);
+
 					}
 				}
+				//	break;
 			}
 		}
 
+		std::vector<std::pair<unsigned int, glm::vec3>> normalPairs = rn.createNormals();
+		for (const auto& each : normalPairs)
+		{
+			unsigned int ndx = each.first;
+			glm::vec3 normal = each.second;
+			triAnglePoints[ndx + 1] = normal;
+		}
 		VAOBuffer* vao = new VAOBuffer(wireShader);
 		MeshDataLight lineData;
-		//lineData.vertices(triAnglePoints, GL_TRIANGLE_STRIP);
 		lineData.vertices(triAnglePoints, GL_TRIANGLES);
-		lineData.indices(indexBuffer, GL_TRIANGLES);
+		lineData.indices(RopeNormaliser::mIndexBuffer, GL_TRIANGLES);
 		lineData.polygonMode(GL_FILL);
+		//	lineData.polygonMode(GL_LINE);
 		vao->add(&lineData);
 		vao->prepare();
 		md.renderers.push_back(vao);
 		return md;
 	}
-	
+
 	RendererBase* createLightSource(const glm::vec3& position)
 	{
 		/*

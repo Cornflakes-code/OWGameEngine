@@ -28,7 +28,6 @@ void NMSRopeScenePhysics::setup()
 		fontHeight, globals->camera()->aspectRatio());
 	mNiceScale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
 						5.2f * _world.size().y / globals->physicalWindowSize().y };
-
 	Rope::initRopes();
 	mTextData.set("Ropes", fontHeight, mNiceSpacing * 10.0f, mNiceScale);
 	drawRope(_world);
@@ -127,7 +126,7 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 	mText->setup(&(sps->mTextData), glm::vec3(0));
 
 	ModelData md1;
-	RendererBase* ls = NMS::createLightSource(glm::vec3(160.0f, 60.0f, -50.0f));
+	RendererBase* ls = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));
 	//RendererBase* ls = NMS::createLightSource(glm::vec3(60.0f, 60.0f, -150.0f));
 	ls->prepare();
 	md1.renderers.push_back(ls);
@@ -139,7 +138,7 @@ void NMSRopeScene::doSetup(ScenePhysicsState* state)
 	//mWireLines.append(&md2);
 	mWireSurfaces.append(&md3);
 	mWireEnds.append(&md4);
-	bool addLabels = true;
+	bool addLabels = false;
 	if (addLabels)
 	{
 		for (const std::pair<TextData, glm::vec3>& td : sps->mPolygonTextData)
@@ -171,12 +170,13 @@ void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),
 		const Shader* shader)
 	{
 		shader->use();
-		shader->setVector4f("lightColor", OWUtils::colour(OWUtils::SolidColours::BLUE));
+		shader->setVector4f("lightColor", OWUtils::colour(OWUtils::SolidColours::WHITE)); 
 		shader->setVector4f("objectColor", glm::vec4(0.90f, 0.91f, 0.98f, 1.0f)); // silver
+		//shader->setVector3f("viewLightPos", glm::vec3(160.0f, 60.0f, 50.0f));
 		shader->setVector3f("viewLightPos", cameraPos);
 		};
 	mWireSurfaces.render(proj, view, model, cameraPos, nullptr, pointRender);
-	mWireEnds.render(proj, view, model, cameraPos);
+	//mWireEnds.render(proj, view, model, cameraPos);
 }
 
 void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
@@ -197,6 +197,8 @@ void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
 		camera->position(center);
 		center.z = 0;
 		camera->lookAt(center);
+		float speed = camera->moveScale();
+		camera->moveScale(speed * 5.0f);
 		//camera->FOV(glm::radians(45.0f));
 	}
 }
