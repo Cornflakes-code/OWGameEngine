@@ -229,6 +229,7 @@
     <ClInclude Include="..\Renderers\LightRenderer.h" />
     <ClInclude Include="..\Renderers\Model.h" />
     <ClInclude Include="..\Renderers\RendererBase.h" />
+    <ClInclude Include="..\Renderers\RendererBaseShader.h" />
     <ClInclude Include="..\Renderers\TextRenderer.h" />
     <ClInclude Include="..\Renderers\TextRendererDynamic.h" />
     <ClInclude Include="..\Renderers\TextRendererStatic.h" />
@@ -279,6 +280,7 @@
     <ClCompile Include="..\Renderers\LightRenderer.cpp" />
     <ClCompile Include="..\Renderers\Model.cpp" />
     <ClCompile Include="..\Renderers\RendererBase.cpp" />
+    <ClCompile Include="..\Renderers\RendererBaseShader.cpp" />
     <ClCompile Include="..\Renderers\TextRenderer.cpp" />
     <ClCompile Include="..\Renderers\TextRendererDynamic.cpp" />
     <ClCompile Include="..\Renderers\TextRendererStatic.cpp" />

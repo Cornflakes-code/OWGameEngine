@@ -349,13 +349,7 @@ namespace NMS
 			}
 		}
 
-		std::vector<std::pair<unsigned int, glm::vec3>> normalPairs = rn.createNormals();
-		for (const auto& each : normalPairs)
-		{
-			unsigned int ndx = each.first;
-			glm::vec3 normal = each.second;
-			triAnglePoints[ndx + 1] = normal;
-		}
+		rn.createNormals(triAnglePoints, 1, 2);
 		VAOBuffer* vao = new VAOBuffer(wireShader);
 		MeshDataLight lineData;
 		lineData.vertices(triAnglePoints, GL_TRIANGLES);

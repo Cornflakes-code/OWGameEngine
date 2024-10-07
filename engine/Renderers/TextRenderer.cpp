@@ -45,7 +45,7 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 }
 
 TextRenderer::TextRenderer(Shader* sh, const std::string& pvm)
-	: RendererBase(sh)
+	: RendererBaseShader(sh)
 {
 	shader()->setStandardUniformNames(pvm);
 }

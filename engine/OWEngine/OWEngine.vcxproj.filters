@@ -171,6 +171,9 @@
     <ClInclude Include="..\Helpers\ComputeNormals.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Renderers\RendererBaseShader.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -313,6 +316,9 @@
     </ClCompile>
     <ClCompile Include="..\Helpers\ComputeNormals.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderers\RendererBaseShader.cpp">
+      <Filter>Source Files\Renderers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

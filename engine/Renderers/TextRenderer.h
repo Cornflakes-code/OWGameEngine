@@ -11,11 +11,11 @@
 
 #include "../Helpers/Texture.h"
 
-#include "RendererBase.h"
+#include "RendererBaseShader.h"
 
 struct TextData;
 
-class OWENGINE_API TextRenderer: public RendererBase
+class OWENGINE_API TextRenderer: public RendererBaseShader
 {
 public:
 	TextRenderer(Shader* shader, const std::string& pvm);

@@ -85,6 +85,9 @@
     <ClCompile Include="RopeNormaliser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\engine\Helpers\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h">
@@ -142,6 +145,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RopeNormaliser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Helpers\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

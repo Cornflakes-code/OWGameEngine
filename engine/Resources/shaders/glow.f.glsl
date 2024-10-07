@@ -1,3 +1,5 @@
+#version 430 core
+
 // How to achieve and control a simple distance glow effect based on several Shadertoy examples
 // Things to try:
 //  * Make the radius and intensity pulse in time or to input
@@ -6,11 +8,12 @@
 //  * Generate more complex shapes
 // https://www.shadertoy.com/view/3s3GDn
 
-#version 330 core
 in vec2 UV;
 in vec4 particlecolor;
+in vec4 frag_Position;
 in vec2 particleCenter;
 out vec4 colourOut;
+
 uniform float cutoffRadius;
 uniform vec2 u_resolution;
 
@@ -18,7 +21,7 @@ void main()
 {
 	float R = cutoffRadius*4.5;
 	float blend = 0.7;
-	vec2 uv = particleCenter.xy - gl_FragCoord.xy;
+	vec2 uv = particleCenter.xy - frag_Position.xy;
     if (length(uv) > R) {
 		//blend = 0;
        //discard;

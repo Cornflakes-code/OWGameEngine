@@ -1,4 +1,5 @@
 #include "RopeNormaliser.h"
+
 #include <Core/ErrorHandling.h>
 
 std::vector<unsigned int> RopeNormaliser::mIndexBuffer;
@@ -34,7 +35,7 @@ void RopeNormaliser::appendTriangle(unsigned int a, unsigned int b, unsigned int
 {
 	if (a == b || a == c || b == c)
 	{
-		throw NMSLogicException("A triangle needs three disticnt lines");
+		throw NMSLogicException("A triangle needs three distinct lines");
 	}
 	mIndexBuffer.push_back(a);
 	mIndexBuffer.push_back(b);
@@ -45,21 +46,52 @@ void RopeNormaliser::appendTriangle(unsigned int a, unsigned int b, unsigned int
 	aggregateFaces(c, tri);
 }
 
-std::vector<std::pair<unsigned int, glm::vec3>> RopeNormaliser::createNormals()
+void RopeNormaliser::createNormals(std::vector<glm::vec3>& points, unsigned int offsetFromVertex, unsigned int stride)
 {
-	std::vector<std::pair<unsigned int, glm::vec3>> normals;
-	for (auto& m : triangles)
+	bool smoothNormals = true;
+	if (smoothNormals)
 	{
-		unsigned int index = m.first;
-		const std::vector<IndexTriangle>& tris = m.second;
-		glm::vec3 sum = { 0,0,0 };
-		for (const auto& v : tris)
+		// https://computergraphics.stackexchange.com/questions/4031/programmatically-generating-vertex-normals
+		// https://iquilezles.org/articles/normals/
+		for (auto& t : triangles)
 		{
-			sum += v.normal;
+			const std::vector<IndexTriangle>& tris = t.second;
+			for (const auto& v : tris)
+			{
+				glm::vec3 edge1 = (*mPoints)[v.indicies[0]] - (*mPoints)[v.indicies[1]];
+				glm::vec3 edge2 = (*mPoints)[v.indicies[2]] - (*mPoints)[v.indicies[1]];
+				glm::vec3 p = glm::cross(edge1, edge2);
+				points[v.indicies[0] + offsetFromVertex] += p;
+				points[v.indicies[1] + offsetFromVertex] += p;
+				points[v.indicies[2] + offsetFromVertex] += p;
+			}
 		}
-		glm::vec3 n = glm::normalize(sum);
-		normals.push_back({ index, n });
+		for (int i = offsetFromVertex; i < points.size(); i += stride)
+		{
+			points[i] = -glm::normalize(points[i]);
+		}
 	}
-	return normals;
+	else
+	{
+		std::vector<std::pair<unsigned int, glm::vec3>> normals;
+		for (auto& m : triangles)
+		{
+			unsigned int index = m.first;
+			const std::vector<IndexTriangle>& tris = m.second;
+			glm::vec3 sum = { 0,0,0 };
+			for (const auto& v : tris)
+			{
+				sum += v.normal;
+			}
+			glm::vec3 n = glm::normalize(sum);
+			normals.push_back({ index, n });
+		}
+		for (const auto& each : normals)
+		{
+			unsigned int ndx = each.first;
+			glm::vec3 normal = each.second;
+			points[ndx + offsetFromVertex] = normal;
+		}
+	}
 }
 

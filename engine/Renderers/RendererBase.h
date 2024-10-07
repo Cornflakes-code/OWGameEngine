@@ -23,8 +23,7 @@ public:
 					ScaleByAspectRatioType scaler,
 					float aspectRatio)> ResizeCallbackType;
 
-	RendererBase(Shader* shader)
-		:mShader(shader) {}
+	RendererBase() {}
 	
 	// OpenGL state functions
 	void appendRenderCallback(RenderCallbackType pfunc) { mRenderCallbacks.push_back(pfunc); }
@@ -49,11 +48,11 @@ public:
 		MoveController* mover = nullptr,
 		RenderCallbackType renderCb = nullptr,
 		ResizeCallbackType resizeCb = nullptr) const;
-	const Shader* shader() const { return mShader; }
+	virtual const Shader* shader() const = 0;
 protected:
-	Shader* shader() { return mShader; }
+	virtual Shader* shader() = 0;
 	virtual void doRender() const = 0;
-	void validateBase() const;
+	virtual void validateBase() const;
 private:
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
 	void callResizeCallback(ResizeCallbackType resizeCb) const;
@@ -76,7 +75,6 @@ private:
 private:
 	std::vector<RenderCallbackType> mRenderCallbacks;
 	std::vector<ResizeCallbackType> mResizeCallbacks;
-	Shader* mShader;
 	// After scene::setup it is Ok to modify Renderers
 	// but only for efficiency reasons. Modifications
 	// cannot change what is happenning else the game 

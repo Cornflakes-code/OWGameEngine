@@ -14,7 +14,7 @@ https://www.reddit.com/r/opengl/comments/18rkgg3/one_vao_for_multiple_vbos/
 https://github.com/fendevel/Guide-to-Modern-OpenGL-Functions#glbuffer
 */
 VAOBuffer::VAOBuffer(Shader* shader)
-	: RendererBase(shader)
+	: RendererBaseShader(shader)
 {
 //	enum RenderType { DRAW_NONE, DRAW_ARRAYS, DRAW_MULTI, DRAW_PRIMITIVE };
 //	mDrawType = DRAW_PRIMITIVE;

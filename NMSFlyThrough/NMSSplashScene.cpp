@@ -27,6 +27,7 @@
 #include "NMSUtils.h"
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
+#include <Helpers/Button.h>
 
 #define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
@@ -87,8 +88,11 @@ ScenePhysicsState* NMSSplashScenePhysics::clone()
 
 bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userInput,
 					std::string& nextScene, 
-					Camera* OW_UNUSED(camera))
+					Camera* camera)
 {
+	float speed = camera->moveScale();
+	if (speed < 201.00f)
+		camera->moveScale(speed * 5.0f);
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
 	{
 //		glm::ivec2 v2 = 
@@ -182,6 +186,9 @@ void NMSSplashScenePhysics::setup()
 	ModelData md = ModelFactory().create("Dice2.obj", false);
 	mCylinderData = md.children[0].meshes[0];
 #endif
+	mButtonData.mButtonShape = GeometricShapes::goldenRectangle(10);
+	mButtonData.mText = mEnjoyData;
+	mButtonData.mText.text("Click Me");
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////
@@ -262,9 +269,11 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	};
 
 	starShader->setFloat("cutoffRadius", w.x, true);
-	mStarRenderer->setup(&sps->mStarData);
+	mStarRenderer->setup(&(sps->mStarData));
 	//mStarRenderer->blendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	mStarRenderer->blendFunction(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	mButton = new OWButton();
+	mButton->setup(sps->mButtonData, glm::vec3(100));
 #endif
 }
 
@@ -295,6 +304,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	};
 	mFullScreen->render(proj, view, model, cameraPos,
 					nullptr, fullScreenRender, fullScreenResize);
+	mButton->render(proj, view, model, cameraPos);
 #endif
 #ifdef INCLUDE_IMPORTED_MODEL
 	glm::vec3 scaled = glm::vec3(10.0, 10.0, 10.0);
@@ -337,7 +347,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 
 							  ScenePhysicsState* OW_UNUSED(state),
-							  Camera* OW_UNUSED(camera), 
+							  Camera* camera, 
 							  unsigned int OW_UNUSED(callCount))
 {
 	//globals->application()->backgroundColour(glm::vec4(0, 0, 0, 0));

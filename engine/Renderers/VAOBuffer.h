@@ -10,11 +10,11 @@
 
 #include "../Helpers/MeshDataLight.h"
 
-#include "RendererBase.h"
+#include "RendererBaseShader.h"
 
 class Shader;
 
-class OWENGINE_API VAOBuffer : public RendererBase
+class OWENGINE_API VAOBuffer : public RendererBaseShader
 {
 public:
 	VAOBuffer(Shader* shader);

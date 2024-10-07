@@ -15,6 +15,7 @@
 
 #include <Renderers/Model.h>
 #include "NMSScene.h"
+#include <Helpers/Button.h>
 
 /*
 	An implementation of a Scene for the NMS game.
@@ -40,6 +41,7 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 
 	static AABB mWindowBounds;
 	static OWUtils::Float mSpeed;
+	ButtonData mButtonData;
 	TextData mWelcomeData;
 	TextData mEnjoyData;
 	MoveController mWelcomeMover;
@@ -55,6 +57,7 @@ class LightRenderer;
 class InstanceRenderer;
 class TextRenderer;
 class HeavyRenderer;
+class OWButton;
 
 class NMSSplashScene : public NMSScene
 {
@@ -64,6 +67,7 @@ class NMSSplashScene : public NMSScene
 	TextRenderer* mEnjoyText = 0;
 	HeavyRenderer* mCylinder = 0;
 	Model mAxis;
+	OWButton* mButton;
 public:
 	NMSSplashScene(const Movie* movie);
 	std::string name() const { return "Splash"; }

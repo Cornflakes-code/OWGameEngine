@@ -8,8 +8,6 @@
 
 void RendererBase::validateBase() const
 {
-	if (mShader == nullptr)
-		throw NMSLogicException("RendererBase::mShader must be set");
 }
 
 float RendererBase::aspectRatio() const
@@ -84,9 +82,10 @@ void RendererBase::render(const glm::mat4& proj,
 	OWUtils::PolygonModeRIAA temp1(mPolygonFace, mPolygonMode);
 	OWUtils::LineWidthRIAA temp2(mLineWidth);
 	OWUtils::BlendFuncRIAA temp3(mSfactor, mDfactor);
+
 	shader()->use();
 	callResizeCallback(resizeCb);
-	mShader->setStandardUniformValues(proj, view, model, cameraPos);
+	const_cast<Shader*>(shader())->setStandardUniformValues(proj, view, model, cameraPos);
 	callRenderCallback(proj, view, model, cameraPos, renderCb);
 
 	doRender();

@@ -10,13 +10,13 @@
 
 #include "../Helpers/MeshDataInstance.h"
 
-#include "RendererBase.h"
+#include "RendererBaseShader.h"
 
-class OWENGINE_API InstanceRenderer: public RendererBase
+class OWENGINE_API InstanceRenderer: public RendererBaseShader
 {
 public:
 	InstanceRenderer(Shader* shader)
-		: RendererBase(shader) {}
+		: RendererBaseShader(shader) {}
 	void setup(const MeshDataInstance* meshData);
 	void doRender() const override;
 private:

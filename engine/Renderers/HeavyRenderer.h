@@ -7,16 +7,16 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "RendererBase.h"
+#include "RendererBaseShader.h"
 
 class Particles;
 struct MeshDataHeavy;
 
-class OWENGINE_API HeavyRenderer: public RendererBase
+class OWENGINE_API HeavyRenderer: public RendererBaseShader
 {
 public:
 	HeavyRenderer(Shader* shader)
-		: RendererBase(shader) {}
+		: RendererBaseShader(shader) {}
 	void setup(MeshDataHeavy* data, unsigned int vertexMode, 
 			unsigned int vertexLocation = 0);
 

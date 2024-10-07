@@ -50,6 +50,20 @@ std::vector<glm::vec3> GeometricShapes::rectangle(const glm::vec2& dims,
 	return retval;
 }
 
+std::vector<glm::vec3> GeometricShapes::goldenRectangle(float scale,
+	const glm::vec2& bottomLeft)
+{
+	// Create at {0,0}, scale then move.
+	float magicGoldenNumber = (scale * 89.0f) / 55.0f + bottomLeft.x;
+	float ydim = 1.0f * scale + bottomLeft.y;
+	std::vector<glm::vec3> retval;
+	retval.push_back(glm::vec3(0.0f, 0.0f, 0));
+	retval.push_back(glm::vec3(0.0f, ydim, 0));
+	retval.push_back(glm::vec3(magicGoldenNumber, ydim, 0));
+	retval.push_back(glm::vec3(magicGoldenNumber, 0.0f, 0));
+	return retval;
+}
+
 // But the points are bunched near the poles.
 std::vector<glm::vec3> GeometricShapes::pointsOnSphere(
 	int numHoroSegments, int numVertSegments, float TAU)

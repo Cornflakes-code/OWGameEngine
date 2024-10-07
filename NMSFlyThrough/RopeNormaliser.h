@@ -26,5 +26,5 @@ public:
 		:mPoints(p)
 	{}
 	void appendTriangle(unsigned int a, unsigned int b, unsigned int c);
-	std::vector<std::pair<unsigned int, glm::vec3>> createNormals();
+	void createNormals(std::vector<glm::vec3>& points, unsigned int offsetFromVertex, unsigned int stride);
 };
