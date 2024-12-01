@@ -12,7 +12,7 @@ glm::uvec2 SaveAndRestore::physicalWindowSize() const
 
 std::string SaveAndRestore::activeScene() const
 {
-	//return "main"; // This sets the initial screen
-	return "Splash";
+	return "Main"; // This sets the initial screen
+	//return "Splash";
 	//return "Rope";
 }

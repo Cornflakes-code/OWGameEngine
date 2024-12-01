@@ -76,8 +76,3 @@ void MoveController::bounceIfCollide(const AABB& scenery)
 		mBounds.move(rebound);
 	}
 }
-
-glm::mat4 MoveController::translate(const glm::mat4& model) const
-{
-	return glm::translate(model, glm::vec3(mBounds.center()) - mInitialPosition);
-}

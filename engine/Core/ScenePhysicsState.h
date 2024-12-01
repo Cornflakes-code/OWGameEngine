@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../OWEngine/OWEngine.h"
+#include "../Core/Actor.h"
 
 #include "CommonUtils.h"
 
@@ -22,7 +23,7 @@ class OWENGINE_API ScenePhysicsState
 {
 public:
 	ScenePhysicsState(const Scene* owner)
-		: mOwner(owner)
+		: mOwner(owner), mRootNode(new SceneGraphNode())
 	{}
 	virtual void setup() = 0;
 	virtual void copy(ScenePhysicsState* source) = 0;
@@ -41,7 +42,9 @@ public:
 	virtual ScenePhysicsState* clone() = 0;
 	const Scene* owner() const { return mOwner; }
 	virtual void clear() {}
+	SceneGraphNode* mRootNode = nullptr;
 protected:
+
 	// https://gafferongames.com/post/fix_your_timestep/
 	float interpolate(float p1, float m1, float p2, float m2)
 	{

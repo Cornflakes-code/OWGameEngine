@@ -7,12 +7,12 @@
 #include "../Core/BoundingBox.h"
 
 
-class BoundsCalculator
+class OWENGINE_API BoundsCalculator
 {
 public:
 	BoundsCalculator() {}
 	void invalidate() const { mBoundsValid = false; }
-	const AABB& bound(const std::vector<glm::vec3>& v) const
+	const AABB& bounds(const std::vector<glm::vec3>& v) const
 	{
 		if (!mBoundsValid)
 		{

@@ -23,8 +23,12 @@ public:
 					ScaleByAspectRatioType scaler,
 					float aspectRatio)> ResizeCallbackType;
 
-	RendererBase() {}
-	
+	RendererBase(Shader* sh = nullptr): mShader(sh) {}
+
+	const Shader* constShader() const  { return mShader; }
+	virtual Shader* shader() { return mShader; }
+	void shader(Shader* newShader) { mShader = newShader; }
+
 	// OpenGL state functions
 	void appendRenderCallback(RenderCallbackType pfunc) { mRenderCallbacks.push_back(pfunc); }
 	void appendResizeCallback(ResizeCallbackType pfunc) { mResizeCallbacks.push_back(pfunc); }
@@ -38,9 +42,7 @@ public:
 		mSfactor = sfactor;
 		mDfactor = dfactor;
 	}
-	virtual void prepare()
-	{}
-
+	virtual void prepare() {}
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,
@@ -48,12 +50,11 @@ public:
 		MoveController* mover = nullptr,
 		RenderCallbackType renderCb = nullptr,
 		ResizeCallbackType resizeCb = nullptr) const;
-	virtual const Shader* shader() const = 0;
 protected:
-	virtual Shader* shader() = 0;
 	virtual void doRender() const = 0;
 	virtual void validateBase() const;
 private:
+	Shader* mShader;
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
 	void callResizeCallback(ResizeCallbackType resizeCb) const;
 	void callRenderCallback(const glm::mat4& proj, const glm::mat4& view,

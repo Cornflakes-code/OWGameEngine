@@ -8,6 +8,7 @@
 #endif
 
 #include "Texture.h"
+#include <Core/BoundingBox.h>
 
 struct aiMesh;
 struct aiScene;
@@ -37,4 +38,5 @@ struct MeshDataHeavy
 	std::vector<Texture> textures;
 	void create(aiMesh *mesh, const aiScene *scene);
 	void calcNormals();
+	AABB bounds() const;
 };

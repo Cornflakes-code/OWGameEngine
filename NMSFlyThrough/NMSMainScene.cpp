@@ -9,9 +9,10 @@
 #include <Core/GlobalSettings.h>
 #include <Core/ResourcePathFactory.h>
 
+#include <Helpers/ThreeDAxis.h>
+
 #include "NMSUserInput.h"
 #include "NoMansSkyStarMap.h"
-#include "NMSUtils.h"
 #include "NMSEndScene.h"
 
 void NMSMainScenePhysics::setup()
@@ -82,30 +83,28 @@ NMSMainScene::NMSMainScene(const Movie* movie)
 
 void NMSMainScene::doSetup(ScenePhysicsState* state)
 {
+	mRootNode = state->mRootNode;
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	sp->mCameraPosition = movie()->camera()->position();
 	sp->mLookAt = { 0,0,0 };
 
-	mStarMap = new NoMansSky();
+	NoMansSky* starMap = new NoMansSky();
 	std::filesystem::path p
 		= ResourcePathFactory().appendPath("NMSMap.txt", 
 				ResourcePathFactory::ResourceType::UnknownType);
-	mStarMap->setUp(p.string(), world());
-
-	ModelData md = NMS::createAxisData(world());
-	mAxis.setup(&md);
-	
+	starMap->setUp(p.string(), world());
+	mRootNode->addChild(starMap);
+	ThreeDAxis* axis = new ThreeDAxis(nullptr);
+	axis->createAxisData(world());
+	mRootNode->addChild(axis);
 }
 
 void NMSMainScene::render(const ScenePhysicsState* state,
 						  const glm::mat4& proj, const glm::mat4& view, 
 						const glm::vec3& cameraPos)
 {
-	const NMSMainScenePhysics* sps
-		= dynamic_cast<const NMSMainScenePhysics*>(state);
 	glm::mat4 model(1.0);
-	mAxis.render(proj, view, model, cameraPos);
-	mStarMap->render(proj, view, model, cameraPos);
+	mRootNode->render(proj, view, model, cameraPos);
 }
 
 void NMSMainScene::activate(const std::string& OW_UNUSED(previousScene), 

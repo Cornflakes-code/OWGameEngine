@@ -45,9 +45,10 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 }
 
 TextRenderer::TextRenderer(Shader* sh, const std::string& pvm)
-	: RendererBaseShader(sh)
+	: RendererBase(sh)
 {
-	shader()->setStandardUniformNames(pvm);
+	if (sh != nullptr)
+		sh->setStandardUniformNames(pvm);
 }
 
 void TextRenderer::setup(const TextData* td, const glm::vec3& initialPosition)
@@ -103,7 +104,8 @@ void TextRenderer::setup(const TextData* td, const glm::vec3& initialPosition)
 
 void TextRenderer::doRender() const
 {
-	shader()->setVector4f("textcolor", mColour);
+	constShader()->setVector4f("textcolor", mColour);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindVertexArray(mVao);
 	glActiveTexture(mTexture.imageUnit());
 	glBindTexture(mTexture.target(), mTexture.location());

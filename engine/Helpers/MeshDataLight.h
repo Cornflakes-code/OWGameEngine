@@ -4,8 +4,9 @@
 #include <limits.h>
 
 #include <glm/glm.hpp>
+#include <Core/BoundingBox.h>
 
-class MeshDataLight
+struct MeshDataLight
 {
 public:
 	void vertices(const std::vector<glm::vec3>& v, 
@@ -42,6 +43,7 @@ public:
 		mRenderData.indicesMode = indicesMode;
 		mRenderData.indicesCount = _indices.size();
 	}
+	AABB bounds() const;
 private:
 	struct RenderData
 	{

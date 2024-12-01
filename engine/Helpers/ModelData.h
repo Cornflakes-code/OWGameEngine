@@ -4,7 +4,6 @@
 #include <functional>
 
 class RendererBase;
-struct ModelData;
 struct MeshDataHeavy;
 
 void testTraverse();

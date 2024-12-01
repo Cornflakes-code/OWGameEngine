@@ -23,36 +23,67 @@ AABB::AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint, bool validate
 		isValid();
 }
 
+AABB::AABB(const glm::vec3& _minPoint, const glm::vec3& _maxPoint, bool validate)
+: AABB(glm::vec4(_minPoint, 0.0f), glm::vec4(_maxPoint, 0.0f), validate)
+{}
+
 AABB::AABB()
 : mMinPoint(glm::vec4(0.0, 0.0, 0.0, 1.0)), mMaxPoint(glm::vec4(0.0, 0.0, 0.0, 1.0))
 {
 	isValid();
 }
 
+AABB AABB::calcBounds(const std::vector<glm::vec3>& v)
+{
+	std::vector<glm::vec4> points4;
+	for (const auto& point : v)
+	{
+		points4.push_back(glm::vec4(point, 0.0));
+	}
+	return calcBounds(points4);
+}
+
 AABB AABB::calcBounds(const std::vector<glm::vec4>& v)
 {
 	// Note: No depth value: default to 0;
 	static constexpr float _max = std::numeric_limits<float>::max();
-	glm::vec4 minPoint(_max, _max, 0, 1);
-	glm::vec4 maxPoint(-_max, -_max, 0, 1);
+	glm::vec4 minPoint(_max, _max, _max, 1);
+	glm::vec4 maxPoint(-_max, -_max, -_max, 1);
 
 	for (const auto& point : v)
 	{
 		if (point.x < minPoint.x)
 			minPoint.x = point.x;
-		else if (point.x > maxPoint.x)
+		if (point.x > maxPoint.x)
 			maxPoint.x = point.x;
-		else if (point.y < minPoint.y)
+
+		if (point.y < minPoint.y)
 			minPoint.y = point.y;
-		else if (point.y > maxPoint.y)
+		if (point.y > maxPoint.y)
 			maxPoint.y = point.y;
+
+		if (point.z < minPoint.z)
+			minPoint.z = point.z;
+		if (point.z > maxPoint.z)
+			maxPoint.z = point.z;
 	}
 	return AABB(minPoint, maxPoint);
 }
 
+AABB AABB::calcBounds(const std::vector<AABB>& v)
+{
+	std::vector<glm::vec4> points;
+	for (const AABB& ab : v)
+	{
+		points.push_back(ab.minPoint());
+		points.push_back(ab.maxPoint());
+	}
+	return AABB::calcBounds(points);
+}
+
 void AABB::isValid() const
 {
-	if (mMinPoint.x > mMaxPoint.x || mMinPoint.x > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)
+	if (mMinPoint.x > mMaxPoint.x || mMinPoint.y > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)
 		throw NMSLogicException("Error: Invalid AABBV size.");
 
 }

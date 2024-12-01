@@ -2,9 +2,11 @@
 #include <vector>
 
 #include <glm/glm.hpp>
-#include "../Core/CommonUtils.h"
 
-struct TextData
+#include <Core/Actor.h>
+#include <Core/CommonUtils.h>
+
+class OWENGINE_API TextData: public Actor
 {
 public:
 	enum PositionType: unsigned int
@@ -15,24 +17,35 @@ public:
 		Top = 0x4,
 		Bottom = 0x8
 	};
-	
-	TextData()
+	enum TextDisplayType
+	{
+		Dynamic,
+		Static
+	};
+
+	TextData(TextDisplayType tdt)
+		: mDynamicSize(tdt)
 	{}
 
-	TextData(const std::string& s, float sx, float sy)
-		: mText(s)
+	TextData(const std::string& s, TextDisplayType tdt, float sx, float sy)
+		: Actor(nullptr)
+		, mText(s)
 		, mX(sx)
 		, mY(sy)
 		, mModified(true)
-	{
-	}
+		, mDynamicSize(tdt)
+	{}
+	void prepare();
 
-	void set(const std::string& s, int height,
+	void set(const std::string& s, 
+		const glm::vec3& position,
+		int height,
 		const glm::vec2& _spacing, const glm::vec2& scale,
 		const std::string& f = "arial.ttf",
 		const glm::vec4& col = { 0.0, 0.0, 0.0, 1.0f })
 	{
 		text(s);
+		mPosition = position;
 		font(f, height);
 		colour(col);
 		spacing(_spacing.x, _spacing.y, scale);
@@ -74,12 +87,18 @@ public:
 		mColour = colour;
 		mModified = true;
 	}
+	void position(const glm::vec3& pos)
+	{
+		mPosition = pos;
+	}
 	glm::vec2 scale() const { return mScale; }
 private:
+	TextDisplayType mDynamicSize = Dynamic;
 	std::string mText;
 	std::string mFontFileName = "arial.ttf";
 	glm::vec4 mColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK);
 	glm::vec2 mScale = glm::vec2({ 1.0, 1.0 });
+	glm::vec3 mPosition = { 0.0, 0.0, 0.0 };
 	unsigned int mReferencePos = PositionType(PositionType::Center & 0xC);
 	float mX = 0.0f;
 	float mY = 0.0f;

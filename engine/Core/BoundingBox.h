@@ -26,30 +26,16 @@ public:
 
 class OWENGINE_API AABB
 {
-#pragma warning( push )
-#pragma warning( disable : 4251 )
-	glm::vec4 mMinPoint;
-	glm::vec4 mMaxPoint;
-
-	static OWUtils::Float clamp(OWUtils::Float value, OWUtils::Float min, OWUtils::Float max)
-	{
-		return std::max(min, std::min(max, value));
-	}
-
-	static glm::vec4 clamp(const glm::vec4& value, const glm::vec4& _min, const glm::vec4& _max)
-	{
-		OWUtils::Float x = clamp(value.x, _min.x, _max.x);
-		OWUtils::Float y = clamp(value.y, _min.y, _max.y);
-		OWUtils::Float z = clamp(value.z, _min.z, _max.z);
-		return glm::vec4(x, y, z, 1.0);
-	}
-	void isValid() const;
-#pragma warning( pop )
 public:
 	AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint, bool validate = true);
+	AABB(const glm::vec3& _minPoint, const glm::vec3& _maxPoint, bool validate = true);
 	AABB();
+	AABB(const AABB& other)
+		: mMinPoint(other.mMinPoint), mMaxPoint(other.mMaxPoint) {}
 
+	static AABB calcBounds(const std::vector<glm::vec3>& v);
 	static AABB calcBounds(const std::vector<glm::vec4>& v);
+	static AABB calcBounds(const std::vector<AABB>& v);
 	bool overlap(const AABB& other) const;
 	Compass::Direction wallIntersection(const AABB& other) const;
 	glm::vec4 size() const { return mMaxPoint - mMinPoint; }
@@ -94,6 +80,39 @@ public:
 	{
 		return *this + (-glm::vec4(v, 1.0));
 	}
+	bool operator==(const AABB& v) const
+	{
+		return this->mMinPoint == v.mMinPoint && this->mMaxPoint == v.mMaxPoint;
+	}
+	AABB& operator=(const AABB& v)
+	{
+		if (*this != v)
+		{
+			this->mMinPoint = v.mMinPoint;
+			this->mMaxPoint = v.mMaxPoint;
+		}
+		return *this;
+	}
+private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+	glm::vec4 mMinPoint;
+	glm::vec4 mMaxPoint;
+
+	static OWUtils::Float clamp(OWUtils::Float value, OWUtils::Float min, OWUtils::Float max)
+	{
+		return std::max(min, std::min(max, value));
+	}
+
+	static glm::vec4 clamp(const glm::vec4& value, const glm::vec4& _min, const glm::vec4& _max)
+	{
+		OWUtils::Float x = clamp(value.x, _min.x, _max.x);
+		OWUtils::Float y = clamp(value.y, _min.y, _max.y);
+		OWUtils::Float z = clamp(value.z, _min.z, _max.z);
+		return glm::vec4(x, y, z, 1.0);
+	}
+	void isValid() const;
+#pragma warning( pop )
 };
 //AABB operator-(const AABB& left, const AABB& right);
 AABB operator+(const AABB& left, const AABB& right);

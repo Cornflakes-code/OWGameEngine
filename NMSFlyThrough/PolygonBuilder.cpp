@@ -3,12 +3,12 @@
 #include <Core/ErrorHandling.h>
 #include <Core/LogStream.h>
 #include <Core/CommonUtils.h>
-#include "NMSUtils.h"
+#include <Helpers/BoundsCalculator.h>
 
 void PolygonBuilder::clear()
 {
-	const float fmax = std::numeric_limits<float>::max();
-	const float fmin = -std::numeric_limits<float>::max();
+	constexpr float fmax = std::numeric_limits<float>::max();
+	constexpr float fmin = -std::numeric_limits<float>::max();
 	mMinMax = { {fmin, fmin, fmin}, {fmax, fmax, fmax} };
 	mAllPolygons = std::vector<std::vector<std::vector<glm::vec3>>>();
 	mAllSliceLabels = std::vector<SliceId>();
@@ -38,16 +38,17 @@ void PolygonBuilder::get(RopeBuf* buffer)
 			if (true)//i == 0) // Only label the first layer
 
 			{
-				std::pair<glm::vec3, glm::vec3> sliceBounds = NMS::boundingBox(wire[i].f);
+				AABB sliceBounds = BoundsCalculator().bounds(wire[i].f);
 				SliceId si;
 				si.id = wire[i].id;
-				si.pos = NMS::center(sliceBounds.first, sliceBounds.second);
+				si.pos = sliceBounds.center();
 				mAllSliceLabels.push_back(si);
 
 				if (!boundsFound)
 				{
 					boundsFound = true;
-					mMinMax = sliceBounds;
+					mMinMax.first = sliceBounds.minPoint();
+					mMinMax.second = sliceBounds.maxPoint();
 				}
 			}
 			layer.push_back(wire[i].f);

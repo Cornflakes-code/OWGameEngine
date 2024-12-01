@@ -17,13 +17,10 @@ void main()
 {
 	vec3 vertexPosition_worldspace = BillboardPos;
 
-
 	// Output position of the vertex
 	gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
 	gl_Position /= gl_Position.w;
 	gl_Position.xy += coord.xy * BillboardSize; 
-
-
 
 	// Or, if BillboardSize is in percentage of the screen size (1,1 for fullscreen) :
 	//gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f); // Get the screen-space position of the particle's center

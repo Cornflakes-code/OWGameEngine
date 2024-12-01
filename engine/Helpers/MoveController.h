@@ -15,7 +15,10 @@ public:
 	void direction(const glm::vec4& newValue) { mDirection = newValue; }
 	void setPosition(const glm::vec3& newValue);
 	void bounceIfCollide(const AABB& scenery);
-	glm::mat4 translate(const glm::mat4& model) const;
+	glm::vec3 translateVector() const
+	{
+		return glm::vec3(mBounds.center()) - mInitialPosition;
+	}
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )

@@ -8,23 +8,19 @@
 
 #include <Core/BoundingBox.h>
 
-#include <Renderers/LightRenderer.h>
+#include <Core/Actor.h>
 
 class Shader;
-class InstanceRenderer;
 class TextRenderer;
 /*
 	The NMS game is a simple fly through of Solar Systems visited while
 	playing the No Man's Sky game. Will be moved to a different repo in due course.
 */
-class NoMansSky
+class NoMansSky: public Actor
 {
 	glm::vec2 mStarRadius;
-	InstanceRenderer* mStarRenderer;
-	LightRenderer* mGridRenderer = nullptr;
 	std::vector<glm::vec3> mRandomMinorStars;
 	std::vector<glm::vec4> mStarPositions;
-	std::vector<TextRenderer*> mStarLabelRenderers;
 	std::vector<glm::vec4> mStarColours;
 	std::vector<glm::vec3> mGrid;
 
@@ -39,8 +35,6 @@ class NoMansSky
 public:
 	NoMansSky();
 	void setUp(const std::string& fileName, const AABB& world);
-	void render(const glm::mat4& proj, const glm::mat4& view, 
-			const glm::mat4& model, const glm::vec3& cameraPos);
 	void readSaveFile(const std::string& saveFileMeta, 
 			const std::string& saveFile);
 };

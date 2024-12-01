@@ -2,6 +2,16 @@
 
 #include <glm/gtc/constants.hpp>
 
+std::pair<glm::vec3, glm::vec3> GeometricShapes::minMaxBox =
+{
+	glm::vec3(std::numeric_limits<float>::min(),
+			std::numeric_limits<float>::min(),
+			std::numeric_limits<float>::min()),
+	glm::vec3(std::numeric_limits<float>::max(),
+			std::numeric_limits<float>::max(),
+			std::numeric_limits<float>::max())
+};
+
 std::vector<glm::vec2> GeometricShapes::circle(float radius, float arcRadians)
 {
 	std::vector<glm::vec2> retval;

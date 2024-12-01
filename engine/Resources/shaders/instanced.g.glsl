@@ -1,3 +1,4 @@
+#version 330 core
 /*
 #version 330 core
 layout(points) in;
@@ -21,7 +22,6 @@ void main()
 	doCircle(gl_in[0].gl_Position, 1.2);
 }
 */
-#version 330 core
 layout(points) in;
 //layout(line_strip, max_vertices = 200) out;
 layout(triangle_strip, max_vertices = 200) out;

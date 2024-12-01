@@ -13,18 +13,14 @@
 https://www.reddit.com/r/opengl/comments/18rkgg3/one_vao_for_multiple_vbos/
 https://github.com/fendevel/Guide-to-Modern-OpenGL-Functions#glbuffer
 */
-VAOBuffer::VAOBuffer(Shader* shader)
-	: RendererBaseShader(shader)
+VAOBuffer::VAOBuffer(Shader* shader, RenderType rt)
+	: RendererBase(shader)
 {
-//	enum RenderType { DRAW_NONE, DRAW_ARRAYS, DRAW_MULTI, DRAW_PRIMITIVE };
-//	mDrawType = DRAW_PRIMITIVE;
-	mDrawType = DRAW_MULTI;
-	mDrawType = DRAW_ARRAYS;
+	mDrawType = rt;
 }
 
 void VAOBuffer::add(const MeshDataLight* meshData)
 {
-	const float* ff = nullptr;
 	validate(meshData);
 	MeshDataLight::RenderData rd = meshData->mRenderData;
 	if (!meshData->mVec3.empty())
@@ -32,7 +28,7 @@ void VAOBuffer::add(const MeshDataLight* meshData)
 		mVec3.insert(mVec3.end(), meshData->mVec3.begin(), meshData->mVec3.end());
 		if (mDrawType == RenderType::DRAW_PRIMITIVE)
 		{
-			int begin = mPrimitiveIndices.size();
+			unsigned int begin = mPrimitiveIndices.size();
 			for (int i = 0; i < meshData->mVec3.size(); i++)
 				mPrimitiveIndices.push_back(i + begin);
 			mPrimitiveIndices.push_back(mPrimitiveRestart);
@@ -173,7 +169,7 @@ void VAOBuffer::doRender() const
 	// https://www.reddit.com/r/opengl/comments/19bgtcb/is_the_effort_of_glmultidrawelements_worth_it/
 	if (!mData[0].shaderColourName.empty())
 	{
-		shader()->setVector4f(mData[0].shaderColourName, mData[0].colour);
+		constShader()->setVector4f(mData[0].shaderColourName, mData[0].colour);
 	}
 
 	glBindVertexArray(mVao);

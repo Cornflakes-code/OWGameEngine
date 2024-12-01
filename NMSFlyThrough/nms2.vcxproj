@@ -261,7 +261,6 @@ del /q "$(TargetDir)\config*.json"
     <ClCompile Include="NMSScene.cpp" />
     <ClCompile Include="NMSSplashScene.cpp" />
     <ClCompile Include="NMSUserInput.cpp" />
-    <ClCompile Include="NMSUtils.cpp" />
     <ClCompile Include="NoMansSkyStarMap.cpp" />
     <ClCompile Include="PolygonBuilder.cpp" />
     <ClCompile Include="RopeNormaliser.cpp" />
@@ -283,7 +282,6 @@ del /q "$(TargetDir)\config*.json"
     <ClInclude Include="NMSScene.h" />
     <ClInclude Include="NMSSplashScene.h" />
     <ClInclude Include="NMSUserInput.h" />
-    <ClInclude Include="NMSUtils.h" />
     <ClInclude Include="NoMansSkyStarMap.h" />
     <ClInclude Include="PolygonBuilder.h" />
     <ClInclude Include="RopeNormaliser.h" />

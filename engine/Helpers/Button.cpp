@@ -13,16 +13,16 @@ bool ButtonData::intersectArea(const glm::vec3& pt)
 
 void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 {
-	mData = data;
-	mShader = new Shader("button.v.glsl", "button.f.glsl", "");
-	mShader->setStandardUniformNames("pvm");
-	mBuffer = new VAOBuffer(mShader);
+	throw NMSException("Incomplete function");
+		Shader* sh = new Shader("button.v.glsl", "button.f.glsl", "");
+	sh->setStandardUniformNames("pvm");
+	VAOBuffer* vao = new VAOBuffer(sh, VAOBuffer::DRAW_ARRAYS);
 	MeshDataLight lineData;
 	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
 	lineData.polygonMode(GL_FILL);
-	mBuffer->add(&lineData);
-	mText = new TextRendererStatic();
-	mText->setup(&(mData.mText), glm::vec3(10));
+	vao->add(&lineData);
+	TextData* td = new TextData(TextData::Static);
+	//td->set(&(data.mText), glm::vec3(10));
 	if (false)
 	{
 		appendRenderCallback([position](const glm::mat4& proj, const glm::mat4& view,
@@ -39,34 +39,10 @@ void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 	}
 }
 
-const Shader* OWButton::shader() const
-{
-	return mShader;
-}
-
-Shader* OWButton::shader() 
-{
-	return mShader;
-}
-
 void OWButton::textures()
 {}
 
 void OWButton::text()
 {}
 
-glm::vec3 OWButton::position()
-{
-	return glm::vec3(0);
-}
-
-void OWButton::prepare()
-{
-}
-
-void OWButton::doRender() const
-{
-	//mBuffer->doRender();
-	mText->doRender();
-}
 

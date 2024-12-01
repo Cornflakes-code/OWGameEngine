@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "../OWEngine/OWEngine.h"
+#include "../Core/Actor.h"
 
 #include "ScenePhysicsState.h"
 #include "Movie.h"
@@ -51,6 +52,7 @@ public:
 						const glm::mat4& proj, const glm::mat4& view,
 						const glm::vec3& cameraPos) = 0;
 	const Movie* movie() const { return mMovie; }
+	SceneGraphNode* mRootNode = nullptr;
 protected:
 	Scene(const Movie* movie);
 

@@ -7,17 +7,17 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "RendererBaseShader.h"
+#include "RendererBase.h"
 
 class Particles;
 struct MeshDataHeavy;
 
-class OWENGINE_API HeavyRenderer: public RendererBaseShader
+class OWENGINE_API HeavyRenderer: public RendererBase
 {
 public:
 	HeavyRenderer(Shader* shader)
-		: RendererBaseShader(shader) {}
-	void setup(MeshDataHeavy* data, unsigned int vertexMode, 
+		: RendererBase(shader) {}
+	void setup(const MeshDataHeavy* data, unsigned int vertexMode, 
 			unsigned int vertexLocation = 0);
 
 	virtual void doRender() const override;
@@ -26,7 +26,7 @@ protected:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	MeshDataHeavy* mData;
+	const MeshDataHeavy* mData = nullptr;
 	unsigned int mIndicesMode = GL_INVALID_ENUM;
 	unsigned int mVertexMode = GL_INVALID_ENUM;
 	unsigned int mVertexLocation = GL_INVALID_ENUM;

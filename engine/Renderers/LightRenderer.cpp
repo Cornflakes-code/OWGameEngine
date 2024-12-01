@@ -96,7 +96,7 @@ void LightRenderer::doRender() const
 {
 	if (!mData.shaderColourName.empty())
 	{
-		shader()->setVector4f(mData.shaderColourName, mData.colour);
+		constShader()->setVector4f(mData.shaderColourName, mData.colour);
 	}
 
 	glBindVertexArray(mVao);

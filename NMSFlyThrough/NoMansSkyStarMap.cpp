@@ -24,17 +24,14 @@
 
 #include <Renderers/InstanceRenderer.h>
 #include <Renderers/TextRendererStatic.h>
+#include <Renderers/LightRenderer.h>
 
-//#define DEBUG_GRID
+#define DEBUG_GRID
 #define DEBUG_STARS
 
 NoMansSky::NoMansSky()
 {
-	Shader* shader = new Shader("Lines.v.glsl", "Lines.f.glsl", "");
-	shader->setStandardUniformNames("pvm");
-	mGridRenderer = new LightRenderer(shader);
 	mStarRadius = glm::vec2(0, 0);
-	mStarRenderer = 0;
 }
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
@@ -48,7 +45,11 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	MeshDataLight gridData;
 	gridData.vertices(mGrid, GL_LINES, 0);
 	gridData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
-	mGridRenderer->setup(&gridData);
+	Shader* shader = new Shader("Lines.v.glsl", "Lines.f.glsl", "");
+	shader->setStandardUniformNames("pvm");
+	LightRenderer* gridRenderer = new LightRenderer(shader);
+	gridRenderer->setup(&gridData);
+	addRenderer(gridRenderer);
 #endif
 
 #ifdef DEBUG_STARS
@@ -91,7 +92,6 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	starShader = new Shader("thebookofshaders.v.glsl",
 		"solarSuns.f.glsl",
 		"thebookofshaders_circle.g.glsl");
-#
 #elif SHADERX == 2
 	starShader = new Shader(
 		"instanced.v.glsl",
@@ -109,9 +109,33 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	
 	starShader->setFloat("cutoffRadius", mStarRadius.x, true);
 	starShader->setStandardUniformNames("VP");
-	mStarRenderer = new InstanceRenderer(starShader);
-	mStarRenderer->setup(&mdi);
+	InstanceRenderer* starRenderer = new InstanceRenderer(starShader);
+	starRenderer->setup(&mdi);
+	bounds(AABB(glm::vec4(1), glm::vec4(1)));
+	glm::vec2 w = globals->physicalWindowSize();
+	auto pointRender = [w](
+		const glm::mat4& OW_UNUSED(proj),
+		const glm::mat4& view,
+		const glm::mat4& OW_UNUSED(model),
+		const glm::vec3& OW_UNUSED(cameraPos),
+		const Shader* shader)
+		{
+			glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
+			shader->use();
+			shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
+			glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
+			shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
+			shader->setFloat("u_time", globals->secondsSinceLoad());
+			glm::vec2 v2 = globals->pointingDevicePosition();
+			shader->setVector2f("u_mouse", v2);
+			shader->setVector2f("u_resolution", w);
+			// Colours are set via mdi.colours
+			//shader->setVector4f("color", OWUtils::colour(OWUtils::SolidColours::YELLOW));
+		};
+	starRenderer->appendRenderCallback(pointRender);
+	addRenderer(starRenderer);
 #endif
+	readyForRender();
 }
 
 void NoMansSky::createGrid(const AABB& nmsSpace,
@@ -268,14 +292,14 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.z *= scaleToWorld;
 			point.w = 1.0;
 			//TextBillboard* text = new TextBillboardFixed( { point.x, point.y, point.z }, );
-			TextData td;
-			td.text(elms[0]);
-			td.font("arial.ttf", fontHeight);
-			td.colour({ 0.0, 0.0, 0.0, 1.0f });
-			td.spacing(nice.x, nice.y, { 1.0,1.0 }, TextData::Right);
-			TextRendererStatic* r = new TextRendererStatic();
-			r->setup(&td, glm::vec3(point.x, point.y, point.z));
-			mStarLabelRenderers.push_back(r);
+			TextData* td = new TextData(TextData::Static);
+			td->text(elms[0]);
+			td->font("arial.ttf", fontHeight);
+			td->colour({ 0.0, 0.0, 0.0, 1.0f });
+			td->spacing(nice.x, nice.y, { 1.0,1.0 }, TextData::Right);
+			td->position(point);
+			td->prepare();
+			addChild(td);
 		}
 
 		myfile.close();
@@ -315,45 +339,6 @@ std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
 		retval.push_back({ x[i], y[i], z[i] });
 	}
 	return retval;
-}
-
-void NoMansSky::render(const glm::mat4& proj, const glm::mat4& view, 
-	const glm::mat4& model, const glm::vec3& cameraPos)
-{
-	glm::mat4 pvm = proj * view * model;
-#ifdef DEBUG_GRID
-	mGridRenderer->render(proj, view, model);
-#endif
-
-#ifdef DEBUG_STARS
-	glm::vec2 w = globals->physicalWindowSize();
-	auto pointRender = [w](
-		const glm::mat4& OW_UNUSED(proj),
-		const glm::mat4& view,
-		const glm::mat4& OW_UNUSED(model),
-		const glm::vec3& OW_UNUSED(cameraPos),
-		const Shader* shader)
-	{
-		glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
-		shader->use();
-		shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
-		glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
-		shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
-		shader->setFloat("u_time", globals->secondsSinceLoad());
-		glm::vec2 v2 = globals->pointingDevicePosition();
-		shader->setVector2f("u_mouse", v2);
-		shader->setVector2f("u_resolution", w);
-		// Colours are set via mdi.colours
-		//shader->setVector4f("color", OWUtils::colour(OWUtils::SolidColours::YELLOW));
-	};
-	mStarRenderer->render(proj, view, model, cameraPos, nullptr, pointRender);
-
-	for (int i = 0; i < mStarLabelRenderers.size(); i++)
-	{
-		const TextRenderer* sr = mStarLabelRenderers[i];
-//		sr->render(proj, view, model);
-	}
-#endif
 }
 
 void NoMansSky::readSaveFile(const std::string& saveFileMeta, const std::string& saveFile)

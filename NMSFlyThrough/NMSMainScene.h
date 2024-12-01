@@ -7,8 +7,6 @@
 
 #include <Helpers/Shader.h>
 
-#include <Renderers/Model.h>
-
 #include "NMSScene.h"
 
 /*
@@ -30,19 +28,12 @@ struct NMSMainScenePhysics : public NMSWorldPhysicsState
 	bool processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, 
 							 Camera* camera) override;
 
-
 	void copy(ScenePhysicsState* source) override;
 	ScenePhysicsState* clone() override;
 };
 
-class NoMansSky;
-class Axis;
 class NMSMainScene : public NMSScene
 {
-	AABB mWorldSpace;
-
-	NoMansSky* mStarMap;
-	Model mAxis;
 public:
 	NMSMainScene(const Movie* movie);
 	std::string name() const { return "Main"; }

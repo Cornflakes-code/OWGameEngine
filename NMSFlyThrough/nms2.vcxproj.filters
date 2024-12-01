@@ -61,9 +61,6 @@
     <ClCompile Include="NoMansSkyStarMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NMSUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NMSRopeScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -121,9 +118,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NoMansSkyStarMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NMSUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NMSRopeScene.h">

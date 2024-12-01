@@ -72,10 +72,10 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 {
 	const float sx = 2.0f / globals->physicalWindowSize().x;
 	const float sy = 2.0f / globals->physicalWindowSize().y;
-	TextData td("G", sx, sy);
-	td.colour( { 0.5, 0.8f, 0.2f, 0 } );
-	mText = new TextRendererDynamic();
-	mText->setup(&td);
+	TextData* td = new TextData("G", TextData::Dynamic, sx, sy);
+	td->colour( { 0.5, 0.8f, 0.2f, 0 } );
+	td->prepare();
+	mRootNode->addChild(td);
 }
 
 void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
@@ -83,7 +83,7 @@ void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
 	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	mText->render(proj, view, model, cameraPos);
+	mRootNode->render(proj, view, model, cameraPos);
 }
 
 void NMSEndScene::activate(const std::string& OW_UNUSED(previousScene),

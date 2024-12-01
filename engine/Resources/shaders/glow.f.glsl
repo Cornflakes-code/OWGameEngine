@@ -1,4 +1,4 @@
-#version 430 core
+#version 330 core
 
 // How to achieve and control a simple distance glow effect based on several Shadertoy examples
 // Things to try:
@@ -10,10 +10,8 @@
 
 in vec2 UV;
 in vec4 particlecolor;
-in vec4 frag_Position;
 in vec2 particleCenter;
 out vec4 colourOut;
-
 uniform float cutoffRadius;
 uniform vec2 u_resolution;
 
@@ -21,7 +19,7 @@ void main()
 {
 	float R = cutoffRadius*4.5;
 	float blend = 0.7;
-	vec2 uv = particleCenter.xy - frag_Position.xy;
+	vec2 uv = particleCenter.xy - gl_FragCoord.xy;
     if (length(uv) > R) {
 		//blend = 0;
        //discard;

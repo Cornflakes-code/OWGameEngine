@@ -135,9 +135,6 @@
     <ClInclude Include="..\Helpers\MeshDataHeavy.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderers\Model.h">
-      <Filter>Header Files\Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderers\InstanceRenderer.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
@@ -162,17 +159,32 @@
     <ClInclude Include="..\Core\ResourcePathFactory.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="LightSource.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderers\VAOBuffer.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="..\Helpers\ComputeNormals.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderers\RendererBaseShader.h">
-      <Filter>Header Files\Renderers</Filter>
+    <ClInclude Include="..\Core\Actor.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\MovableObject.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\HardwareBuffer.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\SceneGraphNode.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\LightSource.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\MeshActor.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\ThreeDAxis.h">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -281,9 +293,6 @@
     <ClCompile Include="..\Helpers\MeshDataHeavy.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderers\Model.cpp">
-      <Filter>Source Files\Renderers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderers\InstanceRenderer.cpp">
       <Filter>Source Files\Renderers</Filter>
     </ClCompile>
@@ -308,17 +317,32 @@
     <ClCompile Include="..\Core\ResourcePathFactory.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="LightSource.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderers\VAOBuffer.cpp">
       <Filter>Source Files\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\ComputeNormals.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderers\RendererBaseShader.cpp">
-      <Filter>Source Files\Renderers</Filter>
+    <ClCompile Include="..\Core\Actor.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\MovableObject.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\HardwareBuffer.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\SceneGraphNode.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\LightSource.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\MeshActor.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\ThreeDAxis.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

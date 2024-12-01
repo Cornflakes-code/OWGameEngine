@@ -1,3 +1,5 @@
+#version 330 core
+
 // How to achieve and control a simple distance glow effect based on several Shadertoy examples
 // Things to try:
 //  * Make the radius and intensity pulse in time or to input
@@ -6,7 +8,6 @@
 //  * Generate more complex shapes
 // https://www.shadertoy.com/view/3s3GDn
 
-#version 330 core
 layout(location = 0) in vec3 fragCoord;
 
 uniform vec3 iResolution;

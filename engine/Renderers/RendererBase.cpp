@@ -8,6 +8,8 @@
 
 void RendererBase::validateBase() const
 {
+	if (constShader() == nullptr)
+		throw NMSLogicException("RendererBase::Shader must be set");
 }
 
 float RendererBase::aspectRatio() const
@@ -40,16 +42,16 @@ void RendererBase::callResizeCallback(ResizeCallbackType resizeCb) const
 	if (mFirstTimeRender || globals->aspectRatioChanged())
 	{
 		// If no callback parameters then used the stored callbacks
-		shader()->use();
+		constShader()->use();
 		if (resizeCb)
 		{
-			resizeCb(shader(),
+			resizeCb(constShader(),
 				std::bind(&RendererBase::scaleByAspectRatio, this, std::placeholders::_1),
 				aspectRatio());
 		}
 		for (auto& cb: mResizeCallbacks)
 		{
-			cb(shader(), std::bind(&RendererBase::scaleByAspectRatio,
+			cb(constShader(), std::bind(&RendererBase::scaleByAspectRatio,
 				this, std::placeholders::_1),
 				aspectRatio());
 			mFirstTimeRender = false;
@@ -61,14 +63,14 @@ void RendererBase::callRenderCallback(const glm::mat4& proj, const glm::mat4& vi
 	const glm::mat4& model, const glm::vec3& cameraPos, RenderCallbackType renderCb) const
 {
 	// Allow callers and derived classes to override the callback
-	shader()->use();
+	constShader()->use();
 	if (renderCb)
 	{
-		renderCb(proj, view, model, cameraPos, shader());
+		renderCb(proj, view, model, cameraPos, constShader());
 	}
 	for (auto& cb : mRenderCallbacks)
 	{
-		cb(proj, view, model, cameraPos, shader());
+		cb(proj, view, model, cameraPos, constShader());
 	}
 }
 
@@ -83,9 +85,9 @@ void RendererBase::render(const glm::mat4& proj,
 	OWUtils::LineWidthRIAA temp2(mLineWidth);
 	OWUtils::BlendFuncRIAA temp3(mSfactor, mDfactor);
 
-	shader()->use();
+	constShader()->use();
 	callResizeCallback(resizeCb);
-	const_cast<Shader*>(shader())->setStandardUniformValues(proj, view, model, cameraPos);
+	const_cast<Shader*>(constShader())->setStandardUniformValues(proj, view, model, cameraPos);
 	callRenderCallback(proj, view, model, cameraPos, renderCb);
 
 	doRender();

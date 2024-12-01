@@ -6,7 +6,7 @@
 #include "../Helpers/MeshDataHeavy.h"
 #include "../Helpers/Shader.h"
 
-void HeavyRenderer::setup(MeshDataHeavy* data, unsigned int vertexMode, unsigned int vertexLocation)
+void HeavyRenderer::setup(const MeshDataHeavy* data, unsigned int vertexMode, unsigned int vertexLocation)
 {
 	mData = data;
 	mIndicesMode = GL_TRIANGLES;
@@ -24,9 +24,9 @@ void HeavyRenderer::setup(MeshDataHeavy* data, unsigned int vertexMode, unsigned
 	glBindVertexArray(mVao);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 
-	const GLsizei vertexSize = sizeof(MeshDataHeavy::Vertex);
-	const GLsizei glmv3Size = glm::vec3::length();
-	const GLsizei glmv2Size = glm::vec2::length();
+	constexpr GLsizei vertexSize = sizeof(MeshDataHeavy::Vertex);
+	constexpr GLsizei glmv3Size = glm::vec3::length();
+	constexpr GLsizei glmv2Size = glm::vec2::length();
 
 	glBufferData(GL_ARRAY_BUFFER, vertexSize * data->vertices.size(),
 		data->vertices.data(), GL_STATIC_DRAW);
@@ -59,6 +59,8 @@ void HeavyRenderer::setup(MeshDataHeavy* data, unsigned int vertexMode, unsigned
 			(GLvoid*)(sizeof(float) * (glmv3Size + glmv2Size)));
 	}
 	glBindVertexArray(0);
+	if (data->indices.size())
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //Unbind the index buffer AFTER the vao has been unbound
 }
 
 void HeavyRenderer::doRender() const
@@ -74,7 +76,7 @@ void HeavyRenderer::doRender() const
 			glActiveTexture(tex.imageUnit());
 			glBindTexture(tex.target(), tex.location());
 			// associate sampler with textureImageUnit
-			shader()->setInteger(tex.samplerName(), tex.imageUnit() - GL_TEXTURE0);
+			constShader()->setInteger(tex.samplerName(), tex.imageUnit() - GL_TEXTURE0);
 		}
 	}
 	glBindVertexArray(mVao);

@@ -190,20 +190,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Core\Actor.h" />
     <ClInclude Include="..\Core\BoundingBox.h" />
     <ClInclude Include="..\Core\Camera.h" />
     <ClInclude Include="..\Core\CommonUtils.h" />
     <ClInclude Include="..\Core\ErrorHandling.h" />
     <ClInclude Include="..\Core\GLApplication.h" />
     <ClInclude Include="..\Core\GlobalSettings.h" />
+    <ClInclude Include="..\Core\HardwareBuffer.h" />
     <ClInclude Include="..\Core\ListenerHelper.h" />
     <ClInclude Include="..\Core\Logger.h" />
     <ClInclude Include="..\Core\LogStream.h" />
+    <ClInclude Include="..\Core\MeshActor.h" />
+    <ClInclude Include="..\Core\MovableObject.h" />
     <ClInclude Include="..\Core\Movie.h" />
     <ClInclude Include="..\Core\QuitScene.h" />
     <ClInclude Include="..\Core\ResourcePathFactory.h" />
     <ClInclude Include="..\Core\SaveAndRestore.h" />
     <ClInclude Include="..\Core\Scene.h" />
+    <ClInclude Include="..\Core\SceneGraphNode.h" />
     <ClInclude Include="..\Core\ScenePhysicsState.h" />
     <ClInclude Include="..\Core\UserInput.h" />
     <ClInclude Include="..\glad\include\glad\glad.h" />
@@ -212,6 +217,7 @@
     <ClInclude Include="..\Helpers\FontFactory.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
     <ClInclude Include="..\Helpers\GeometricShapes.h" />
+    <ClInclude Include="..\Helpers\LightSource.h" />
     <ClInclude Include="..\Helpers\MeshDataHeavy.h" />
     <ClInclude Include="..\Helpers\MeshDataInstance.h" />
     <ClInclude Include="..\Helpers\MeshDataLight.h" />
@@ -224,36 +230,39 @@
     <ClInclude Include="..\Helpers\TextData.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
     <ClInclude Include="..\Helpers\TextureFactory.h" />
+    <ClInclude Include="..\Helpers\ThreeDAxis.h" />
     <ClInclude Include="..\Renderers\HeavyRenderer.h" />
     <ClInclude Include="..\Renderers\InstanceRenderer.h" />
     <ClInclude Include="..\Renderers\LightRenderer.h" />
-    <ClInclude Include="..\Renderers\Model.h" />
     <ClInclude Include="..\Renderers\RendererBase.h" />
-    <ClInclude Include="..\Renderers\RendererBaseShader.h" />
     <ClInclude Include="..\Renderers\TextRenderer.h" />
     <ClInclude Include="..\Renderers\TextRendererDynamic.h" />
     <ClInclude Include="..\Renderers\TextRendererStatic.h" />
     <ClInclude Include="..\Renderers\VAOBuffer.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="LightSource.h" />
     <ClInclude Include="OWEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
+    <ClCompile Include="..\Core\Actor.cpp" />
     <ClCompile Include="..\Core\BoundingBox.cpp" />
     <ClCompile Include="..\Core\Camera.cpp" />
     <ClCompile Include="..\Core\CommonUtils.cpp" />
     <ClCompile Include="..\Core\ErrorHandling.cpp" />
     <ClCompile Include="..\Core\GLApplication.cpp" />
     <ClCompile Include="..\Core\GlobalSettings.cpp" />
+    <ClCompile Include="..\Core\HardwareBuffer.cpp" />
     <ClCompile Include="..\Core\ListenerHelper.cpp" />
     <ClCompile Include="..\Core\Logger.cpp" />
     <ClCompile Include="..\Core\LogStream.cpp" />
+    <ClCompile Include="..\Core\MeshActor.cpp" />
+    <ClCompile Include="..\Core\MovableObject.cpp" />
     <ClCompile Include="..\Core\Movie.cpp" />
     <ClCompile Include="..\Core\QuitScene.cpp" />
     <ClCompile Include="..\Core\ResourcePathFactory.cpp" />
     <ClCompile Include="..\Core\SaveAndRestore.cpp" />
     <ClCompile Include="..\Core\Scene.cpp" />
+    <ClCompile Include="..\Core\SceneGraphNode.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
     <ClCompile Include="..\Helpers\BoundsCalculator.cpp" />
@@ -261,6 +270,7 @@
     <ClCompile Include="..\Helpers\FontFactory.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
     <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
+    <ClCompile Include="..\Helpers\LightSource.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
     <ClCompile Include="..\Helpers\MeshDataHeavy.cpp" />
     <ClCompile Include="..\Helpers\MeshDataInstance.cpp" />
@@ -275,18 +285,16 @@
     <ClCompile Include="..\Helpers\TextData.cpp" />
     <ClCompile Include="..\Helpers\Texture.cpp" />
     <ClCompile Include="..\Helpers\TextureFactory.cpp" />
+    <ClCompile Include="..\Helpers\ThreeDAxis.cpp" />
     <ClCompile Include="..\Renderers\HeavyRenderer.cpp" />
     <ClCompile Include="..\Renderers\InstanceRenderer.cpp" />
     <ClCompile Include="..\Renderers\LightRenderer.cpp" />
-    <ClCompile Include="..\Renderers\Model.cpp" />
     <ClCompile Include="..\Renderers\RendererBase.cpp" />
-    <ClCompile Include="..\Renderers\RendererBaseShader.cpp" />
     <ClCompile Include="..\Renderers\TextRenderer.cpp" />
     <ClCompile Include="..\Renderers\TextRendererDynamic.cpp" />
     <ClCompile Include="..\Renderers\TextRendererStatic.cpp" />
     <ClCompile Include="..\Renderers\VAOBuffer.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="LightSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\OpenGL\Glitter\Build\Glitter\Vendor\assimp\code\assimp.vcxproj">

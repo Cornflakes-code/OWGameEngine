@@ -9,6 +9,7 @@
 class OWENGINE_API GeometricShapes
 {
 public:
+	static std::pair<glm::vec3, glm::vec3> minMaxBox;
 	static std::vector<glm::vec2> circle(float radius, float arcRadians);
 	static std::vector<glm::vec2> torus(float innerRadius, 
 									float outerRadius, 

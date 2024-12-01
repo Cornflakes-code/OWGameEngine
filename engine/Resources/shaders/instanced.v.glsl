@@ -12,7 +12,7 @@ layout(location = 2) in vec4 color;
 // Output data will be interpolated for each fragment.
 out vec2 particleCenter;
 out vec4 particlecolor;
-out vec4 frag_Position;
+
 // Values that stay constant for the whole mesh.
 uniform vec3 CameraRight_worldspace;
 uniform vec3 CameraUp_worldspace;
@@ -30,7 +30,7 @@ void main()
 		+ CameraUp_worldspace * squareVertices.y * particleSize;
 
 	// Output position of the vertex
-	frag_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
+	gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
 
     //vec2 ndcPos = gl_Position.xy / gl_Position.w;
     //UV = u_resolution * (ndcPos * 0.5 + 0.5);

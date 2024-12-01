@@ -13,7 +13,6 @@
 #include <Helpers/MeshDataLight.h>
 #include <Helpers/TextData.h>
 
-#include <Renderers/Model.h>
 #include "NMSScene.h"
 #include <Helpers/Button.h>
 
@@ -41,19 +40,16 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 
 	static AABB mWindowBounds;
 	static OWUtils::Float mSpeed;
-	ButtonData mButtonData;
-	TextData mWelcomeData;
-	TextData mEnjoyData;
+	ButtonData* mButtonData = nullptr;
+	TextData* mWelcome = nullptr;
+	TextData* mEnjoy = nullptr;
 	MoveController mWelcomeMover;
 	MoveController mEnjoyMover;
-	std::vector<glm::vec4> mFullScreenData;
 	MeshDataInstance mStarData;
 	glm::vec2 mStarRadius;
-	MeshDataHeavy* mCylinderData;
 };
 
 class Axis;
-class LightRenderer;
 class InstanceRenderer;
 class TextRenderer;
 class HeavyRenderer;
@@ -61,13 +57,8 @@ class OWButton;
 
 class NMSSplashScene : public NMSScene
 {
-	LightRenderer* mFullScreen = 0;
 	InstanceRenderer* mStarRenderer = 0;
-	TextRenderer* mWelcomeText = 0;
-	TextRenderer* mEnjoyText = 0;
-	HeavyRenderer* mCylinder = 0;
-	Model mAxis;
-	OWButton* mButton;
+	OWButton* mButton = nullptr;
 public:
 	NMSSplashScene(const Movie* movie);
 	std::string name() const { return "Splash"; }

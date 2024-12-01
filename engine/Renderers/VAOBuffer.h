@@ -10,14 +10,15 @@
 
 #include "../Helpers/MeshDataLight.h"
 
-#include "RendererBaseShader.h"
+#include "RendererBase.h"
 
 class Shader;
 
-class OWENGINE_API VAOBuffer : public RendererBaseShader
+class OWENGINE_API VAOBuffer : public RendererBase
 {
 public:
-	VAOBuffer(Shader* shader);
+	enum RenderType { DRAW_NONE, DRAW_ARRAYS, DRAW_MULTI, DRAW_PRIMITIVE };
+	VAOBuffer(Shader* shader, RenderType rt);
 	void add(const MeshDataLight* meshData);
 	void add(const std::vector<glm::vec3>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
@@ -45,9 +46,6 @@ private:
 	unsigned int mVbo = std::numeric_limits<unsigned int>::max();
 	unsigned int mEbo = std::numeric_limits<unsigned int>::max();
 	unsigned int mPrimitiveEbo = std::numeric_limits<unsigned int>::max();
-	enum RenderType { DRAW_NONE, DRAW_ARRAYS, DRAW_MULTI, DRAW_PRIMITIVE };
 	RenderType mDrawType = DRAW_NONE;
-
-
 #pragma warning( pop )
 };

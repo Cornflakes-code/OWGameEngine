@@ -9,7 +9,7 @@
 
 #include "TextRenderer.h"
 
-struct TextData;
+class TextData;
 
 class OWENGINE_API TextRendererDynamic: public TextRenderer
 {

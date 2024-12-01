@@ -30,7 +30,6 @@ class TextRenderer;
 
 class NMSEndScene : public NMSScene
 {
-	TextRenderer* mText;
 public:
 	NMSEndScene(const Movie* movie);
 	std::string name() const { return "The End"; }

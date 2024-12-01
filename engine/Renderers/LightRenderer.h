@@ -9,13 +9,13 @@
 
 #include "../Helpers/MeshDataLight.h"
 
-#include "RendererBaseShader.h"
+#include "RendererBase.h"
 
-class OWENGINE_API LightRenderer : public RendererBaseShader
+class OWENGINE_API LightRenderer : public RendererBase
 {
 public:
 	LightRenderer(Shader* shader)
-		: RendererBaseShader(shader) {}
+		: RendererBase(shader) {}
 	void setup(const MeshDataLight* meshData);
 	void setup(const std::vector<glm::vec3>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
