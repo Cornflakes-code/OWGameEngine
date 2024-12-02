@@ -26,8 +26,6 @@ struct NMSEndScenePhysics : public ScenePhysicsState
 	float textPosition = 0.0;
 };
 
-class TextRenderer;
-
 class NMSEndScene : public NMSScene
 {
 public:

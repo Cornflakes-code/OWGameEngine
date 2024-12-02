@@ -3,10 +3,6 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
-#include <Core/BoundingBox.h>
-
-#include <Helpers/Shader.h>
-
 #include "NMSScene.h"
 
 /*

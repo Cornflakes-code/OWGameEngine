@@ -1,8 +1,67 @@
 #include "BoundingBox.h"
 
+glm::vec4 convert(const glm::vec3& v3)
+{
+	glm::vec4 retval = glm::vec4(v3, 1);
+	return retval;
+}
+
+glm::vec3 convert(const glm::vec4& v4)
+{
+	glm::vec3 retval = glm::vec3(v4.x, v4.y, v4.z);
+	return retval;
+}
+
+AABBV4 convertToV4(const AABBV3& v3)
+{
+	glm::vec4 _min = convert(v3.minPoint());
+	glm::vec4 _max = convert(v3.maxPoint());
+	return AABBV4(_min, _max);
+}
+
+AABBV3 convertToV3(const AABBV4& v4)
+{
+	glm::vec3 _min = convert(v4.minPoint());
+	glm::vec3 _max = convert(v4.maxPoint());
+	return AABBV3(_min, _max);
+}
+
+
+namespace Compass
+{
+	glm::vec4 Rose[NumDirections] = {
+			glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),	// North
+			glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),	// South
+			glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),	// East
+			glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f),	// West
+			glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),	// in (maybe wrong)
+			glm::vec4(1.0f, 0.0f, -1.0f, 0.0f),	// out (maybe wrong)
+			glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)	// No Direction
+	};
+
+	std::string asString(Direction dir)
+	{
+		switch (dir)
+		{
+		case North: return "North";
+		case South: return "South";
+		case East: return "East";
+		case West: return "West";
+		case In: return "In";
+		case Out: return "Out";
+		case NoDirection: return "NoDirection";
+		case NumDirections: return "NumDirections";
+		default: throw NMSLogicException(std::stringstream() << "Unknown Direction [" << dir << "]\n");
+		}
+	}
+}
+
+/*
 #include <glm/gtx/intersect.hpp>
 
 #include "ErrorHandling.h"
+
+constexpr float _max = std::numeric_limits<float>::max();
 
 glm::vec4 Plane::ClosestPointOnPlane(const glm::vec4& p)
 {
@@ -15,80 +74,51 @@ glm::vec4 Plane::ClosestPointOnPlane(const glm::vec4& p)
 	return glm::vec4(0.0);
 }
 
-//__cdecl AABB::AABB(struct glm::vec<4,float,0> const &,struct glm::vec<4,float,0> const &)" (? ? 0AABB@@QEAA@AEBU?$vec@$03M$0A@@glm@@0@Z) referenced in function "private: class AABB __cdecl TextBillboard::findBounds(void)const " (? findBounds@TextBillboard@@AEBA?AVAABB@@XZ)
-AABB::AABB(const glm::vec4& _minPoint, const glm::vec4& _maxPoint, bool validate)
-	: mMinPoint(_minPoint), mMaxPoint(_maxPoint)
-{
-	if (validate)
-		isValid();
-}
-
-AABB::AABB(const glm::vec3& _minPoint, const glm::vec3& _maxPoint, bool validate)
-: AABB(glm::vec4(_minPoint, 0.0f), glm::vec4(_maxPoint, 0.0f), validate)
-{}
-
-AABB::AABB()
-: mMinPoint(glm::vec4(0.0, 0.0, 0.0, 1.0)), mMaxPoint(glm::vec4(0.0, 0.0, 0.0, 1.0))
-{
-	isValid();
-}
-
-AABB AABB::calcBounds(const std::vector<glm::vec3>& v)
-{
-	std::vector<glm::vec4> points4;
-	for (const auto& point : v)
-	{
-		points4.push_back(glm::vec4(point, 0.0));
-	}
-	return calcBounds(points4);
-}
-
-AABB AABB::calcBounds(const std::vector<glm::vec4>& v)
+template <int Dim, typename Type>
+AABB<Dim, Type>::AABB<Dim, Type>(const std::vector<vec_type>& v)
 {
 	// Note: No depth value: default to 0;
-	static constexpr float _max = std::numeric_limits<float>::max();
-	glm::vec4 minPoint(_max, _max, _max, 1);
-	glm::vec4 maxPoint(-_max, -_max, -_max, 1);
+	mMinPoint = vec_type(_max);
+	mMaxPoint = vec_type(-_max, -_max, -_max, 1);
 
-	for (const auto& point : v)
+	for (const vec_type& point : v)
 	{
-		if (point.x < minPoint.x)
-			minPoint.x = point.x;
-		if (point.x > maxPoint.x)
-			maxPoint.x = point.x;
+		if (point.x < mMinPoint.x)
+			mMinPoint.x = point.x;
+		if (point.x > mMaxPoint.x)
+			mMaxPoint.x = point.x;
 
-		if (point.y < minPoint.y)
-			minPoint.y = point.y;
-		if (point.y > maxPoint.y)
-			maxPoint.y = point.y;
+		if (point.y < mMinPoint.y)
+			mMinPoint.y = point.y;
+		if (point.y > mMaxPoint.y)
+			mMaxPoint.y = point.y;
 
-		if (point.z < minPoint.z)
-			minPoint.z = point.z;
-		if (point.z > maxPoint.z)
-			maxPoint.z = point.z;
+		if (point.z < mMinPoint.z)
+			mMinPoint.z = point.z;
+		if (point.z > mMaxPoint.z)
+			mMaxPoint.z = point.z;
+
+		if (point.w < mMinPoint.w)
+			mMinPoint.w = point.w;
+		if (point.w > mMaxPoint.w)
+			mMaxPoint.w = point.w;
 	}
-	return AABB(minPoint, maxPoint);
 }
 
-AABB AABB::calcBounds(const std::vector<AABB>& v)
+template <int Dim, typename Type>
+AABB<Dim, Type>::AABB<Dim, Type>(const std::vector<AABB<Dim, Type>>& v)
 {
-	std::vector<glm::vec4> points;
-	for (const AABB& ab : v)
-	{
-		points.push_back(ab.minPoint());
-		points.push_back(ab.maxPoint());
-	}
-	return AABB::calcBounds(points);
 }
 
-void AABB::isValid() const
+template <int Dim, typename Type>
+void AABB<Dim, Type>::isValid() const
 {
 	if (mMinPoint.x > mMaxPoint.x || mMinPoint.y > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)
-		throw NMSLogicException("Error: Invalid AABBV size.");
-
+		throw NMSLogicException("Error: Invalid AABB size.");
 }
 
-bool AABB::overlap(const AABB& other) const
+template <int Dim, typename Type>
+bool AABB<Dim, Type>::overlap(const AABB<Dim, Type>& other) const
 {
 	// If there is no overlap in any one direction 
 	// then the objects cannot intersect
@@ -104,130 +134,22 @@ bool AABB::overlap(const AABB& other) const
 	return false;
 }
 
-Compass::Direction AABB::wallIntersection(const AABB& other) const
-{
-	if (!overlap(other))
-		return Compass::Direction::NoDirection;
-	if (other.maxPoint().y >= maxPoint().y)
-		return Compass::Direction::North;
-	else if (other.maxPoint().x >= maxPoint().x)
-		return Compass::Direction::East;
-	else if (other.maxPoint().z >= maxPoint().z)
-		return Compass::Direction::In;
-	else if (other.minPoint().y <= minPoint().y)
-		return Compass::Direction::South;
-	else if (other.minPoint().x <= minPoint().x)
-		return Compass::Direction::West;
-	else if (other.minPoint().z <= minPoint().z)
-		return Compass::Direction::Out;
-	return Compass::Direction::NoDirection;
-}
-
-glm::vec4 AABB::pointAndNormal(Compass::Direction dir, glm::vec4& normal)
-{
-	glm::vec4 pointOnPlane = center();
-	if (dir == Compass::North)
-	{
-		normal.x = 0.0;
-		normal.y = 1.0;
-		normal.z = 0.0;
-		pointOnPlane.y += size().y / 2;
-	}
-	else if (dir == Compass::South)
-	{
-		normal.x = 0.0;
-		normal.y = -1.0;
-		normal.z = 0.0;
-		pointOnPlane.y -= size().y / 2;
-	}
-	else if (dir == Compass::East)
-	{
-		normal.x = 1.0;
-		normal.y = 0.0;
-		normal.z = 0.0;
-		pointOnPlane.x += size().x / 2;
-	}
-	else if (dir == Compass::West)
-	{
-		normal.x = -1.0;
-		normal.y = 0.0;
-		normal.z = 0.0;
-		pointOnPlane.x -= size().x / 2;
-	}
-	else if (dir == Compass::In)
-	{
-		normal.x = 0.0;
-		normal.y = 0.0;
-		normal.z = 1.0;
-		pointOnPlane.z += size().z / 2;
-	}
-	else if (dir == Compass::Out)
-	{
-		normal.x = 0.0;
-		normal.y = 0.0;
-		normal.z = -1.0;
-		pointOnPlane.z -= size().z / 2;
-	}
-	normal.w = 0.0;
-
-	return pointOnPlane;
-}
-
-glm::vec4 AABB::calcBouncePosition(const glm::vec4& origen, const glm::vec4& dest, Compass::Direction whichWall)
-{
-	glm::vec4 normToEdge;
-	glm::vec4 pointOnEdge = pointAndNormal(whichWall, normToEdge);
-
-	OWUtils::Float distToPlane = 0.0;
-	glm::vec4 distance = dest - origen;
-	glm::vec4 direction = glm::normalize(dest - origen);
-	if (glm::intersectRayPlane(origen, direction, pointOnEdge, normToEdge, distToPlane))
-	{
-		glm::vec4 intersectionPoint = origen + direction * distToPlane;
-		glm::vec4 remainingDistAfterBounce = distance - direction * distToPlane;
-		if (whichWall == Compass::Direction::North || whichWall == Compass::Direction::South)
-			direction.y = -direction.y;
-		else if (whichWall == Compass::Direction::East || whichWall == Compass::Direction::West)
-			direction.x = -direction.x;
-		else if (whichWall == Compass::Direction::In || whichWall == Compass::Direction::Out)
-			direction.z = -direction.z;
-		glm::vec4 positionAfterBounce = intersectionPoint + direction * remainingDistAfterBounce;
-		return glm::vec4(origen - positionAfterBounce);
-	}
-	else
-		throw NMSLogicException("Object should have intersected Boundary");
-}
-
 // returns the AABB that encompasses both params
-AABB operator+(const AABB& left, const AABB& right)
+template <int Dim, typename Type>
+AABB<Dim, Type> operator+(const AABB<Dim, Type>& left, const AABB<Dim, Type>& right)
 {
-	glm::vec4 minPoint = glm::vec4(std::min(left.minPoint().x, right.minPoint().x),
+	vec_type minPoint = vec_type(std::min(left.minPoint().x, right.minPoint().x),
 		std::min(left.minPoint().y, right.minPoint().y),
 		std::min(left.minPoint().z, right.minPoint().z),
 		1.0);
-	glm::vec4 maxPoint = glm::vec4(std::max(left.maxPoint().x, right.maxPoint().x),
+	vec_type maxPoint = glm::vec4(std::max(left.maxPoint().x, right.maxPoint().x),
 		std::max(left.maxPoint().y, right.maxPoint().y),
 		std::max(left.maxPoint().z, right.maxPoint().z),
 		1.0);
-	return AABB(minPoint, maxPoint);
+	return AABB<Dim, Type>(minPoint, maxPoint);
 }
-//AABB operator-(const AABB& left, const AABB& right)
-//{
-//	AABB retval = left;
-//	retval.mMinPoint -= right.mMinPoint;
-//	retval.mMaxPoint -= right.mMaxPoint;
-//	return retval;
-//}
-//
-//AABB operator+(const AABB& left, const AABB& right)
-//{
-//	AABB retval = left;
-//	retval.mMinPoint += right.mMinPoint;
-//	retval.mMaxPoint += right.mMaxPoint;
-//	return retval;
-//}
 
-bool Ball::contains(const AABB& other) const
+bool Ball::contains(const AABB<Dim, Type>& other) const
 {
 	// https://learnopengl.com/In-Practice/2D-Game/Collisions/Collision-detection
 	glm::vec4 ballCenter = center();
@@ -248,3 +170,4 @@ bool Ball::contains(const AABB& other) const
 
 	return glm::length(difference) < mRadius;
 }
+*/

@@ -265,7 +265,6 @@
     <ClCompile Include="..\Core\SceneGraphNode.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
-    <ClCompile Include="..\Helpers\BoundsCalculator.cpp" />
     <ClCompile Include="..\Helpers\ComputeNormals.cpp" />
     <ClCompile Include="..\Helpers\FontFactory.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />

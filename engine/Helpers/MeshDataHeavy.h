@@ -22,7 +22,11 @@ struct MeshDataHeavy
 		glm::vec3 normal;
 		//glm::vec3 tangent;
 		//glm::vec3 biTangent;
-		Vertex() {}
+		Vertex()
+			: position(glm::vec3(0)),
+			normal(glm::vec3(0)),
+			textureCoord(glm::vec2(0))
+		{}
 
 		Vertex(const glm::vec3& _position,
 			const glm::vec3& _normal = glm::vec3(0),
@@ -38,5 +42,5 @@ struct MeshDataHeavy
 	std::vector<Texture> textures;
 	void create(aiMesh *mesh, const aiScene *scene);
 	void calcNormals();
-	AABB bounds() const;
+	AABBV3 bounds() const;
 };

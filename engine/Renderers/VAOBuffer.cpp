@@ -28,8 +28,8 @@ void VAOBuffer::add(const MeshDataLight* meshData)
 		mVec3.insert(mVec3.end(), meshData->mVec3.begin(), meshData->mVec3.end());
 		if (mDrawType == RenderType::DRAW_PRIMITIVE)
 		{
-			unsigned int begin = mPrimitiveIndices.size();
-			for (int i = 0; i < meshData->mVec3.size(); i++)
+			size_t begin = mPrimitiveIndices.size();
+			for (size_t i = 0; i < meshData->mVec3.size(); i++)
 				mPrimitiveIndices.push_back(i + begin);
 			mPrimitiveIndices.push_back(mPrimitiveRestart);
 		}
@@ -186,7 +186,7 @@ void VAOBuffer::doRender() const
 	if (mDrawType == RenderType::DRAW_ARRAYS)
 	{
 		// FPS = 26/27
-		GLsizei sum = 0;
+		size_t sum = 0;
 		for (const MeshDataLight::RenderData& rd : mData)
 		{
 			if (mIndices.size())

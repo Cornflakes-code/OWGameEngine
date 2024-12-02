@@ -3,7 +3,7 @@
 #include <Core/ErrorHandling.h>
 #include <Core/LogStream.h>
 #include <Core/CommonUtils.h>
-#include <Helpers/BoundsCalculator.h>
+#include <Core/BoundingBox.h>
 
 void PolygonBuilder::clear()
 {
@@ -38,7 +38,7 @@ void PolygonBuilder::get(RopeBuf* buffer)
 			if (true)//i == 0) // Only label the first layer
 
 			{
-				AABB sliceBounds = BoundsCalculator().bounds(wire[i].f);
+				AABBV3 sliceBounds = AABBV3(wire[i].f);
 				SliceId si;
 				si.id = wire[i].id;
 				si.pos = sliceBounds.center();

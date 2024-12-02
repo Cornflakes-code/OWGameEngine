@@ -10,7 +10,7 @@
 #include <Renderers/VAOBuffer.h>
 #include <Renderers/TextRendererStatic.h>
 
-TextData* createText(const std::string& s, const glm::vec3& pos, unsigned int refPos, AABB& b)
+TextData* createText(const std::string& s, const glm::vec3& pos, unsigned int refPos, AABBV3& b)
 {
 	int fontHeight = 12;
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
@@ -29,7 +29,7 @@ TextData* createText(const std::string& s, const glm::vec3& pos, unsigned int re
 	return td;
 }
 
-void ThreeDAxis::createAxisData(const AABB& w)
+void ThreeDAxis::createAxisData(const AABBV3& w)
 {
 	const float scale = 1.0;
 	std::vector<glm::vec3> axisCoords = {
@@ -38,16 +38,16 @@ void ThreeDAxis::createAxisData(const AABB& w)
 		{ 0.0, w.maxPoint().y * scale, 0.0 },
 		{ 0.0, 0.0, w.maxPoint().z * scale} };
 
-	std::vector<AABB> boxes;
-	AABB box;
+	AABBV3 boxUnion;
+	AABBV3 box;
 	addChild(createText("0", glm::vec3(0), TextData::Top | TextData::Right, box));
-	boxes.push_back(box);
+	boxUnion |= box;
 	addChild(createText("X", axisCoords[1], TextData::Center, box));
-	boxes.push_back(box);
+	boxUnion |= box;
 	addChild(createText("Y", axisCoords[2], TextData::Center, box));
-	boxes.push_back(box);
+	boxUnion |= box;
 	addChild(createText("Z", axisCoords[3], TextData::Center, box));
-	boxes.push_back(box);
+	boxUnion |= box;
 	ShaderFactory shaders;
 	Shader* lineShader = new Shader();
 	lineShader->loadShaders(shaders.boilerPlateVertexShader(),
@@ -62,9 +62,9 @@ void ThreeDAxis::createAxisData(const AABB& w)
 	lineData.vertices(axisCoords, GL_LINES);
 	lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
 	axis->setup(&lineData, lineShader);
-	boxes.push_back(axis->bounds());
+	boxUnion |= axis->bounds();
 	addChild(axis);
-	bounds(AABB::calcBounds(boxes));
+	bounds(boxUnion);
 	axis->readyForRender();
 	mName = "Labelled 3DAxis";
 	readyForRender();

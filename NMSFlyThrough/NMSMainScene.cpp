@@ -4,7 +4,6 @@
 #include <glm/ext/matrix_projection.hpp>
 
 #include <Core/Camera.h>
-#include <Core/ErrorHandling.h>
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
 #include <Core/ResourcePathFactory.h>

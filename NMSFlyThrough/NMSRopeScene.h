@@ -1,8 +1,6 @@
 #pragma once
 
 #include "NMSScene.h"
-#include "PolygonBuilder.h"
-#include <Helpers/TextData.h>
 
 /*
 	An implementation of a Scene for the NMS game.
@@ -23,10 +21,7 @@ struct NMSRopeScenePhysics : public ScenePhysicsState
 
 	void copy(ScenePhysicsState* source) override;
 	ScenePhysicsState* clone() override;
-
 };
-
-class TextRenderer;
 
 class NMSRopeScene : public NMSScene
 {

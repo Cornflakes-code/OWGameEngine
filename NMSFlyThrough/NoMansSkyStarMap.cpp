@@ -34,11 +34,11 @@ NoMansSky::NoMansSky()
 	mStarRadius = glm::vec2(0, 0);
 }
 
-void NoMansSky::setUp(const std::string& fileName, const AABB& world)
+void NoMansSky::setUp(const std::string& fileName, const AABBV3& world)
 {
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
-	AABB NMSSize(glm::vec4(-0x7FF, -0x7F, -0x7FF, 1),
-				 glm::vec4(0x7FF, 0x7F, 0x7FF, 1));
+	AABBV3 NMSSize(glm::vec3(-0x7FF, -0x7F, -0x7FF),
+				 glm::vec3(0x7FF, 0x7F, 0x7FF));
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
@@ -111,7 +111,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	starShader->setStandardUniformNames("VP");
 	InstanceRenderer* starRenderer = new InstanceRenderer(starShader);
 	starRenderer->setup(&mdi);
-	bounds(AABB(glm::vec4(1), glm::vec4(1)));
+	bounds(AABB(glm::vec3(1), glm::vec3(1)));
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),
@@ -138,7 +138,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	readyForRender();
 }
 
-void NoMansSky::createGrid(const AABB& nmsSpace,
+void NoMansSky::createGrid(const AABBV3& nmsSpace,
 						   const glm::u32vec3& gridSizes,
 						   float scaleToWorld)
 {
@@ -172,7 +172,7 @@ void NoMansSky::createGrid(const AABB& nmsSpace,
 }
 
 void NoMansSky::loadStars(const std::string& fileName,
-						  const AABB& OW_UNUSED(nmsSpace),
+						  const AABBV3& OW_UNUSED(nmsSpace),
 						  float scaleToWorld)
 {
 	int fontHeight = 12;
@@ -310,7 +310,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 	}
 }
 
-std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
+std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABBV3& nmsSpace,
 					unsigned int count, float scaleToWorld)
 {
 	std::vector<glm::vec3> retval;

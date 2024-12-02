@@ -8,17 +8,15 @@
 
 #include <Helpers/MoveController.h>
 
-#include <Helpers/MeshDataHeavy.h>
-#include <Helpers/MeshDataInstance.h>
-#include <Helpers/MeshDataLight.h>
-#include <Helpers/TextData.h>
-
 #include "NMSScene.h"
-#include <Helpers/Button.h>
 
 /*
 	An implementation of a Scene for the NMS game.
 */
+
+class TextData;
+struct ButtonData;
+class MeshDataInstance;
 
 struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 {
@@ -38,15 +36,15 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 	void copy(ScenePhysicsState* source) override;
 	void clear() override;
 
-	static AABB mWindowBounds;
+	static AABBV3 mWindowBounds;
 	static OWUtils::Float mSpeed;
 	ButtonData* mButtonData = nullptr;
 	TextData* mWelcome = nullptr;
 	TextData* mEnjoy = nullptr;
 	MoveController mWelcomeMover;
 	MoveController mEnjoyMover;
-	MeshDataInstance mStarData;
-	glm::vec2 mStarRadius;
+	MeshDataInstance* mStarData = nullptr;
+	glm::vec2 mStarRadius = glm::vec2(0);
 };
 
 class Axis;
@@ -57,7 +55,7 @@ class OWButton;
 
 class NMSSplashScene : public NMSScene
 {
-	InstanceRenderer* mStarRenderer = 0;
+	InstanceRenderer* mStarRenderer = nullptr;
 	OWButton* mButton = nullptr;
 public:
 	NMSSplashScene(const Movie* movie);

@@ -9,7 +9,7 @@ MoveController::MoveController()
 {
 }
 
-void MoveController::targetGeometry(const AABB& targetBounds, 
+void MoveController::targetGeometry(const AABBV3& targetBounds, 
 									const glm::vec3& initialPosition)
 { 
 	mBounds = targetBounds;
@@ -17,25 +17,46 @@ void MoveController::targetGeometry(const AABB& targetBounds,
 
 	// Start the minPoint of the text at 0,0,0.
 	setPosition(initialPosition);
-	mBounds = mBounds - mBounds.minPoint();
+	mBounds.move(mBounds.minPoint());
 }
 
-void MoveController::move(const glm::vec4& speed)
+void MoveController::move(const glm::vec3& speed)
 {
 	mBounds.move(mDirection * speed);
 }
 
 void MoveController::setPosition(const glm::vec3& newValue)
 {
-	mBounds = mBounds - mBounds.minPoint() + newValue;
+	mBounds.move(-mBounds.minPoint() + newValue);
 }
 
-Compass::Direction MoveController::wallIntersection(const AABB& scenery)
+/*
+Compass::Direction wallIntersection(const AABBV3& box, const AABBV3& other)
 {
-	return scenery.wallIntersection(mBounds);
+	if (!box.intersects(other))
+		return Compass::Direction::NoDirection;
+	if (other.maxPoint().y >= box.maxPoint().y)
+		return Compass::Direction::North;
+	else if (other.maxPoint().x >= box.maxPoint().x)
+		return Compass::Direction::East;
+	else if (other.maxPoint().z >= box.maxPoint().z)
+		return Compass::Direction::In;
+	else if (other.minPoint().y <= box.minPoint().y)
+		return Compass::Direction::South;
+	else if (other.minPoint().x <= box.minPoint().x)
+		return Compass::Direction::West;
+	else if (other.minPoint().z <= box.minPoint().z)
+		return Compass::Direction::Out;
+	return Compass::Direction::NoDirection;
+}
+*/
+
+Compass::Direction MoveController::wallIntersection(const AABBV3& scenery)
+{
+	return scenery.intersectionDirection(mBounds);
 }
 
-void MoveController::bounceIfCollide(const AABB& scenery)
+void MoveController::bounceIfCollide(const AABBV3& scenery)
 {
 	Compass::Direction dir = wallIntersection(scenery);
 

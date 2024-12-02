@@ -25,16 +25,16 @@ class NoMansSky: public Actor
 	std::vector<glm::vec3> mGrid;
 
 	void loadStars(const std::string& fileName, 
-				   const AABB& nmsSpace,
+				   const AABBV3& nmsSpace,
 				   float scaleToWorld);
-	void createGrid(const AABB& nmsSpace, 
+	void createGrid(const AABBV3& nmsSpace,
 					const glm::u32vec3& gridSizes,
 					float scaleToWorld);
-	std::vector<glm::vec3> createRandomVectors(const AABB& world,
+	std::vector<glm::vec3> createRandomVectors(const AABBV3& world,
 					unsigned int count, float scaleToWorld);
 public:
 	NoMansSky();
-	void setUp(const std::string& fileName, const AABB& world);
+	void setUp(const std::string& fileName, const AABBV3& world);
 	void readSaveFile(const std::string& saveFileMeta, 
 			const std::string& saveFile);
 };

@@ -17,18 +17,12 @@
 #include <Helpers/GeometricShapes.h>
 #include <Helpers/ModelData.h>
 #include <Helpers/ModelFactory.h>
-#include <Helpers/Shader.h>
-#include <Helpers/ShaderFactory.h>
 #include <Helpers/ThreeDAxis.h>
+#include <Helpers/Button.h>
 
-#include <Renderers/HeavyRenderer.h>
-#include <Renderers/InstanceRenderer.h>
-#include <Renderers/TextRendererDynamic.h>
-#include <Renderers/TextRendererStatic.h>
 
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
-#include <Helpers/Button.h>
 
 #define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
@@ -37,7 +31,7 @@
 //#define INCLUDE_STAR_RENDER
 #define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
-AABB NMSSplashScenePhysics::mWindowBounds;
+AABBV3 NMSSplashScenePhysics::mWindowBounds;
 
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
@@ -59,7 +53,7 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
 
 	// Find the translation magnitudes
-	glm::vec4 velocity = glm::vec4(timeStep * mSpeed, timeStep * mSpeed, timeStep * mSpeed, 1.0);
+	glm::vec3 velocity = glm::vec3(timeStep * mSpeed, timeStep * mSpeed, timeStep * mSpeed);
 #ifdef INCLUDE_WELCOME
 	mWelcomeMover.move(velocity);
 	mWelcomeMover.bounceIfCollide(mWindowBounds);
@@ -134,7 +128,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 
 void NMSSplashScenePhysics::setup()
 {
-	const AABB& _world = NMSScene::world();
+	const AABBV3& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 10.0f;
 

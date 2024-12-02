@@ -23,7 +23,7 @@ void MeshActor::setup(const std::vector<glm::vec4>& v, Shader* shader,
 {
 	LightRenderer* r = new LightRenderer(shader);
 	r->setup(v, vertexMode, vertexLocation);
-	bounds(AABB::calcBounds(v));
+	bounds(convertToV3(AABBV4(v)));
 	addRenderer(r);
 }
 

@@ -5,7 +5,6 @@
 #include <Helpers/ShaderFactory.h>
 #include <Helpers/Shader.h>
 #include <Helpers/MeshDataLight.h>
-#include <Helpers/BoundsCalculator.h>
 #include <Renderers/VAOBuffer.h>
 
 #include "./../NMSFlyThrough/rope_interface_test.h"
@@ -153,8 +152,7 @@ RendererBase* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec
 			for (int layer = 0; layer < numLayers; layer++)
 			{
 				std::vector<glm::vec3>& slice = threeDWires[layer][eachWire];
-				glm::vec4 center = BoundsCalculator().bounds(slice).center();
-				line.push_back(glm::vec3(center.x, center.y, center.z));
+				line.push_back(AABBV3(slice).center());
 			}
 			ropeLines.push_back(line);
 		}

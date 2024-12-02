@@ -3,25 +3,20 @@
 #include <Core/Camera.h>
 #include <Core/GlobalSettings.h>
 
-#include <Helpers/Shader.h>
 #include <Helpers/TextData.h>
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/MeshDataLight.h>
-#include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
 #include <Helpers/LightSource.h>
 
 #include "NMSUserInput.h"
-#include "rope_interface_utils.h"
-#include "rope_interface_test.h"
-#include "rope_quick.h"
 #include "ropes.h"
 
 void NMSRopeScenePhysics::setup()
 {
 	Rope* rope = new Rope(nullptr);
 	rope->prepare();
-	const AABB& _world = NMSScene::world();
+	const AABBV3& _world = NMSScene::world();
 	glm::vec2 ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
 	int fontHeight = 24;
@@ -57,17 +52,20 @@ void NMSRopeScenePhysics::setup()
 }
 
 void NMSRopeScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
-{}
+{
+}
 
 void NMSRopeScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration OW_UNUSED(dt))
-{}
+{
+}
 
 void NMSRopeScenePhysics::interpolateRatio(const ScenePhysicsState* OW_UNUSED(previousState),
 	double OW_UNUSED(multPrev),
 	const ScenePhysicsState* OW_UNUSED(currentState),
 	double OW_UNUSED(multCurr))
-{}
+{
+}
 
 void NMSRopeScenePhysics::copy(ScenePhysicsState* source)
 {
@@ -97,7 +95,7 @@ bool NMSRopeScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 		}
 		else if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::Special1)
 		{
-			const AABB& _world = NMSScene::world();
+			const AABBV3& _world = NMSScene::world();
 			//drawRope(_world);
 			return true;
 		}
@@ -142,7 +140,7 @@ void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
 	if (!callCount)
 	{
 		SceneGraphNode* rope = mRootNode->findChild("Ropes");
-		AABB b = rope->bounds();
+		AABBV3 b = rope->bounds();
 		glm::vec3 center = b.center();
 		center.z = -200;
 		camera->position(center);

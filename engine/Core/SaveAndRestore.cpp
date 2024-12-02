@@ -14,5 +14,5 @@ std::string SaveAndRestore::activeScene() const
 {
 	return "Main"; // This sets the initial screen
 	//return "Splash";
-	//return "Rope";
+	return "Rope";
 }

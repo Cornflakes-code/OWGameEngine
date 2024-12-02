@@ -1,15 +1,15 @@
 #include "MeshDataLight.h"
 #include <Core/ErrorHandling.h>
 
-AABB MeshDataLight::bounds() const
+AABBV3 MeshDataLight::bounds() const
 {
 	if (mVec3.size())
 	{
-		return AABB::calcBounds(mVec3);
+		return AABBV3(mVec3);
 	}
 	else if (mVec4.size())
 	{
-		return AABB::calcBounds(mVec4);
+		return convertToV3(AABBV4(mVec4));
 	}
 	else
 	{

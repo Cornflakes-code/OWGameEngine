@@ -127,20 +127,3 @@ struct OWENGINE_API OWUtils
 		}
 	};
 };
-
-namespace Compass
-{
-	enum Direction
-	{
-		North,
-		South,
-		East,
-		West,
-		In,
-		Out,
-		NoDirection,
-		NumDirections
-	};
-	std::string OWENGINE_API asString(Direction dir);
-	extern glm::vec4 OWENGINE_API Rose[NumDirections];
-};

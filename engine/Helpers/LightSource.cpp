@@ -6,7 +6,6 @@
 #include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
 #include <Helpers/GeometricShapes.h>
-#include <Helpers/BoundsCalculator.h>
 #define GLSL(src) "#version 330 core\n" #src
 
 const std::string& lightSourceVertexShader()
@@ -54,7 +53,7 @@ void LightSource::prepare()
     sh->setVector3f("sphereCenter", mPosition, true);
     MeshDataLight lineData;
     std::vector<glm::vec3> vertices = GeometricShapes::cube(mPosition);
-    AABB b = BoundsCalculator().bounds(vertices);
+    AABBV3 b = AABBV3(vertices);
     bounds(b);
     lineData.vertices(vertices, GL_TRIANGLES);
 

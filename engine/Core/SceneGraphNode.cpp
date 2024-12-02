@@ -50,10 +50,14 @@ void SceneGraphNode::render(const glm::mat4& proj,
 	RendererBase::RenderCallbackType renderCb,
 	RendererBase::ResizeCallbackType resizeCb)
 {
+	if (mName == "hsjaf")
+	{
+		mName = "hsjaf";
+	}
 	glm::mat4 model = glm::scale(_model, mScaleFactor);
 	model = glm::translate(model, mTranslateVector);
-	const AABB negative(glm::vec4(-1), glm::vec4(-1));
-	if (mNodeBounds == negative && mParent != nullptr)
+	const AABBV3 negative(glm::vec3(-1), glm::vec3(-1));
+	if ((mNodeBounds == negative) && (mParent != nullptr))
 	{
 		throw NMSLogicException("Bounds for Actor: " + mName + " not set.");
 	}

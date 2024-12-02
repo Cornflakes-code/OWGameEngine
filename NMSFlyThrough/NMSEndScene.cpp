@@ -6,8 +6,6 @@
 #include <Helpers/Shader.h>
 #include <Helpers/TextData.h>
 
-#include <Renderers/TextRendererDynamic.h>
-
 #include "NMSUserInput.h"
 
 void NMSEndScenePhysics::setup()

@@ -272,9 +272,6 @@
     <ClCompile Include="..\Renderers\RendererBase.cpp">
       <Filter>Source Files\Renderers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Helpers\BoundsCalculator.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Helpers\MeshDataLight.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>

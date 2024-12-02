@@ -21,7 +21,7 @@ public:
 	TextRenderer(Shader* shader, const std::string& pvm);
 	void setup(const TextData* td, 
 				const glm::vec3& initialPosition = glm::vec3(0.0f, 0.0f, 0.0f));
-	AABB bounds() const { return mBounds; }
+	AABBV3 bounds() const { return mBounds; }
 	virtual void doRender() const override;
 protected:
 	virtual void doSetup(const TextData* td, const glm::vec3& initialPosition) = 0;
@@ -29,7 +29,7 @@ protected:
 #pragma warning( disable : 4251 )
 	glm::vec4 mColour = glm::vec4();
 	Texture mTexture;
-	AABB mBounds;
+	AABBV3 mBounds;
 	size_t mV4Size = 0;
 	unsigned int mVao = 0;
 	unsigned int mVbo = 0;
