@@ -61,6 +61,16 @@ public:
 	{ 
 		return glm::normalize(glm::cross(mCurrent->direction(), mCurrent->up()));
 	}
+	glm::vec3 front() const override
+	{
+		glm::vec3 front;
+		front.x = cos(glm::radians(mCurrent->yaw())) * cos(glm::radians(mCurrent->pitch()));
+		front.y = sin(glm::radians(mCurrent->pitch()));
+		front.z = sin(glm::radians(mCurrent->yaw())) * cos(glm::radians(mCurrent->pitch()));
+		front = glm::normalize(front);
+		return front;
+	}
+
 	glm::vec3 direction() const override
 	{
 		return mCurrent->direction();
@@ -115,6 +125,8 @@ public:
 	{
 		return mCurrent->aspectRatio();
 	}
+	BoundingFrustum createFrustum(float aspect, float fovY,
+		float zNear, float zFar) const override;
 private:
 	bool processKeyboardInput(
 		UserInput::UserCommandCallbackData keyInput, float seconds);

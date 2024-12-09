@@ -136,6 +136,29 @@ bool CameraMazhar::processKeyboardInput(
 	return foundKey;
 }
 
+BoundingFrustum CameraMazhar::createFrustum(float aspect, float fovY,
+	float zNear, float zFar) const
+{
+	BoundingFrustum frustum;
+	const float halfVSide = zFar * tanf(fovY * .5f);
+	const float halfHSide = halfVSide * aspect;
+	const glm::vec3 frontMultFar = zFar * front();
+
+	glm::vec3 _front = front();
+	frustum.nearFace = { position() + zNear * _front, _front };
+	frustum.farFace = { position() + frontMultFar, -_front};
+	frustum.rightFace = { position(),
+							glm::cross(frontMultFar - right() * halfHSide, up()) };
+	frustum.leftFace = { position(),
+							glm::cross(up(),frontMultFar + right() * halfHSide)};
+	frustum.topFace = { position(),
+							glm::cross(right(), frontMultFar - up() * halfVSide)};
+	frustum.bottomFace = { position(),
+							glm::cross(frontMultFar + up() * halfVSide, right()) };
+
+	return frustum;
+}
+
 void CameraMazhar::doProcessKeyboardInput(int userCommand, float seconds)
 {
 	switch (userCommand)

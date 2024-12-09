@@ -246,7 +246,7 @@ void Movie::pushUserInput(const UserInput::AnyInput& userInput)
 	// TODO: inefficient. Used for debugging
 	if (mUserInput.empty())
 	{
-		if (userInput.inputType == UserInput::InputAction::Press)
+		if (int(userInput.inputType) == int(UserInput::InputAction::Press))
 			mUserInput.push(userInput);
 		else
 			mUserInput.push(userInput);
@@ -254,7 +254,7 @@ void Movie::pushUserInput(const UserInput::AnyInput& userInput)
 	else
 	{
 //		UserInput::AnyInput& front = mUserInput.front();
-		if (userInput.inputType == UserInput::InputAction::Press)
+		if (int(userInput.inputType) == int(UserInput::InputAction::Press))
 			mUserInput.push(userInput);
 //		else
 //			mUserInput.push(userInput);

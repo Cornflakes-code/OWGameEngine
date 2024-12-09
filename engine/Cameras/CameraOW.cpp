@@ -19,6 +19,18 @@ void CameraOW::bindResize(UserInput* app)
 	app->addWindowResizeListener(cb, this);
 }
 
+glm::vec3 CameraOW::front() const 
+{
+	throw NMSException(std::stringstream()
+		<< "Unimplemented function [CameraOW::front()].");
+	glm::vec3 front;
+	//front.x = cos(glm::radians(mCurrent->yaw())) * cos(glm::radians(mCurrent->pitch()));
+	//front.y = sin(glm::radians(mCurrent->pitch()));
+	//front.z = sin(glm::radians(mCurrent->yaw())) * cos(glm::radians(mCurrent->pitch()));
+	//front = glm::normalize(front);
+	//return front;
+}
+
 bool CameraOW::processInput(UserInput::AnyInput input, float seconds)
 {
 	if (input.inputType == UserInput::AnyInputType::KeyPress)
@@ -184,4 +196,27 @@ void CameraOW::doProcessKeyboardInput(int userCommand, float seconds)
 	const glm::vec3 v3 = mCurrent->position();
 	LogStream(LogStreamLevel::Info) << "Camera position ["
 		<< glm::to_string(v3) << "]\n";
+}
+
+BoundingFrustum CameraOW::createFrustum(float aspect, float fovY,
+	float zNear, float zFar) const
+{
+	BoundingFrustum frustum;
+	const float halfVSide = zFar * tanf(fovY * .5f);
+	const float halfHSide = halfVSide * aspect;
+	const glm::vec3 frontMultFar = zFar * front();
+
+	glm::vec3 _front = front();
+	frustum.nearFace = { position() + zNear * _front, _front };
+	frustum.farFace = { position() + frontMultFar, -_front };
+	frustum.rightFace = { position(),
+							glm::cross(frontMultFar - right() * halfHSide, up()) };
+	frustum.leftFace = { position(),
+							glm::cross(up(),frontMultFar + right() * halfHSide) };
+	frustum.topFace = { position(),
+							glm::cross(right(), frontMultFar - up() * halfVSide) };
+	frustum.bottomFace = { position(),
+							glm::cross(frontMultFar + up() * halfVSide, right()) };
+
+	return frustum;
 }

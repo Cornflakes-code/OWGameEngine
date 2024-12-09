@@ -36,7 +36,7 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 	void copy(ScenePhysicsState* source) override;
 	void clear() override;
 
-	static AABBV3 mWindowBounds;
+	static AABB mWindowBounds;
 	static OWUtils::Float mSpeed;
 	ButtonData* mButtonData = nullptr;
 	TextData* mWelcome = nullptr;

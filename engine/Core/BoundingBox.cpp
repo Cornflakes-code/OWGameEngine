@@ -1,32 +1,5 @@
 #include "BoundingBox.h"
 
-glm::vec4 convert(const glm::vec3& v3)
-{
-	glm::vec4 retval = glm::vec4(v3, 1);
-	return retval;
-}
-
-glm::vec3 convert(const glm::vec4& v4)
-{
-	glm::vec3 retval = glm::vec3(v4.x, v4.y, v4.z);
-	return retval;
-}
-
-AABBV4 convertToV4(const AABBV3& v3)
-{
-	glm::vec4 _min = convert(v3.minPoint());
-	glm::vec4 _max = convert(v3.maxPoint());
-	return AABBV4(_min, _max);
-}
-
-AABBV3 convertToV3(const AABBV4& v4)
-{
-	glm::vec3 _min = convert(v4.minPoint());
-	glm::vec3 _max = convert(v4.maxPoint());
-	return AABBV3(_min, _max);
-}
-
-
 namespace Compass
 {
 	glm::vec4 Rose[NumDirections] = {
@@ -56,69 +29,42 @@ namespace Compass
 	}
 }
 
-/*
-#include <glm/gtx/intersect.hpp>
+// And thanks to https://gist.github.com/podgorskiy/308f0438a77ddee78cc12148ee654e95
+// for some good ideas.
 
-#include "ErrorHandling.h"
+// And the following is also good
+// https://github.com/iauns/cpm-glm-aabb/blob/master/glm-aabb/AABB.hpp
 
-constexpr float _max = std::numeric_limits<float>::max();
-
-glm::vec4 Plane::ClosestPointOnPlane(const glm::vec4& p)
-{
-	// Not a bad site for beginner vectors
-	// https://gdbooks.gitbooks.io/3dcollisions/content/Chapter1/closest_point_on_plane.html
-	//// This works assuming plane.Normal is normalized, which it should be
-	//float distance = DOT(plane.Normal, point) - plane.Distance;
-	//// If the plane normal wasn't normalized, we'd need this:
-	//// distance = distance / DOT(plane.Normal, plane.Normal);
-	return glm::vec4(0.0);
-}
-
-template <int Dim, typename Type>
-AABB<Dim, Type>::AABB<Dim, Type>(const std::vector<vec_type>& v)
+AABB::AABB(const std::vector<glm::vec3>& v)
 {
 	// Note: No depth value: default to 0;
-	mMinPoint = vec_type(_max);
-	mMaxPoint = vec_type(-_max, -_max, -_max, 1);
+	mMinPoint = glm::vec3(_max);
+	mMaxPoint = glm::vec3(-_max);
 
-	for (const vec_type& point : v)
+	for (const glm::vec3& point : v)
 	{
-		if (point.x < mMinPoint.x)
-			mMinPoint.x = point.x;
-		if (point.x > mMaxPoint.x)
-			mMaxPoint.x = point.x;
-
-		if (point.y < mMinPoint.y)
-			mMinPoint.y = point.y;
-		if (point.y > mMaxPoint.y)
-			mMaxPoint.y = point.y;
-
-		if (point.z < mMinPoint.z)
-			mMinPoint.z = point.z;
-		if (point.z > mMaxPoint.z)
-			mMaxPoint.z = point.z;
-
-		if (point.w < mMinPoint.w)
-			mMinPoint.w = point.w;
-		if (point.w > mMaxPoint.w)
-			mMaxPoint.w = point.w;
+		mMinPoint = glm::min(point, mMinPoint);
+		mMaxPoint = glm::max(point, mMaxPoint);
 	}
 }
 
-template <int Dim, typename Type>
-AABB<Dim, Type>::AABB<Dim, Type>(const std::vector<AABB<Dim, Type>>& v)
+AABB::AABB(const std::vector<glm::vec4>& v)
+	:AABB(convertToV3(v))
 {
 }
 
-template <int Dim, typename Type>
-void AABB<Dim, Type>::isValid() const
+AABB::AABB(const std::vector<AABB>& v)
 {
-	if (mMinPoint.x > mMaxPoint.x || mMinPoint.y > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)
-		throw NMSLogicException("Error: Invalid AABB size.");
+	mMinPoint = glm::vec3(_max);
+	mMaxPoint = glm::vec3(-_max);
+	for (const AABB& ab : v)
+	{
+		mMinPoint = glm::min(ab.minPoint(), mMinPoint);
+		mMaxPoint = glm::max(ab.maxPoint(), mMaxPoint);
+	}
 }
 
-template <int Dim, typename Type>
-bool AABB<Dim, Type>::overlap(const AABB<Dim, Type>& other) const
+bool AABB::intersects(const AABB& other) const
 {
 	// If there is no overlap in any one direction 
 	// then the objects cannot intersect
@@ -134,40 +80,31 @@ bool AABB<Dim, Type>::overlap(const AABB<Dim, Type>& other) const
 	return false;
 }
 
-// returns the AABB that encompasses both params
-template <int Dim, typename Type>
-AABB<Dim, Type> operator+(const AABB<Dim, Type>& left, const AABB<Dim, Type>& right)
+Compass::Direction AABB::intersectionDirection(const AABB& other) const
 {
-	vec_type minPoint = vec_type(std::min(left.minPoint().x, right.minPoint().x),
-		std::min(left.minPoint().y, right.minPoint().y),
-		std::min(left.minPoint().z, right.minPoint().z),
-		1.0);
-	vec_type maxPoint = glm::vec4(std::max(left.maxPoint().x, right.maxPoint().x),
-		std::max(left.maxPoint().y, right.maxPoint().y),
-		std::max(left.maxPoint().z, right.maxPoint().z),
-		1.0);
-	return AABB<Dim, Type>(minPoint, maxPoint);
+	if (!intersects(other))
+		return Compass::Direction::NoDirection;
+	if (other.maxPoint().y >= maxPoint().y)
+		return Compass::Direction::North;
+	else if (other.maxPoint().x >= maxPoint().x)
+		return Compass::Direction::East;
+	else if (other.maxPoint().z >= maxPoint().z)
+		return Compass::Direction::In;
+	else if (other.minPoint().y <= minPoint().y)
+		return Compass::Direction::South;
+	else if (other.minPoint().x <= minPoint().x)
+		return Compass::Direction::West;
+	else if (other.minPoint().z <= minPoint().z)
+		return Compass::Direction::Out;
+	return Compass::Direction::NoDirection;
 }
 
-bool Ball::contains(const AABB<Dim, Type>& other) const
+std::vector<glm::vec3> convertToV3(const std::vector<glm::vec4>& v4)
 {
-	// https://learnopengl.com/In-Practice/2D-Game/Collisions/Collision-detection
-	glm::vec4 ballCenter = center();
-
-	// calculate AABB info (center, half-extents)
-	glm::vec4 aabb_half_extents = other.size() / 2.0f;
-	glm::vec4 aabb_center = other.center();
-
-	// get difference vector between both centers
-	glm::vec4 difference = ballCenter - aabb_center;
-	glm::vec4 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-
-	// add clamped value to AABB_center and we get the value of box closest to circle
-	glm::vec4 closest = aabb_center + clamped;
-
-	// retrieve vector between center circle and closest point AABB and check if length <= radius
-	difference = closest - ballCenter;
-
-	return glm::length(difference) < mRadius;
+	std::vector<glm::vec3> v3;
+	for (glm::vec4 v : v4)
+	{
+		v3.push_back({v.x, v.y, v.z});
+	}
+	return v3;
 }
-*/

@@ -87,43 +87,4 @@ struct OWENGINE_API OWUtils
 		return nearlyEqual(f1, f2, 1.e-6f);
 	}
 
-	class OWENGINE_API PolygonModeRIAA
-	{
-		static GLint mOriginalMode;
-		bool mActive = true;
-	public:
-		PolygonModeRIAA(GLenum face, GLenum mode);
-		~PolygonModeRIAA()
-		{
-			if (mActive)
-				glPolygonMode(GL_FRONT_AND_BACK, mOriginalMode);
-		}
-	};
-
-	class OWENGINE_API LineWidthRIAA
-	{
-		static GLfloat mOriginalWidth;
-		bool mActive = true;
-	public:
-		LineWidthRIAA(float width);
-		~LineWidthRIAA()
-		{
-			if (mActive)
-				glLineWidth(mOriginalWidth);
-		}
-	};
-
-	class OWENGINE_API BlendFuncRIAA
-	{
-		static GLenum mSfactor;
-		static GLenum mDfactor;
-		bool mActive = true;
-	public:
-		BlendFuncRIAA(GLenum sfactor, GLenum dfactor);
-		~BlendFuncRIAA()
-		{
-			if (mActive)
-				glBlendFunc(mSfactor, mDfactor);
-		}
-	};
 };

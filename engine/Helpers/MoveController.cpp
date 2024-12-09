@@ -9,7 +9,7 @@ MoveController::MoveController()
 {
 }
 
-void MoveController::targetGeometry(const AABBV3& targetBounds, 
+void MoveController::targetGeometry(const AABB& targetBounds, 
 									const glm::vec3& initialPosition)
 { 
 	mBounds = targetBounds;
@@ -31,7 +31,7 @@ void MoveController::setPosition(const glm::vec3& newValue)
 }
 
 /*
-Compass::Direction wallIntersection(const AABBV3& box, const AABBV3& other)
+Compass::Direction wallIntersection(const AABB& box, const AABB& other)
 {
 	if (!box.intersects(other))
 		return Compass::Direction::NoDirection;
@@ -51,12 +51,12 @@ Compass::Direction wallIntersection(const AABBV3& box, const AABBV3& other)
 }
 */
 
-Compass::Direction MoveController::wallIntersection(const AABBV3& scenery)
+Compass::Direction MoveController::wallIntersection(const AABB& scenery)
 {
 	return scenery.intersectionDirection(mBounds);
 }
 
-void MoveController::bounceIfCollide(const AABBV3& scenery)
+void MoveController::bounceIfCollide(const AABB& scenery)
 {
 	Compass::Direction dir = wallIntersection(scenery);
 

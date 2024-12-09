@@ -10,24 +10,14 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
+#include "BoundingFrustum.h"		  
 #include "ErrorHandling.h"
 
 // https://en.wikibooks.org/wiki/OpenGL_Programming/Bounding_box
-/*
-	Mainly provides a AABB box for early functionality. Will morph into a more 
-	sophisticated implementation
-*/
-class OWENGINE_API Plane
-{
-#pragma warning( push )
-#pragma warning( disable : 4251 )
-	glm::vec4 mPoint1;
-	glm::vec4 mPoint2;
-	glm::vec4 mPoint3;
-	glm::vec4 mNormal;
-#pragma warning( pop )
-public:
-};
+
+//	Mainly provides a AABB box for early functionality. Will morph into a more 
+//	sophisticated implementation
+
 
 namespace Compass
 {
@@ -46,103 +36,101 @@ namespace Compass
 	extern glm::vec4 OWENGINE_API Rose[NumDirections];
 };
 
-// And thanks to https://gist.github.com/podgorskiy/308f0438a77ddee78cc12148ee654e95
-// for some good ideas.
-template <int Dim, typename Type>
+class OWENGINE_API Range
+{
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+	glm::vec3 mMinimum;
+	glm::vec3 mCurrent;
+	glm::vec3 mMaximum;
+#pragma warning( pop )
+public:
+	Range()
+		:Range(-1, 1, 0)  {}
+
+	Range(float _min, float _max, float _curr)
+		: mMinimum(_min), mMaximum(_max), mCurrent(_curr)
+	{		
+	}
+	const glm::vec3& maximum() const { return mMaximum; }
+	const glm::vec3& current() const { return mCurrent; }
+	const void maximum(const glm::vec3& _value) { mMaximum = _value; }
+	const void minimum(const glm::vec3& _value) { mMinimum = _value; }
+
+	void addTo(const glm::vec3& toAdd)
+	{
+		current(current() + toAdd);
+	}
+	void increaseBy(float scale)
+	{
+		current(current() * scale);
+	}
+
+	void current(const glm::vec3& _curr) 
+	{
+		float temp = glm::length(_curr);
+		if (temp > glm::length(mMaximum))
+			mCurrent = mMaximum;
+		else if (temp < glm::length(mMinimum))
+			mCurrent = mMinimum;
+		else mCurrent = _curr;
+	}
+	float length() const
+	{
+		return glm::length(mCurrent);
+	}
+};
+
 class OWENGINE_API AABB
 {
 	static constexpr float _max = std::numeric_limits<float>::max();
 	static constexpr float _epsilon = 0.0001f;
 public:
-	typedef glm::vec<Dim, Type> vec_type;
-	AABB<Dim, Type>()
-		: mMinPoint(vec_type(_max)), mMaxPoint(vec_type(-_max))
+	AABB()
+		: mMinPoint(glm::vec3(_max)), mMaxPoint(glm::vec3(-_max))
 	{}
 
-	AABB<Dim, Type>(const vec_type& _minPoint, const vec_type& _maxPoint, bool validate = true)
+	AABB(float _value)
+		: mMinPoint(glm::vec3(_value)), mMaxPoint(glm::vec3(-_value))
+	{}
+
+	AABB(const glm::vec3& _minPoint, const glm::vec3& _maxPoint, bool validate = true)
 	: mMinPoint(_minPoint), mMaxPoint(_maxPoint)
 	{
 		if (validate)
 			isValid();
 	}
+	AABB(const std::vector<glm::vec3>& v);
+	AABB(const std::vector<glm::vec4>& v);
+	AABB(const std::vector<AABB>& v);
 
-	AABB<Dim, Type>(const std::vector<vec_type>& v)
+	glm::vec3 size() const { return mMaxPoint - mMinPoint; }
+	const glm::vec3 minPoint() const { return mMinPoint; }
+	const glm::vec3 maxPoint() const { return mMaxPoint; }
+
+	bool intersects(const AABB& other) const;
+	Compass::Direction intersectionDirection(const AABB& other) const;
+	bool contains(const glm::vec3& pt) const
 	{
-		// Note: No depth value: default to 0;
-		mMinPoint = vec_type(_max);
-		mMaxPoint = vec_type(-_max);
-
-		for (const vec_type& point : v)
-		{
-			mMinPoint = glm::min(point, mMinPoint);
-			mMaxPoint = glm::max(point, mMaxPoint);
-		}
+		return (pt.x > mMinPoint.x && pt.x < mMaxPoint.x &&
+				pt.y > mMinPoint.y && pt.y < mMaxPoint.y &&
+				pt.z > mMinPoint.z && pt.z < mMaxPoint.z);
 	}
-	AABB<Dim, Type>(const std::vector<AABB<Dim, Type>>& v)
-	{
-		mMinPoint = vec_type(_max);
-		mMaxPoint = vec_type(-_max);
-		for (const AABB& ab : v)
-		{
-			mMinPoint = glm::min(ab.minPoint(), mMinPoint);
-			mMaxPoint = glm::max(ab.maxPoint(), mMaxPoint);
-		}
-	}
-
-	bool intersects(const AABB<Dim, Type>& other) const
-	{
-		// If there is no overlap in any one direction 
-		// then the objects cannot intersect
-		if (mMinPoint.x <= other.mMaxPoint.x &&
-			mMaxPoint.x >= other.mMinPoint.x)
-			return true;
-		if (mMinPoint.y <= other.mMaxPoint.y &&
-			mMaxPoint.y >= other.mMinPoint.y)
-			return true;
-		if (mMinPoint.z <= other.mMaxPoint.z &&
-			mMaxPoint.z >= other.mMinPoint.z)
-			return true;
-		return false;
-	}
-
-	Compass::Direction intersectionDirection(const AABB<Dim, Type>& other) const
-	{
-		if (!intersects(other))
-			return Compass::Direction::NoDirection;
-		if (other.maxPoint().y >= maxPoint().y)
-			return Compass::Direction::North;
-		else if (other.maxPoint().x >= maxPoint().x)
-			return Compass::Direction::East;
-		else if (other.maxPoint().z >= maxPoint().z)
-			return Compass::Direction::In;
-		else if (other.minPoint().y <= minPoint().y)
-			return Compass::Direction::South;
-		else if (other.minPoint().x <= minPoint().x)
-			return Compass::Direction::West;
-		else if (other.minPoint().z <= minPoint().z)
-			return Compass::Direction::Out;
-		return Compass::Direction::NoDirection;
-	}
-
 	// If the point is inside or on the border of the aabb returns true, otherwise false
-	inline bool inside(AABB<Dim, Type> x, const glm::vec<Dim, Type> point) const
+	inline bool inside(const glm::vec3& point) const
 	{
-		return	glm::all(glm::lessThanEqual(x.minp, point)) && 
-				glm::all(glm::greaterThanEqual(x.maxp, point));
+		return	glm::all(glm::lessThanEqual(mMinPoint, point)) && 
+				glm::all(glm::greaterThanEqual(mMaxPoint, point));
 	}	
 	
-	vec_type size() const { return mMaxPoint - mMinPoint; }
-
-	const vec_type minPoint() const { return mMinPoint; }
-	const vec_type maxPoint() const { return mMaxPoint; }
-	void move(const vec_type& moveBy)
+	void move(const glm::vec3& moveBy)
 	{
 		mMinPoint += moveBy;
 		mMaxPoint += moveBy;
 	}
-	vec_type center() const
+	glm::vec3 center() const
 	{ 
-		vec_type halfSize = size();
+		glm::vec3 halfSize = size();
 		halfSize /= 2.0f;
 		return mMinPoint + halfSize;
 	}
@@ -151,66 +139,58 @@ public:
 		if (mMinPoint.x > mMaxPoint.x || mMinPoint.y > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)
 			throw NMSLogicException("Error: Invalid AABB size.");
 	}
-	bool operator==(const AABB<Dim, Type>& other) const
+	bool operator==(const AABB& other) const
 	{
 		return glm::all(glm::epsilonEqual(mMinPoint, other.mMinPoint, _epsilon))
 			&& glm::all(glm::epsilonEqual(mMaxPoint, other.mMaxPoint, _epsilon));
 	}
+	glm::vec3 extent() const 
+	{
+		return (mMaxPoint - mMinPoint) / 2.0f;
+	}
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	vec_type mMinPoint;
-	vec_type mMaxPoint;
+	glm::vec3 mMinPoint;
+	glm::vec3 mMaxPoint;
 #pragma warning( pop )
 };
 
-template <int Dim, typename Type>
-inline AABB<Dim, Type> operator | (const AABB<Dim, Type>& x, const glm::vec<Dim, Type>& point)
+inline AABB operator | (const AABB& x, const glm::vec3& point)
 {
-	return AABB<Dim, Type>(min(x.minPoint(), point), max(x.maxPoint(), point));
+	return AABB(min(x.minPoint(), point), max(x.maxPoint(), point));
 }
 // Union of a point with aabb
-template <int Dim, typename Type>
-inline AABB<Dim, Type> operator |= (AABB<Dim, Type>& x, const glm::vec<Dim, Type>& point)
+inline AABB operator |= (AABB& x, const glm::vec3& point)
 {
 	x = x | point;
 	return x;
 }
 
 // Union of two aabb's
-template <int Dim, typename Type>
-inline AABB<Dim, Type> operator | (const AABB<Dim, Type>& a, const AABB<Dim, Type>& b)
+inline AABB operator | (const AABB& a, const AABB& b)
 {
 	return (a | b.minPoint()) | b.maxPoint();
 }
 
 // Union of two aabb's
-template <int Dim, typename Type>
-inline AABB<Dim, Type> operator |= (AABB<Dim, Type>& a, const AABB<Dim, Type>& b)
+inline AABB operator |= (AABB& a, const AABB& b)
 {
 	a = a | b;
 	return a;
 }
 
 // Intersection of two aabb's
-template <int Dim, typename Type>
-inline AABB<Dim, Type> operator & (const AABB<Dim, Type>& a, const AABB<Dim, Type>& b)
+inline AABB operator & (const AABB& a, const AABB& b)
 {
-	return AABB<Dim, Type>(max(a.minPoint(), b.minPoint()), min(a.maxPoint(), b.maxPoint()));
+	return AABB(max(a.minPoint(), b.minPoint()), min(a.maxPoint(), b.maxPoint()));
 }
 
 // Intersection of two aabb's
-template <int Dim, typename Type>
-inline AABB<Dim, Type> operator &= (AABB<Dim, Type>& a, const AABB<Dim, Type>& b)
+inline AABB operator &= (AABB& a, const AABB& b)
 {
 	a = a & b;
 	return a;
 }
 
-typedef AABB<2, float> AABBV2;
-typedef AABB<3, float> AABBV3;
-typedef AABB<4, float> AABBV4;
-AABBV4 convertToV4(const AABBV3& v3);
-AABBV3 convertToV3(const AABBV4& v4);
-
-
+std::vector<glm::vec3> convertToV3(const std::vector<glm::vec4>& v4);

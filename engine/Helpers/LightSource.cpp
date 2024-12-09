@@ -53,7 +53,7 @@ void LightSource::prepare()
     sh->setVector3f("sphereCenter", mPosition, true);
     MeshDataLight lineData;
     std::vector<glm::vec3> vertices = GeometricShapes::cube(mPosition);
-    AABBV3 b = AABBV3(vertices);
+    AABB b = AABB(vertices);
     bounds(b);
     lineData.vertices(vertices, GL_TRIANGLES);
 

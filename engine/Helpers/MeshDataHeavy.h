@@ -42,5 +42,5 @@ struct MeshDataHeavy
 	std::vector<Texture> textures;
 	void create(aiMesh *mesh, const aiScene *scene);
 	void calcNormals();
-	AABBV3 bounds() const;
+	AABB bounds() const;
 };

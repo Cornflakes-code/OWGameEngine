@@ -5,7 +5,6 @@
 #include <chrono>
 #include <regex>
 #include <random>
-#include <cmath>
 #include <algorithm>
 
 #include <glm/glm.hpp>
@@ -34,10 +33,10 @@ NoMansSky::NoMansSky()
 	mStarRadius = glm::vec2(0, 0);
 }
 
-void NoMansSky::setUp(const std::string& fileName, const AABBV3& world)
+void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 {
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
-	AABBV3 NMSSize(glm::vec3(-0x7FF, -0x7F, -0x7FF),
+	AABB NMSSize(glm::vec3(-0x7FF, -0x7F, -0x7FF),
 				 glm::vec3(0x7FF, 0x7F, 0x7FF));
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
@@ -138,7 +137,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABBV3& world)
 	readyForRender();
 }
 
-void NoMansSky::createGrid(const AABBV3& nmsSpace,
+void NoMansSky::createGrid(const AABB& nmsSpace,
 						   const glm::u32vec3& gridSizes,
 						   float scaleToWorld)
 {
@@ -172,7 +171,7 @@ void NoMansSky::createGrid(const AABBV3& nmsSpace,
 }
 
 void NoMansSky::loadStars(const std::string& fileName,
-						  const AABBV3& OW_UNUSED(nmsSpace),
+						  const AABB& OW_UNUSED(nmsSpace),
 						  float scaleToWorld)
 {
 	int fontHeight = 12;
@@ -310,7 +309,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 	}
 }
 
-std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABBV3& nmsSpace,
+std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
 					unsigned int count, float scaleToWorld)
 {
 	std::vector<glm::vec3> retval;

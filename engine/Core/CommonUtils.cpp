@@ -5,12 +5,6 @@
 
 #include "ErrorHandling.h"
 
-GLint OWUtils::PolygonModeRIAA::mOriginalMode;
-GLfloat OWUtils::LineWidthRIAA::mOriginalWidth;
-
-GLenum OWUtils::BlendFuncRIAA::mSfactor;
-GLenum OWUtils::BlendFuncRIAA::mDfactor;
-
 glm::vec4 gSolidColours[16] =
 {
   {0.0f, 0.0f, 0.0f, 1.0f},     // BLACK
@@ -127,52 +121,4 @@ std::vector<std::string> OWUtils::split(const std::string& s, char delim)
 	std::vector<std::string> results;
 	extractWords(s, delim, back_inserter(results));
 	return results;
-}
-
-OWUtils::PolygonModeRIAA::PolygonModeRIAA(GLenum face, GLenum mode)
-	: mActive(face != UINT_MAX && mode != UINT_MAX)
-{
-	;
-	if (mActive)
-	{
-		static bool onceOnly = true;
-		if (onceOnly)
-		{
-			glGetIntegerv(GL_POLYGON_MODE, &mOriginalMode);
-			onceOnly = false;
-		}
-		glPolygonMode(face, mode);
-	}
-}
-
-
-OWUtils::LineWidthRIAA::LineWidthRIAA(float width)
-	: mActive(width >= 0)
-{
-	if (mActive)
-	{
-		static bool onceOnly = true;
-		if (onceOnly)
-		{
-			glGetFloatv(GL_LINE_WIDTH, &mOriginalWidth);
-			onceOnly = false;
-		}
-		glLineWidth(width);
-	}
-}
-
-OWUtils::BlendFuncRIAA::BlendFuncRIAA(GLenum sfactor, GLenum dfactor)
-	: mActive(sfactor != UINT_MAX && dfactor != UINT_MAX)
-{
-	if (mActive)
-	{
-		static bool onceOnly = true;
-		if (onceOnly)
-		{
-			mSfactor = GL_SRC_ALPHA;
-			mDfactor = GL_ONE_MINUS_SRC_ALPHA;
-			onceOnly = false;
-		}
-		glBlendFunc(sfactor, dfactor);
-	}
 }

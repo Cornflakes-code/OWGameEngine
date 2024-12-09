@@ -9,6 +9,6 @@ class OWENGINE_API ThreeDAxis : public Actor
 private:
 public:
 	ThreeDAxis(Actor* _owner) : Actor(_owner) {}
-	void createAxisData(const AABBV3& w);
+	void createAxisData(const AABB& w);
 private:
 };

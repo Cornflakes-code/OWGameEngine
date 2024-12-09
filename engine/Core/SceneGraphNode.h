@@ -23,8 +23,8 @@ public:
 	std::string mName;
 	SceneGraphNode* addChild(SceneGraphNode* newChild);
 	SceneGraphNode* findChild(const std::string& _name);
-	const AABBV3& bounds() const { return mNodeBounds; }
-	void bounds(const AABBV3& newValue) { mNodeBounds = newValue; }
+	const AABB& bounds() const { return mNodeBounds; }
+	void bounds(const AABB& newValue) { mNodeBounds = newValue; }
 	void scale(const glm::vec3& scaleFactor)
 	{
 		mScaleFactor = scaleFactor;
@@ -49,13 +49,13 @@ public:
 		RendererBase::RenderCallbackType renderCb = nullptr,
 		RendererBase::ResizeCallbackType resizeCb = nullptr);
 protected:
-	glm::quat mQuat;
+	glm::quat mQuat = glm::quat();
 	glm::vec3 mScaleFactor = { 1,1,1 }; // Should be in mQuat
 	glm::vec3 mTranslateVector = { 0,0,0 }; // Should be in mQuat
 	SceneGraphNode* mParent = nullptr;
 	std::vector<SceneGraphNode*> mChildren;
 private:
-	AABBV3 mNodeBounds = AABBV3(glm::vec3(-1), glm::vec3(-1));
+	AABB mNodeBounds = AABB(glm::vec3(-1), glm::vec3(-1));
 	std::vector<RendererBase*> mRenderers;
 	bool mReadyForRender = false;
 };

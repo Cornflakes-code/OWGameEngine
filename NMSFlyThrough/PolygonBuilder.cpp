@@ -38,7 +38,7 @@ void PolygonBuilder::get(RopeBuf* buffer)
 			if (true)//i == 0) // Only label the first layer
 
 			{
-				AABBV3 sliceBounds = AABBV3(wire[i].f);
+				AABB sliceBounds = AABB(wire[i].f);
 				SliceId si;
 				si.id = wire[i].id;
 				si.pos = sliceBounds.center();

@@ -31,7 +31,7 @@
 //#define INCLUDE_STAR_RENDER
 #define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
-AABBV3 NMSSplashScenePhysics::mWindowBounds;
+AABB NMSSplashScenePhysics::mWindowBounds;
 
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
@@ -128,7 +128,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 
 void NMSSplashScenePhysics::setup()
 {
-	const AABBV3& _world = NMSScene::world();
+	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 10.0f;
 
@@ -178,7 +178,7 @@ void NMSSplashScenePhysics::setup()
 #ifdef INCLUDE_ENJOY
 	mEnjoy = new TextData(TextData::Static);
 	mEnjoy->font("arial.ttf", fontHeight);
-	mEnjoy->colour({ 0.1, 0.9, 0.1, 1 });
+	mEnjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
 	mEnjoy->spacing(nice.x, nice.y, scale);
 	mEnjoy->text("Enjoy it while you can");
 	mEnjoy->prepare();

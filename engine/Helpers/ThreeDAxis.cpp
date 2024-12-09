@@ -10,7 +10,7 @@
 #include <Renderers/VAOBuffer.h>
 #include <Renderers/TextRendererStatic.h>
 
-TextData* createText(const std::string& s, const glm::vec3& pos, unsigned int refPos, AABBV3& b)
+TextData* createText(const std::string& s, const glm::vec3& pos, unsigned int refPos, AABB& b)
 {
 	int fontHeight = 12;
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
@@ -29,7 +29,7 @@ TextData* createText(const std::string& s, const glm::vec3& pos, unsigned int re
 	return td;
 }
 
-void ThreeDAxis::createAxisData(const AABBV3& w)
+void ThreeDAxis::createAxisData(const AABB& w)
 {
 	const float scale = 1.0;
 	std::vector<glm::vec3> axisCoords = {
@@ -38,8 +38,8 @@ void ThreeDAxis::createAxisData(const AABBV3& w)
 		{ 0.0, w.maxPoint().y * scale, 0.0 },
 		{ 0.0, 0.0, w.maxPoint().z * scale} };
 
-	AABBV3 boxUnion;
-	AABBV3 box;
+	AABB boxUnion;
+	AABB box;
 	addChild(createText("0", glm::vec3(0), TextData::Top | TextData::Right, box));
 	boxUnion |= box;
 	addChild(createText("X", axisCoords[1], TextData::Center, box));

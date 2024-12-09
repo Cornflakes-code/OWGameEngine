@@ -152,7 +152,7 @@ RendererBase* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec
 			for (int layer = 0; layer < numLayers; layer++)
 			{
 				std::vector<glm::vec3>& slice = threeDWires[layer][eachWire];
-				line.push_back(AABBV3(slice).center());
+				line.push_back(AABB(slice).center());
 			}
 			ropeLines.push_back(line);
 		}

@@ -134,7 +134,7 @@ void MeshDataHeavy::calcNormals()
 	for (int i = 0; i < vertices.size(); i++)
 		vertices[i].normal = glm::normalize(vertices[i].normal);
 }
-AABBV3 MeshDataHeavy::bounds() const
+AABB MeshDataHeavy::bounds() const
 {
 	static constexpr float _max = std::numeric_limits<float>::max();
 	glm::vec3 minPoint(_max, _max, _max);
@@ -157,5 +157,5 @@ AABBV3 MeshDataHeavy::bounds() const
 		if (v.position.z > maxPoint.z)
 			maxPoint.z = v.position.z;
 	}
-	return AABBV3(minPoint, maxPoint);
+	return AABB(minPoint, maxPoint);
 }

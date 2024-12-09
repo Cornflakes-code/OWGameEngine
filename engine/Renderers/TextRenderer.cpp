@@ -7,9 +7,9 @@
 #include "../Helpers/Shader.h"
 #include "../Helpers/TextData.h"
 
-AABBV3 adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
+AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 {
-	AABBV3 bounds = convertToV3(AABBV4(v4));
+	AABB bounds(v4);
 
 	glm::vec4 displacement = glm::vec4(0);
 	if (mReferencePos  & TextData::PositionType::Left)

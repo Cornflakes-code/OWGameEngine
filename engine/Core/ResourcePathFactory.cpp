@@ -108,6 +108,6 @@ ResourcePathFactory::appendPath(const std::string& fileName, ResourceType key)
 	throw NMSException(std::stringstream() 
 			<< "Fatal Error: File ["
 			<< fileName << "] not found in directories:\n");
-	return std::filesystem::path();
+//	return std::filesystem::path();
 }
 

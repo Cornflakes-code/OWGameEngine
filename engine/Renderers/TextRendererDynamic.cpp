@@ -32,7 +32,7 @@ void TextRendererDynamic::doSetup(const TextData* td, const glm::vec3& initialPo
 		shader->setVector3f("BillboardPos", newModel[3]);
 	});
 	
-	AABBV3 bounds = mBounds;
+	AABB bounds = mBounds;
 	glm::vec2 scale = td->scale();
 	appendResizeCallback([bounds, scale](const Shader* shader,
 			ScaleByAspectRatioType scaler,

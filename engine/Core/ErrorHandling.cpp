@@ -13,6 +13,7 @@ NMSException::NMSException(const std::string& msg)
 {
 }
 
+/*
 static std::string toString(NMSErrorLevel err)
 {
 	switch (err)
@@ -23,6 +24,7 @@ static std::string toString(NMSErrorLevel err)
 		default: throw NMSException("Unknow NMSErrorLevel");
 	}
 }
+*/
 
 std::string glCheckError_(unsigned int errorCode)
 {

@@ -43,7 +43,7 @@ public:
 		mRenderData.indicesMode = indicesMode;
 		mRenderData.indicesCount = _indices.size();
 	}
-	AABBV3 bounds() const;
+	AABB bounds() const;
 private:
 	struct RenderData
 	{

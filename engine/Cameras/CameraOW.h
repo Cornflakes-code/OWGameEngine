@@ -61,6 +61,7 @@ public:
 	{
 		return glm::normalize(glm::cross(mCurrent->direction(), mCurrent->up()));
 	}
+	glm::vec3 front() const override;
 	glm::vec3 direction() const override
 	{
 		return mCurrent->direction();
@@ -119,6 +120,8 @@ public:
 	{
 		return mCurrent->aspectRatio();
 	}
+	BoundingFrustum createFrustum(float aspect, float fovY,
+		float zNear, float zFar) const override;
 private:
 	void resizeCallback(void* OW_UNUSED(window), glm::ivec2 dimensions)
 	{

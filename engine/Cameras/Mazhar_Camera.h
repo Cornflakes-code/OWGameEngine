@@ -102,6 +102,7 @@ public:
 	//Change the pitch (up, down) for the free camera
 	void changePitch(float radians);
 	float pitch() const { return camera_pitch; }
+	float yaw() const { return camera_heading; } // I think this is correct jfw dec 2024
 	//Given a specific moving direction, the camera will be moved in the appropriate direction
 	//For a spherical camera this will be around the look_at point
 	//For a free camera a delta will be computed for the direction of movement.

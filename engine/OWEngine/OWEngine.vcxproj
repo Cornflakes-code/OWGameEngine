@@ -192,6 +192,8 @@
   <ItemGroup>
     <ClInclude Include="..\Core\Actor.h" />
     <ClInclude Include="..\Core\BoundingBox.h" />
+    <ClInclude Include="..\Core\BoundingFrustum.h" />
+    <ClInclude Include="..\Core\BoundingSphere.h" />
     <ClInclude Include="..\Core\Camera.h" />
     <ClInclude Include="..\Core\CommonUtils.h" />
     <ClInclude Include="..\Core\ErrorHandling.h" />
@@ -204,7 +206,10 @@
     <ClInclude Include="..\Core\MeshActor.h" />
     <ClInclude Include="..\Core\MovableObject.h" />
     <ClInclude Include="..\Core\Movie.h" />
+    <ClInclude Include="..\Core\OcTree.h" />
+    <ClInclude Include="..\Core\Particle.h" />
     <ClInclude Include="..\Core\QuitScene.h" />
+    <ClInclude Include="..\Core\Ray.h" />
     <ClInclude Include="..\Core\ResourcePathFactory.h" />
     <ClInclude Include="..\Core\SaveAndRestore.h" />
     <ClInclude Include="..\Core\Scene.h" />
@@ -246,6 +251,8 @@
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
     <ClCompile Include="..\Core\Actor.cpp" />
     <ClCompile Include="..\Core\BoundingBox.cpp" />
+    <ClCompile Include="..\Core\BoundingFrustum.cpp" />
+    <ClCompile Include="..\Core\BoundingSphere.cpp" />
     <ClCompile Include="..\Core\Camera.cpp" />
     <ClCompile Include="..\Core\CommonUtils.cpp" />
     <ClCompile Include="..\Core\ErrorHandling.cpp" />
@@ -258,7 +265,10 @@
     <ClCompile Include="..\Core\MeshActor.cpp" />
     <ClCompile Include="..\Core\MovableObject.cpp" />
     <ClCompile Include="..\Core\Movie.cpp" />
+    <ClCompile Include="..\Core\OcTree.cpp" />
+    <ClCompile Include="..\Core\Particle.cpp" />
     <ClCompile Include="..\Core\QuitScene.cpp" />
+    <ClCompile Include="..\Core\Ray.cpp" />
     <ClCompile Include="..\Core\ResourcePathFactory.cpp" />
     <ClCompile Include="..\Core\SaveAndRestore.cpp" />
     <ClCompile Include="..\Core\Scene.cpp" />

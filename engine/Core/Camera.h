@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "../OWEngine/OWEngine.h"
-
+#include "BoundingFrustum.h"
 #include "UserInput.h"
 
 /*
@@ -31,6 +31,7 @@ public:
 
 	virtual glm::vec3 up() const = 0;
 	virtual glm::vec3 right() const = 0;
+	virtual glm::vec3 front() const = 0;
 	virtual glm::vec3 direction() const = 0;
 
 	virtual void position(const glm::vec3& pos) = 0;
@@ -53,4 +54,7 @@ public:
 
 	virtual void aspectRatio(float newValue) = 0;
 	virtual float aspectRatio() const = 0;
+
+	virtual BoundingFrustum createFrustum(float aspect, float fovY,
+		float zNear, float zFar) const = 0;
 };

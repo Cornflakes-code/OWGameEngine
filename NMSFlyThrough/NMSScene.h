@@ -16,9 +16,9 @@ struct NMSWorldPhysicsState: public ScenePhysicsState
 */
 class NMSScene: public Scene
 {
-	static AABBV3 mWorld;
+	static AABB mWorld;
 public:
 	NMSScene(const Movie* movie);
-	static const AABBV3& world() { return mWorld; }
+	static const AABB& world() { return mWorld; }
 private:
 };

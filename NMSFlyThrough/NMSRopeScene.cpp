@@ -15,8 +15,9 @@
 void NMSRopeScenePhysics::setup()
 {
 	Rope* rope = new Rope(nullptr);
-	rope->prepare();
-	const AABBV3& _world = NMSScene::world();
+	if (!rope->prepare())
+		; // failed.
+	const AABB& _world = NMSScene::world();
 	glm::vec2 ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
 	int fontHeight = 24;
@@ -95,7 +96,7 @@ bool NMSRopeScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 		}
 		else if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::Special1)
 		{
-			const AABBV3& _world = NMSScene::world();
+			const AABB& _world = NMSScene::world();
 			//drawRope(_world);
 			return true;
 		}
@@ -140,7 +141,7 @@ void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
 	if (!callCount)
 	{
 		SceneGraphNode* rope = mRootNode->findChild("Ropes");
-		AABBV3 b = rope->bounds();
+		AABB b = rope->bounds();
 		glm::vec3 center = b.center();
 		center.z = -200;
 		camera->position(center);

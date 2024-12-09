@@ -56,7 +56,7 @@ void SceneGraphNode::render(const glm::mat4& proj,
 	}
 	glm::mat4 model = glm::scale(_model, mScaleFactor);
 	model = glm::translate(model, mTranslateVector);
-	const AABBV3 negative(glm::vec3(-1), glm::vec3(-1));
+	const AABB negative(glm::vec3(-1), glm::vec3(-1));
 	if ((mNodeBounds == negative) && (mParent != nullptr))
 	{
 		throw NMSLogicException("Bounds for Actor: " + mName + " not set.");
