@@ -87,13 +87,13 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	sp->mCameraPosition = movie()->camera()->position();
 	sp->mLookAt = { 0,0,0 };
 
-	NoMansSky* starMap = new NoMansSky();
+	NoMansSky* starMap = new NoMansSky(new Physical(glm::vec3(0)), nullptr);
 	std::filesystem::path p
 		= ResourcePathFactory().appendPath("NMSMap.txt", 
 				ResourcePathFactory::ResourceType::UnknownType);
 	starMap->setUp(p.string(), world());
 	mRootNode->addChild(starMap);
-	ThreeDAxis* axis = new ThreeDAxis(nullptr);
+	ThreeDAxis* axis = new ThreeDAxis(new Physical(glm::vec3(0)), nullptr);
 	axis->createAxisData(world());
 	mRootNode->addChild(axis);
 }

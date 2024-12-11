@@ -183,7 +183,7 @@ private:
 	glm::ivec2 mFrameBuffer = glm::ivec2(0);
 	glm::ivec2 mWindowSize = glm::ivec2(0);
 	std::map<std::pair<int, int>, LogicalOperator> mBaseKeyMapping;
-	std::vector< std::pair<UserCommandCallbackType, size_t>> mUserCommandCallbacks;
+	std::vector<std::pair<UserCommandCallbackType, size_t>> mUserCommandCallbacks;
 	std::vector<std::pair<PointingDeviceCallbackType, size_t>> mPointingDeviceCallbacks;
 	std::vector<std::pair<WindowResizeCallbackType, size_t>> mWindowResizeCallbacks;
 	void windowResize(void* window, const glm::ivec2& widthHeight);

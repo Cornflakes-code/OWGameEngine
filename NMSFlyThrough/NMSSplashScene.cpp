@@ -1,6 +1,7 @@
 #include "NMSSplashScene.h"
 
 #include <chrono>
+#include <vector>
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -12,6 +13,8 @@
 #include <Core/Movie.h>
 #include <Core/MeshActor.h>
 #include <Core/Actor.h>
+#include <Core/OcTree.h>
+#include <Core/Particle.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/GeometricShapes.h>
@@ -51,18 +54,42 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
+	auto updater = [timeStep](SceneGraphNode* sgn)
+		{
+			sgn->update(timeStep);
+			return true;
+		};
+	mRootNode->traverse(updater);
 
-	// Find the translation magnitudes
-	glm::vec3 velocity = glm::vec3(timeStep * mSpeed, timeStep * mSpeed, timeStep * mSpeed);
+	std::vector<std::pair<Actor*, Actor*>> collisions;
+	auto collider = [&collisions](OcTree* o)
+		{
+			int inc = 0;
+			for (int i = 0; i < o->mPoints.size(); i++)
+			{
+				inc++;
+				Actor* a1 = o->mPoints[i];
+				for (int j = inc; j < o->mPoints.size(); j++)
+				{
+					Actor* a2 = o->mPoints[j];
+					if (a1->bounds().intersects(a2->bounds()))
+					{
+						collisions.push_back({ a1, a2 });
+					}
+				}
+			}
+			return true;
+		};
+	mOctTree->traverse(collider);
 #ifdef INCLUDE_WELCOME
-	mWelcomeMover.move(velocity);
-	mWelcomeMover.bounceIfCollide(mWindowBounds);
-	mWelcome->translate(mWelcomeMover.translateVector());
+//	mWelcomeMover.move(velocity);
+	//mWelcomeMover.bounceIfCollide(mWindowBounds);
+	//mWelcome->translate(mWelcomeMover.translateVector());
 #endif
 #ifdef INCLUDE_ENJOY
-	mEnjoyMover.move(velocity);
-	mEnjoyMover.bounceIfCollide(mWindowBounds);
-	mEnjoy->translate(mEnjoyMover.translateVector());
+//	mEnjoyMover.move(velocity);
+	//mEnjoyMover.bounceIfCollide(mWindowBounds);
+	//mEnjoy->translate(mEnjoyMover.translateVector());
 #endif
 }
 
@@ -161,12 +188,17 @@ void NMSSplashScenePhysics::setup()
 	int fontHeight = 24;
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());
-
+	
 #ifdef INCLUDE_WELCOME
 	glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
-	mWelcome = new TextData(TextData::Dynamic);
+	Physical* ph1 = new Physical(NMSScene::world().center());
+	glm::vec3 direction1 = Compass::Rose[Compass::North] +
+		Compass::Rose[Compass::East] +
+		Compass::Rose[Compass::In];
+	ph1->velocity(direction1, mSpeed);
+	mWelcome = new TextData(ph1, TextData::Dynamic);
 	mWelcome->font("arial.ttf", fontHeight);
 	mWelcome->colour({ 0.0, 0.0, 0.0, 1.0f });
 	mWelcome->spacing(10 * nice.x, 10 * nice.y, scale);
@@ -176,7 +208,11 @@ void NMSSplashScenePhysics::setup()
 #endif
 
 #ifdef INCLUDE_ENJOY
-	mEnjoy = new TextData(TextData::Static);
+	glm::vec3 direction2 = Compass::Rose[Compass::South] +
+		Compass::Rose[Compass::West];
+	Physical* ph2 = new Physical(NMSScene::world().center());
+	ph2->velocity(direction2, mSpeed);
+	mEnjoy = new TextData(ph2, TextData::Static);
 	mEnjoy->font("arial.ttf", fontHeight);
 	mEnjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
 	mEnjoy->spacing(nice.x, nice.y, scale);
@@ -186,22 +222,30 @@ void NMSSplashScenePhysics::setup()
 #endif
 
 #ifdef INCLUDE_IMPORTED_MODEL
-	MeshActor* am = new MeshActor(nullptr);
-	am->mName = "Dice";
+	MeshActor* dice = new MeshActor(new Physical(), nullptr);
+	dice->mName = "Dice";
 	ModelData md = ModelFactory().create("Dice2.obj", false);
 	Shader* shader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
 	shader->setStandardUniformNames("pvm");
-	am->setup(md.children[0].meshes[0], shader, GL_TRIANGLES, 0);
+	dice->setup(md.children[0].meshes[0], shader, GL_TRIANGLES, 0);
 	glm::vec3 scaleBy = glm::vec3(10.0, 10.0, 10.0);
-	am->scale(scaleBy);
-	am->readyForRender();
-	mRootNode->addChild(am);
+	dice->scale(scaleBy);
+	dice->readyForRender();
+	mRootNode->addChild(dice);
 #endif
 #ifdef INCLUDE_STAR_RENDER
 	mButtonData.mButtonShape = GeometricShapes::goldenRectangle(10);
 	mButtonData.mText = mEnjoyData;
 	mButtonData.mText.text("Click Me");
 #endif
+	if (!mOctTree)
+	{
+		mOctTree = new OcTree();
+		std::vector<Actor*> addToOcTree;
+		addToOcTree.push_back(mWelcome);
+		addToOcTree.push_back(mEnjoy);
+		mOctTree->build(addToOcTree, 4, 3, _world);
+	}
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////
@@ -216,32 +260,16 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		= dynamic_cast<NMSSplashScenePhysics*>(state);
 	mRootNode = state->mRootNode;
 
-#ifdef INCLUDE_WELCOME
-
-	sps->mWelcomeMover.setPosition(NMSScene::world().center());
-	sps->mWelcomeMover.targetGeometry(sps->mWelcome->bounds(), glm::vec3(0.0f, 0.0f, 0.0f));
-	sps->mWelcomeMover.direction(Compass::Rose[Compass::North] +
-								Compass::Rose[Compass::East] +
-								Compass::Rose[Compass::In]);
-#endif
-#ifdef INCLUDE_ENJOY
-
-	sps->mEnjoyMover.setPosition(NMSScene::world().center());
-	sps->mEnjoyMover.targetGeometry(sps->mEnjoy->bounds(), glm::vec3(0.0f, 0.0f, 0.0f));
-	sps->mEnjoyMover.direction(Compass::Rose[Compass::South] +
-		Compass::Rose[Compass::West]);
-#endif
-
 #ifdef INCLUDE_IMPORTED_MODEL
 #endif
 #ifdef INCLUDE_XYZ_AXIS
-	ThreeDAxis* axis = new ThreeDAxis(nullptr);
+	ThreeDAxis* axis = new ThreeDAxis(new Physical(), nullptr);
 	axis->createAxisData(world());
 	mRootNode->addChild(axis);
 
 #endif
 #ifdef INCLUDE_FULLSCREEN
-	MeshActor* fullScreen = new MeshActor(nullptr);
+	MeshActor* fullScreen = new MeshActor(new Physical(), nullptr);
 	fullScreen->mName = "Fullscreen";
 	Shader* sh = new Shader("thebookofshaders.v.glsl",
 		"thebookofshaders.f.glsl",

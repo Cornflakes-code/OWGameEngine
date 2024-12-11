@@ -7,7 +7,6 @@
 
 #include "../OWEngine/OWEngine.h"
 
-class MoveController;
 class Shader;
 
 class OWENGINE_API RendererBase
@@ -47,7 +46,6 @@ public:
 		const glm::mat4& view,
 		const glm::mat4& model,
 		const glm::vec3& cameraPos,
-		MoveController* mover = nullptr,
 		RenderCallbackType renderCb = nullptr,
 		ResizeCallbackType resizeCb = nullptr) const;
 protected:

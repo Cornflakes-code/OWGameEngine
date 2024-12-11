@@ -6,8 +6,6 @@
 
 #include <Core/BoundingBox.h>
 
-#include <Helpers/MoveController.h>
-
 #include "NMSScene.h"
 
 /*
@@ -41,8 +39,6 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 	ButtonData* mButtonData = nullptr;
 	TextData* mWelcome = nullptr;
 	TextData* mEnjoy = nullptr;
-	MoveController mWelcomeMover;
-	MoveController mEnjoyMover;
 	MeshDataInstance* mStarData = nullptr;
 	glm::vec2 mStarRadius = glm::vec2(0);
 };

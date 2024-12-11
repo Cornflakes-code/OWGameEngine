@@ -13,7 +13,7 @@ private:
 	
 	std::pair<glm::vec3, glm::vec3> mMinMax = GeometricShapes::minMaxBox;
 public:
-	Rope(Actor* _owner): Actor(_owner) {}
+	Rope(Physical* _physical, Actor* _owner): Actor(_physical, _owner) {}
 	void visualComponents(bool _ends, bool _lines, bool _surfaces);
 	bool prepare();
 	void prepareRope(int ropeNum, int width, int height, int numDepthLayers);

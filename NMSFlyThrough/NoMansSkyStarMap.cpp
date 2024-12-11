@@ -28,7 +28,8 @@
 #define DEBUG_GRID
 #define DEBUG_STARS
 
-NoMansSky::NoMansSky()
+NoMansSky::NoMansSky(Physical* _physical, Actor* _owner)
+: Actor(_physical, _owner)
 {
 	mStarRadius = glm::vec2(0, 0);
 }
@@ -290,13 +291,11 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
-			//TextBillboard* text = new TextBillboardFixed( { point.x, point.y, point.z }, );
-			TextData* td = new TextData(TextData::Static);
+			TextData* td = new TextData(new Physical(point), TextData::Static);
 			td->text(elms[0]);
 			td->font("arial.ttf", fontHeight);
 			td->colour({ 0.0, 0.0, 0.0, 1.0f });
 			td->spacing(nice.x, nice.y, { 1.0,1.0 }, TextData::Right);
-			td->position(point);
 			td->prepare();
 			addChild(td);
 		}

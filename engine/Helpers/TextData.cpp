@@ -12,7 +12,7 @@ void TextData::prepare()
 		ren = new TextRendererDynamic();
 	else
 		ren = new TextRendererStatic();
-	ren->setup(this, this->mPosition);
+	ren->setup(this, position());
 	bounds(ren->bounds());
 	addRenderer(ren);
 	readyForRender();

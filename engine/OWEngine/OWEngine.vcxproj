@@ -228,7 +228,6 @@
     <ClInclude Include="..\Helpers\MeshDataLight.h" />
     <ClInclude Include="..\Helpers\ModelData.h" />
     <ClInclude Include="..\Helpers\ModelFactory.h" />
-    <ClInclude Include="..\Helpers\MoveController.h" />
     <ClInclude Include="..\Helpers\PhongShader.h" />
     <ClInclude Include="..\Helpers\Shader.h" />
     <ClInclude Include="..\Helpers\ShaderFactory.h" />
@@ -286,7 +285,6 @@
     <ClCompile Include="..\Helpers\MeshDataLight.cpp" />
     <ClCompile Include="..\Helpers\ModelData.cpp" />
     <ClCompile Include="..\Helpers\ModelFactory.cpp" />
-    <ClCompile Include="..\Helpers\MoveController.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
     <ClCompile Include="..\Helpers\ShaderFactory.cpp" />

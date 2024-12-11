@@ -8,6 +8,7 @@
 #include "UserInput.h"
 
 class Scene;
+class OcTree;
 class Camera;
 /*
 	My implementation of a Fixed timestep physics/Variable timestep Render Game 
@@ -43,6 +44,7 @@ public:
 	const Scene* owner() const { return mOwner; }
 	virtual void clear() {}
 	SceneGraphNode* mRootNode = nullptr;
+	OcTree* mOctTree = nullptr;
 protected:
 
 	// https://gafferongames.com/post/fix_your_timestep/

@@ -21,7 +21,7 @@ void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
 	lineData.polygonMode(GL_FILL);
 	vao->add(&lineData);
-	TextData* td = new TextData(TextData::Static);
+	TextData* td = new TextData(new Physical(glm::vec3(10)), TextData::Static);
 	//td->set(&(data.mText), glm::vec3(10));
 	if (false)
 	{

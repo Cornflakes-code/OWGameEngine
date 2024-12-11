@@ -64,8 +64,8 @@ std::vector<Actor*> Rope::labels(const glm::vec2& textSpacing, const glm::vec2& 
 	std::vector<Actor*> labs;
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
-		TextData* td = new TextData(TextData::Dynamic);
-		td->set(std::to_string(si.id), si.pos, 10, textSpacing * 10.0f, textScale);
+		TextData* td = new TextData(new Physical(si.pos), TextData::Dynamic);
+		td->typeSetDetails(std::to_string(si.id), 10, textSpacing * 10.0f, textScale);
 		td->prepare();
 		labs.push_back(td);
 	}

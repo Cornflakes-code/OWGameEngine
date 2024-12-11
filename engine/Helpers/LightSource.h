@@ -1,23 +1,22 @@
 #pragma once
 #include "../OWEngine/OWEngine.h"
-#include "../Core/Actor.h"
 
 #include <string>
-
+#include <glm/glm.hpp>
 #include <json/single_include/nlohmann/json.hpp>
 
-#include <glm/glm.hpp>
+#include "../Core/Actor.h"
 
 class LightRenderer;
+class Physical;
 
 class OWENGINE_API LightSource : public Actor
 {
 public:
-	LightSource(const glm::vec3& _position);
+	LightSource(Physical* ph, Actor* _owner);
 	~LightSource();
 	void prepare();
 private:
-	glm::vec3 mPosition;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 #pragma warning( pop )

@@ -46,7 +46,6 @@ void SceneGraphNode::appendResizeCallback(RendererBase::ResizeCallbackType pfunc
 void SceneGraphNode::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& _model,
 	const glm::vec3& cameraPos,
-	MoveController* mover,
 	RendererBase::RenderCallbackType renderCb,
 	RendererBase::ResizeCallbackType resizeCb)
 {
@@ -56,11 +55,6 @@ void SceneGraphNode::render(const glm::mat4& proj,
 	}
 	glm::mat4 model = glm::scale(_model, mScaleFactor);
 	model = glm::translate(model, mTranslateVector);
-	const AABB negative(glm::vec3(-1), glm::vec3(-1));
-	if ((mNodeBounds == negative) && (mParent != nullptr))
-	{
-		throw NMSLogicException("Bounds for Actor: " + mName + " not set.");
-	}
 	if (!mReadyForRender && mParent != nullptr)
 	{
 		throw NMSLogicException("Actor: " + mName + " not ready for render.");
@@ -68,11 +62,23 @@ void SceneGraphNode::render(const glm::mat4& proj,
 	for (RendererBase* rend : mRenderers)
 	{
 		rend->render(proj, view, model, cameraPos,
-			mover, renderCb, resizeCb);
+			renderCb, resizeCb);
 	}
 	for (SceneGraphNode* child : mChildren)
 	{
 		child->render(proj, view, model, cameraPos,
-			mover, renderCb, resizeCb);
+			renderCb, resizeCb);
 	}
+}
+
+bool SceneGraphNode::traverse(SceneGraphNodeCallbackType proc)
+{
+	if (!proc(this))
+		return false;
+	for (SceneGraphNode* child : mChildren)
+	{
+		if (!child->traverse(proc))
+			return false;
+	}
+	return true;
 }

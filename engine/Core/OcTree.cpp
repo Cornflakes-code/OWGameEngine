@@ -1,18 +1,20 @@
 #include "OcTree.h"
 #include <bitset>
 
+#include "Actor.h"
+
 // See also
 // https://stackoverflow.com/questions/41946007/efficient-and-well-explained-implementation-of-a-quadtree-for-2d-collision-det
 
-Octree::Octree()
+OcTree::OcTree()
 {
 }
 
-Octree::~Octree()
+OcTree::~OcTree()
 {
 }
 
-void Octree::build(const std::vector<Physical*>& points,
+void OcTree::build(const std::vector<Actor*>& points,
     unsigned int threshold,
     unsigned int maximumDepth,
     const AABB& bounds,
@@ -36,12 +38,13 @@ void Octree::build(const std::vector<Physical*>& points,
         return;
     }
 
-    std::vector<std::vector<Physical*>> childPoints(8);
+    std::vector<std::vector<Actor*>> childPoints(8);
     // Center of this node
     glm::vec3 c = bounds.center();
+    const AABB negative(glm::vec3(-1), glm::vec3(-1));
 
     // Classify each point to a child node
-    for (Physical* p : points)
+    for (Actor* a : points)
     {
         // Current point
 
@@ -49,9 +52,13 @@ void Octree::build(const std::vector<Physical*>& points,
         // do this, we build an index into the child bucket using the
         // relative position of the point to the center of the current
         // node
-        const glm::vec3 pc = p->bounds().center();
+        if (a->bounds() == negative)
+        {
+            throw NMSLogicException("Bounds for particle not set.");
+        }
+        const glm::vec3 pc = a->bounds().center();
         // 'p' can be in multiple areas
-        // If a part of Physical is in an area then add it to the area.
+        // If a part of Actor is in an area then add it to the area.
         // Y
         // |  _________
         // | / 6 /  7 / |
@@ -62,28 +69,28 @@ void Octree::build(const std::vector<Physical*>& points,
         // 
         
         std::vector<char> code(1);
-        // If all of p->bounds is > than the center then p cannot be in bins 0, 2, 4, 6
-        if (p->bounds().minPoint().x > c.x)
+        // If all of a->bounds is > than the center then p cannot be in bins 0, 2, 4, 6
+        if (a->bounds().minPoint().x > c.x)
             code[0] = code[2] = code[4] = code[6] = 0;
-        // If all of p->bounds is < than the center p then cannot be in bins 1, 3, 5, 7
-        if (p->bounds().maxPoint().x < c.x)
+        // If all of a->bounds is < than the center p then cannot be in bins 1, 3, 5, 7
+        if (a->bounds().maxPoint().x < c.x)
             code[1] = code[3] = code[5] = code[7] = 0;
 
         // ... and same logic for y and z.
-        if (p->bounds().minPoint().y > c.y)
+        if (a->bounds().minPoint().y > c.y)
             code[2] = code[3] = code[6] = code[7] = 0;
-        if (p->bounds().maxPoint().y < c.y)
+        if (a->bounds().maxPoint().y < c.y)
             code[0] = code[1] = code[4] = code[5] = 0;
 
-        if (p->bounds().minPoint().z > c.z)
+        if (a->bounds().minPoint().z > c.z)
             code[0] = code[1] = code[2] = code[3] = 0;
-        if (p->bounds().maxPoint().z < c.z)
+        if (a->bounds().maxPoint().z < c.z)
             code[4] = code[5] = code[6] = code[7] = 0;
 
         for (unsigned int i = 0; i < 8; i++)
         {
             if (code[i])
-                childPoints[i].push_back(p);
+                childPoints[i].push_back(a);
         }
     }
 
@@ -105,26 +112,30 @@ void Octree::build(const std::vector<Physical*>& points,
         // Don't bother going any further if there aren't any points for
         // this child
 
-        if (!childPoints[i].size()) 
+        if (!childPoints[i].size())
+        {
+            mChildren[i] = nullptr;
             continue;
+        }
 
         glm::vec3 minPoint = boundsOffsetTable[i] * bounds.extent();
         glm::vec3 maxPoint = minPoint + bounds.extent();
         AABB childBounds(minPoint, maxPoint);
 
         // Allocate the child
-        mChildren[i] = new Octree;
+        mChildren[i] = new OcTree;
 
         mChildren[i]->build(childPoints[i], threshold, maximumDepth,
             childBounds, currentDepth + 1);
     }
 }
-const bool Octree::traverse(callback proc, void* data) const
+
+bool OcTree::traverse(OctreeCallbackType proc)
 {
     // Call the callback for this node (if the callback returns false, then
     // stop traversing.
 
-    if (!proc(*this, data)) return false;
+    if (!proc(this)) return false;
 
     // If I'm a node, recursively traverse my children
     if (!mPoints.size())
@@ -136,7 +147,7 @@ const bool Octree::traverse(callback proc, void* data) const
             if (!mChildren[i]) 
                 continue;
 
-            if (!mChildren[i]->traverse(proc, data)) 
+            if (!mChildren[i]->traverse(proc)) 
                 return false;
         }
     }

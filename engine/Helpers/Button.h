@@ -29,7 +29,7 @@ class TextRendererStatic;
 class OWButton : public Actor
 {
 public:
-	OWButton() : Actor() {}
+	OWButton(Physical* _physical) : Actor(_physical, nullptr) {}
 	void setup(const ButtonData& data, const glm::vec3& position);
 	void textures();
 	void text();

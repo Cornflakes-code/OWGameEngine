@@ -33,7 +33,7 @@ class NoMansSky: public Actor
 	std::vector<glm::vec3> createRandomVectors(const AABB& world,
 					unsigned int count, float scaleToWorld);
 public:
-	NoMansSky();
+	NoMansSky(Physical* _physical, Actor* _owner);
 	void setUp(const std::string& fileName, const AABB& world);
 	void readSaveFile(const std::string& saveFileMeta, 
 			const std::string& saveFile);

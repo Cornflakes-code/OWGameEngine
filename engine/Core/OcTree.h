@@ -1,8 +1,9 @@
 #pragma once
 
+#include <functional>
 #include <vector>
+
 #include "BoundingBox.h"
-#include "Particle.h"
 
 // This has some seriously good links
 // https://stackoverflow.com/questions/5963954/fast-templated-c-octree-implementation
@@ -21,26 +22,29 @@
 // This defines a callback for traversal
 // -----------------------------------------------------------------------------
 
-class   Octree;
-typedef bool (*callback)(const Octree& o, void* data);
+class OcTree;
+class Actor;
 
-class Octree
+typedef std::function<bool(OcTree* o)> OctreeCallbackType;
+
+class OWENGINE_API OcTree
 {
 public:
-    Octree();
-    virtual ~Octree();
+    OcTree();
+    virtual ~OcTree();
 
-    const std::vector<Physical*> points() const { return mPoints; }
+    const std::vector<Actor*> points() const { return mPoints; }
 
-    void build(const std::vector<Physical*>& points,
+    void build(const std::vector<Actor*>& points,
         unsigned int threshold,
         unsigned int maximumDepth,
         const AABB& bounds,
         unsigned int currentDepth = 0);
-    const bool traverse(callback proc, void* data) const;
-protected:
-    Octree* mChildren[8];
-    std::vector<Physical*> mPoints;
+    bool traverse(OctreeCallbackType proc);
+//protected:
+public:
+    OcTree* mChildren[8];
+    std::vector<Actor*> mPoints;
     AABB mBounds;
     unsigned int mDepth = 0;
 };

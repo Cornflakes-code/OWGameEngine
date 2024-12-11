@@ -1,11 +1,14 @@
 #include "LightSource.h"
 
+#include "../Core/Particle.h"
+
 #include <Renderers/LightRenderer.h>
 #include <Renderers/VAOBuffer.h>
 
 #include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
 #include <Helpers/GeometricShapes.h>
+
 #define GLSL(src) "#version 330 core\n" #src
 
 const std::string& lightSourceVertexShader()
@@ -20,8 +23,8 @@ const std::string& lightSourceVertexShader()
     return s;
 }
 
-LightSource::LightSource(const glm::vec3& _position)
-    :mPosition(_position)
+LightSource::LightSource(Physical* ph, Actor* _owner)
+    :Actor(ph, _owner)
 {
     mName = "Light";
 /*
@@ -50,9 +53,9 @@ void LightSource::prepare()
         "sphere.f.glsl",
         ShaderFactory::boilerPlateGeometryShader());
     sh->setStandardUniformNames("pvm", "perspective", "view", "model", "camPos");
-    sh->setVector3f("sphereCenter", mPosition, true);
+    sh->setVector3f("sphereCenter", position(), true);
     MeshDataLight lineData;
-    std::vector<glm::vec3> vertices = GeometricShapes::cube(mPosition);
+    std::vector<glm::vec3> vertices = GeometricShapes::cube(position());
     AABB b = AABB(vertices);
     bounds(b);
     lineData.vertices(vertices, GL_TRIANGLES);

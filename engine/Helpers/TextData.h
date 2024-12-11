@@ -23,8 +23,8 @@ public:
 		Static
 	};
 
-	TextData(TextDisplayType tdt)
-		: mDynamicSize(tdt)
+	TextData(Physical* _physical, TextDisplayType tdt)
+		: Actor(_physical, nullptr), mDynamicSize(tdt)
 	{}
 
 	TextData(const std::string& s, TextDisplayType tdt, float sx, float sy)
@@ -35,17 +35,15 @@ public:
 		, mModified(true)
 		, mDynamicSize(tdt)
 	{}
+
 	void prepare();
 
-	void set(const std::string& s, 
-		const glm::vec3& position,
-		int height,
+	void typeSetDetails(const std::string& s, int height,
 		const glm::vec2& _spacing, const glm::vec2& scale,
 		const std::string& f = "arial.ttf",
 		const glm::vec4& col = { 0.0, 0.0, 0.0, 1.0f })
 	{
 		text(s);
-		mPosition = position;
 		font(f, height);
 		colour(col);
 		spacing(_spacing.x, _spacing.y, scale);
@@ -87,10 +85,6 @@ public:
 		mColour = colour;
 		mModified = true;
 	}
-	void position(const glm::vec3& pos)
-	{
-		mPosition = pos;
-	}
 	glm::vec2 scale() const { return mScale; }
 private:
 	TextDisplayType mDynamicSize = Dynamic;
@@ -98,7 +92,6 @@ private:
 	std::string mFontFileName = "arial.ttf";
 	glm::vec4 mColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK);
 	glm::vec2 mScale = glm::vec2({ 1.0, 1.0 });
-	glm::vec3 mPosition = { 0.0, 0.0, 0.0 };
 	unsigned int mReferencePos = PositionType(PositionType::Center & 0xC);
 	float mX = 0.0f;
 	float mY = 0.0f;

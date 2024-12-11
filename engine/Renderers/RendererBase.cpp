@@ -164,7 +164,6 @@ GLenum BlendFuncRIAA::mDfactor;
 void RendererBase::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& model,
 	const glm::vec3& cameraPos,
-	MoveController* mover, 
 	RenderCallbackType renderCb,
 	ResizeCallbackType resizeCb) const
 {

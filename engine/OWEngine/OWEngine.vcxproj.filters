@@ -87,9 +87,6 @@
     <ClInclude Include="..\Helpers\GeometricShapes.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Helpers\MoveController.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Helpers\FontFactory.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
@@ -255,9 +252,6 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\GeometricShapes.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Helpers\MoveController.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c">

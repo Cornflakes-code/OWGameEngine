@@ -21,6 +21,7 @@ struct NMSRopeScenePhysics : public ScenePhysicsState
 
 	void copy(ScenePhysicsState* source) override;
 	ScenePhysicsState* clone() override;
+	glm::vec3 mCameraFocus;
 };
 
 class NMSRopeScene : public NMSScene

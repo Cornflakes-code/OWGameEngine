@@ -12,6 +12,14 @@
 #include "BoundingBox.h"
 #include "../Renderers/RendererBase.h"
 
+class SceneGraphNode;
+
+typedef std::function<bool(SceneGraphNode* o)> SceneGraphNodeCallbackType;
+
+class OWENGINE_API Renderable
+{
+};
+
 class OWENGINE_API SceneGraphNode
 {
 public:
@@ -23,13 +31,10 @@ public:
 	std::string mName;
 	SceneGraphNode* addChild(SceneGraphNode* newChild);
 	SceneGraphNode* findChild(const std::string& _name);
-	const AABB& bounds() const { return mNodeBounds; }
-	void bounds(const AABB& newValue) { mNodeBounds = newValue; }
 	void scale(const glm::vec3& scaleFactor)
 	{
 		mScaleFactor = scaleFactor;
 	}
-
 	void translate(const glm::vec3& translateVector)
 	{
 		mTranslateVector = translateVector;
@@ -45,9 +50,10 @@ public:
 	void render(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4& model,
 		const glm::vec3& cameraPos,
-		MoveController* mover = nullptr,
 		RendererBase::RenderCallbackType renderCb = nullptr,
 		RendererBase::ResizeCallbackType resizeCb = nullptr);
+	bool traverse(SceneGraphNodeCallbackType proc);
+	virtual int update(float dt) { return 0; }
 protected:
 	glm::quat mQuat = glm::quat();
 	glm::vec3 mScaleFactor = { 1,1,1 }; // Should be in mQuat
@@ -55,7 +61,10 @@ protected:
 	SceneGraphNode* mParent = nullptr;
 	std::vector<SceneGraphNode*> mChildren;
 private:
-	AABB mNodeBounds = AABB(glm::vec3(-1), glm::vec3(-1));
 	std::vector<RendererBase*> mRenderers;
 	bool mReadyForRender = false;
 };
+
+
+
+
