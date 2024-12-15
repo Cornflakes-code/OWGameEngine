@@ -108,3 +108,51 @@ std::vector<glm::vec3> convertToV3(const std::vector<glm::vec4>& v4)
 	}
 	return v3;
 }
+
+std::vector<std::vector<glm::vec3>> AABB::surfaces() const
+{
+	std::vector<std::vector<glm::vec3>> retval;
+	std::vector<glm::vec3> surface;
+	// front
+	surface.push_back(glm::vec3({ mMinPoint.x, mMinPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMinPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMaxPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMaxPoint.y, mMinPoint.z }));
+	retval.push_back(surface);
+	surface.clear();
+	// back
+	surface.push_back(glm::vec3({ mMinPoint.x, mMinPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMaxPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMaxPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMinPoint.y, mMaxPoint.z }));
+	retval.push_back(surface);
+	surface.clear();
+	// top
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMaxPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMaxPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMaxPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMaxPoint.y, mMaxPoint.z }));
+	retval.push_back(surface);
+	surface.clear();
+	// bottom
+	surface.push_back(glm::vec3({ mMinPoint.x, mMinPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMinPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMinPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMinPoint.y, mMinPoint.z }));
+	retval.push_back(surface);
+	surface.clear();
+	// left
+	surface.push_back(glm::vec3({ mMinPoint.x, mMinPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMaxPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMaxPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMinPoint.x, mMinPoint.y, mMaxPoint.z }));
+	retval.push_back(surface);
+	surface.clear();
+	// right
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMaxPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMinPoint.y, mMaxPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMinPoint.y, mMinPoint.z }));
+	surface.push_back(glm::vec3({ mMaxPoint.x, mMaxPoint.y, mMinPoint.z }));
+	retval.push_back(surface);
+	return retval;
+}

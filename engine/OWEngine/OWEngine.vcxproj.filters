@@ -198,6 +198,12 @@
     <ClInclude Include="..\Core\Ray.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\Core\Plane.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\Renderable.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -363,6 +369,12 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Ray.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Plane.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Renderable.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>

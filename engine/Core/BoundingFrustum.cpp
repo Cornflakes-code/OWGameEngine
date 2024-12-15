@@ -1,5 +1,4 @@
 #include "BoundingFrustum.h"
-#include "BoundingBox.h"
 
 bool Plane::isOnOrForwardPlane(const AABB& box) const
 {

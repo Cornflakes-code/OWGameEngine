@@ -15,6 +15,7 @@
 #include <Core/Actor.h>
 #include <Core/OcTree.h>
 #include <Core/Particle.h>
+#include <Core/Plane.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/GeometricShapes.h>
@@ -54,12 +55,12 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
-	auto updater = [timeStep](SceneGraphNode* sgn)
+	auto ticker = [timeStep](SceneGraphNode* sgn)
 		{
-			sgn->update(timeStep);
+			sgn->tick(timeStep);
 			return true;
 		};
-	mRootNode->traverse(updater);
+	mRootNode->traverse(ticker);
 
 	std::vector<std::pair<Actor*, Actor*>> collisions;
 	auto collider = [&collisions](OcTree* o)
@@ -246,6 +247,14 @@ void NMSSplashScenePhysics::setup()
 		addToOcTree.push_back(mEnjoy);
 		mOctTree->build(addToOcTree, 4, 3, _world);
 	}
+	// Create planes at the boundaries of the world
+	std::vector<std::vector<glm::vec3>> surfaces = _world.surfaces();
+	Plane* p1 = new Plane(surfaces[0]);
+	Plane* p2 = new Plane(surfaces[1]);
+	Plane* p3 = new Plane(surfaces[2]);
+	Plane* p4 = new Plane(surfaces[3]);
+	Plane* p5 = new Plane(surfaces[4]);
+	Plane* p6 = new Plane(surfaces[5]);
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////

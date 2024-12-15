@@ -2,6 +2,9 @@
 
 #include <glm/glm.hpp>
 
+#include "Plane.h"
+#include "BoundingBox.h"
+
 #include "../OWEngine/OWEngine.h"
 /*
 template <int Dim, typename Type>
@@ -26,31 +29,6 @@ public:
 	}
 };
 */
-
-class AABB;
-
-class OWENGINE_API Plane
-{
-	glm::vec3 mNormal = { 0.f, 1.f, 0.f }; // unit vector
-	float mDistance = 0.f; // distance from origin
-public:
-#pragma warning( push )
-#pragma warning( disable : 4251 )
-	Plane() = default;
-	Plane(const glm::vec3& p1, const glm::vec3& norm)
-		: mNormal(glm::normalize(norm)),
-		mDistance(glm::dot(mNormal, p1))
-	{}
-	const glm::vec3& normal() const { return mNormal; }
-	float getSignedDistanceToPlane(const glm::vec3& point) const
-	{
-		return glm::dot(mNormal, point) - mDistance;
-	}
-
-	bool isOnOrForwardPlane(const AABB& box) const;
-
-#pragma warning( pop )
-};
 
 class OWENGINE_API BoundingFrustum
 {

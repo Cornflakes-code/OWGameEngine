@@ -10,7 +10,6 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-#include "BoundingFrustum.h"		  
 #include "ErrorHandling.h"
 
 // https://en.wikibooks.org/wiki/OpenGL_Programming/Bounding_box
@@ -134,6 +133,8 @@ public:
 		halfSize /= 2.0f;
 		return mMinPoint + halfSize;
 	}
+	// 6 vectors of a surfaces four points. The points are clockwise as viewed from the center
+	std::vector<std::vector<glm::vec3>> surfaces() const;
 	void isValid() const
 	{
 		if (mMinPoint.x > mMaxPoint.x || mMinPoint.y > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)

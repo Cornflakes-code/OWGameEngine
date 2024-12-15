@@ -17,7 +17,7 @@ public:
 	/// 0 = The object did not move.
 	/// 1 = the object was moved.
 	/// 2 = the object just died.
-	virtual int update(float dt) override
+	virtual int tick(float dt) override
 	{ 
 		mPhysical->move(dt);
 		return false; 

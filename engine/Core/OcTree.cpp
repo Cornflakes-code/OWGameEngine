@@ -14,6 +14,102 @@ OcTree::~OcTree()
 {
 }
 
+void OcTree::add(const std::vector<Actor*>& toAdd, unsigned int threshold,
+    unsigned int maximumDepth)
+{
+    build(toAdd, threshold, maximumDepth, mBounds, 0);
+}
+
+const AABB negative(glm::vec3(-1), glm::vec3(-1));
+
+void OcTree::addActorToBin(Actor* a, std::vector<std::vector<Actor*>>& childBin)
+{
+    // Center of this node
+    glm::vec3 center = mBounds.center();
+
+    // Current point
+
+    // Push the objects into the relevant child bucket. The bucTo
+    // do this, we build an index into the child bucket using the
+    // relative position of the point to the center of the current
+    // node
+    if (a->bounds() == negative)
+    {
+        throw NMSLogicException("Bounds for particle not set.");
+    }
+    const glm::vec3 pc = a->bounds().center();
+    // 'p' can be in multiple areas
+    // If a part of Actor is in an area then add it to the area.
+    // Y
+    // |  _________
+    // | / 6 /  7 / |
+    // |/---/----/|7|
+    // | 2 | 3 |3|/|
+    // |---|---|/|5/
+    // | 0 | 1 |1|/___X
+    // 
+
+    std::vector<char> code(1);
+    // If all of a->bounds is > than the center then p cannot be in bins 0, 2, 4, 6
+    if (a->bounds().minPoint().x > center.x)
+        code[0] = code[2] = code[4] = code[6] = 0;
+    // If all of a->bounds is < than the center p then cannot be in bins 1, 3, 5, 7
+    if (a->bounds().maxPoint().x < center.x)
+        code[1] = code[3] = code[5] = code[7] = 0;
+
+    // ... and same logic for y and z.
+    if (a->bounds().minPoint().y > center.y)
+        code[2] = code[3] = code[6] = code[7] = 0;
+    if (a->bounds().maxPoint().y < center.y)
+        code[0] = code[1] = code[4] = code[5] = 0;
+
+    if (a->bounds().minPoint().z > center.z)
+        code[0] = code[1] = code[2] = code[3] = 0;
+    if (a->bounds().maxPoint().z < center.z)
+        code[4] = code[5] = code[6] = code[7] = 0;
+
+    for (unsigned int i = 0; i < 8; i++)
+    {
+        if (code[i])
+            childBin[i].push_back(a);
+    }
+}
+
+void OcTree::addBinToChildren(const std::vector<std::vector<Actor*>>& bin, 
+                                unsigned int threshold, unsigned int maximumDepth,
+                                const AABB& bounds, unsigned int currentDepth)
+{
+    const glm::vec3 boundsOffsetTable[8] =
+    {
+        {0, 0, 0},
+        {1, 0, 0},
+        {0, 1, 0},
+        {1, 1, 0},
+        {0, 0, 1},
+        {1, 0, 1},
+        {0, 1, 1},
+        {1, 1, 1}
+    };
+
+    // Recursively call build() for each of the 8 children
+    for (unsigned int i = 0; i < bin.size(); i++)
+    {
+        // Don't bother going any further if there aren't any points for this child
+        if (!bin[i].size())
+            continue;
+
+        glm::vec3 minPoint = boundsOffsetTable[i] * bounds.extent();
+        glm::vec3 maxPoint = minPoint + bounds.extent();
+        AABB childBounds(minPoint, maxPoint);
+
+        // Allocate the child
+        mChildren[i] = new OcTree;
+
+        mChildren[i]->build(bin[i], threshold, maximumDepth,
+            childBounds, currentDepth + 1);
+    }
+}
+
 void OcTree::build(const std::vector<Actor*>& points,
     unsigned int threshold,
     unsigned int maximumDepth,
@@ -32,102 +128,18 @@ void OcTree::build(const std::vector<Actor*>& points,
     //          can set the maximumDepth depth to 0 if we want a tree with
     //          no depth.
 
-    if (points.size() <= threshold || currentDepth >= maximumDepth)
+    if (!mPoints.size() && 
+        (points.size() <= threshold || currentDepth >= maximumDepth))
     {
         mPoints = points;
         return;
     }
 
-    std::vector<std::vector<Actor*>> childPoints(8);
-    // Center of this node
-    glm::vec3 c = bounds.center();
-    const AABB negative(glm::vec3(-1), glm::vec3(-1));
+    std::vector<std::vector<Actor*>> bin(8);
 
-    // Classify each point to a child node
     for (Actor* a : points)
-    {
-        // Current point
-
-        // Push the objects into the relevant child bucket. The bucTo
-        // do this, we build an index into the child bucket using the
-        // relative position of the point to the center of the current
-        // node
-        if (a->bounds() == negative)
-        {
-            throw NMSLogicException("Bounds for particle not set.");
-        }
-        const glm::vec3 pc = a->bounds().center();
-        // 'p' can be in multiple areas
-        // If a part of Actor is in an area then add it to the area.
-        // Y
-        // |  _________
-        // | / 6 /  7 / |
-        // |/---/----/|7|
-        // | 2 | 3 |3|/|
-        // |---|---|/|5/
-        // | 0 | 1 |1|/___X
-        // 
-        
-        std::vector<char> code(1);
-        // If all of a->bounds is > than the center then p cannot be in bins 0, 2, 4, 6
-        if (a->bounds().minPoint().x > c.x)
-            code[0] = code[2] = code[4] = code[6] = 0;
-        // If all of a->bounds is < than the center p then cannot be in bins 1, 3, 5, 7
-        if (a->bounds().maxPoint().x < c.x)
-            code[1] = code[3] = code[5] = code[7] = 0;
-
-        // ... and same logic for y and z.
-        if (a->bounds().minPoint().y > c.y)
-            code[2] = code[3] = code[6] = code[7] = 0;
-        if (a->bounds().maxPoint().y < c.y)
-            code[0] = code[1] = code[4] = code[5] = 0;
-
-        if (a->bounds().minPoint().z > c.z)
-            code[0] = code[1] = code[2] = code[3] = 0;
-        if (a->bounds().maxPoint().z < c.z)
-            code[4] = code[5] = code[6] = code[7] = 0;
-
-        for (unsigned int i = 0; i < 8; i++)
-        {
-            if (code[i])
-                childPoints[i].push_back(a);
-        }
-    }
-
-    const glm::vec3 boundsOffsetTable[8] =
-    {
-        {0, 0, 0},
-        {1, 0, 0},
-        {0, 1, 0},
-        {1, 1, 0},
-        {0, 0, 1},
-        {1, 0, 1},
-        {0, 1, 1},
-        {1, 1, 1}
-    };
-
-    // Recursively call build() for each of the 8 children
-    for (unsigned int i = 0; i < childPoints.size(); i++)
-    {
-        // Don't bother going any further if there aren't any points for
-        // this child
-
-        if (!childPoints[i].size())
-        {
-            mChildren[i] = nullptr;
-            continue;
-        }
-
-        glm::vec3 minPoint = boundsOffsetTable[i] * bounds.extent();
-        glm::vec3 maxPoint = minPoint + bounds.extent();
-        AABB childBounds(minPoint, maxPoint);
-
-        // Allocate the child
-        mChildren[i] = new OcTree;
-
-        mChildren[i]->build(childPoints[i], threshold, maximumDepth,
-            childBounds, currentDepth + 1);
-    }
+        addActorToBin(a, bin);
+    addBinToChildren(bin, threshold, maximumDepth, bounds, currentDepth + 1);
 }
 
 bool OcTree::traverse(OctreeCallbackType proc)

@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "../OWEngine/OWEngine.h"
+#include "../Core/Renderable.h"
 
 class Shader;
 

@@ -208,8 +208,10 @@
     <ClInclude Include="..\Core\Movie.h" />
     <ClInclude Include="..\Core\OcTree.h" />
     <ClInclude Include="..\Core\Particle.h" />
+    <ClInclude Include="..\Core\Plane.h" />
     <ClInclude Include="..\Core\QuitScene.h" />
     <ClInclude Include="..\Core\Ray.h" />
+    <ClInclude Include="..\Core\Renderable.h" />
     <ClInclude Include="..\Core\ResourcePathFactory.h" />
     <ClInclude Include="..\Core\SaveAndRestore.h" />
     <ClInclude Include="..\Core\Scene.h" />
@@ -266,8 +268,10 @@
     <ClCompile Include="..\Core\Movie.cpp" />
     <ClCompile Include="..\Core\OcTree.cpp" />
     <ClCompile Include="..\Core\Particle.cpp" />
+    <ClCompile Include="..\Core\Plane.cpp" />
     <ClCompile Include="..\Core\QuitScene.cpp" />
     <ClCompile Include="..\Core\Ray.cpp" />
+    <ClCompile Include="..\Core\Renderable.cpp" />
     <ClCompile Include="..\Core\ResourcePathFactory.cpp" />
     <ClCompile Include="..\Core\SaveAndRestore.cpp" />
     <ClCompile Include="..\Core\Scene.cpp" />

@@ -10,15 +10,13 @@
 #include "MovableObject.h"
 #include "ErrorHandling.h"
 #include "BoundingBox.h"
+#include "Renderable.h"
+
 #include "../Renderers/RendererBase.h"
 
 class SceneGraphNode;
 
 typedef std::function<bool(SceneGraphNode* o)> SceneGraphNodeCallbackType;
-
-class OWENGINE_API Renderable
-{
-};
 
 class OWENGINE_API SceneGraphNode
 {
@@ -53,7 +51,7 @@ public:
 		RendererBase::RenderCallbackType renderCb = nullptr,
 		RendererBase::ResizeCallbackType resizeCb = nullptr);
 	bool traverse(SceneGraphNodeCallbackType proc);
-	virtual int update(float dt) { return 0; }
+	virtual int tick(float dt) { return 0; }
 protected:
 	glm::quat mQuat = glm::quat();
 	glm::vec3 mScaleFactor = { 1,1,1 }; // Should be in mQuat

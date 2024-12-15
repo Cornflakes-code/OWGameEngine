@@ -34,7 +34,8 @@ public:
     virtual ~OcTree();
 
     const std::vector<Actor*> points() const { return mPoints; }
-
+    void add(const std::vector<Actor*>&, unsigned int threshold,
+            unsigned int maximumDepth);
     void build(const std::vector<Actor*>& points,
         unsigned int threshold,
         unsigned int maximumDepth,
@@ -43,8 +44,13 @@ public:
     bool traverse(OctreeCallbackType proc);
 //protected:
 public:
-    OcTree* mChildren[8];
+    std::vector<OcTree*> mChildren = std::vector<OcTree*>(8, nullptr);
     std::vector<Actor*> mPoints;
     AABB mBounds;
     unsigned int mDepth = 0;
+private:
+    void addActorToBin(Actor* a, std::vector<std::vector<Actor*>>& childBin);
+    void addBinToChildren(const std::vector<std::vector<Actor*>>& bin,
+        unsigned int threshold, unsigned int maximumDepth,
+        const AABB& bounds, unsigned int currentDepth);
 };
