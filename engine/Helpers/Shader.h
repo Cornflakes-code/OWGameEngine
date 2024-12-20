@@ -8,12 +8,16 @@
 
 #include <glm/glm.hpp>
 
+#include "../Renderers/RenderTypes.h"
+
 using json = nlohmann::json;
 /*
 	A wrapper for Shaders. Based on the Shader class at https://learnopengl.com/
 */
 class OWENGINE_API Shader //: public ResourceSource
 {
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	enum class StandardUniforms
 	{
 		PVM,
@@ -23,11 +27,27 @@ class OWENGINE_API Shader //: public ResourceSource
 		CameraPosition
 	};
 	std::map<StandardUniforms, std::string> mUniforms;
+#pragma warning( pop )
+	std::vector<RenderTypes::ShaderMutator> mMutatorCallbacks;
+	std::vector<RenderTypes::ShaderResizer> mResizeCallbacks;
+	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
+	// After scene::setup it is Ok to modify Renderers
+	// but only for efficiency reasons. Modifications
+	// cannot change what is happenning else the game 
+	// loop will be broken.
+	mutable bool mFirstTimeRender = true;
+	float aspectRatio() const;
 public:
 	Shader();
 	Shader(const std::string& vertexPath, const std::string& fragPath = "",
 		const std::string& geometryPath = "");
 	~Shader();
+	void appendMutator(RenderTypes::ShaderMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
+	void appendResizer(RenderTypes::ShaderResizer pfunc) { mResizeCallbacks.push_back(pfunc); }
+	void callMutators(const glm::mat4& proj, const glm::mat4& view,
+		const glm::mat4& model, const glm::vec3& cameraPos, RenderTypes::ShaderMutator renderCb) const;
+	void callResizers(RenderTypes::ShaderResizer resizeCb) const;
+
 	void setStandardUniformNames(const std::string& pvm,
 		const std::string& projection = "",
 		const std::string& view = "",

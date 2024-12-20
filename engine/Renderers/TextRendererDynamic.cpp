@@ -19,8 +19,7 @@ TextRendererDynamic::TextRendererDynamic()
 void TextRendererDynamic::doSetup(const TextData* td, const glm::vec3& initialPosition)
 {
 	glm::vec3 position = glm::vec3(mBounds.center()) + initialPosition;
-
-	appendRenderCallback([position](const glm::mat4& proj, const glm::mat4& view,
+	shader()->appendMutator([position](const glm::mat4& proj, const glm::mat4& view,
 									const glm::mat4& model, const glm::vec3& cameraPos,
 									const Shader* shader)
 	{
@@ -34,8 +33,8 @@ void TextRendererDynamic::doSetup(const TextData* td, const glm::vec3& initialPo
 	
 	AABB bounds = mBounds;
 	glm::vec2 scale = td->scale();
-	appendResizeCallback([bounds, scale](const Shader* shader,
-			ScaleByAspectRatioType scaler,
+	shader()->appendResizer([bounds, scale](const Shader* shader,
+			RenderTypes::ScaleByAspectRatioType scaler,
 			float aspectRatio)
 	{
 		glm::vec2 bbSize({ bounds.size().x * scale.x, bounds.size().y * scale.y });

@@ -3,10 +3,10 @@
 
 #include <glm/glm.hpp>
 
-#include <Core/Actor.h>
+#include <Core/OWSceneComponent.h>
 #include <Core/CommonUtils.h>
 
-class OWENGINE_API TextData: public Actor
+class OWENGINE_API TextData: public OWSceneComponent
 {
 public:
 	enum PositionType: unsigned int
@@ -23,12 +23,12 @@ public:
 		Static
 	};
 
-	TextData(Physical* _physical, TextDisplayType tdt)
-		: Actor(_physical, nullptr), mDynamicSize(tdt)
+	TextData(OWActor* _owner, const glm::vec3& _position, TextDisplayType tdt)
+		: OWSceneComponent(_owner, _position), mDynamicSize(tdt)
 	{}
 
-	TextData(const std::string& s, TextDisplayType tdt, float sx, float sy)
-		: Actor(nullptr)
+	TextData(OWActor* _owner, const glm::vec3& _position, const std::string& s, TextDisplayType tdt, float sx, float sy)
+		: OWSceneComponent(_owner, _position)
 		, mText(s)
 		, mX(sx)
 		, mY(sy)

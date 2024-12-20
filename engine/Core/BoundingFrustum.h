@@ -2,8 +2,9 @@
 
 #include <glm/glm.hpp>
 
-#include "Plane.h"
+#include "BoundingPlane.h"
 #include "BoundingBox.h"
+#include "OWBounding.h"
 
 #include "../OWEngine/OWEngine.h"
 /*
@@ -30,16 +31,19 @@ public:
 };
 */
 
-class OWENGINE_API BoundingFrustum
+class OWENGINE_API BoundingFrustum: public OWBounding
 {
 public:
-	Plane topFace;
-	Plane bottomFace;
 
-	Plane rightFace;
-	Plane leftFace;
+	BoundingPlane topFace;
+	BoundingPlane bottomFace;
 
-	Plane farFace;
-	Plane nearFace;
+	BoundingPlane rightFace;
+	BoundingPlane leftFace;
+
+	BoundingPlane farFace;
+	BoundingPlane nearFace;
+	bool intersects(const OWBounding* other) const override;
 	bool intersects(const AABB& box) const;
+	void move(const glm::vec3& OW_UNUSED(pt)) {}
 };

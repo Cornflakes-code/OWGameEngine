@@ -27,17 +27,17 @@ ModelData ModelFactory::create(const std::string& modelFileName, bool cache)
 			ResourcePathFactory::ResourceType::Model);
 
 	Assimp::Importer importer;
-	const aiScene *scene = importer.ReadFile(modelPath.string(),
+	const aiScene *aiscene = importer.ReadFile(modelPath.string(),
 		aiProcess_Triangulate | aiProcess_ConvertToLeftHanded); // | aiProcess_FlipUVs);
 
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	if (!aiscene || aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !aiscene->mRootNode)
 	{
 		LogStream(LogStreamLevel::Info)
 			<< "Mesh load failed for model ["
 			<< modelPath << "] ASSIMP error [" << importer.GetErrorString() << "]";
 		return ModelData();
 	}
-	ModelData root = processNode(scene->mRootNode, scene);
+	ModelData root = processNode(aiscene->mRootNode, aiscene);
 	return root;
 }
 

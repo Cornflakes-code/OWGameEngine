@@ -18,8 +18,7 @@ class MeshDataInstance;
 
 struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 {
-	NMSSplashScenePhysics(const Scene* owner)
-		: NMSWorldPhysicsState(owner) {}
+	NMSSplashScenePhysics(Scene* owner);
 
 	void setup() override;
 	virtual void variableTimeStep(OWUtils::Time::duration dt) override;
@@ -37,8 +36,6 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 	static AABB mWindowBounds;
 	static OWUtils::Float mSpeed;
 	ButtonData* mButtonData = nullptr;
-	TextData* mWelcome = nullptr;
-	TextData* mEnjoy = nullptr;
 	MeshDataInstance* mStarData = nullptr;
 	glm::vec2 mStarRadius = glm::vec2(0);
 };

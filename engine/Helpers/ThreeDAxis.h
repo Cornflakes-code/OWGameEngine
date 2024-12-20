@@ -1,14 +1,16 @@
 #pragma once
 #include <vector>
 
-#include <Core/Actor.h>
+#include <Core/OWActor.h>
 #include <Helpers/GeometricShapes.h>
 
-class OWENGINE_API ThreeDAxis : public Actor
+class TextData;
+class OWENGINE_API ThreeDAxis : public OWActor
 {
 private:
 public:
-	ThreeDAxis(Physical* _physical, Actor* _owner): Actor(_physical, _owner) {}
+	ThreeDAxis(Scene* _owner, const glm::vec3& _position);
 	void createAxisData(const AABB& w);
 private:
+	TextData* createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b);
 };

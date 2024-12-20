@@ -6,6 +6,7 @@
 
 #include "../Core/Logger.h"
 #include "../Core/LogStream.h"
+#include "../Core/BoundingFrustum.h"
 
 CameraMazhar::CameraMazhar()
 {

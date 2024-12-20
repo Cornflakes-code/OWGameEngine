@@ -6,7 +6,7 @@
 
 struct NMSWorldPhysicsState: public ScenePhysicsState
 {
-	NMSWorldPhysicsState(const Scene* owner)
+	NMSWorldPhysicsState(Scene* owner)
 		: ScenePhysicsState(owner) {}
 };
 

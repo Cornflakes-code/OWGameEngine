@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../OWEngine/OWEngine.h"
-#include "../Core/Actor.h"
 
 #include "CommonUtils.h"
 
@@ -10,6 +9,7 @@
 class Scene;
 class OcTree;
 class Camera;
+class OWActor;
 /*
 	My implementation of a Fixed timestep physics/Variable timestep Render Game 
 	Loop requires the separation of static and dynamic information. Class Scene 
@@ -23,9 +23,7 @@ class Camera;
 class OWENGINE_API ScenePhysicsState
 {
 public:
-	ScenePhysicsState(const Scene* owner)
-		: mOwner(owner), mRootNode(new SceneGraphNode())
-	{}
+	ScenePhysicsState(Scene* owner);
 	virtual void setup() = 0;
 	virtual void copy(ScenePhysicsState* source) = 0;
 	virtual void fixedTimeStep(std::string& nextSceneName, OWUtils::Time::duration dt) = 0;
@@ -41,10 +39,10 @@ public:
 								  const ScenePhysicsState* OW_UNUSED(currentState),
 								  double OW_UNUSED(multCurr)) {}
 	virtual ScenePhysicsState* clone() = 0;
-	const Scene* owner() const { return mOwner; }
+	Scene* owner() { return mOwner; }
 	virtual void clear() {}
-	SceneGraphNode* mRootNode = nullptr;
-	OcTree* mOctTree = nullptr;
+	OcTree* mOctTreeEx = nullptr;
+	OWActor* mSceneryEx = nullptr;
 protected:
 
 	// https://gafferongames.com/post/fix_your_timestep/
@@ -53,7 +51,7 @@ protected:
 		return p1 * m1 + p2 * m2;
 	}
 private:
-	const Scene* mOwner;
+	Scene* mOwner;
 };
 
 class SceneLogic

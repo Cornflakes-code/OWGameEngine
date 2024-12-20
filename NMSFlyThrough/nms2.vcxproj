@@ -252,7 +252,6 @@ del /q "$(TargetDir)\config*.json"
     <ClCompile Include="..\engine\Cameras\CameraMazhar.cpp" />
     <ClCompile Include="..\engine\Cameras\CameraOW.cpp" />
     <ClCompile Include="..\engine\Cameras\Mazhar_Camera.cpp" />
-    <ClCompile Include="..\engine\Helpers\Button.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NMSEndScene.cpp" />
     <ClCompile Include="NMSMainScene.cpp" />
@@ -274,7 +273,6 @@ del /q "$(TargetDir)\config*.json"
     <ClInclude Include="..\engine\Cameras\CameraOW.h" />
     <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h" />
     <ClInclude Include="..\engine\Cameras\OW_Camera.h" />
-    <ClInclude Include="..\engine\Helpers\Button.h" />
     <ClInclude Include="NMSEndScene.h" />
     <ClInclude Include="NMSMainScene.h" />
     <ClInclude Include="NMSMovie.h" />

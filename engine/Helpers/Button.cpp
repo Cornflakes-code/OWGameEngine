@@ -2,9 +2,16 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include <Renderers/VAOBuffer.h>
-#include <Helpers/Shader.h>
-#include <Renderers/TextRendererStatic.h>
+#include "Shader.h"
+#include "../Renderers/VAOBuffer.h"
+#include "../Renderers/TextRendererStatic.h"
+#include "TextData.h"
+
+OWButton::OWButton(Scene* _owner, const glm::vec3& _position, const std::string& _displayText)
+	: OWActor(_owner, _position)
+{
+	throw NMSException("Incomplete class");
+}
 
 bool ButtonData::intersectArea(const glm::vec3& pt)
 {
@@ -21,11 +28,11 @@ void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
 	lineData.polygonMode(GL_FILL);
 	vao->add(&lineData);
-	TextData* td = new TextData(new Physical(glm::vec3(10)), TextData::Static);
-	//td->set(&(data.mText), glm::vec3(10));
+	TextData* td = new TextData(this, glm::vec3(10), TextData::Static);
+	//td->set(mDisplayText, glm::vec3(10));
 	if (false)
 	{
-		appendRenderCallback([position](const glm::mat4& proj, const glm::mat4& view,
+		sh->appendMutator([position](const glm::mat4& proj, const glm::mat4& view,
 			const glm::mat4& model, const glm::vec3& cameraPos,
 			const Shader* shader)
 			{

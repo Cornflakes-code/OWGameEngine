@@ -193,6 +193,7 @@
     <ClInclude Include="..\Core\Actor.h" />
     <ClInclude Include="..\Core\BoundingBox.h" />
     <ClInclude Include="..\Core\BoundingFrustum.h" />
+    <ClInclude Include="..\Core\BoundingPlane.h" />
     <ClInclude Include="..\Core\BoundingSphere.h" />
     <ClInclude Include="..\Core\Camera.h" />
     <ClInclude Include="..\Core\CommonUtils.h" />
@@ -203,10 +204,16 @@
     <ClInclude Include="..\Core\ListenerHelper.h" />
     <ClInclude Include="..\Core\Logger.h" />
     <ClInclude Include="..\Core\LogStream.h" />
-    <ClInclude Include="..\Core\MeshActor.h" />
+    <ClInclude Include="..\Core\MeshComponent.h" />
     <ClInclude Include="..\Core\MovableObject.h" />
     <ClInclude Include="..\Core\Movie.h" />
     <ClInclude Include="..\Core\OcTree.h" />
+    <ClInclude Include="..\Core\OWActor.h" />
+    <ClInclude Include="..\Core\OWBounding.h" />
+    <ClInclude Include="..\Core\OWComponent.h" />
+    <ClInclude Include="..\Core\OWMovableComponent.h" />
+    <ClInclude Include="..\Core\OWObject.h" />
+    <ClInclude Include="..\Core\OWSceneComponent.h" />
     <ClInclude Include="..\Core\Particle.h" />
     <ClInclude Include="..\Core\Plane.h" />
     <ClInclude Include="..\Core\QuitScene.h" />
@@ -219,7 +226,7 @@
     <ClInclude Include="..\Core\ScenePhysicsState.h" />
     <ClInclude Include="..\Core\UserInput.h" />
     <ClInclude Include="..\glad\include\glad\glad.h" />
-    <ClInclude Include="..\Helpers\BoundsCalculator.h" />
+    <ClInclude Include="..\Helpers\Button.h" />
     <ClInclude Include="..\Helpers\ComputeNormals.h" />
     <ClInclude Include="..\Helpers\FontFactory.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
@@ -240,7 +247,9 @@
     <ClInclude Include="..\Renderers\HeavyRenderer.h" />
     <ClInclude Include="..\Renderers\InstanceRenderer.h" />
     <ClInclude Include="..\Renderers\LightRenderer.h" />
+    <ClInclude Include="..\Renderers\OWRenderable.h" />
     <ClInclude Include="..\Renderers\RendererBase.h" />
+    <ClInclude Include="..\Renderers\RenderTypes.h" />
     <ClInclude Include="..\Renderers\TextRenderer.h" />
     <ClInclude Include="..\Renderers\TextRendererDynamic.h" />
     <ClInclude Include="..\Renderers\TextRendererStatic.h" />
@@ -253,6 +262,7 @@
     <ClCompile Include="..\Core\Actor.cpp" />
     <ClCompile Include="..\Core\BoundingBox.cpp" />
     <ClCompile Include="..\Core\BoundingFrustum.cpp" />
+    <ClCompile Include="..\Core\BoundingPlane.cpp" />
     <ClCompile Include="..\Core\BoundingSphere.cpp" />
     <ClCompile Include="..\Core\Camera.cpp" />
     <ClCompile Include="..\Core\CommonUtils.cpp" />
@@ -263,10 +273,16 @@
     <ClCompile Include="..\Core\ListenerHelper.cpp" />
     <ClCompile Include="..\Core\Logger.cpp" />
     <ClCompile Include="..\Core\LogStream.cpp" />
-    <ClCompile Include="..\Core\MeshActor.cpp" />
+    <ClCompile Include="..\Core\MeshComponent.cpp" />
     <ClCompile Include="..\Core\MovableObject.cpp" />
     <ClCompile Include="..\Core\Movie.cpp" />
     <ClCompile Include="..\Core\OcTree.cpp" />
+    <ClCompile Include="..\Core\OWActor.cpp" />
+    <ClCompile Include="..\Core\OWBounding.cpp" />
+    <ClCompile Include="..\Core\OWComponent.cpp" />
+    <ClCompile Include="..\Core\OWMovableComponent.cpp" />
+    <ClCompile Include="..\Core\OWObject.cpp" />
+    <ClCompile Include="..\Core\OWSceneComponent.cpp" />
     <ClCompile Include="..\Core\Particle.cpp" />
     <ClCompile Include="..\Core\Plane.cpp" />
     <ClCompile Include="..\Core\QuitScene.cpp" />
@@ -278,6 +294,7 @@
     <ClCompile Include="..\Core\SceneGraphNode.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
+    <ClCompile Include="..\Helpers\Button.cpp" />
     <ClCompile Include="..\Helpers\ComputeNormals.cpp" />
     <ClCompile Include="..\Helpers\FontFactory.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
@@ -300,6 +317,7 @@
     <ClCompile Include="..\Renderers\HeavyRenderer.cpp" />
     <ClCompile Include="..\Renderers\InstanceRenderer.cpp" />
     <ClCompile Include="..\Renderers\LightRenderer.cpp" />
+    <ClCompile Include="..\Renderers\OWRenderable.cpp" />
     <ClCompile Include="..\Renderers\RendererBase.cpp" />
     <ClCompile Include="..\Renderers\TextRenderer.cpp" />
     <ClCompile Include="..\Renderers\TextRendererDynamic.cpp" />

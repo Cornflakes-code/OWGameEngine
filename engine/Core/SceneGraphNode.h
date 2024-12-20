@@ -16,6 +16,7 @@
 
 class SceneGraphNode;
 
+class OWActor;
 typedef std::function<bool(SceneGraphNode* o)> SceneGraphNodeCallbackType;
 
 class OWENGINE_API SceneGraphNode
@@ -37,21 +38,18 @@ public:
 	{
 		mTranslateVector = translateVector;
 	}
-	void appendRenderCallback(RendererBase::RenderCallbackType pfunc);
-	void appendResizeCallback(RendererBase::ResizeCallbackType pfunc);
-	size_t addRenderer(RendererBase* toAdd)
+	size_t add(OWActor* toAdd)
 	{
-		mRenderers.push_back(toAdd);
-		return mRenderers.size() - 1;
+		mActors.push_back(toAdd);
+		return mActors.size() - 1;
 	}
 	void readyForRender() { mReadyForRender = true; }
 	void render(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4& model,
 		const glm::vec3& cameraPos,
-		RendererBase::RenderCallbackType renderCb = nullptr,
-		RendererBase::ResizeCallbackType resizeCb = nullptr);
+		RenderTypes::ShaderMutator renderCb = nullptr,
+		RenderTypes::ShaderResizer resizeCb = nullptr);
 	bool traverse(SceneGraphNodeCallbackType proc);
-	virtual int tick(float dt) { return 0; }
 protected:
 	glm::quat mQuat = glm::quat();
 	glm::vec3 mScaleFactor = { 1,1,1 }; // Should be in mQuat
@@ -59,7 +57,7 @@ protected:
 	SceneGraphNode* mParent = nullptr;
 	std::vector<SceneGraphNode*> mChildren;
 private:
-	std::vector<RendererBase*> mRenderers;
+	std::vector<OWActor*> mActors;
 	bool mReadyForRender = false;
 };
 

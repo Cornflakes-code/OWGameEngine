@@ -1,11 +1,8 @@
 #include "BoundingFrustum.h"
 
-bool Plane::isOnOrForwardPlane(const AABB& box) const
+bool BoundingFrustum::intersects(const OWBounding* other) const
 {
-	// Compute the projection interval radius of b onto L(t) = b.c + t * p.n
-	const glm::vec3& extent = box.extent();
-	float r = extent.x * std::abs(normal().x) + extent.y * std::abs(normal().y) + extent.z * std::abs(normal().z);
-	return -r <= getSignedDistanceToPlane(box.center());
+	return false;
 }
 
 bool BoundingFrustum::intersects(const AABB& box) const
@@ -14,6 +11,7 @@ bool BoundingFrustum::intersects(const AABB& box) const
 		rightFace.isOnOrForwardPlane(box) && leftFace.isOnOrForwardPlane(box) &&
 		farFace.isOnOrForwardPlane(box) && nearFace.isOnOrForwardPlane(box);
 }
+
 
 /*
 constexpr float _max = std::numeric_limits<float>::max();
@@ -29,3 +27,4 @@ glm::vec4 Plane::ClosestPointOnPlane(const glm::vec4& p)
 	return glm::vec4(0.0);
 }
 */
+

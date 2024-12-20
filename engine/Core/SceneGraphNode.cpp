@@ -28,26 +28,11 @@ SceneGraphNode* SceneGraphNode::addChild(SceneGraphNode* newChild)
 	return newChild;
 }
 
-void SceneGraphNode::appendRenderCallback(RendererBase::RenderCallbackType pfunc)
-{
-	for (RendererBase* r : mRenderers)
-	{
-		r->appendRenderCallback(pfunc);
-	}
-}
-void SceneGraphNode::appendResizeCallback(RendererBase::ResizeCallbackType pfunc)
-{
-	for (RendererBase* r : mRenderers)
-	{
-		r->appendResizeCallback(pfunc);
-	}
-}
-
 void SceneGraphNode::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& _model,
 	const glm::vec3& cameraPos,
-	RendererBase::RenderCallbackType renderCb,
-	RendererBase::ResizeCallbackType resizeCb)
+	RenderTypes::ShaderMutator renderCb,
+	RenderTypes::ShaderResizer resizeCb)
 {
 	if (mName == "hsjaf")
 	{
@@ -58,11 +43,6 @@ void SceneGraphNode::render(const glm::mat4& proj,
 	if (!mReadyForRender && mParent != nullptr)
 	{
 		throw NMSLogicException("Actor: " + mName + " not ready for render.");
-	}
-	for (RendererBase* rend : mRenderers)
-	{
-		rend->render(proj, view, model, cameraPos,
-			renderCb, resizeCb);
 	}
 	for (SceneGraphNode* child : mChildren)
 	{

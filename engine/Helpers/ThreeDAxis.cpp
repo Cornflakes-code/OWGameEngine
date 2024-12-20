@@ -1,7 +1,7 @@
 #include "ThreeDAxis.h"
 
 #include <Core/Camera.h>
-#include <Core/MeshActor.h>
+#include <Core/OWActor.h>
 #include <Core/GlobalSettings.h>
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/TextData.h>
@@ -9,15 +9,22 @@
 #include <Helpers/ShaderFactory.h>
 #include <Renderers/VAOBuffer.h>
 #include <Renderers/TextRendererStatic.h>
+#include <Core/MeshComponent.h>
 
-TextData* createText(Physical* ph, const std::string& s, unsigned int refPos, AABB& b)
+ThreeDAxis::ThreeDAxis(Scene* _owner, const glm::vec3& _position)
+	: OWActor(_owner, _position)
+{
+	name("Labelled 3DAxis");
+}
+
+TextData* ThreeDAxis::createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b)
 {
 	int fontHeight = 12;
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());
 
 	float scale = 1.0;
-	TextData* td = new TextData(ph, TextData::Static);
+	TextData* td = new TextData(this, pos, TextData::Static);
 	td->font("arial.ttf", fontHeight);
 	td->colour({ 1.0, 0.0, 0.0, 1.0f });
 //	td->colour({ 0.3, 0.45, 0.7, 1.0f });
@@ -39,13 +46,14 @@ void ThreeDAxis::createAxisData(const AABB& w)
 
 	AABB boxUnion;
 	AABB box;
-	addChild(createText(new Physical(glm::vec3(0)), "0", TextData::Top | TextData::Right, box));
+	
+	createText(glm::vec3(0), "0", TextData::Top | TextData::Right, box);
 	boxUnion |= box;
-	addChild(createText(new Physical(axisCoords[1]), "X", TextData::Center, box));
+	createText(axisCoords[1], "X", TextData::Center, box);
 	boxUnion |= box;
-	addChild(createText(new Physical(axisCoords[2]), "Y", TextData::Center, box));
+	createText(axisCoords[2], "Y", TextData::Center, box);
 	boxUnion |= box;
-	addChild(createText(new Physical(axisCoords[3]), "Z", TextData::Center, box));
+	createText(axisCoords[3], "Z", TextData::Center, box);
 	boxUnion |= box;
 	ShaderFactory shaders;
 	Shader* lineShader = new Shader();
@@ -53,18 +61,13 @@ void ThreeDAxis::createAxisData(const AABB& w)
 		shaders.boilerPlateFragmentShader(),
 		shaders.boilerPlateGeometryShader());
 	lineShader->setStandardUniformNames("pvm");
-	MeshActor* axis = new MeshActor(new Physical(glm::vec3(0)), nullptr);
-	axis->mName = "Axis";
+	MeshComponent* axis = new MeshComponent(this, glm::vec3(0));
+	axis->name("Axis");
 	MeshDataLight lineData;
 	lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
 	lineData.vertices(axisCoords, GL_LINES);
 	lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
 	axis->setup(&lineData, lineShader);
 	boxUnion |= axis->bounds();
-	addChild(axis);
-	bounds(boxUnion);
-	axis->readyForRender();
-	mName = "Labelled 3DAxis";
-	readyForRender();
 }
 

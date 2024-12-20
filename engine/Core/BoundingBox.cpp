@@ -64,6 +64,11 @@ AABB::AABB(const std::vector<AABB>& v)
 	}
 }
 
+bool AABB::intersects(const OWBounding* other) const
+{
+	return false;
+}
+
 bool AABB::intersects(const AABB& other) const
 {
 	// If there is no overlap in any one direction 

@@ -24,14 +24,16 @@
 #include <Renderers/InstanceRenderer.h>
 #include <Renderers/TextRendererStatic.h>
 #include <Renderers/LightRenderer.h>
+#include <Core/MeshComponent.h>
 
 #define DEBUG_GRID
 #define DEBUG_STARS
 
-NoMansSky::NoMansSky(Physical* _physical, Actor* _owner)
-: Actor(_physical, _owner)
+NoMansSky::NoMansSky(Scene* _owner, const glm::vec3& _position)
+: OWActor(_owner, _position)
 {
 	mStarRadius = glm::vec2(0, 0);
+	name("NMS Map");
 }
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
@@ -42,14 +44,14 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
+	MeshComponent* grid = new MeshComponent(this, glm::vec3(0));
+	grid->name("grid");
 	MeshDataLight gridData;
 	gridData.vertices(mGrid, GL_LINES, 0);
 	gridData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
 	Shader* shader = new Shader("Lines.v.glsl", "Lines.f.glsl", "");
 	shader->setStandardUniformNames("pvm");
-	LightRenderer* gridRenderer = new LightRenderer(shader);
-	gridRenderer->setup(&gridData);
-	addRenderer(gridRenderer);
+	grid->setup(&gridData, shader);
 #endif
 
 #ifdef DEBUG_STARS
@@ -109,9 +111,9 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	
 	starShader->setFloat("cutoffRadius", mStarRadius.x, true);
 	starShader->setStandardUniformNames("VP");
-	InstanceRenderer* starRenderer = new InstanceRenderer(starShader);
-	starRenderer->setup(&mdi);
-	bounds(AABB(glm::vec3(1), glm::vec3(1)));
+	MeshComponent* stars = new MeshComponent(this, glm::vec3(0));
+	stars->name("stars");
+	stars->setup(&mdi, starShader);
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),
@@ -132,10 +134,8 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 			// Colours are set via mdi.colours
 			//shader->setVector4f("color", OWUtils::colour(OWUtils::SolidColours::YELLOW));
 		};
-	starRenderer->appendRenderCallback(pointRender);
-	addRenderer(starRenderer);
+	starShader->appendMutator(pointRender);
 #endif
-	readyForRender();
 }
 
 void NoMansSky::createGrid(const AABB& nmsSpace,
@@ -291,13 +291,12 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
-			TextData* td = new TextData(new Physical(point), TextData::Static);
+			TextData* td = new TextData(this, point, TextData::Static);
 			td->text(elms[0]);
 			td->font("arial.ttf", fontHeight);
 			td->colour({ 0.0, 0.0, 0.0, 1.0f });
 			td->spacing(nice.x, nice.y, { 1.0,1.0 }, TextData::Right);
 			td->prepare();
-			addChild(td);
 		}
 
 		myfile.close();

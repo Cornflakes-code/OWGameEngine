@@ -5,7 +5,7 @@
 
 void TextData::prepare()
 {
-	mName = "Text: " + mText;
+	name("Text: " + mText);
 
 	TextRenderer* ren;
 	if (mDynamicSize == Dynamic)
@@ -15,5 +15,4 @@ void TextData::prepare()
 	ren->setup(this, position());
 	bounds(ren->bounds());
 	addRenderer(ren);
-	readyForRender();
 }

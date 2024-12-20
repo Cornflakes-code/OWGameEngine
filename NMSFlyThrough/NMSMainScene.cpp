@@ -82,20 +82,19 @@ NMSMainScene::NMSMainScene(const Movie* movie)
 
 void NMSMainScene::doSetup(ScenePhysicsState* state)
 {
-	mRootNode = state->mRootNode;
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	sp->mCameraPosition = movie()->camera()->position();
 	sp->mLookAt = { 0,0,0 };
 
-	NoMansSky* starMap = new NoMansSky(new Physical(glm::vec3(0)), nullptr);
+	NoMansSky* starMap = new NoMansSky(this, glm::vec3(0));
 	std::filesystem::path p
 		= ResourcePathFactory().appendPath("NMSMap.txt", 
 				ResourcePathFactory::ResourceType::UnknownType);
 	starMap->setUp(p.string(), world());
-	mRootNode->addChild(starMap);
-	ThreeDAxis* axis = new ThreeDAxis(new Physical(glm::vec3(0)), nullptr);
+	mRootNode.push_back(starMap);
+	ThreeDAxis* axis = new ThreeDAxis(this, glm::vec3(0));
 	axis->createAxisData(world());
-	mRootNode->addChild(axis);
+	mRootNode.push_back(axis);
 }
 
 void NMSMainScene::render(const ScenePhysicsState* state,
@@ -103,7 +102,12 @@ void NMSMainScene::render(const ScenePhysicsState* state,
 						const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0);
-	mRootNode->render(proj, view, model, cameraPos);
+
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
+	{
+		a->render(proj, view, model, cameraPos);
+	};
+	traverseSceneGraph(rend);
 }
 
 void NMSMainScene::activate(const std::string& OW_UNUSED(previousScene), 

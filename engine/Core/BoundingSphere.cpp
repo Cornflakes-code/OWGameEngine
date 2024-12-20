@@ -5,6 +5,11 @@ static float _sqr(float f)
 	return f * f;
 }
 
+bool BoundingSphere::intersects(const OWBounding* other) const
+{
+	return false;
+}
+
 bool BoundingSphere::intersects(const AABB& box) const
 {
 	// https://stackoverflow.com/questions/28343716/sphere-intersection-test-of-aabb

@@ -2,6 +2,7 @@
 
 #include <Core/Camera.h>
 #include <Core/GlobalSettings.h>
+#include <Core/OWActor.h>
 
 #include <Helpers/Shader.h>
 #include <Helpers/TextData.h>
@@ -70,10 +71,11 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 {
 	const float sx = 2.0f / globals->physicalWindowSize().x;
 	const float sy = 2.0f / globals->physicalWindowSize().y;
-	TextData* td = new TextData("G", TextData::Dynamic, sx, sy);
-	td->colour( { 0.5, 0.8f, 0.2f, 0 } );
-	td->prepare();
-	mRootNode->addChild(td);
+	// Needs an OWActor as owner and a position
+	//TextData* td = new TextData("G", TextData::Dynamic, sx, sy);
+	//td->colour( { 0.5, 0.8f, 0.2f, 0 } );
+	//td->prepare();
+	//mRootNode->addChild(td);
 }
 
 void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
@@ -81,7 +83,11 @@ void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
 	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	mRootNode->render(proj, view, model, cameraPos);
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
+	{
+		a->render(proj, view, model, cameraPos);
+	};
+	traverseSceneGraph(rend);
 }
 
 void NMSEndScene::activate(const std::string& OW_UNUSED(previousScene),

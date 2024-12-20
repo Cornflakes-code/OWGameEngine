@@ -11,6 +11,7 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "ErrorHandling.h"
+#include "OWBounding.h"
 
 // https://en.wikibooks.org/wiki/OpenGL_Programming/Bounding_box
 
@@ -80,7 +81,7 @@ public:
 	}
 };
 
-class OWENGINE_API AABB
+class OWENGINE_API AABB: public OWBounding
 {
 	static constexpr float _max = std::numeric_limits<float>::max();
 	static constexpr float _epsilon = 0.0001f;
@@ -107,6 +108,7 @@ public:
 	const glm::vec3 minPoint() const { return mMinPoint; }
 	const glm::vec3 maxPoint() const { return mMaxPoint; }
 
+	bool intersects(const OWBounding* other) const override;
 	bool intersects(const AABB& other) const;
 	Compass::Direction intersectionDirection(const AABB& other) const;
 	bool contains(const glm::vec3& pt) const

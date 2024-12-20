@@ -1,7 +1,7 @@
 #include "Ray.h"
 
-Ray::Ray(const glm::vec3& orig, const glm::vec3& dir)
-	: mOrigen(orig), mDirection(dir)
+Ray::Ray(OWActor* _owner, const glm::vec3& _position, const glm::vec3& orig, const glm::vec3& dir)
+	: OWSceneComponent(_owner, _position), mOrigen(orig), mDirection(dir)
 {
 	mInvDir = 1.0f / mDirection;
 	mSign[0] = (mInvDir.x < 0) ? 1 : 0;
@@ -35,9 +35,3 @@ bool Ray::intersects(const AABB& box) const
 
 	return true;
 }
-
-void Ray::render(const glm::mat4& proj,
-	const glm::mat4& view,
-	const glm::mat4& model,
-	const glm::vec3& cameraPos)
-{}

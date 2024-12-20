@@ -5,8 +5,9 @@
 #include "../OWEngine/OWEngine.h"
 #include "BoundingBox.h"
 #include "Renderable.h"
+#include "OWSceneComponent.h"
 
-class OWENGINE_API Ray: public Renderable
+class OWENGINE_API Ray: public OWSceneComponent
 {
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.html
 #pragma warning( push )
@@ -17,10 +18,6 @@ class OWENGINE_API Ray: public Renderable
 	int mSign[3];
 #pragma warning( pop )
 public:
-	Ray(const glm::vec3& orig, const glm::vec3& dir);
+	Ray(OWActor* _owner, const glm::vec3& _position, const glm::vec3& orig, const glm::vec3& dir);
 	bool intersects(const AABB& box) const;
-	void render(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model,
-		const glm::vec3& cameraPos) override;
 };

@@ -22,11 +22,12 @@ const std::string& lightSourceVertexShader()
     });
     return s;
 }
+;
 
-LightSource::LightSource(Physical* ph, Actor* _owner)
-    :Actor(ph, _owner)
+LightSource::LightSource(OWActor* _owner, const glm::vec3& _position)
+    : OWSceneComponent(_owner, _position)
 {
-    mName = "Light";
+    name("Light");
 /*
     Shader* shader = new Shader();
     shader->loadShaders(lightSourceVertexShader(),
@@ -64,5 +65,4 @@ void LightSource::prepare()
     vao->add(&lineData);
     vao->prepare();
     addRenderer(vao);
-    readyForRender();
 }

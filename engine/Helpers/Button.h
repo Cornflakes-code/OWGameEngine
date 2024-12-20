@@ -4,9 +4,10 @@
 #include <string>
 
 #include <glm/glm.hpp>
-#include <Core/Actor.h>
-#include <Helpers/TextData.h>
-#include "Shader.h"
+
+#include "../Core/OWActor.h"
+
+class TextData;
 
 struct ButtonData
 {
@@ -17,19 +18,16 @@ struct ButtonData
 	};
 
 	std::vector<glm::vec3> mButtonShape;
-	TextData mText;
+	TextData* mText = nullptr;
 	bool intersectArea(const glm::vec3& pt);
 	ClickState mClickState;
 };
 
-class VAOBuffer;
-class TextRendererStatic;
-
-// move to OWEngine once stable
-class OWButton : public Actor
+class OWButton : public OWActor
 {
+	ButtonData mData;
 public:
-	OWButton(Physical* _physical) : Actor(_physical, nullptr) {}
+	OWButton(Scene* _owner, const glm::vec3& _position, const std::string& _displayText);
 	void setup(const ButtonData& data, const glm::vec3& position);
 	void textures();
 	void text();

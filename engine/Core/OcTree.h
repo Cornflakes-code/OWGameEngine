@@ -23,7 +23,7 @@
 // -----------------------------------------------------------------------------
 
 class OcTree;
-class Actor;
+class OWMovableComponent;
 
 typedef std::function<bool(OcTree* o)> OctreeCallbackType;
 
@@ -33,10 +33,12 @@ public:
     OcTree();
     virtual ~OcTree();
 
-    const std::vector<Actor*> points() const { return mPoints; }
-    void add(const std::vector<Actor*>&, unsigned int threshold,
-            unsigned int maximumDepth);
-    void build(const std::vector<Actor*>& points,
+    const std::vector<OWMovableComponent*> points() const { return mPoints; }
+    void add(const std::vector<OWMovableComponent*>&, unsigned int threshold,
+        unsigned int maximumDepth);
+    void add(OWMovableComponent* mc, unsigned int threshold,
+        unsigned int maximumDepth);
+    void build(const std::vector<OWMovableComponent*>& points,
         unsigned int threshold,
         unsigned int maximumDepth,
         const AABB& bounds,
@@ -45,12 +47,12 @@ public:
 //protected:
 public:
     std::vector<OcTree*> mChildren = std::vector<OcTree*>(8, nullptr);
-    std::vector<Actor*> mPoints;
+    std::vector<OWMovableComponent*> mPoints;
     AABB mBounds;
     unsigned int mDepth = 0;
 private:
-    void addActorToBin(Actor* a, std::vector<std::vector<Actor*>>& childBin);
-    void addBinToChildren(const std::vector<std::vector<Actor*>>& bin,
+    void addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableComponent*>>& childBin);
+    void addBinToChildren(const std::vector<std::vector<OWMovableComponent*>>& bin,
         unsigned int threshold, unsigned int maximumDepth,
         const AABB& bounds, unsigned int currentDepth);
 };

@@ -11,7 +11,7 @@
 */
 struct NMSMainScenePhysics : public NMSWorldPhysicsState
 {
-	NMSMainScenePhysics(const Scene* owner)
+	NMSMainScenePhysics(Scene* owner)
 		: NMSWorldPhysicsState(owner) {}
 
 	glm::vec3 mCameraPosition = glm::vec3(-1.48475, 1.77853, -0.553399);

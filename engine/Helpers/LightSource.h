@@ -5,15 +5,12 @@
 #include <glm/glm.hpp>
 #include <json/single_include/nlohmann/json.hpp>
 
-#include "../Core/Actor.h"
+#include "../Core/OWSceneComponent.h"
 
-class LightRenderer;
-class Physical;
-
-class OWENGINE_API LightSource : public Actor
+class OWENGINE_API LightSource : public OWSceneComponent
 {
 public:
-	LightSource(Physical* ph, Actor* _owner);
+	LightSource(OWActor* _owner, const glm::vec3& _position);
 	~LightSource();
 	void prepare();
 private:

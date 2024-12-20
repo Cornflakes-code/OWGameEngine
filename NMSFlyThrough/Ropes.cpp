@@ -7,6 +7,7 @@
 #include <Helpers/MeshDataLight.h>
 #include <Renderers/VAOBuffer.h>
 
+#include <Core/MeshComponent.h>
 #include "./../NMSFlyThrough/rope_interface_test.h"
 #include "./../NMSFlyThrough/rope_quick.h"
 #include "RopeNormaliser.h"
@@ -20,12 +21,59 @@ bool runImportTests();
 
 
 static bool mRopeDLLOk = false;
+static std::string gRopeEnds = "RopeEnds";
+static std::string gRopeLines = "RopeLines";
+static std::string gRopeSurfaces = "RopeSurfaces";
 
-void Rope::visualComponents(bool _ends, bool _lines, bool _surfaces)
+void Rope::visualComponents(bool _ends, bool _lines, bool _surfaces, bool _labels)
 {
-	mEnds = _ends;
-	mLines = _lines;
-	mSurfaces = _surfaces;
+	if (mEnds != _ends)
+	{
+		auto toggleRender = [_labels](OWSceneComponent* sc)
+			{
+				if (sc->name().find(gRopeEnds) != std::string::npos)
+				{
+					sc->canRender(_labels);
+				}
+			};
+		traverse(toggleRender);
+		mEnds = _ends;
+	}
+	if (mLines != _lines)
+	{
+		auto toggleRender = [_lines](OWSceneComponent* sc)
+			{
+				if (sc->name().find(gRopeLines) != std::string::npos)
+				{
+					sc->canRender(_lines);
+				}
+			};
+		traverse(toggleRender);
+		mLines = _lines;
+	}
+	if (mSurfaces != _surfaces)
+	{
+		auto toggleRender = [_surfaces](OWSceneComponent* sc)
+			{
+				if (sc->name().find(gRopeSurfaces) != std::string::npos)
+				{
+					sc->canRender(_surfaces);
+				}
+			};
+		traverse(toggleRender);
+		mSurfaces = _surfaces;
+	}
+	if (_labels != mLabels)
+	{
+		auto toggleRender = [_labels](OWSceneComponent* sc)
+		{
+			if (sc->name().find("Text:") != std::string::npos)
+			{
+				sc->canRender(_labels);
+			}
+		};
+		traverse(toggleRender);
+	}
 }
 
 bool Rope::prepare()
@@ -37,7 +85,7 @@ bool Rope::prepare()
 
 bool Rope::initRopes()
 {
-	mName = "Ropes";
+	name("Ropes");
 	bool ok = initInterfaceUtils() && initTestFunctions() && initQuickExterns();
 	if (ok)
 	{
@@ -46,59 +94,57 @@ bool Rope::initRopes()
 	return ok;
 }
 
-void Rope::prepareRope(int ropeNum, int width, int height, int numDepthLayers)
+void Rope::prepareRope(int ropeNum, int width, int height, int numDepthLayers, 
+	int fontHeight, const glm::vec2& textSpacing, const glm::vec2& textScale)
 {
 	RopeBuf* pointSourceBuffer = calcQuickRope(ropeNum, width, height, numDepthLayers);
 	mPolyBuilder = new PolygonBuilder();
 	mPolyBuilder->get(pointSourceBuffer);
 	std::pair<glm::vec3, glm::vec3> b = mPolyBuilder->bounds();
-	bounds(AABB(b.first, b.second));
+	mBounds = AABB(b.first, b.second);
+	labels(textSpacing, textScale);
+	makeBanner("Ropes", fontHeight, textSpacing * 10.0f, textScale);
 	lines();
 	surfaces();
 	ends();
-	readyForRender();
 }
 
-std::vector<Actor*> Rope::labels(const glm::vec2& textSpacing, const glm::vec2& textScale)
+void Rope::makeBanner(const std::string& s, int height,
+	const glm::vec2& _spacing, const glm::vec2& scale,
+	const std::string& f,
+	const glm::vec4& col)
 {
-	std::vector<Actor*> labs;
+	TextData* textData = new TextData(this, { 0.0f, 0.0f, 0.0f }, TextData::Dynamic);
+	textData->typeSetDetails(s, height, _spacing, scale);
+	textData->prepare();
+}
+
+void Rope::labels(const glm::vec2& textSpacing, const glm::vec2& textScale)
+{
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
-		TextData* td = new TextData(new Physical(si.pos), TextData::Dynamic);
+		TextData* td = new TextData(this, si.pos, TextData::Dynamic);
 		td->typeSetDetails(std::to_string(si.id), 10, textSpacing * 10.0f, textScale);
 		td->prepare();
-		labs.push_back(td);
 	}
-	return labs;
 }
 
 void Rope::ends()
 {
-	if (mEnds)
-	{
-		RendererBase* rb = createRopeEnds(mPolyBuilder->slices());
-		addRenderer(rb);
-	}
+	createRopeEnds(mPolyBuilder->slices());
 }
 
 void Rope::lines()
 {
-	if (mLines)
-	{
-		RendererBase* rb = createRopeLines(mPolyBuilder->slices());
-	}
+	createRopeLines(mPolyBuilder->slices());
 }
 
 void Rope::surfaces()
 {
-	if (mSurfaces)
-	{
-		RendererBase* rb = createRopeSurfaces(mPolyBuilder->slices());
-		addRenderer(rb);
-	}
+	createRopeSurfaces(mPolyBuilder->slices());
 }
 
-RendererBase* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	ShaderFactory shaders;
 	Shader* lineShader = new Shader();
@@ -121,11 +167,13 @@ RendererBase* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::vec3
 		}
 		break;
 	}
-	vao->prepare();
-	return vao;
+	MeshComponent* m = new MeshComponent(this, glm::vec3(0));
+	m->name("RopeEnds");
+	m->setup(vao, lineShader);
+	return m;
 }
 
-RendererBase* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+OWSceneComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	ShaderFactory shaders;
 	Shader* lineShader = new Shader();
@@ -183,10 +231,10 @@ RendererBase* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec
 			lineData.vertices(aLine, GL_LINE_STRIP);
 			vao->add(&lineData);
 		}
-		vao->prepare();
-		addRenderer(vao);
 	}
-	return vao;
+	MeshComponent* m = new MeshComponent(this, glm::vec3(0));
+	m->setup(vao, lineShader);
+	return m;
 }
 
 glm::vec3 centerOfPolygon(const std::vector<glm::vec3>& polygon)
@@ -210,7 +258,7 @@ static unsigned int safeWrap(const std::vector<unsigned int>& vv, size_t ndx)
 	return i < 0 ? vv[ndx] : vv[i];
 }
 
-RendererBase* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	Shader* wireShader = new Shader();
 	wireShader->loadShaders("Wires.v.glsl",
@@ -347,7 +395,8 @@ RendererBase* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<glm::
 			shader->setVector3f("viewLightPos", glm::vec3(160.0f, 60.0f, 50.0f));
 			//shader->setVector3f("viewLightPos", cameraPos);
 		};
-	vao->appendRenderCallback(pointRender);
-	vao->prepare();
-	return vao;
+	MeshComponent* m = new MeshComponent(this, glm::vec3(0));
+	m->setup(vao);
+	wireShader->appendMutator(pointRender);
+	return m;
 }

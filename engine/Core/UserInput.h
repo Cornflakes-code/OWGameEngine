@@ -106,6 +106,8 @@ public:
 		UserCommandCallbackData keyInput;
 	};
 private:
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	std::map<LogicalOperator, std::string> mLogicalOperatorStringMap;
 	void createLogicalOperatorStringMap();
 
@@ -146,6 +148,7 @@ private:
 	typedef std::function<void(void* window, glm::ivec2 dimensions)> WindowResizeCallbackType;
 
 	void init(GLApplication* app);
+#pragma warning( pop )
 protected:
 	void addKey(int keyCode, int mods, UserInput::LogicalOperator lo);
 public:

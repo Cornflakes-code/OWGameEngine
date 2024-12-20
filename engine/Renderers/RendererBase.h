@@ -7,22 +7,13 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "../Core/Renderable.h"
+#include "../Renderers/RenderTypes.h"
 
 class Shader;
 
 class OWENGINE_API RendererBase
 {
 public:
-	typedef std::function<void(const glm::mat4& proj, const glm::mat4& view,
-					const glm::mat4& model, const glm::vec3& cameraPos,
-					const Shader* shader)> RenderCallbackType;
-
-	typedef std::function<glm::vec2(const glm::vec2)> ScaleByAspectRatioType;
-
-	typedef std::function<void(const Shader* shader,
-					ScaleByAspectRatioType scaler,
-					float aspectRatio)> ResizeCallbackType;
-
 	RendererBase(Shader* sh = nullptr): mShader(sh) {}
 
 	const Shader* constShader() const  { return mShader; }
@@ -30,8 +21,6 @@ public:
 	void shader(Shader* newShader) { mShader = newShader; }
 
 	// OpenGL state functions
-	void appendRenderCallback(RenderCallbackType pfunc) { mRenderCallbacks.push_back(pfunc); }
-	void appendResizeCallback(ResizeCallbackType pfunc) { mResizeCallbacks.push_back(pfunc); }
 	void lineWidth(float width) { mLineWidth = width; }
 	void polygonMode(unsigned int face, unsigned int mode) 
 	{
@@ -47,18 +36,13 @@ public:
 		const glm::mat4& view,
 		const glm::mat4& model,
 		const glm::vec3& cameraPos,
-		RenderCallbackType renderCb = nullptr,
-		ResizeCallbackType resizeCb = nullptr) const;
+		RenderTypes::ShaderMutator renderCb = nullptr,
+		RenderTypes::ShaderResizer resizeCb = nullptr) const;
 protected:
 	virtual void doRender() const = 0;
 	virtual void validateBase() const;
 private:
 	Shader* mShader;
-	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
-	void callResizeCallback(ResizeCallbackType resizeCb) const;
-	void callRenderCallback(const glm::mat4& proj, const glm::mat4& view,
-							const glm::mat4& model, const glm::vec3& cameraPos,
-							RenderCallbackType renderCb) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	// OpenGL state variables. The default values are used as flags 
@@ -73,13 +57,5 @@ private:
 	unsigned int mDfactor = UINT_MAX;
 
 private:
-	std::vector<RenderCallbackType> mRenderCallbacks;
-	std::vector<ResizeCallbackType> mResizeCallbacks;
-	// After scene::setup it is Ok to modify Renderers
-	// but only for efficiency reasons. Modifications
-	// cannot change what is happenning else the game 
-	// loop will be broken.
-	mutable bool mFirstTimeRender = true;
-	float aspectRatio() const;
 #pragma warning( pop )
 };

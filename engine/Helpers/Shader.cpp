@@ -36,6 +36,68 @@ void Shader::debugPrint()
 	Logger::print_all(mShaderProgram);
 }
 
+void Shader::callMutators(const glm::mat4& proj, const glm::mat4& view,
+	const glm::mat4& model, const glm::vec3& cameraPos, RenderTypes::ShaderMutator renderCb) const
+{
+	use();
+	if (renderCb)
+	{
+		renderCb(proj, view, model, cameraPos, this);
+	}
+	for (auto& cb : mMutatorCallbacks)
+	{
+		cb(proj, view, model, cameraPos, this);
+	}
+}
+
+float Shader::aspectRatio() const
+{
+	return globals->physicalWindowSize().x /
+		(globals->physicalWindowSize().y * 1.0f);
+
+}
+
+
+glm::vec2 Shader::scaleByAspectRatio(const glm::vec2& toScale) const
+{
+	// This seems to work best (trial and error) when resizing the window.
+	glm::vec2 retval = toScale;
+	float _aspectRatio = aspectRatio();
+	if (_aspectRatio < 1)
+	{
+		retval.x /= _aspectRatio;
+		retval.y *= _aspectRatio;
+	}
+	else
+	{
+		retval.x /= _aspectRatio;
+		//retval.y *= _aspectRatio ;
+	}
+	return retval;
+}
+
+void Shader::callResizers(RenderTypes::ShaderResizer resizeCb) const
+{
+	if (mFirstTimeRender || globals->aspectRatioChanged())
+	{
+		// If no callback parameters then used the stored callbacks
+		use();
+		if (resizeCb)
+		{
+			resizeCb(this,
+				std::bind(&Shader::scaleByAspectRatio, this, std::placeholders::_1),
+				aspectRatio());
+		}
+		for (auto& cb : mResizeCallbacks)
+		{
+			cb(this, std::bind(&Shader::scaleByAspectRatio,
+				this, std::placeholders::_1),
+				aspectRatio());
+			mFirstTimeRender = false;
+		}
+	}
+}
+
 void Shader::use() const
 {
 	if (mShaderProgram)

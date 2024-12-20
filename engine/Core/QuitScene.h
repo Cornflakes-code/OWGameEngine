@@ -8,7 +8,7 @@
 */
 struct OWENGINE_API QuitScenePhysics: public ScenePhysicsState
 {
-	QuitScenePhysics(const Scene* owner)
+	QuitScenePhysics(Scene* owner)
 		: ScenePhysicsState(owner) {}
 	void setup() override {}
 	void variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt)) override {}

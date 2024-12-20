@@ -8,7 +8,7 @@
 */
 struct NMSRopeScenePhysics : public ScenePhysicsState
 {
-	NMSRopeScenePhysics(const Scene* owner)
+	NMSRopeScenePhysics(Scene* owner)
 		: ScenePhysicsState(owner) {}
 	void setup() override;
 	void variableTimeStep(OWUtils::Time::duration dt) override;

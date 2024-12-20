@@ -1,7 +1,7 @@
 #include "OcTree.h"
 #include <bitset>
 
-#include "Actor.h"
+#include "OWActor.h"
 
 // See also
 // https://stackoverflow.com/questions/41946007/efficient-and-well-explained-implementation-of-a-quadtree-for-2d-collision-det
@@ -14,7 +14,14 @@ OcTree::~OcTree()
 {
 }
 
-void OcTree::add(const std::vector<Actor*>& toAdd, unsigned int threshold,
+void OcTree::add(OWMovableComponent* mc, unsigned int threshold,
+    unsigned int maximumDepth)
+{
+    std::vector<OWMovableComponent*> toAdd;
+    toAdd.push_back(mc);
+}
+
+void OcTree::add(const std::vector<OWMovableComponent*>& toAdd, unsigned int threshold,
     unsigned int maximumDepth)
 {
     build(toAdd, threshold, maximumDepth, mBounds, 0);
@@ -22,7 +29,7 @@ void OcTree::add(const std::vector<Actor*>& toAdd, unsigned int threshold,
 
 const AABB negative(glm::vec3(-1), glm::vec3(-1));
 
-void OcTree::addActorToBin(Actor* a, std::vector<std::vector<Actor*>>& childBin)
+void OcTree::addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableComponent*>>& childBin)
 {
     // Center of this node
     glm::vec3 center = mBounds.center();
@@ -75,7 +82,7 @@ void OcTree::addActorToBin(Actor* a, std::vector<std::vector<Actor*>>& childBin)
     }
 }
 
-void OcTree::addBinToChildren(const std::vector<std::vector<Actor*>>& bin, 
+void OcTree::addBinToChildren(const std::vector<std::vector<OWMovableComponent*>>& bin,
                                 unsigned int threshold, unsigned int maximumDepth,
                                 const AABB& bounds, unsigned int currentDepth)
 {
@@ -110,7 +117,7 @@ void OcTree::addBinToChildren(const std::vector<std::vector<Actor*>>& bin,
     }
 }
 
-void OcTree::build(const std::vector<Actor*>& points,
+void OcTree::build(const std::vector<OWMovableComponent*>& points,
     unsigned int threshold,
     unsigned int maximumDepth,
     const AABB& bounds,
@@ -135,10 +142,10 @@ void OcTree::build(const std::vector<Actor*>& points,
         return;
     }
 
-    std::vector<std::vector<Actor*>> bin(8);
+    std::vector<std::vector<OWMovableComponent*>> bin(8);
 
-    for (Actor* a : points)
-        addActorToBin(a, bin);
+    for (OWMovableComponent* a : points)
+        addToBin(a, bin);
     addBinToChildren(bin, threshold, maximumDepth, bounds, currentDepth + 1);
 }
 

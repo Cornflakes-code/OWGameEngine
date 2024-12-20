@@ -9,7 +9,7 @@
 */
 struct NMSEndScenePhysics : public ScenePhysicsState
 {
-	NMSEndScenePhysics(const Scene* owner)
+	NMSEndScenePhysics(Scene* owner)
 		: ScenePhysicsState(owner) {}
 	void setup() override;
 	void variableTimeStep(OWUtils::Time::duration dt) override;

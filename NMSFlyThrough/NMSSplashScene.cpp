@@ -11,11 +11,11 @@
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
 #include <Core/Movie.h>
-#include <Core/MeshActor.h>
-#include <Core/Actor.h>
+#include <Core/OWActor.h>
 #include <Core/OcTree.h>
 #include <Core/Particle.h>
 #include <Core/Plane.h>
+#include <Core/MeshComponent.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/GeometricShapes.h>
@@ -23,7 +23,8 @@
 #include <Helpers/ModelFactory.h>
 #include <Helpers/ThreeDAxis.h>
 #include <Helpers/Button.h>
-
+#include <Helpers/Shader.h>
+#include <Helpers/TextData.h>
 
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
@@ -40,6 +41,38 @@ AABB NMSSplashScenePhysics::mWindowBounds;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
+static unsigned int gOctTreeThreshhold = 4;
+static unsigned int gOctTreeMaxDepth = 5;
+
+OWActor* mScenery = nullptr;
+OcTree* mOctTree = nullptr;
+/*
+std::vector<OWActor*> mRootNode;
+void traverseSceneGraph(Scene::OWActorCallbackType cb)
+{
+	for (OWActor* a : mRootNode)
+	{
+		cb(a);
+	}
+}
+*/
+
+
+void makeGlobals(Scene* owner)
+{
+	if (mScenery == nullptr)
+	{
+		mScenery = new OWActor(owner, glm::vec3(0));
+		mScenery->name("Scenery");
+		mOctTree = new OcTree();
+	}
+}
+
+NMSSplashScenePhysics::NMSSplashScenePhysics(Scene* owner)
+	: NMSWorldPhysicsState(owner)
+{
+	makeGlobals(owner);
+}
 
 void NMSSplashScenePhysics::clear() 
 {
@@ -55,33 +88,44 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
-	auto ticker = [timeStep](SceneGraphNode* sgn)
+	auto ticker = [timeStep](OWActor* a)
 		{
-			sgn->tick(timeStep);
-			return true;
+			a->tick(timeStep, OWActor::TickType::InitialTick);
 		};
-	mRootNode->traverse(ticker);
+	//owner()->traverseSceneGraph(ticker);
 
-	std::vector<std::pair<Actor*, Actor*>> collisions;
-	auto collider = [&collisions](OcTree* o)
+	auto collider = [](OcTree* o)
 		{
 			int inc = 0;
 			for (int i = 0; i < o->mPoints.size(); i++)
 			{
 				inc++;
-				Actor* a1 = o->mPoints[i];
-				for (int j = inc; j < o->mPoints.size(); j++)
+				OWMovableComponent* a1 = o->mPoints[i];
+				if (a1->canCollide())
 				{
-					Actor* a2 = o->mPoints[j];
-					if (a1->bounds().intersects(a2->bounds()))
+					for (int j = inc; j < o->mPoints.size(); j++)
 					{
-						collisions.push_back({ a1, a2 });
+						OWMovableComponent* a2 = o->mPoints[j];
+						if (a2->canCollide())
+						{
+							if (a1->canCollide(a2))
+							{
+								if (a1->bounds().intersects(a2->bounds()))
+								{
+									if (a1->collides(a2))
+									{
+										a1->collided(a2);
+										a2->collided(a1);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
 			return true;
 		};
-	mOctTree->traverse(collider);
+	//mOctTree->traverse(collider);
 #ifdef INCLUDE_WELCOME
 //	mWelcomeMover.move(velocity);
 	//mWelcomeMover.bounceIfCollide(mWindowBounds);
@@ -156,6 +200,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 
 void NMSSplashScenePhysics::setup()
 {
+	std::vector<OWMovableComponent*> addToOcTree;
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 10.0f;
@@ -189,72 +234,70 @@ void NMSSplashScenePhysics::setup()
 	int fontHeight = 24;
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());
-	
+	owner()->mRootNode.push_back(mScenery);
+
 #ifdef INCLUDE_WELCOME
 	glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
-	Physical* ph1 = new Physical(NMSScene::world().center());
+	
 	glm::vec3 direction1 = Compass::Rose[Compass::North] +
 		Compass::Rose[Compass::East] +
 		Compass::Rose[Compass::In];
-	ph1->velocity(direction1, mSpeed);
-	mWelcome = new TextData(ph1, TextData::Dynamic);
-	mWelcome->font("arial.ttf", fontHeight);
-	mWelcome->colour({ 0.0, 0.0, 0.0, 1.0f });
-	mWelcome->spacing(10 * nice.x, 10 * nice.y, scale);
-	mWelcome->text("Welcome to reality.");
-	mWelcome->prepare();
-	mRootNode->addChild(mWelcome);
+	TextData* welcome = new TextData(mScenery, glm::vec3(0), TextData::Dynamic);
+	welcome->velocity(direction1, mSpeed);
+	welcome->font("arial.ttf", fontHeight);
+	welcome->colour({ 0.0, 0.0, 0.0, 1.0f });
+	welcome->spacing(10 * nice.x, 10 * nice.y, scale);
+	welcome->text("Welcome to reality.");
+	welcome->prepare();
+	addToOcTree.push_back(welcome);
 #endif
 
 #ifdef INCLUDE_ENJOY
 	glm::vec3 direction2 = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West];
-	Physical* ph2 = new Physical(NMSScene::world().center());
-	ph2->velocity(direction2, mSpeed);
-	mEnjoy = new TextData(ph2, TextData::Static);
-	mEnjoy->font("arial.ttf", fontHeight);
-	mEnjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
-	mEnjoy->spacing(nice.x, nice.y, scale);
-	mEnjoy->text("Enjoy it while you can");
-	mEnjoy->prepare();
-	mRootNode->addChild(mEnjoy);
+	TextData* enjoy = new TextData(mScenery, glm::vec3(0), TextData::Static);
+	enjoy->velocity(direction2, mSpeed);
+	enjoy->font("arial.ttf", fontHeight);
+	enjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
+	enjoy->spacing(nice.x, nice.y, scale);
+	enjoy->text("Enjoy it while you can");
+	enjoy->prepare();
+	addToOcTree.push_back(enjoy);
 #endif
 
 #ifdef INCLUDE_IMPORTED_MODEL
-	MeshActor* dice = new MeshActor(new Physical(), nullptr);
-	dice->mName = "Dice";
+	MeshComponent* dice = new MeshComponent(mScenery, glm::vec3(0));
+	dice->name("Dice");
 	ModelData md = ModelFactory().create("Dice2.obj", false);
 	Shader* shader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
 	shader->setStandardUniformNames("pvm");
 	dice->setup(md.children[0].meshes[0], shader, GL_TRIANGLES, 0);
 	glm::vec3 scaleBy = glm::vec3(10.0, 10.0, 10.0);
-	dice->scale(scaleBy);
-	dice->readyForRender();
-	mRootNode->addChild(dice);
+	auto mm = [scaleBy](const glm::mat4& model)
+		{
+			return glm::scale(model, scaleBy);
+		};
+	dice->addModelModifier(mm);
+	addToOcTree.push_back(dice);
 #endif
 #ifdef INCLUDE_STAR_RENDER
 	mButtonData.mButtonShape = GeometricShapes::goldenRectangle(10);
 	mButtonData.mText = mEnjoyData;
 	mButtonData.mText.text("Click Me");
 #endif
-	if (!mOctTree)
-	{
-		mOctTree = new OcTree();
-		std::vector<Actor*> addToOcTree;
-		addToOcTree.push_back(mWelcome);
-		addToOcTree.push_back(mEnjoy);
-		mOctTree->build(addToOcTree, 4, 3, _world);
-	}
 	// Create planes at the boundaries of the world
 	std::vector<std::vector<glm::vec3>> surfaces = _world.surfaces();
-	Plane* p1 = new Plane(surfaces[0]);
-	Plane* p2 = new Plane(surfaces[1]);
-	Plane* p3 = new Plane(surfaces[2]);
-	Plane* p4 = new Plane(surfaces[3]);
-	Plane* p5 = new Plane(surfaces[4]);
-	Plane* p6 = new Plane(surfaces[5]);
+	glm::vec3 pos(0);
+	Plane* p1 = new Plane(mScenery, pos, surfaces[0]);
+//	Plane* p2 = new Plane(mScenery, pos, surfaces[1]);
+//	Plane* p3 = new Plane(mScenery, pos, surfaces[2]);
+//	Plane* p4 = new Plane(mScenery, pos, surfaces[3]);
+//	Plane* p5 = new Plane(mScenery, pos, surfaces[4]);
+//	Plane* p6 = new Plane(mScenery, pos, surfaces[5]);
+	addToOcTree.push_back(dice);
+	mOctTree->build(addToOcTree, gOctTreeThreshhold, gOctTreeMaxDepth, _world);
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////
@@ -267,19 +310,18 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 {
 	NMSSplashScenePhysics* sps 
 		= dynamic_cast<NMSSplashScenePhysics*>(state);
-	mRootNode = state->mRootNode;
 
 #ifdef INCLUDE_IMPORTED_MODEL
 #endif
 #ifdef INCLUDE_XYZ_AXIS
-	ThreeDAxis* axis = new ThreeDAxis(new Physical(), nullptr);
+	ThreeDAxis* axis = new ThreeDAxis(this, world().center());
 	axis->createAxisData(world());
-	mRootNode->addChild(axis);
+	mRootNode.push_back(axis);
 
 #endif
 #ifdef INCLUDE_FULLSCREEN
-	MeshActor* fullScreen = new MeshActor(new Physical(), nullptr);
-	fullScreen->mName = "Fullscreen";
+	MeshComponent* fullScreen = new MeshComponent(mScenery, glm::vec3(0));
+	fullScreen->name("Fullscreen");
 	Shader* sh = new Shader("thebookofshaders.v.glsl",
 		"thebookofshaders.f.glsl",
 		"thebookofshaders_square.g.glsl");
@@ -298,16 +340,14 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 			shader->setFloat("u_time", globals->secondsSinceLoad());
 		};
 	auto fullScreenResize = [](const Shader* shader,
-		RendererBase::ScaleByAspectRatioType scaleByAspectRatio,
+		RenderTypes::ScaleByAspectRatioType scaleByAspectRatio,
 		float OW_UNUSED(aspectRatio))
 		{
 			glm::vec2 vv = globals->physicalWindowSize();
 			shader->setVector2f("u_resolution", vv);
 		};
-	fullScreen->appendRenderCallback(fullScreenRender);
-	fullScreen->appendResizeCallback(fullScreenResize);
-	fullScreen->readyForRender();
-	mRootNode->addChild(fullScreen);
+	sh->appendMutator(fullScreenRender);
+	sh->appendResizer(fullScreenResize);
 #endif
 
 #ifdef INCLUDE_STAR_RENDER
@@ -376,7 +416,11 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	mStarRenderer->render(proj, view, model, cameraPos, nullptr, pointRender);
 	mButton->render(proj, view, model, cameraPos);
 #endif
-	mRootNode->render(proj, view, model, cameraPos);
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
+		{
+			a->render(proj, view, model, cameraPos);
+		};
+	traverseSceneGraph(rend);
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 

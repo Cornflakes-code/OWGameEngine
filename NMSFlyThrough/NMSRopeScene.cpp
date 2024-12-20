@@ -14,7 +14,7 @@
 
 void NMSRopeScenePhysics::setup()
 {
-	Rope* rope = new Rope(new Physical(), nullptr);
+	Rope* rope = new Rope(this->owner(), glm::vec3(0));
 	if (!rope->prepare())
 		; // failed.
 	const AABB& _world = NMSScene::world();
@@ -30,26 +30,15 @@ void NMSRopeScenePhysics::setup()
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	rope->visualComponents(false, false, true);
-	rope->prepareRope(30822, ropeZoom.x, ropeZoom.y, 45);
-	mRootNode->addChild(rope);
+	rope->prepareRope(30822, ropeZoom.x, ropeZoom.y, 45, fontHeight, niceTextSpacing, niceTextScale);
+	rope->visualComponents(true, true, true, true);
+	owner()->mRootNode.push_back(rope);
 	mCameraFocus = rope->bounds().center();
-
-	std::vector<Actor*> text = rope->labels(niceTextSpacing, niceTextScale);
-	for (Actor* a : text)
-	{
-		mRootNode->addChild(a);
-	}
-
-	TextData* textData = new TextData(new Physical({ 0.0f, 0.0f, 0.0f }), TextData::Dynamic);
-	textData->typeSetDetails("Ropes", fontHeight, niceTextSpacing * 10.0f, niceTextScale);
-	textData->prepare();
-	mRootNode->addChild(textData);
-	LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
+	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(60.0f, 60.0f, -150.0f));
-	ls->prepare();
-	mRootNode->addChild(ls);
+	//ls->prepare();
+	//mRootNode->addChild(ls);
 }
 
 void NMSRopeScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
@@ -122,7 +111,6 @@ NMSRopeScene::NMSRopeScene(const Movie* _movie)
 
 void NMSRopeScene::doSetup(ScenePhysicsState* state)
 {
-	mRootNode = state->mRootNode;
 }
 
 void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),
@@ -130,7 +118,11 @@ void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),
 	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	mRootNode->render(proj, view, model, cameraPos, nullptr, nullptr);
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
+		{
+			a->render(proj, view, model, cameraPos);
+		};
+	traverseSceneGraph(rend);
 }
 
 void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
