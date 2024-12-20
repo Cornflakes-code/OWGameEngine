@@ -9,7 +9,7 @@
 #include "Logger.h"
 #include "LogStream.h"
 
-#include "Camera.h"
+#include "../Cameras/Camera.h"
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif

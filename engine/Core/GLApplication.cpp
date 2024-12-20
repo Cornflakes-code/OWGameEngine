@@ -13,7 +13,7 @@ OWENGINE_API GlobalSettings* globals = nullptr;
 #include "SaveAndRestore.h"
 #include "GlobalSettings.h"
 #include "Movie.h"
-#include "Camera.h"
+#include "../Cameras/Camera.h"
 
 #pragma comment( lib, "glfw3.lib" )
 #pragma comment (lib, "OpenGL32.lib")

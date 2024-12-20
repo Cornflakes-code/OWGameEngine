@@ -190,12 +190,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Core\Actor.h" />
-    <ClInclude Include="..\Core\BoundingBox.h" />
-    <ClInclude Include="..\Core\BoundingFrustum.h" />
-    <ClInclude Include="..\Core\BoundingPlane.h" />
-    <ClInclude Include="..\Core\BoundingSphere.h" />
-    <ClInclude Include="..\Core\Camera.h" />
     <ClInclude Include="..\Core\CommonUtils.h" />
     <ClInclude Include="..\Core\ErrorHandling.h" />
     <ClInclude Include="..\Core\GLApplication.h" />
@@ -209,15 +203,11 @@
     <ClInclude Include="..\Core\Movie.h" />
     <ClInclude Include="..\Core\OcTree.h" />
     <ClInclude Include="..\Core\OWActor.h" />
-    <ClInclude Include="..\Core\OWBounding.h" />
     <ClInclude Include="..\Core\OWComponent.h" />
     <ClInclude Include="..\Core\OWMovableComponent.h" />
     <ClInclude Include="..\Core\OWObject.h" />
     <ClInclude Include="..\Core\OWSceneComponent.h" />
-    <ClInclude Include="..\Core\Particle.h" />
-    <ClInclude Include="..\Core\Plane.h" />
     <ClInclude Include="..\Core\QuitScene.h" />
-    <ClInclude Include="..\Core\Ray.h" />
     <ClInclude Include="..\Core\Renderable.h" />
     <ClInclude Include="..\Core\ResourcePathFactory.h" />
     <ClInclude Include="..\Core\SaveAndRestore.h" />
@@ -225,7 +215,14 @@
     <ClInclude Include="..\Core\SceneGraphNode.h" />
     <ClInclude Include="..\Core\ScenePhysicsState.h" />
     <ClInclude Include="..\Core\UserInput.h" />
-    <ClInclude Include="..\glad\include\glad\glad.h" />
+    <ClInclude Include="..\Geometry\BoundingBox.h" />
+    <ClInclude Include="..\Geometry\BoundingFrustum.h" />
+    <ClInclude Include="..\Geometry\BoundingPlane.h" />
+    <ClInclude Include="..\Geometry\BoundingSphere.h" />
+    <ClInclude Include="..\Geometry\OWBounding.h" />
+    <ClInclude Include="..\Geometry\Particle.h" />
+    <ClInclude Include="..\Geometry\Plane.h" />
+    <ClInclude Include="..\Geometry\Ray.h" />
     <ClInclude Include="..\Helpers\Button.h" />
     <ClInclude Include="..\Helpers\ComputeNormals.h" />
     <ClInclude Include="..\Helpers\FontFactory.h" />
@@ -259,12 +256,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
-    <ClCompile Include="..\Core\Actor.cpp" />
-    <ClCompile Include="..\Core\BoundingBox.cpp" />
-    <ClCompile Include="..\Core\BoundingFrustum.cpp" />
-    <ClCompile Include="..\Core\BoundingPlane.cpp" />
-    <ClCompile Include="..\Core\BoundingSphere.cpp" />
-    <ClCompile Include="..\Core\Camera.cpp" />
     <ClCompile Include="..\Core\CommonUtils.cpp" />
     <ClCompile Include="..\Core\ErrorHandling.cpp" />
     <ClCompile Include="..\Core\GLApplication.cpp" />
@@ -278,15 +269,11 @@
     <ClCompile Include="..\Core\Movie.cpp" />
     <ClCompile Include="..\Core\OcTree.cpp" />
     <ClCompile Include="..\Core\OWActor.cpp" />
-    <ClCompile Include="..\Core\OWBounding.cpp" />
     <ClCompile Include="..\Core\OWComponent.cpp" />
     <ClCompile Include="..\Core\OWMovableComponent.cpp" />
     <ClCompile Include="..\Core\OWObject.cpp" />
     <ClCompile Include="..\Core\OWSceneComponent.cpp" />
-    <ClCompile Include="..\Core\Particle.cpp" />
-    <ClCompile Include="..\Core\Plane.cpp" />
     <ClCompile Include="..\Core\QuitScene.cpp" />
-    <ClCompile Include="..\Core\Ray.cpp" />
     <ClCompile Include="..\Core\Renderable.cpp" />
     <ClCompile Include="..\Core\ResourcePathFactory.cpp" />
     <ClCompile Include="..\Core\SaveAndRestore.cpp" />
@@ -294,6 +281,14 @@
     <ClCompile Include="..\Core\SceneGraphNode.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
+    <ClCompile Include="..\Geometry\BoundingBox.cpp" />
+    <ClCompile Include="..\Geometry\BoundingFrustum.cpp" />
+    <ClCompile Include="..\Geometry\BoundingPlane.cpp" />
+    <ClCompile Include="..\Geometry\BoundingSphere.cpp" />
+    <ClCompile Include="..\Geometry\OWBounding.cpp" />
+    <ClCompile Include="..\Geometry\Particle.cpp" />
+    <ClCompile Include="..\Geometry\Plane.cpp" />
+    <ClCompile Include="..\Geometry\Ray.cpp" />
     <ClCompile Include="..\Helpers\Button.cpp" />
     <ClCompile Include="..\Helpers\ComputeNormals.cpp" />
     <ClCompile Include="..\Helpers\FontFactory.cpp" />

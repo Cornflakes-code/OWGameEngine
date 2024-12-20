@@ -7,7 +7,7 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "../Core/BoundingBox.h"
+#include "../Geometry/BoundingBox.h"
 
 #include "../Helpers/Texture.h"
 

@@ -8,7 +8,7 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "BoundingBox.h"
+#include "../Geometry/BoundingBox.h"
 
 #include "ScenePhysicsState.h"
 

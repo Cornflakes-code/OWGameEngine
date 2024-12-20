@@ -3,7 +3,7 @@
 #include <Core/ErrorHandling.h>
 #include <Core/LogStream.h>
 #include <Core/CommonUtils.h>
-#include <Core/BoundingBox.h>
+#include <Geometry/BoundingBox.h>
 
 void PolygonBuilder::clear()
 {

@@ -8,7 +8,7 @@
 #include "ErrorHandling.h"
 #include "LogStream.h"
 #include "Movie.h"
-#include "Camera.h"
+#include "../Cameras/Camera.h"
 
 OWUtils::Time::time_point GlobalSettings::mLoadTime;
 extern OWENGINE_API GlobalSettings* globals;

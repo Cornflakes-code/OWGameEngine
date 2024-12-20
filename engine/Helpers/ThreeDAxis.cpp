@@ -1,6 +1,6 @@
 #include "ThreeDAxis.h"
 
-#include <Core/Camera.h>
+#include <Cameras/Camera.h>
 #include <Core/OWActor.h>
 #include <Core/GlobalSettings.h>
 #include <Helpers/FreeTypeFontAtlas.h>

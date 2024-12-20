@@ -10,7 +10,7 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-#include "ErrorHandling.h"
+#include "../Core/ErrorHandling.h"
 #include "OWBounding.h"
 
 // https://en.wikibooks.org/wiki/OpenGL_Programming/Bounding_box

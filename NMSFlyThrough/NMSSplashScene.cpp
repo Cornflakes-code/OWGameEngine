@@ -6,15 +6,15 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-#include <Core/Camera.h>
+#include <Cameras/Camera.h>
 #include <Core/ErrorHandling.h>
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
 #include <Core/Movie.h>
 #include <Core/OWActor.h>
 #include <Core/OcTree.h>
-#include <Core/Particle.h>
-#include <Core/Plane.h>
+#include <Geometry/Particle.h>
+#include <Geometry/Plane.h>
 #include <Core/MeshComponent.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>

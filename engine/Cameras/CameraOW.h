@@ -1,7 +1,7 @@
 #pragma once
 #include <set>
 
-#include <Core/Camera.h>
+#include <Cameras/Camera.h>
 #include <Core/ErrorHandling.h>
 #include <Core/ListenerHelper.h>
 #include <Core/UserInput.h>

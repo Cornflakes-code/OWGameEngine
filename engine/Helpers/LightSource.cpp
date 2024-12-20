@@ -1,7 +1,5 @@
 #include "LightSource.h"
 
-#include "../Core/Particle.h"
-
 #include <Renderers/LightRenderer.h>
 #include <Renderers/VAOBuffer.h>
 

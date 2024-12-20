@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext/matrix_projection.hpp>
 
-#include <Core/Camera.h>
+#include <Cameras/Camera.h>
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
 #include <Core/ResourcePathFactory.h>

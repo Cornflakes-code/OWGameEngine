@@ -3,8 +3,8 @@
 #include <glm/glm.hpp>
 
 #include "../OWEngine/OWEngine.h"
-#include "BoundingFrustum.h"
-#include "UserInput.h"
+#include "../Geometry/BoundingFrustum.h"
+#include "../Core/UserInput.h"
 
 /*
 	Abstract interface for a Camera. It is intended that this class provides 

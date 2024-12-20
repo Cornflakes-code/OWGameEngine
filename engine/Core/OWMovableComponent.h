@@ -2,7 +2,7 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "OWComponent.h"
-#include "BoundingBox.h"
+#include "../Geometry/BoundingBox.h"
 
 class OWENGINE_API PhysicalTypeMetaData
 {

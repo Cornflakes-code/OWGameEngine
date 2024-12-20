@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include <Core/Camera.h>
+#include <Cameras/Camera.h>
 
 #include <Core/ErrorHandling.h>
 

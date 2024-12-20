@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "../Core/BoundingBox.h"
+#include "../Geometry/BoundingBox.h"
 #include "../Core/ErrorHandling.h"
 
 #include "../Helpers/MeshDataLight.h"

@@ -8,7 +8,7 @@
 #endif
 
 #include "Texture.h"
-#include <Core/BoundingBox.h>
+#include <Geometry/BoundingBox.h>
 
 struct aiMesh;
 struct aiScene;

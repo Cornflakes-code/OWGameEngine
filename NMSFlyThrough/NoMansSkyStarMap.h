@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
-#include <Core/BoundingBox.h>
+#include <Geometry/BoundingBox.h>
 
 #include <Core/OWActor.h>
 

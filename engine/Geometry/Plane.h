@@ -3,8 +3,8 @@
 #include <glm/glm.hpp>
 #include "BoundingBox.h"
 #include "BoundingPlane.h"
-#include "Renderable.h"
-#include "OWSceneComponent.h"
+#include "../Core/Renderable.h"
+#include "../Core/OWSceneComponent.h"
 
 // Note : This class defines infinite planes.
 class OWENGINE_API Plane: public OWSceneComponent

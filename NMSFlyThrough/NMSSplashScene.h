@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include <Core/BoundingBox.h>
+#include <Geometry/BoundingBox.h>
 
 #include "NMSScene.h"
 

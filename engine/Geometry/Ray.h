@@ -4,8 +4,8 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "BoundingBox.h"
-#include "Renderable.h"
-#include "OWSceneComponent.h"
+#include "../Core/Renderable.h"
+#include "../Core/OWSceneComponent.h"
 
 class OWENGINE_API Ray: public OWSceneComponent
 {

@@ -4,7 +4,7 @@
 #include <limits.h>
 
 #include <glm/glm.hpp>
-#include <Core/BoundingBox.h>
+#include <Geometry/BoundingBox.h>
 
 struct MeshDataLight
 {

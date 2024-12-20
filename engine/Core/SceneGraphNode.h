@@ -9,7 +9,8 @@
 
 #include "MovableObject.h"
 #include "ErrorHandling.h"
-#include "BoundingBox.h"
+#include "../Geometry/BoundingBox.h"
+
 #include "Renderable.h"
 
 #include "../Renderers/RendererBase.h"

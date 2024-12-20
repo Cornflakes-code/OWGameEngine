@@ -3,7 +3,8 @@
 #include <functional>
 #include <vector>
 
-#include "BoundingBox.h"
+#include "../Geometry/BoundingBox.h"
+
 
 // This has some seriously good links
 // https://stackoverflow.com/questions/5963954/fast-templated-c-octree-implementation

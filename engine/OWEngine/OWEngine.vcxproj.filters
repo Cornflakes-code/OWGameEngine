@@ -31,13 +31,16 @@
     <Filter Include="Source Files\Renderers">
       <UniqueIdentifier>{3c4bec93-a36e-4b8a-93f0-59e7d8e8bec3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Geometry">
+      <UniqueIdentifier>{32b642c3-6164-474f-92f5-f4883521dab3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Geometry">
+      <UniqueIdentifier>{e67a20a3-748c-4467-ac31-b06845f9dd30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\Camera.h">
-      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Core\GLApplication.h">
       <Filter>Header Files\Core</Filter>
@@ -76,9 +79,6 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="OWEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\glad\include\glad\glad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Core\GlobalSettings.h">
@@ -135,9 +135,6 @@
     <ClInclude Include="..\Helpers\MeshDataInstance.h">
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Core\BoundingBox.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\CommonUtils.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -159,9 +156,6 @@
     <ClInclude Include="..\Helpers\ComputeNormals.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Core\Actor.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\MovableObject.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -178,21 +172,6 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="..\Core\OcTree.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\Particle.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\BoundingSphere.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\BoundingFrustum.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\Ray.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\Plane.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Core\Renderable.h">
@@ -213,16 +192,10 @@
     <ClInclude Include="..\Core\OWMovableComponent.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Core\OWBounding.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderers\OWRenderable.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="..\Core\MeshComponent.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\BoundingPlane.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Helpers\Button.h">
@@ -231,13 +204,34 @@
     <ClInclude Include="..\Renderers\RenderTypes.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Geometry\BoundingBox.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\BoundingFrustum.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\BoundingPlane.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\BoundingSphere.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\OWBounding.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Particle.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Plane.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Ray.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Camera.cpp">
-      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\GLApplication.cpp">
       <Filter>Source Files\Core</Filter>
@@ -338,9 +332,6 @@
     <ClCompile Include="..\Helpers\MeshDataInstance.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\BoundingBox.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\CommonUtils.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -362,9 +353,6 @@
     <ClCompile Include="..\Helpers\ComputeNormals.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\Actor.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\MovableObject.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -381,21 +369,6 @@
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\OcTree.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Particle.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\BoundingSphere.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\BoundingFrustum.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Ray.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Plane.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Renderable.cpp">
@@ -416,20 +389,38 @@
     <ClCompile Include="..\Core\OWMovableComponent.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\OWBounding.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderers\OWRenderable.cpp">
       <Filter>Source Files\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\MeshComponent.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\BoundingPlane.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Helpers\Button.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\BoundingBox.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\BoundingFrustum.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\BoundingPlane.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\BoundingSphere.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\OWBounding.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Particle.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Plane.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Ray.cpp">
+      <Filter>Source Files\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

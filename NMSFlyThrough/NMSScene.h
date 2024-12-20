@@ -2,7 +2,7 @@
 
 #include <Core/Scene.h>
 
-#include <Core/BoundingBox.h>
+#include <Geometry/BoundingBox.h>
 
 struct NMSWorldPhysicsState: public ScenePhysicsState
 {
