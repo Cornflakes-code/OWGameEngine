@@ -5,7 +5,7 @@
 
 #include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
-#include <Helpers/GeometricShapes.h>
+#include <Geometry/GeometricShapes.h>
 
 #define GLSL(src) "#version 330 core\n" #src
 
@@ -27,10 +27,7 @@ LightSource::LightSource(OWActor* _owner, const glm::vec3& _position)
 {
     name("Light");
 /*
-    Shader* shader = new Shader();
-    shader->loadShaders(lightSourceVertexShader(),
-        ShaderFactory::boilerPlateFragmentShader(),
-        ShaderFactory::boilerPlateGeometryShader());
+    shader->loadBoilerPlates(),
     shader->setStandardUniformNames("pvm");
 */
 }

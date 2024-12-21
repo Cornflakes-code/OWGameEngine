@@ -15,4 +15,5 @@ void TextData::prepare()
 	ren->setup(this, position());
 	bounds(ren->bounds());
 	addRenderer(ren);
+	readyForRender();
 }

@@ -8,16 +8,23 @@
 class OWENGINE_API OWSceneComponent : public OWMovableComponent, public OWRenderable
 {
 	// ModelModifierCallbackType propably should be replaced with a quaternian.
-	typedef std::function<glm::mat4(const glm::mat4& model)> ModelModifierCallbackType;
-	std::vector< ModelModifierCallbackType> mModelChangers;
+	//typedef std::function<glm::mat4(const glm::mat4& model)> ModelModifierCallbackType;
+	//std::vector< ModelModifierCallbackType> mModelChangers;
 	RendererBase* mRenderer = nullptr;
 	bool mRenderThis = true;
+	bool mReadyForRender = false;
+	glm::mat4 mModelMatrix = glm::mat4(1.0f);
+protected:
+	void readyForRender() { mReadyForRender = true; }
 public:
+	bool readyForRender() const { return mReadyForRender; }
 	OWSceneComponent(OWActor* _owner, const glm::vec3& _position);
-
 	typedef std::function<void(OWSceneComponent* sc)> OWSceneComponentCallbackType;
 	void addRenderer(RendererBase* r) { mRenderer = r; }
-	void addModelModifier(ModelModifierCallbackType cb) { mModelChangers.push_back(cb); }
+	void scale(const glm::vec3& factor);
+	void translate(const glm::vec3& factor);
+	void rotate(float angle, const glm::vec3& factor);
+	//void addModelModifier(ModelModifierCallbackType cb) { mModelChangers.push_back(cb); }
 	int tick(float dt) override
 	{
 		return OWMovableComponent::tick(dt);

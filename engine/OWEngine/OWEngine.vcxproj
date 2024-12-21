@@ -219,6 +219,8 @@
     <ClInclude Include="..\Geometry\BoundingFrustum.h" />
     <ClInclude Include="..\Geometry\BoundingPlane.h" />
     <ClInclude Include="..\Geometry\BoundingSphere.h" />
+    <ClInclude Include="..\Geometry\Box.h" />
+    <ClInclude Include="..\Geometry\GeometricShapes.h" />
     <ClInclude Include="..\Geometry\OWBounding.h" />
     <ClInclude Include="..\Geometry\Particle.h" />
     <ClInclude Include="..\Geometry\Plane.h" />
@@ -227,7 +229,6 @@
     <ClInclude Include="..\Helpers\ComputeNormals.h" />
     <ClInclude Include="..\Helpers\FontFactory.h" />
     <ClInclude Include="..\Helpers\FreeTypeFontAtlas.h" />
-    <ClInclude Include="..\Helpers\GeometricShapes.h" />
     <ClInclude Include="..\Helpers\LightSource.h" />
     <ClInclude Include="..\Helpers\MeshDataHeavy.h" />
     <ClInclude Include="..\Helpers\MeshDataInstance.h" />
@@ -285,6 +286,8 @@
     <ClCompile Include="..\Geometry\BoundingFrustum.cpp" />
     <ClCompile Include="..\Geometry\BoundingPlane.cpp" />
     <ClCompile Include="..\Geometry\BoundingSphere.cpp" />
+    <ClCompile Include="..\Geometry\Box.cpp" />
+    <ClCompile Include="..\Geometry\GeometricShapes.cpp" />
     <ClCompile Include="..\Geometry\OWBounding.cpp" />
     <ClCompile Include="..\Geometry\Particle.cpp" />
     <ClCompile Include="..\Geometry\Plane.cpp" />
@@ -293,7 +296,6 @@
     <ClCompile Include="..\Helpers\ComputeNormals.cpp" />
     <ClCompile Include="..\Helpers\FontFactory.cpp" />
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp" />
-    <ClCompile Include="..\Helpers\GeometricShapes.cpp" />
     <ClCompile Include="..\Helpers\LightSource.cpp" />
     <ClCompile Include="..\Helpers\MacroRecorder.cpp" />
     <ClCompile Include="..\Helpers\MeshDataHeavy.cpp" />

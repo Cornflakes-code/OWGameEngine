@@ -15,7 +15,7 @@ public:
 									float outerRadius, 
 									float arcRadians);
 	static std::vector<glm::vec3> rectangle(const glm::vec2& dims,
-		const glm::vec2& bottomLeft = { 0.0f, 0.0f });
+											const glm::vec2& bottomLeft = { 0.0f, 0.0f });
 	static std::vector<glm::vec3> goldenRectangle(float scale,
 		const glm::vec2& bottomLeft = { 0.0f, 0.0f });
 	static std::vector<glm::vec3> pointsOnSphere(

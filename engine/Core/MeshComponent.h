@@ -16,7 +16,7 @@ private:
 public:
 	MeshComponent(OWActor* _owner, const glm::vec3&_position) 
 		: OWSceneComponent(_owner, _position) {}
-	void setup(const MeshDataHeavy* md, Shader* shader, 
+	void setup(const MeshDataHeavy* md, Shader* shader,
 				unsigned int vertexMode, unsigned int vertexLocation);
 	void setup(const MeshDataLight* md, Shader* shader);
 	void setup(const std::vector<glm::vec4>& v, Shader* shader,
@@ -24,6 +24,5 @@ public:
 	void setup(const MeshDataInstance* md, Shader* shader);
 	void setup(VAOBuffer* vao, Shader* shader = nullptr);
 	virtual bool canCollide() { return mCanCollide; }
-
 private:
 };

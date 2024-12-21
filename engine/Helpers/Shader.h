@@ -58,6 +58,7 @@ public:
 		const glm::vec3& cameraPos);
 	void create(const std::string& vertexPath, const std::string& fragPath,
 			const std::string& geometryPath);
+	void loadBoilerPlates();
 	void loadShaders(const std::string& vertexShader, 
 					 const std::string& fragShader,
 					 const std::string& geometryShader);

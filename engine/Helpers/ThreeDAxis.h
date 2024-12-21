@@ -2,7 +2,7 @@
 #include <vector>
 
 #include <Core/OWActor.h>
-#include <Helpers/GeometricShapes.h>
+#include <Geometry/GeometricShapes.h>
 
 class TextData;
 class OWENGINE_API ThreeDAxis : public OWActor

@@ -18,7 +18,7 @@
 #include <Core/MeshComponent.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
-#include <Helpers/GeometricShapes.h>
+#include <Geometry/GeometricShapes.h>
 #include <Helpers/ModelData.h>
 #include <Helpers/ModelFactory.h>
 #include <Helpers/ThreeDAxis.h>
@@ -273,13 +273,13 @@ void NMSSplashScenePhysics::setup()
 	ModelData md = ModelFactory().create("Dice2.obj", false);
 	Shader* shader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
 	shader->setStandardUniformNames("pvm");
-	dice->setup(md.children[0].meshes[0], shader, GL_TRIANGLES, 0);
 	glm::vec3 scaleBy = glm::vec3(10.0, 10.0, 10.0);
 	auto mm = [scaleBy](const glm::mat4& model)
 		{
 			return glm::scale(model, scaleBy);
 		};
-	dice->addModelModifier(mm);
+	dice->scale(glm::vec3(10.0, 10.0, 10.0));
+	dice->setup(md.children[0].meshes[0], shader, GL_TRIANGLES, 0);
 	addToOcTree.push_back(dice);
 #endif
 #ifdef INCLUDE_STAR_RENDER
@@ -290,7 +290,11 @@ void NMSSplashScenePhysics::setup()
 	// Create planes at the boundaries of the world
 	std::vector<std::vector<glm::vec3>> surfaces = _world.surfaces();
 	glm::vec3 pos(0);
-	Plane* p1 = new Plane(mScenery, pos, surfaces[0]);
+	Plane* p1 = new Plane(mScenery, pos, surfaces[0]); 
+	p1->name("Plane1"); 
+	p1->scale(glm::vec3(10));
+	//p1->translate(glm::vec3(10, 0, 0));
+	p1->prepare();
 //	Plane* p2 = new Plane(mScenery, pos, surfaces[1]);
 //	Plane* p3 = new Plane(mScenery, pos, surfaces[2]);
 //	Plane* p4 = new Plane(mScenery, pos, surfaces[3]);

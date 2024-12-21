@@ -17,7 +17,7 @@
 #include <Core/ErrorHandling.h>
 #include <Core/GlobalSettings.h>
 
-#include <Helpers/GeometricShapes.h>
+#include <Geometry/GeometricShapes.h>
 #include <Helpers/Shader.h>
 #include <Helpers/TextData.h>
 

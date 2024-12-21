@@ -55,11 +55,8 @@ void ThreeDAxis::createAxisData(const AABB& w)
 	boxUnion |= box;
 	createText(axisCoords[3], "Z", TextData::Center, box);
 	boxUnion |= box;
-	ShaderFactory shaders;
 	Shader* lineShader = new Shader();
-	lineShader->loadShaders(shaders.boilerPlateVertexShader(),
-		shaders.boilerPlateFragmentShader(),
-		shaders.boilerPlateGeometryShader());
+	lineShader->loadBoilerPlates();
 	lineShader->setStandardUniformNames("pvm");
 	MeshComponent* axis = new MeshComponent(this, glm::vec3(0));
 	axis->name("Axis");

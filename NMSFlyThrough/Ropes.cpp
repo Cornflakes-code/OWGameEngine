@@ -146,11 +146,8 @@ void Rope::surfaces()
 
 OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
-	ShaderFactory shaders;
 	Shader* lineShader = new Shader();
-	lineShader->loadShaders(shaders.boilerPlateVertexShader(),
-		shaders.boilerPlateFragmentShader(),
-		shaders.boilerPlateGeometryShader());
+	lineShader->loadBoilerPlates();
 	lineShader->setStandardUniformNames("pvm");
 	VAOBuffer* vao = new VAOBuffer(lineShader, VAOBuffer::DRAW_MULTI);
 
@@ -175,11 +172,8 @@ OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::
 
 OWSceneComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
-	ShaderFactory shaders;
 	Shader* lineShader = new Shader();
-	lineShader->loadShaders(shaders.boilerPlateVertexShader(),
-		shaders.boilerPlateFragmentShader(),
-		shaders.boilerPlateGeometryShader());
+	lineShader->loadBoilerPlates();
 	lineShader->setStandardUniformNames("pvm");
 
 	VAOBuffer* vao = new VAOBuffer(lineShader, VAOBuffer::DRAW_MULTI);

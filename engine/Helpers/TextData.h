@@ -36,8 +36,6 @@ public:
 		, mDynamicSize(tdt)
 	{}
 
-	void prepare();
-
 	void typeSetDetails(const std::string& s, int height,
 		const glm::vec2& _spacing, const glm::vec2& scale,
 		const std::string& f = "arial.ttf",
@@ -86,6 +84,8 @@ public:
 		mModified = true;
 	}
 	glm::vec2 scale() const { return mScale; }
+	void prepare();
+protected:
 private:
 	TextDisplayType mDynamicSize = Dynamic;
 	std::string mText;

@@ -208,6 +208,14 @@ std::string getShaderCode(const std::string& s)
 		return readFile(s);
 }
 
+void Shader::loadBoilerPlates()
+{
+	ShaderFactory shaders;
+	loadShaders(shaders.boilerPlateVertexShader(),
+		shaders.boilerPlateFragmentShader(),
+		shaders.boilerPlateGeometryShader());
+}
+
 void Shader::loadShaders(const std::string& vertexShader,
 	const std::string& fragShader,
 	const std::string& geometryShader)
