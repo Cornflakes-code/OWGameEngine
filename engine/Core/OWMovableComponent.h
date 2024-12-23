@@ -46,7 +46,7 @@ public:
 	OWMovableComponent(OWActor* _owner, const glm::vec3& _position)
 		: OWComponent(_owner)
 	{
-		mCurrent.mPosition = _position;
+		position(_position);
 	}
 	const AABB& bounds() const { return mBoundingBox; }
 	void bounds(const AABB& bb) { mBoundingBox = bb; }

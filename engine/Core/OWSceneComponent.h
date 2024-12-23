@@ -14,6 +14,9 @@ class OWENGINE_API OWSceneComponent : public OWMovableComponent, public OWRender
 	bool mRenderThis = true;
 	bool mReadyForRender = false;
 	glm::mat4 mModelMatrix = glm::mat4(1.0f);
+	glm::vec3 mScale = glm::vec3(1);
+	glm::vec3 mRotateFactor = glm::vec3(1);
+	float mRotateRadians = 0.0f;
 protected:
 	void readyForRender() { mReadyForRender = true; }
 public:
@@ -22,8 +25,7 @@ public:
 	typedef std::function<void(OWSceneComponent* sc)> OWSceneComponentCallbackType;
 	void addRenderer(RendererBase* r) { mRenderer = r; }
 	void scale(const glm::vec3& factor);
-	void translate(const glm::vec3& factor);
-	void rotate(float angle, const glm::vec3& factor);
+	void rotate(float degrees, const glm::vec3& factor);
 	//void addModelModifier(ModelModifierCallbackType cb) { mModelChangers.push_back(cb); }
 	int tick(float dt) override
 	{

@@ -10,8 +10,6 @@
 Plane::Plane(OWActor* _owner, const glm::vec3& _position, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const glm::vec3& p4)
 : OWSceneComponent(_owner, _position)
 {
-//	throw NMSException(std::string("Warning. The rest of this class defines infinite planes") +
-//				"The intention of this ctor is to define a finite plane.");
 }
 
 Plane::Plane(OWActor* _owner, const glm::vec3& _position, const std::vector<glm::vec3>& corners)

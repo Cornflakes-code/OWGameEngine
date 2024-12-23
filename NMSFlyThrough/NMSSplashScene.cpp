@@ -198,6 +198,16 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	return false;
 }
 
+Plane* createBumperPlane(const std::string& _name, const glm::vec3& pos, float rotDegrees, const glm::vec3& rotAxis)
+{
+	Plane* p = new Plane(mScenery, pos);
+	p->name(_name);
+	p->scale(glm::vec3(100));
+	p->rotate(rotDegrees, rotAxis);
+	p->prepare();
+	return p;
+}
+
 void NMSSplashScenePhysics::setup()
 {
 	std::vector<OWMovableComponent*> addToOcTree;
@@ -288,13 +298,8 @@ void NMSSplashScenePhysics::setup()
 	mButtonData.mText.text("Click Me");
 #endif
 	// Create planes at the boundaries of the world
-	std::vector<std::vector<glm::vec3>> surfaces = _world.surfaces();
-	glm::vec3 pos(0);
-	Plane* p1 = new Plane(mScenery, pos, surfaces[0]); 
-	p1->name("Plane1"); 
-	p1->scale(glm::vec3(10));
-	//p1->translate(glm::vec3(10, 0, 0));
-	p1->prepare();
+	Plane* p1 = createBumperPlane("Plane1", glm::vec3(0, 0, -100), 0.0f, glm::vec3(1, 0, 0));
+	Plane* p2 = createBumperPlane("Plane2", glm::vec3(0, 0, 100), 0.0f, glm::vec3(1, 0, 0));
 //	Plane* p2 = new Plane(mScenery, pos, surfaces[1]);
 //	Plane* p3 = new Plane(mScenery, pos, surfaces[2]);
 //	Plane* p4 = new Plane(mScenery, pos, surfaces[3]);
