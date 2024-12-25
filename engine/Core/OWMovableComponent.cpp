@@ -34,10 +34,12 @@ int OWMovableComponent::tick(float dt)
 	mPrevious = mCurrent;
 	glm::vec3 moveStep = mCurrent.mVelocity * dt;
 	mCurrent.mPosition += moveStep;
-	mFineGrain->move(moveStep);
-	mHitSphere->move(moveStep);
+	if (mFineGrain)
+		mFineGrain->move(moveStep);
+	if (mHitSphere)
+		mHitSphere->move(moveStep);
 	mBoundingBox.move(moveStep);
-	mHitBox.move(moveStep);
+	//mHitBox.move(moveStep);
 
 	mCurrent.mVelocity += mCurrent.mAcceleration * dt;
 	return retval? 1: 0;

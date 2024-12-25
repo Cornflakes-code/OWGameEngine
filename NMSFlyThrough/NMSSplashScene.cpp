@@ -92,7 +92,7 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 		{
 			a->tick(timeStep, OWActor::TickType::InitialTick);
 		};
-	//owner()->traverseSceneGraph(ticker);
+	owner()->traverseSceneGraph(ticker);
 
 	auto collider = [](OcTree* o)
 		{
@@ -125,7 +125,7 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 			}
 			return true;
 		};
-	//mOctTree->traverse(collider);
+	mOctTree->traverse(collider);
 #ifdef INCLUDE_WELCOME
 //	mWelcomeMover.move(velocity);
 	//mWelcomeMover.bounceIfCollide(mWindowBounds);
@@ -202,7 +202,7 @@ Plane* createBumperPlane(const std::string& _name, const glm::vec3& pos, float r
 {
 	Plane* p = new Plane(mScenery, pos);
 	p->name(_name);
-	p->scale(glm::vec3(100));
+	p->scale(glm::vec3(std::abs(2 * pos.x)));
 	p->rotate(rotDegrees, rotAxis);
 	p->prepare();
 	return p;
@@ -213,7 +213,7 @@ void NMSSplashScenePhysics::setup()
 	std::vector<OWMovableComponent*> addToOcTree;
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
-	mSpeed = _world.size().x / 10.0f;
+	mSpeed = _world.size().x / 200.0f;
 
 #ifdef INCLUDE_FULLSCREEN
 #endif
@@ -297,16 +297,25 @@ void NMSSplashScenePhysics::setup()
 	mButtonData.mText = mEnjoyData;
 	mButtonData.mText.text("Click Me");
 #endif
+	int off = 100;
 	// Create planes at the boundaries of the world
-	Plane* p1 = createBumperPlane("Plane1", glm::vec3(0, 0, -100), 0.0f, glm::vec3(1, 0, 0));
-	Plane* p2 = createBumperPlane("Plane2", glm::vec3(0, 0, 100), 0.0f, glm::vec3(1, 0, 0));
-//	Plane* p2 = new Plane(mScenery, pos, surfaces[1]);
-//	Plane* p3 = new Plane(mScenery, pos, surfaces[2]);
-//	Plane* p4 = new Plane(mScenery, pos, surfaces[3]);
-//	Plane* p5 = new Plane(mScenery, pos, surfaces[4]);
-//	Plane* p6 = new Plane(mScenery, pos, surfaces[5]);
-	addToOcTree.push_back(dice);
-	mOctTree->build(addToOcTree, gOctTreeThreshhold, gOctTreeMaxDepth, _world);
+	Plane* p1 = createBumperPlane("Plane1", glm::vec3(-off, -off, off), 0.0f, glm::vec3(1, 0, 0));
+	Plane* p2 = createBumperPlane("Plane2", glm::vec3(-off, -off, -off), 0.0f, glm::vec3(1, 0, 0));
+	Plane* p3 = createBumperPlane("Plane3", glm::vec3(-off, -off, off), 90.0f, glm::vec3(0, 1, 0));
+	Plane* p4 = createBumperPlane("Plane4", glm::vec3(off, -off, off), 90.0f, glm::vec3(0, 1, 0));
+	Plane* p5 = createBumperPlane("Plane5", glm::vec3(-off, -off, -off), 90.0f, glm::vec3(1, 0, 0));
+	Plane* p6 = createBumperPlane("Plane6", glm::vec3(-off, off, -off), 90.0f, glm::vec3(1, 0, 0));
+
+	addToOcTree.push_back(p1);
+	addToOcTree.push_back(p2);
+	addToOcTree.push_back(p3);
+	addToOcTree.push_back(p4);
+	addToOcTree.push_back(p5);
+	addToOcTree.push_back(p6);
+	// Make the bounds a bit bigger than where the planes are.
+	float bf = 1.2f;
+	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off* bf));
+	mOctTree->build(addToOcTree, gOctTreeThreshhold, gOctTreeMaxDepth, planeBounds);
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////

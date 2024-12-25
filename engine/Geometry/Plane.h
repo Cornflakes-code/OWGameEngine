@@ -14,11 +14,6 @@ public:
 #pragma warning( disable : 4251 )
 	Plane(OWActor* _owner, const glm::vec3& _position)
 		: OWSceneComponent(_owner, _position) {}
-	Plane(OWActor* _owner, const glm::vec3& _position, const glm::vec3& norm, const glm::vec3& p1)
-		: OWSceneComponent(_owner, _position) {}
-
-	Plane(OWActor* _owner, const glm::vec3& _position, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const glm::vec3& p4);
-	Plane(OWActor* _owner, const glm::vec3& _position, const std::vector<glm::vec3>& corners);
 	void prepare();
 	//const glm::vec3& normal() const { return mPlane.normal(); }
 	//float getSignedDistanceToPlane(const glm::vec3& point) const

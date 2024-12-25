@@ -56,7 +56,7 @@ void OcTree::addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableCo
     // | 0 | 1 |1|/___X
     // 
 
-    std::vector<char> code(1);
+    std::vector<int> code(8, 1);
     // If all of a->bounds is > than the center then p cannot be in bins 0, 2, 4, 6
     if (a->bounds().minPoint().x > center.x)
         code[0] = code[2] = code[4] = code[6] = 0;

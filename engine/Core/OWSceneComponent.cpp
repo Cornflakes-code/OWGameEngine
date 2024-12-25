@@ -2,6 +2,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include "CommonUtils.h"
+#include "../Renderers/VAOBuffer.h"
 #include "OWActor.h"
 
 OWSceneComponent::OWSceneComponent(OWActor* _owner, const glm::vec3& _position)
@@ -24,6 +26,15 @@ void OWSceneComponent::rotate(float degrees, const glm::vec3& factor)
 		mRotateRadians -= M_TWO_PI;
 	else if (mRotateRadians < -M_TWO_PI)
 		mRotateRadians += M_TWO_PI;
+}
+
+glm::mat4 transformHelper(const glm::mat4& model, float rotAngle, const glm::vec3& rotFactor, const glm::vec3& scale, const glm::vec3& pos)
+{
+	const glm::mat4 I(1.0f);
+	glm::mat4 r = glm::rotate(model, rotAngle, rotFactor);
+	glm::mat4 s = glm::scale(model, scale);
+	glm::mat4 t = glm::translate(I, pos);
+	return t * s * r;
 }
 
 void OWSceneComponent::render(const glm::mat4& proj,
@@ -49,11 +60,26 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	}
 	if (mRenderThis)
 	{
-		const glm::mat4 I(1.0f);
-		glm::mat4 r = glm::rotate(model, mRotateRadians, mRotateFactor);
-		glm::mat4 s = glm::scale(model, mScale);
-		glm::mat4 t = glm::translate(I, position());
-		glm::mat4 _model = t * s * r;
+		glm::mat4 _model = transformHelper(model, mRotateRadians, mRotateFactor, mScale, position());
+		AABB bb = bounds();
 		mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
+		if (mRenderBoundingBox)
+		{
+			if (mBoundingBoxRenderer == nullptr)
+			{
+				/*
+				glm::mat4 I(1.0f);
+				const glm::vec4 tmin = glm::vec4(bb.minPoint(), 0);
+				const glm::mat4 tmin4 = I * tmin;
+				glm::mat4 tmin = transformHelper(tmin, mRotateRadians, mRotateFactor, mScale, position());
+				glm::mat4 tmax = transformHelper(bb.maxPoint(), mRotateRadians, mRotateFactor, mScale, position());
+				AABB newBounds(= bb * model);
+				MeshDataLight lineData;
+				lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
+				lineData.vertices(aLine, GL_LINE_STRIP);
+				vao->add(&lineData);
+				*/
+			}
+		}
 	}
 }

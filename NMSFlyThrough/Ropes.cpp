@@ -373,8 +373,8 @@ OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<g
 	MeshDataLight lineData;
 	lineData.vertices(triAnglePoints, GL_TRIANGLES);
 	lineData.indices(RopeNormaliser::mIndexBuffer, GL_TRIANGLES);
-	lineData.polygonMode(GL_FILL);
-	//lineData.polygonMode(GL_LINE);
+	//lineData.polygonMode(GL_FILL);
+	lineData.polygonMode(GL_LINE);
 	vao->add(&lineData);
 	auto pointRender = [](
 		const glm::mat4& OW_UNUSED(proj),

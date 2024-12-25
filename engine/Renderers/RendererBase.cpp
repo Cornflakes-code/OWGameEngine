@@ -80,10 +80,13 @@ public:
 	{
 		if (mActive)
 		{
+			glEnable(GL_BLEND);
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 			static bool onceOnly = true;
 			if (onceOnly)
 			{
-				mSfactor = GL_SRC_ALPHA;
+				mSfactor = GL_SRC_ALPHA; // jfw not sure why I did this? maybe delete both statics
 				mDfactor = GL_ONE_MINUS_SRC_ALPHA;
 				onceOnly = false;
 			}
@@ -93,7 +96,10 @@ public:
 	~BlendFuncRIAA()
 	{
 		if (mActive)
+		{
+			glDisable(GL_BLEND);
 			glBlendFunc(mSfactor, mDfactor);
+		}
 	}
 };
 

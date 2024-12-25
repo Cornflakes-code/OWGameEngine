@@ -99,6 +99,7 @@ void TextRenderer::setup(const TextData* td, const glm::vec3& initialPosition)
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't 
 	// unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
+	blendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	doSetup(td, initialPosition);
 }
 

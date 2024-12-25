@@ -30,6 +30,7 @@ public:
 };
 
 class OWBounding;
+class RendererBase;
 class OWENGINE_API OWMovableComponent : public OWComponent
 {
 	AABB mBoundingBox = AABB(glm::vec3(-1), glm::vec3(-1));
@@ -42,12 +43,16 @@ class OWENGINE_API OWMovableComponent : public OWComponent
 	AABB mHitBox;
 	glm::vec3 mSteerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
 	float mScale = 1.0f;         //this is the scale factor for the object
+protected:
+	RendererBase* mBoundingBoxRenderer = nullptr;
+	bool mRenderBoundingBox = true;
 public:
 	OWMovableComponent(OWActor* _owner, const glm::vec3& _position)
 		: OWComponent(_owner)
 	{
 		position(_position);
 	}
+	void renderBoundingBox(bool _value) { mRenderBoundingBox = _value; }
 	const AABB& bounds() const { return mBoundingBox; }
 	void bounds(const AABB& bb) { mBoundingBox = bb; }
 	const glm::vec3& position() const { return mCurrent.mPosition; }
