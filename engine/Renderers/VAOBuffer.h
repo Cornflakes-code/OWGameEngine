@@ -19,6 +19,7 @@ class OWENGINE_API VAOBuffer : public RendererBase
 public:
 	enum RenderType { DRAW_NONE, DRAW_ARRAYS, DRAW_MULTI, DRAW_PRIMITIVE };
 	VAOBuffer(Shader* shader, RenderType rt);
+	void clear();
 	void add(const MeshDataLight* meshData);
 	void add(const std::vector<glm::vec3>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
@@ -36,7 +37,7 @@ private:
 	std::vector<glm::vec4> mVec4;
 	std::vector<GLint> mMultiArrayStartIndexes;
 	std::vector<unsigned int> mPrimitiveIndices;
-	unsigned int mPrimitiveRestart = 0xFFFF;
+	static unsigned int mPrimitiveRestart;
 	std::vector<GLsizei> mMultiArrayVertexCount;
 	std::vector<unsigned int> mIndices;
 	// mVbo[0] The VBO containing the triangles to draw

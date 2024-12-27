@@ -30,7 +30,7 @@ void NMSRopeScenePhysics::setup()
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	rope->prepareRope(30822, ropeZoom.x, ropeZoom.y, 45, fontHeight, niceTextSpacing, niceTextScale);
+	rope->prepareRope(9239, ropeZoom.x, ropeZoom.y, 45, fontHeight, niceTextSpacing, niceTextScale);
 	rope->visualComponents(true, true, true, true);
 	owner()->mRootNode.push_back(rope);
 	mCameraFocus = rope->bounds().center();

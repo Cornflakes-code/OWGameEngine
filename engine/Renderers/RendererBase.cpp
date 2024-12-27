@@ -110,7 +110,7 @@ void RendererBase::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& model,
 	const glm::vec3& cameraPos,
 	RenderTypes::ShaderMutator renderCb,
-	RenderTypes::ShaderResizer resizeCb) const
+	RenderTypes::ShaderResizer resizeCb) 
 {
 	PolygonModeRIAA temp1(mPolygonFace, mPolygonMode);
 	LineWidthRIAA temp2(mLineWidth);

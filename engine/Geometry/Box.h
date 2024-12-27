@@ -14,10 +14,9 @@ class OWENGINE_API Box : public OWSceneComponent
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.html
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	glm::quat mQuat;
 #pragma warning( pop )
 public:
-	Box(OWActor* _owner, const glm::vec3& _position, const glm::quat& q); // to scale and rotate a cube
+	Box(OWActor* _owner, const glm::vec3& _position);
 	void prepare();
 	bool intersects(const AABB& box) const;
 };

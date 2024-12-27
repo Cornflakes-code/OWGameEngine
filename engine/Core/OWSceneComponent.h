@@ -37,5 +37,5 @@ public:
 		const glm::mat4& model,
 		const glm::vec3& cameraPos,
 		RenderTypes::ShaderMutator renderCb = nullptr,
-		RenderTypes::ShaderResizer resizeCb = nullptr) const override;
+		RenderTypes::ShaderResizer resizeCb = nullptr) override;
 };

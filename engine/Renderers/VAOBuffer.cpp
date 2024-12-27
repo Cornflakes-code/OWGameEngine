@@ -8,11 +8,15 @@
 
 #include "../Helpers/Shader.h"
 
+
 /*
 * Very Modern OpenGL
 https://www.reddit.com/r/opengl/comments/18rkgg3/one_vao_for_multiple_vbos/
 https://github.com/fendevel/Guide-to-Modern-OpenGL-Functions#glbuffer
 */
+
+unsigned int VAOBuffer::mPrimitiveRestart = 0xFFFF;
+
 VAOBuffer::VAOBuffer(Shader* shader, RenderType rt)
 	: RendererBase(shader)
 {
@@ -218,4 +222,19 @@ void VAOBuffer::validate(const MeshDataLight* mdl)
 		else
 			throw NMSLogicException("LightRenderer has v3 and v4 data");
 	}
+}
+
+void VAOBuffer::clear()
+{
+	mData.clear();
+	mVec3.clear();
+	mVec4.clear();
+	mMultiArrayStartIndexes.clear();
+	mPrimitiveIndices.clear();
+	mMultiArrayVertexCount.clear();
+	mIndices.clear();
+	mVao = std::numeric_limits<unsigned int>::max();
+	mVbo = std::numeric_limits<unsigned int>::max();
+	mEbo = std::numeric_limits<unsigned int>::max();
+	mPrimitiveEbo = std::numeric_limits<unsigned int>::max();
 }

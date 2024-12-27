@@ -19,7 +19,7 @@ public:
 		const glm::mat4& model,
 		const glm::vec3& cameraPos,
 		RenderTypes::ShaderMutator renderCb = nullptr,
-		RenderTypes::ShaderResizer resizeCb = nullptr) const = 0;
+		RenderTypes::ShaderResizer resizeCb = nullptr) = 0;
 
 private:
 

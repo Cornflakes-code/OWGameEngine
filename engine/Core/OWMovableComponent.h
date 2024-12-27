@@ -30,7 +30,7 @@ public:
 };
 
 class OWBounding;
-class RendererBase;
+class VAOBuffer;
 class OWENGINE_API OWMovableComponent : public OWComponent
 {
 	AABB mBoundingBox = AABB(glm::vec3(-1), glm::vec3(-1));
@@ -42,9 +42,8 @@ class OWENGINE_API OWMovableComponent : public OWComponent
 	glm::vec3 mHitSphereOffset = glm::vec3(0);
 	AABB mHitBox;
 	glm::vec3 mSteerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
-	float mScale = 1.0f;         //this is the scale factor for the object
 protected:
-	RendererBase* mBoundingBoxRenderer = nullptr;
+	VAOBuffer* mBoundingBoxRenderer = nullptr;
 	bool mRenderBoundingBox = true;
 public:
 	OWMovableComponent(OWActor* _owner, const glm::vec3& _position)

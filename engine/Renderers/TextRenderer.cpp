@@ -68,7 +68,6 @@ void TextRenderer::setup(const TextData* td, const glm::vec3& initialPosition)
 
 	// render::glDrawArrays needs the size of the buffer. This allows v4 to be cleared
 	// if it is not going to be modified.
-	std::vector<glm::vec4> v4Displaced;
 	mV4Size = v4.size();
 
 	mTexture = fontData->texture();

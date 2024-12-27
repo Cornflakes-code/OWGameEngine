@@ -2,7 +2,13 @@
 
 #include <Core/ErrorHandling.h>
 
-std::vector<unsigned int> RopeNormaliser::mIndexBuffer;
+unsigned int RopeNormaliser::append(std::vector<glm::vec3>& v, const glm::vec3& p)
+{
+	v.emplace_back(p);
+	v.emplace_back(glm::vec3(0.0f));// placeholder for normal values
+	return static_cast<unsigned int>(v.size()) - 2;
+}
+
 RopeNormaliser::IndexTriangle::IndexTriangle(unsigned int a, unsigned int b, unsigned int c, const std::vector<glm::vec3>& points)
 {
 	indicies[0] = a;
@@ -17,7 +23,6 @@ RopeNormaliser::IndexTriangle::IndexTriangle(unsigned int a, unsigned int b, uns
 		(std::isnan(normal.y)) || 
 		(std::isnan(normal.z)))
 	{
-		//		normal.x = 0.10f; normal.y = 0.10f; normal.z = 0.10f;
 		throw NMSLogicException("A normal is a NAN");
 	}
 }
@@ -49,7 +54,7 @@ void RopeNormaliser::appendTriangle(unsigned int a, unsigned int b, unsigned int
 void RopeNormaliser::createNormals(std::vector<glm::vec3>& points, unsigned int offsetFromVertex, unsigned int stride)
 {
 	bool smoothNormals = true;
-	if (smoothNormals)
+	if (smoothNormals) // ie face normals
 	{
 		// https://computergraphics.stackexchange.com/questions/4031/programmatically-generating-vertex-normals
 		// https://iquilezles.org/articles/normals/
@@ -71,7 +76,7 @@ void RopeNormaliser::createNormals(std::vector<glm::vec3>& points, unsigned int 
 			points[i] = -glm::normalize(points[i]);
 		}
 	}
-	else
+	else // flat ie vertex normals
 	{
 		std::vector<std::pair<unsigned int, glm::vec3>> normals;
 		for (auto& m : triangles)

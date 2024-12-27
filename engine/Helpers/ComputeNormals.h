@@ -1,16 +1,41 @@
 #pragma once
 
+#include <map>
+#include <vector>
+
 #include <glm/glm.hpp>
-/*
-// Linked list of vertex normals
-class VNormal
+
+namespace GLMHelpers
 {
+    std::vector<glm::vec3> createNormals(const std::vector<glm::vec3>& tris);
+}
+
+struct MeshDataLight;
+
+class ComputeNormals
+{
+	struct IndexTriangle
+	{
+		IndexTriangle(unsigned int a, unsigned int b, unsigned int c, const std::vector<glm::vec3>& points);
+
+		unsigned int indicies[3];
+		glm::vec3 normal;
+	};
+
+	const std::vector<glm::vec3> mPoints;
+	typedef std::map<unsigned int, std::vector<IndexTriangle>> TriAngleElements;
+	TriAngleElements triangles;
+	void aggregateFaces(unsigned int ndx, const IndexTriangle& tri);
+	std::vector<unsigned int> mIndexBuffer;
+	static unsigned int append(std::vector<glm::vec3>& v, const glm::vec3& p);
+	void appendTriangle(const std::vector<glm::vec3>& triAngles, unsigned int a, unsigned int b, unsigned int c);
+	void createNormals(std::vector<glm::vec3>& triAngles, unsigned int offsetFromVertex, unsigned int stride);
 public:
-    VNormal() { smooth = 0; next = NULL; init = false; norm = glm::vec3(0, 0, 0); }
-    VNormal(glm::vec3& n, unsigned int s) { next = NULL; init = true; norm = n; smooth = s; }
-    ~VNormal() { delete next; }
-    void AddNormal(glm::vec3& n, unsigned int s);
-    glm::vec3& GetNormal(unsigned int s);
-    void Normalize();
+	ComputeNormals(const std::vector<glm::vec3>& p)
+		:mPoints(p)
+	{}
+
+	// Call compute when mPoints contains vec3 already arranged in triangles
+	// populates data with vertices and indices
+	MeshDataLight compute();
 };
-*/

@@ -15,6 +15,7 @@
 #include <Core/OcTree.h>
 #include <Geometry/Particle.h>
 #include <Geometry/Plane.h>
+#include <Geometry/Box.h>
 #include <Core/MeshComponent.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
@@ -29,12 +30,12 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-#define INCLUDE_FULLSCREEN
-#define INCLUDE_WELCOME
-#define INCLUDE_ENJOY
+//#define INCLUDE_FULLSCREEN
+//#define INCLUDE_WELCOME
+//#define INCLUDE_ENJOY
 #define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
-#define INCLUDE_IMPORTED_MODEL
+//#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
 
@@ -245,11 +246,11 @@ void NMSSplashScenePhysics::setup()
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());
 	owner()->mRootNode.push_back(mScenery);
-
-#ifdef INCLUDE_WELCOME
 	glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
+
+#ifdef INCLUDE_WELCOME
 	
 	glm::vec3 direction1 = Compass::Rose[Compass::North] +
 		Compass::Rose[Compass::East] +
@@ -263,6 +264,15 @@ void NMSSplashScenePhysics::setup()
 	welcome->prepare();
 	addToOcTree.push_back(welcome);
 #endif
+	Box* box = new Box(mScenery, origin);
+	box->name("box");
+	box->scale({ 0.5,2,1 });
+	glm::vec3 direction11 = Compass::Rose[Compass::North] +
+		Compass::Rose[Compass::West] +
+		Compass::Rose[Compass::In];
+	//box->velocity(direction11, mSpeed);
+	//box->rotate
+	box->prepare();
 
 #ifdef INCLUDE_ENJOY
 	glm::vec3 direction2 = Compass::Rose[Compass::South] +
@@ -299,6 +309,7 @@ void NMSSplashScenePhysics::setup()
 #endif
 	int off = 100;
 	// Create planes at the boundaries of the world
+	/*
 	Plane* p1 = createBumperPlane("Plane1", glm::vec3(-off, -off, off), 0.0f, glm::vec3(1, 0, 0));
 	Plane* p2 = createBumperPlane("Plane2", glm::vec3(-off, -off, -off), 0.0f, glm::vec3(1, 0, 0));
 	Plane* p3 = createBumperPlane("Plane3", glm::vec3(-off, -off, off), 90.0f, glm::vec3(0, 1, 0));
@@ -312,6 +323,7 @@ void NMSSplashScenePhysics::setup()
 	addToOcTree.push_back(p4);
 	addToOcTree.push_back(p5);
 	addToOcTree.push_back(p6);
+	*/
 	// Make the bounds a bit bigger than where the planes are.
 	float bf = 1.2f;
 	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off* bf));

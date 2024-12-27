@@ -239,13 +239,6 @@ glm::vec3 centerOfPolygon(const std::vector<glm::vec3>& polygon)
 	return midpoint;
 }
 
-static unsigned int append(std::vector<glm::vec3>& v, const glm::vec3& p)
-{
-	v.emplace_back(p);
-	v.emplace_back(glm::vec3(0.0f));// placeholder for normal values
-	return static_cast<unsigned int>(v.size()) - 2;
-}
-
 static unsigned int safeWrap(const std::vector<unsigned int>& vv, size_t ndx)
 {
 	int i = static_cast<int>(ndx) - static_cast<int>(vv.size());
@@ -283,7 +276,7 @@ OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<g
 			tempWireIndices[i][j] = std::vector<unsigned int>(threeDWires[i][j].size());
 			for (unsigned int pointOnPoly = 0; pointOnPoly < threeDWires[i][j].size(); pointOnPoly++)
 			{
-				unsigned int ndx = append(triAnglePoints, threeDWires[i][j][pointOnPoly]);
+				unsigned int ndx = RopeNormaliser::append(triAnglePoints, threeDWires[i][j][pointOnPoly]);
 				tempWireIndices[i][j][pointOnPoly] = ndx;
 			}
 		}
@@ -299,11 +292,11 @@ OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<g
 			(layer == 0 and layer == numLayers - 1) respectively. We use these to
 		* triangulate the surfaces of the end points.
 		*/
-		centroidIndex[eachWire][0] = append(triAnglePoints,
+		centroidIndex[eachWire][0] = RopeNormaliser::append(triAnglePoints,
 			centerOfPolygon(threeDWires[0][eachWire]));
 
 		// Center of the bottom slice
-		centroidIndex[eachWire][1] = append(triAnglePoints,
+		centroidIndex[eachWire][1] = RopeNormaliser::append(triAnglePoints,
 			centerOfPolygon(threeDWires[numLayers - 1][eachWire]));
 	}
 
@@ -372,9 +365,9 @@ OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<g
 	rn.createNormals(triAnglePoints, 1, 2);
 	MeshDataLight lineData;
 	lineData.vertices(triAnglePoints, GL_TRIANGLES);
-	lineData.indices(RopeNormaliser::mIndexBuffer, GL_TRIANGLES);
-	//lineData.polygonMode(GL_FILL);
-	lineData.polygonMode(GL_LINE);
+	lineData.indices(rn.mIndexBuffer, GL_TRIANGLES);
+	lineData.polygonMode(GL_FILL);
+	//lineData.polygonMode(GL_LINE);
 	vao->add(&lineData);
 	auto pointRender = [](
 		const glm::mat4& OW_UNUSED(proj),

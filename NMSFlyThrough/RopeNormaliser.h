@@ -21,7 +21,8 @@ class RopeNormaliser
 	TriAngleElements triangles;
 	void aggregateFaces(unsigned int ndx, const IndexTriangle& tri);
 public:
-	static std::vector<unsigned int> mIndexBuffer;
+	std::vector<unsigned int> mIndexBuffer;
+	static unsigned int append(std::vector<glm::vec3>& v, const glm::vec3& p);
 	RopeNormaliser(const std::vector<glm::vec3>* p)
 		:mPoints(p)
 	{}

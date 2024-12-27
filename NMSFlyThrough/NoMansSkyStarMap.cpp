@@ -63,7 +63,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 //		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
 	mdi.vertices(squareVertices, GL_TRIANGLES, 0);
 
-	const int numStars = 50000;
+	const int numStars = 500000;
 	mRandomMinorStars = createRandomVectors(NMSSize, numStars, scaleNMStoWorld);
 	std::vector<glm::vec3> starPositions;
 	starPositions.push_back({ 0,0,0 });

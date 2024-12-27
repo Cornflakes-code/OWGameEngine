@@ -1,94 +1,142 @@
 #include "ComputeNormals.h"
 
-/*
-// Add a normal to the list if the smoothing group bits overlap,
-// otherwise create a new vertex normal in the list
-void VNormal::AddNormal(glm::vec3& n, unsigned int s) {
-    if (!(s & smooth) && init) {
-        if (next) next->AddNormal(n, s);
-        else {
-            next = new VNormal(n, s);
-        }
-    }
-    else {
-        norm += n;
-        smooth |= s;
-        init = true;
-    }
-}
+#include <Core/ErrorHandling.h>
+#include "../Helpers/MeshDataLight.h"
 
-// Retrieves a normal if the smoothing groups overlap or there is
-// only one in the list
-glm::vec3& VNormal::GetNormal(unsigned int s)
+namespace GLMHelpers
 {
-    if (smooth & s || !next) return norm;
-    else return next->GetNormal(s);
-}
 
-// Normalize each normal in the list
-void VNormal::Normalize() {
-    VNormal* ptr = next, * prev = this;
-    while (ptr)
+    std::vector<glm::vec3> createNormals(const std::vector<glm::vec3>& tris)
     {
-        if (ptr->smooth & smooth) {
-            norm += ptr->norm;
-            smooth |= ptr->smooth;
-            prev->next = ptr->next;
-            delete ptr;
-            ptr = prev->next;
+        std::vector<glm::vec3> vertPlusNormals;
+        for (int i = 0; i < tris.size(); i += 3)
+        {
+            glm::vec3 edge1 = tris[i] - tris[i + 1];
+            glm::vec3 edge2 = tris[i + 2] - tris[i + 1];
+            glm::vec3 n = glm::cross(edge1, edge2);
+            vertPlusNormals.push_back(tris[i]);
+            vertPlusNormals.push_back(tris[i + 1]);
+            vertPlusNormals.push_back(tris[i + 2]);
+            vertPlusNormals.push_back(glm::normalize(n));
         }
-        else {
-            prev = ptr;
-            ptr = ptr->next;
-        }
+        return vertPlusNormals;
     }
-    norm = ::Normalize(norm);
-    if (next) next->Normalize();
 }
 
-// Compute the face and vertex normals
-void Utility::ComputeVertexNormals(Mesh* mesh)
+unsigned int ComputeNormals::append(std::vector<glm::vec3>& v, const glm::vec3& p)
 {
-    Face* face;
-    glm::vec3* verts;
-    glm::vec3 v0, v1, v2;
-    Tab<VNormal> vnorms;
-    Tab<glm::vec3> fnorms;
-    face = mesh->faces;
-    verts = mesh->verts;
-    vnorms.SetCount(mesh->getNumVerts());
-    fnorms.SetCount(mesh->getNumFaces());
-
-    // Compute face and vertex surface normals
-    for (int i = 0; i < mesh->getNumVerts(); i++) {
-        vnorms[i] = VNormal();
-    }
-    for (int i = 0; i < mesh->getNumFaces(); i++, face++) {
-        // Calculate the surface normal
-        v0 = verts[face->v[0]];
-        v1 = verts[face->v[1]];
-        v2 = verts[face->v[2]];
-        fnorms[i] = (v1 - v0) ^ (v2 - v1);
-        for (int j = 0; j < 3; j++) {
-            vnorms[face->v[j]].AddNormal(fnorms[i], face->smGroup);
-        }
-        fnorms[i] = Normalize(fnorms[i]);
-    }
-    for (i = 0; i < mesh->getNumVerts(); i++) {
-        vnorms[i].Normalize();
-    }
-    // Display the normals in the debug window of the VC++ IDE
-    DebugPrint(";\n\nVertex Normals ---";);
-    for (i = 0; i < vnorms.Count(); i++) {
-        DisplayVertexNormal(vnorms.Addr(i), i, 0);
-    }
-    DebugPrint("\n\n");
+	v.emplace_back(p);
+	v.emplace_back(glm::vec3(0.0f));// placeholder for normal values
+	return static_cast<unsigned int>(v.size()) - 2;
 }
 
-void Utility::DisplayVertexNormal(VNormal* vn, int i, int n)
+ComputeNormals::IndexTriangle::IndexTriangle(unsigned int a, unsigned int b, unsigned int c, const std::vector<glm::vec3>& points)
 {
-    DebugPrint("\nVertex %d Normal %d=(%.1f, %.1f, %.1f)&",
-        i, n, vn->norm.x, vn->norm.y, vn->norm.z);
-    if (vn->next) DisplayVertexNormal(vn->next, i, n + 1);
+	indicies[0] = a;
+	indicies[1] = b;
+	indicies[2] = c;
+
+	glm::vec3 edge1 = points[b] - points[a];
+	glm::vec3 edge2 = points[c] - points[a];
+	glm::vec3 t = glm::cross(edge1, edge2);
+	normal = glm::normalize(t);
+	if ((std::isnan(normal.x)) ||
+		(std::isnan(normal.y)) ||
+		(std::isnan(normal.z)))
+	{
+		//		normal.x = 0.10f; normal.y = 0.10f; normal.z = 0.10f;
+		throw NMSLogicException("A normal is a NAN");
+	}
 }
-*/
+
+void ComputeNormals::aggregateFaces(unsigned int ndx, const IndexTriangle& tri)
+{
+	TriAngleElements::iterator iter = triangles.find(ndx);
+	if (iter == triangles.end())
+		triangles.insert({ ndx, {tri} });
+	else
+		iter->second.push_back(tri);
+}
+
+void ComputeNormals::appendTriangle(const std::vector<glm::vec3>& triAngles, unsigned int a, unsigned int b, unsigned int c)
+{
+	if (a == b || a == c || b == c)
+	{
+		throw NMSLogicException("A triangle needs three distinct lines");
+	}
+	mIndexBuffer.push_back(a);
+	mIndexBuffer.push_back(b);
+	mIndexBuffer.push_back(c);
+	IndexTriangle tri(a, b, c, triAngles);
+	aggregateFaces(a, tri);
+	aggregateFaces(b, tri);
+	aggregateFaces(c, tri);
+}
+
+void ComputeNormals::createNormals(std::vector<glm::vec3>& triAngles, unsigned int offsetFromVertex, unsigned int stride)
+{
+	bool smoothNormals = true;
+	if (smoothNormals) // ie face normals
+	{
+		// https://computergraphics.stackexchange.com/questions/4031/programmatically-generating-vertex-normals
+		// https://iquilezles.org/articles/normals/
+		for (auto& t : triangles)
+		{
+			const std::vector<IndexTriangle>& tris = t.second;
+			for (const auto& v : tris)
+			{
+				glm::vec3 edge1 = triAngles[v.indicies[0]] - triAngles[v.indicies[1]];
+				glm::vec3 edge2 = triAngles[v.indicies[2]] - triAngles[v.indicies[1]];
+				glm::vec3 p = glm::cross(edge1, edge2);
+				triAngles[v.indicies[0] + offsetFromVertex] += p;
+				triAngles[v.indicies[1] + offsetFromVertex] += p;
+				triAngles[v.indicies[2] + offsetFromVertex] += p;
+			}
+		}
+		for (int i = offsetFromVertex; i < triAngles.size(); i += stride)
+		{
+			triAngles[i] = -glm::normalize((triAngles)[i]);
+		}
+	}
+	else // flat ie vertex normals
+	{
+		std::vector<std::pair<unsigned int, glm::vec3>> normals;
+		for (auto& m : triangles)
+		{
+			unsigned int index = m.first;
+			const std::vector<IndexTriangle>& tris = m.second;
+			glm::vec3 sum = { 0,0,0 };
+			for (const auto& v : tris)
+			{
+				sum += v.normal;
+			}
+			glm::vec3 n = glm::normalize(sum);
+			normals.push_back({ index, n });
+		}
+		for (const auto& each : normals)
+		{
+			unsigned int ndx = each.first;
+			glm::vec3 normal = each.second;
+			triAngles[ndx + offsetFromVertex] = normal;
+		}
+	}
+}
+
+MeshDataLight ComputeNormals::compute()
+{
+	MeshDataLight data;
+	std::vector<unsigned int> tempWireIndices(mPoints.size());
+	std::vector<glm::vec3> trianglePoints;
+	for (int i = 0; i < mPoints.size(); i++)
+	{
+		tempWireIndices[i] = ComputeNormals::append(trianglePoints, mPoints[i]);
+	}
+	for (int i = 0; i < mPoints.size(); i += 3)
+	{
+		appendTriangle(trianglePoints, tempWireIndices[i], tempWireIndices[i + 1], tempWireIndices[i + 2]);
+	}
+	createNormals(trianglePoints, 1, 2);
+	data.vertices(trianglePoints, GL_TRIANGLES);
+	data.indices(mIndexBuffer, GL_TRIANGLES);
+	return data;
+}

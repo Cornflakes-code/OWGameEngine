@@ -5,7 +5,7 @@ void OWActor::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& _model,
 	const glm::vec3& cameraPos,
 	RenderTypes::ShaderMutator renderCb,
-	RenderTypes::ShaderResizer resizeCb) const
+	RenderTypes::ShaderResizer resizeCb)
 {
 	std::string s = name();
 	if (s == "stars")

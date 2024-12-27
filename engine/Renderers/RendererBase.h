@@ -37,7 +37,7 @@ public:
 		const glm::mat4& model,
 		const glm::vec3& cameraPos,
 		RenderTypes::ShaderMutator renderCb = nullptr,
-		RenderTypes::ShaderResizer resizeCb = nullptr) const;
+		RenderTypes::ShaderResizer resizeCb = nullptr);
 protected:
 	virtual void doRender() const = 0;
 	virtual void validateBase() const;
