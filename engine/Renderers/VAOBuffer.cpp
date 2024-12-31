@@ -167,6 +167,20 @@ void VAOBuffer::prepare()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //Unbind the index buffer AFTER the vao has been unbound
 }
 
+//void VAOBuffer::scale(const glm::vec3& factor)
+//{
+//	for (glm::vec3& v : mVec3)
+//	{
+//		v *= factor;
+//	}
+//	glm::vec4 factor4(factor, 0);
+//	for (glm::vec4& v : mVec4)
+//	{
+//		v *= factor4;
+//	}
+//	prepare();
+//}
+
 void VAOBuffer::doRender() const
 {
 	// Look at:

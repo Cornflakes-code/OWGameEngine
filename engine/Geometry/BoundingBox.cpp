@@ -1,5 +1,8 @@
 #include "BoundingBox.h"
 
+#include <glm/gtc/epsilon.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Compass
 {
 	glm::vec4 Rose[NumDirections] = {
@@ -7,8 +10,8 @@ namespace Compass
 			glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),	// South
 			glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),	// East
 			glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f),	// West
-			glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),	// in (maybe wrong)
-			glm::vec4(1.0f, 0.0f, -1.0f, 0.0f),	// out (maybe wrong)
+			glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),	// In
+			glm::vec4(0.0f, 0.0f, -1.0f, 0.0f),	// Out
 			glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)	// No Direction
 	};
 
@@ -73,35 +76,59 @@ bool AABB::intersects(const AABB& other) const
 {
 	// If there is no overlap in any one direction 
 	// then the objects cannot intersect
-	if (mMinPoint.x <= other.mMaxPoint.x &&
-		mMaxPoint.x >= other.mMinPoint.x)
-		return true;
-	if (mMinPoint.y <= other.mMaxPoint.y &&
-		mMaxPoint.y >= other.mMinPoint.y)
-		return true;
-	if (mMinPoint.z <= other.mMaxPoint.z &&
-		mMaxPoint.z >= other.mMinPoint.z)
+	if (mMaxPoint.x > other.mMinPoint.x &&
+		other.mMaxPoint.x > mMinPoint.x &&
+
+		mMaxPoint.y > other.mMinPoint.y &&
+		other.mMaxPoint.y > mMinPoint.y &&
+
+		mMaxPoint.z > other.mMinPoint.z &&
+		other.mMaxPoint.z > mMinPoint.z)
 		return true;
 	return false;
+
+	//if (mMinPoint.x < other.mMaxPoint.x &&
+	//	mMaxPoint.x > other.mMinPoint.x)
+	//	return false;
+	//if (mMinPoint.y < other.mMaxPoint.y &&
+	//	mMaxPoint.y > other.mMinPoint.y)
+	//	return false;
+	//if (mMinPoint.z < other.mMaxPoint.z &&
+	//	mMaxPoint.z > other.mMinPoint.z)
+	//	return false;
+	//return true;
 }
 
 Compass::Direction AABB::intersectionDirection(const AABB& other) const
 {
 	if (!intersects(other))
 		return Compass::Direction::NoDirection;
-	if (other.maxPoint().y >= maxPoint().y)
+	if (maxPoint().y > other.minPoint().y)
 		return Compass::Direction::North;
-	else if (other.maxPoint().x >= maxPoint().x)
-		return Compass::Direction::East;
-	else if (other.maxPoint().z >= maxPoint().z)
-		return Compass::Direction::In;
-	else if (other.minPoint().y <= minPoint().y)
+	else if (minPoint().y < other.maxPoint().y)
 		return Compass::Direction::South;
-	else if (other.minPoint().x <= minPoint().x)
+	else if (maxPoint().x > other.minPoint().x)
+		return Compass::Direction::East;
+	else if (maxPoint().x < other.maxPoint().x)
 		return Compass::Direction::West;
-	else if (other.minPoint().z <= minPoint().z)
+	else if (other.maxPoint().z > maxPoint().z)
+		return Compass::Direction::In;
+	else if (other.minPoint().z < minPoint().z)
 		return Compass::Direction::Out;
 	return Compass::Direction::NoDirection;
+	//if (other.maxPoint().y >= maxPoint().y)
+	//	return Compass::Direction::North;
+	//else if (other.maxPoint().x >= maxPoint().x)
+	//	return Compass::Direction::East;
+	//else if (other.maxPoint().z >= maxPoint().z)
+	//	return Compass::Direction::In;
+	//else if (other.minPoint().y <= minPoint().y)
+	//	return Compass::Direction::South;
+	//else if (other.minPoint().x <= minPoint().x)
+	//	return Compass::Direction::West;
+	//else if (other.minPoint().z <= minPoint().z)
+	//	return Compass::Direction::Out;
+	//return Compass::Direction::NoDirection;
 }
 
 std::vector<glm::vec3> convertToV3(const std::vector<glm::vec4>& v4)
@@ -112,6 +139,27 @@ std::vector<glm::vec3> convertToV3(const std::vector<glm::vec4>& v4)
 		v3.push_back({v.x, v.y, v.z});
 	}
 	return v3;
+}
+
+AABB AABB::findBoundsIfRotated(float rot, const glm::vec3& rotAxis) const
+{
+	if (glm::epsilonEqual(rot, 0.0f, OWUtils::epsilon()))
+		return *this;
+	constexpr glm::mat4 model(1);
+	std::vector<std::vector<glm::vec3>> surfaces = this->surfaces();
+	std::vector<glm::vec3> corners;
+	for (const std::vector<glm::vec3>& surf : surfaces)
+	{
+		for (const glm::vec3& pt : surf)
+		{
+			glm::vec3 pt1 = pt - center();
+			glm::vec4 rotatedPoint = glm::rotate(model, rot, rotAxis) * glm::vec4(pt1, 0);
+			pt1 = glm::vec3({ rotatedPoint.x, rotatedPoint.y, rotatedPoint.z }) + center();
+			corners.push_back(pt1);
+		}
+	}
+	AABB b2(corners);
+	return b2;
 }
 
 std::vector<std::vector<glm::vec3>> AABB::surfaces() const

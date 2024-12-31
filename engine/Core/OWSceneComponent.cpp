@@ -2,9 +2,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "CommonUtils.h"
+
 #include "../Renderers/VAOBuffer.h"
-#include "../Helpers/Shader.h"
 
 #include "OWActor.h"
 
@@ -16,13 +15,22 @@ OWSceneComponent::OWSceneComponent(OWActor* _owner, const glm::vec3& _position)
 
 void OWSceneComponent::scale(const glm::vec3& factor)
 {
+	glm::vec3 mi = bounds().minPoint() - bounds().center();
+	mi *= factor;
+	glm::vec3 ma = bounds().maxPoint() - bounds().center();
+	ma *= factor;
+
+	AABB newBounds(mi + bounds().center(), ma + bounds().center());
+	bounds(newBounds);
 	mScale *= factor;
 }
 
 constexpr float M_TWO_PI = 2 * M_PI;
-void OWSceneComponent::rotate(float degrees, const glm::vec3& factor)
+void OWSceneComponent::rotate(float degrees, const glm::vec3& axis)
 {
-	mRotateFactor *= factor;
+	AABB newBounds = bounds().findBoundsIfRotated(glm::radians(degrees), axis);
+	bounds(newBounds);
+	mRotateAxis *= axis;
 	mRotateRadians += glm::radians(degrees);
 	if (mRotateRadians > M_TWO_PI)
 		mRotateRadians -= M_TWO_PI;
@@ -37,16 +45,13 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	RenderTypes::ShaderMutator renderCb,
 	RenderTypes::ShaderResizer resizeCb) 
 {
-	std::string s = name();
-	if (s == "Plane1")
+	std::string ss = name();
+	if (ss == "Plane3" || ss == "box")
 	{
 		glm::vec3 p = position();
-		glm::vec3 ss = mScale * mScale;
-		glm::mat4 i(1.0f);
-		s = "Plane1";
 	}
-	if (s == "Text:X")
-		s = "Text:X";
+	if (ss == "Text:X")
+		ss = "Text:X";
 	if (!mReadyForRender)
 	{
 		throw NMSLogicException("Component: [" + name() + "] not ready for render.");
@@ -54,61 +59,28 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	if (mRenderThis)
 	{
 		const glm::mat4 I(1.0f);
-		glm::mat4 r = glm::rotate(model, mRotateRadians, mRotateFactor);
+		glm::mat4 r = glm::rotate(model, mRotateRadians, mRotateAxis);
 		glm::mat4 s = glm::scale(model, mScale);
 		glm::mat4 t = glm::translate(I, position());
-		glm::mat4 _model = t * s * r;
+		glm::mat4 _model = t * r * s;
 		mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
-		if (false)//mRenderBoundingBox)
+
+		if (mRenderBoundingBox)
 		{
-			std::vector<std::vector<glm::vec3>> surfaces = bounds().surfaces();
-			if (mRotateRadians > 0)
-			{
-				mRotateRadians = mRotateRadians;
-			}
-			if (mBoundingBoxRenderer == nullptr)
-			{
-				Shader* lineShader = new Shader();
-				lineShader->loadBoilerPlates();
-				lineShader->setStandardUniformNames("pvm");
+			// We need to find how much the current AABB has been scaled from the original.
+			// This will include mScale as well as any extra scaling due to rotations (since we do not rotate an AABB).
+			glm::vec3 newScaling(0);
+			const AABB& orig = boundBoxOriginal();
+			const AABB& current = bounds();
+			newScaling.x = glm::abs(((current.maxPoint().x - current.minPoint().x)) / (orig.maxPoint().x - orig.minPoint().x));
+			newScaling.y = glm::abs(((current.maxPoint().y - current.minPoint().y)) / (orig.maxPoint().y - orig.minPoint().y));
+			newScaling.z = glm::abs(((current.maxPoint().z - current.minPoint().z)) / (orig.maxPoint().z - orig.minPoint().z));
 
-				mBoundingBoxRenderer = new VAOBuffer(lineShader, VAOBuffer::DRAW_MULTI);
-
-				for (const std::vector<glm::vec3>& p : surfaces)
-				{
-					MeshDataLight lineData;
-					lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
-					lineData.vertices(p, GL_LINE_STRIP);
-					mBoundingBoxRenderer->add(&lineData);
-				}
-				mBoundingBoxRenderer->prepare();
-			}
-			std::vector<glm::vec3> corners;
-			for (const std::vector<glm::vec3>& surf : surfaces)
-			{
-				for (const glm::vec3& pt : surf)
-				{
-					glm::vec4 rotatedPoint = _model * glm::vec4(pt, 0);
-					corners.push_back(rotatedPoint);
-				}
-			}
-			AABB jfw = bounds();
-
-			// now find the bounding box of the rotated original AABB
-			AABB b2(corners);
-			float x = glm::abs(((b2.maxPoint().x - b2.minPoint().x)) / (bounds().maxPoint().x - bounds().minPoint().x));
-			float y = glm::abs(((b2.maxPoint().y - b2.minPoint().y)) / (bounds().maxPoint().y - bounds().minPoint().y));
-			float z = glm::abs(((b2.maxPoint().z - b2.minPoint().z)) / (bounds().maxPoint().z - bounds().minPoint().z));
-			glm::vec3 newScaling = glm::vec3(x, y, z);
-			//_model = glm::translate(_model, -position());
-			//_model = glm::scale(_model, newScaling);
-			//_model = glm::translate(_model, position());
-
-			//std::vector<glm::vec3> v;
-			//v.push_back({ tmin.x, tmin.y, tmin.z });
-			//v.push_back({ tmax.x, tmax.y, tmax.z });
-			//bounds(AABB(v));
-			mBoundingBoxRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
+			const glm::mat4 I2(1.0f);
+			glm::mat4 s2 = glm::scale(model, newScaling);
+			glm::mat4 t2 = glm::translate(I2, position());
+			glm::mat4 model2 = t2 * s2;
+			boundingBoxRenderer()->render(proj, view, model2, cameraPos, renderCb, resizeCb);
 		}
 	}
 }

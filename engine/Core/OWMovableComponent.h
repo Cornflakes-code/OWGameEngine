@@ -33,7 +33,10 @@ class OWBounding;
 class VAOBuffer;
 class OWENGINE_API OWMovableComponent : public OWComponent
 {
+	// We need an up to date mBoundingBox for collision calculation purposes.
+	// For correct scaling while rendering we need to compare against the original.
 	AABB mBoundingBox = AABB(glm::vec3(-1), glm::vec3(-1));
+	AABB mBoundBoxOriginal = AABB(glm::vec3(-1), glm::vec3(-1));
 	ParticleData mCurrent;
 	ParticleData mPrevious;
 	PhysicalTypeMetaData* mClassSpecs = nullptr;
@@ -42,8 +45,14 @@ class OWENGINE_API OWMovableComponent : public OWComponent
 	glm::vec3 mHitSphereOffset = glm::vec3(0);
 	AABB mHitBox;
 	glm::vec3 mSteerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
-protected:
 	VAOBuffer* mBoundingBoxRenderer = nullptr;
+	bool validBoundingBox() const;
+protected:
+	VAOBuffer* boundingBoxRenderer();
+	const AABB& boundBoxOriginal() const 
+	{
+		return mBoundBoxOriginal;
+	}
 	bool mRenderBoundingBox = true;
 public:
 	OWMovableComponent(OWActor* _owner, const glm::vec3& _position)
@@ -52,8 +61,11 @@ public:
 		position(_position);
 	}
 	void renderBoundingBox(bool _value) { mRenderBoundingBox = _value; }
-	const AABB& bounds() const { return mBoundingBox; }
-	void bounds(const AABB& bb) { mBoundingBox = bb; }
+	const AABB& bounds() const 
+	{ 
+		return mBoundingBox; 
+	}
+	void bounds(const AABB& bb);
 	const glm::vec3& position() const { return mCurrent.mPosition; }
 	void position(const glm::vec3& value) { mCurrent.mPosition = value; }
 	int tick(float dt) override; 
@@ -69,7 +81,7 @@ public:
 	virtual bool canCollide() { return true; }
 	virtual bool canCollide(OWMovableComponent* other);
 	virtual bool collides(OWMovableComponent* other);
-	virtual void collided(OWMovableComponent* OW_UNUSED(other)) {}
+	virtual void collided(OWMovableComponent* other);
 protected:
 	virtual bool fineGrainCollide(OWMovableComponent* OW_UNUSED(other))
 	{

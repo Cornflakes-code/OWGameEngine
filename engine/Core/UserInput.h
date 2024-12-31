@@ -34,6 +34,8 @@ public:
 		POVBack,
 		POVLeft,
 		POVRight,
+		POVDown,
+		POVUp,
 		POVPitchDown,
 		POVPitchUp,
 		POVYawLeft,

@@ -23,6 +23,11 @@ namespace GLMHelpers
     }
 }
 
+// I could also do it this way
+// https://gamedev.stackexchange.com/questions/133864/calculating-vertex-normals-in-opengl-c?newreg=310c1117667f4ec99cd28866d3a49149
+
+// And this may have some info
+// https://community.khronos.org/t/surface-normal-function-not-really-sure/62685
 unsigned int ComputeNormals::append(std::vector<glm::vec3>& v, const glm::vec3& p)
 {
 	v.emplace_back(p);

@@ -54,6 +54,8 @@ void UserInput::createLogicalOperatorStringMap()
 	addMapping(LogicalOperator::POVBack, "POVBack");
 	addMapping(LogicalOperator::POVLeft, "POVLeft");
 	addMapping(LogicalOperator::POVRight, "POVRight");
+	addMapping(LogicalOperator::POVDown, "POVDown");
+	addMapping(LogicalOperator::POVUp, "POVUp");
 	addMapping(LogicalOperator::POVPitchDown, "POVPitchDown");
 	addMapping(LogicalOperator::POVPitchUp, "POVPitchUp");
 	addMapping(LogicalOperator::POVYawLeft, "POVYawLeft");

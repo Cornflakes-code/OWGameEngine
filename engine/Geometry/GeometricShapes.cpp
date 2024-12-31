@@ -12,50 +12,50 @@ std::pair<glm::vec3, glm::vec3> GeometricShapes::minMaxBox =
 			std::numeric_limits<float>::max())
 };
 
-std::vector<glm::vec2> GeometricShapes::circle(float radius, float arcRadians)
+std::vector<glm::vec3> GeometricShapes::circle(float radius, float arcRadians)
 {
-	std::vector<glm::vec2> retval;
+	std::vector<glm::vec3> retval;
 	for (float i = 0.0f; i < glm::two_pi<float>(); i += arcRadians)
 	{
-		retval.push_back(glm::vec2(radius * glm::cos(i), radius * glm::sin(i)));
+		retval.push_back({ radius * glm::cos(i), radius * glm::sin(i), 0 });
 	}
 	return retval;
 }
 
-std::vector<glm::vec2> GeometricShapes::torus(float innerRadius,
+std::vector<glm::vec3> GeometricShapes::torus(float innerRadius,
 										float outerRadius,
 										float arcRadians)
 {
-	std::vector<glm::vec2> retval;
+	std::vector<glm::vec3> retval;
 	for (float i = 0.0f; i < glm::two_pi<float>(); i += arcRadians)
 	{
 		float arc = i + arcRadians;
 
-		retval.push_back(glm::vec2(innerRadius * glm::cos(i), innerRadius * glm::sin(i)));
-		retval.push_back(glm::vec2(outerRadius * glm::cos(i), outerRadius * glm::sin(i)));
-		retval.push_back(glm::vec2(outerRadius * glm::cos(arc), outerRadius * glm::sin(arc)));
+		retval.push_back({ innerRadius * glm::cos(i), innerRadius * glm::sin(i), 0 });
+		retval.push_back({ outerRadius * glm::cos(i), outerRadius * glm::sin(i), 0 });
+		retval.push_back({ outerRadius * glm::cos(arc), outerRadius * glm::sin(arc), 0 });
 
-		retval.push_back(glm::vec2(innerRadius * glm::cos(i), innerRadius * glm::sin(i)));
-		retval.push_back(glm::vec2(outerRadius * glm::cos(arc), outerRadius * glm::sin(arc)));
-		retval.push_back(glm::vec2(innerRadius * glm::cos(arc), innerRadius * glm::sin(arc)));
+		retval.push_back({ innerRadius * glm::cos(i), innerRadius * glm::sin(i), 0 });
+		retval.push_back({ outerRadius * glm::cos(arc), outerRadius * glm::sin(arc), 0 });
+		retval.push_back({ innerRadius * glm::cos(arc), innerRadius * glm::sin(arc), 0 });
 	}
 	return retval;
 }
 
-std::vector<glm::vec3> GeometricShapes::rectangle(const glm::vec2& dims, 
-							const glm::vec2& bottomLeft)
+std::vector<glm::vec3> GeometricShapes::rectangle(const glm::vec2& dims)
 {
-	const float& x = bottomLeft.x;
-	const float& y = bottomLeft.y;
+	const float x = dims.x * 0.5f;
+	const float y = dims.y * 0.5f;
 	float z = 0.0f;
-	std::vector<glm::vec3> retval;
-	retval.push_back({ x, y, z });
-	retval.push_back({ x, dims.y + y, z });
-	retval.push_back({ dims.x + x, y, z });
-
-	retval.push_back({ dims.x + x, y, z });
-	retval.push_back({ x, dims.y + y, z });
-	retval.push_back({ dims.x + x, dims.y + y, z });
+	std::vector<glm::vec3> retval =
+	{
+		{ x, y, z },
+		{ x, -y, z },
+		{ -x, -y, z },
+		{ -x, -y, z },
+		{ -x, y, z },
+		{ x, y, z }
+	};
 
 	return retval;
 }
@@ -148,7 +148,7 @@ std::vector<glm::vec3> GeometricShapes::star(float innerRadius, float outerRadiu
 	return retval;
 }
 
-std::vector<glm::vec3> GeometricShapes::cube(const glm::vec3& position, const glm::vec3& scale)
+std::vector<glm::vec3> GeometricShapes::cube(const glm::vec3& scale)
 {
 	float dx = scale.x;
 	float dy = scale.y;
@@ -172,9 +172,5 @@ std::vector<glm::vec3> GeometricShapes::cube(const glm::vec3& position, const gl
 		{-0.5f * dx,  0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy,  0.5f * dz},
 		{ 0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy, -0.5f * dz}
 	};
-	for (glm::vec3& v : vertices)
-	{
-		v = v + position;
-	}
 	return vertices;
 }

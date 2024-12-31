@@ -11,6 +11,7 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "../Core/ErrorHandling.h"
+#include "../Core/CommonUtils.h"
 #include "OWBounding.h"
 
 // https://en.wikibooks.org/wiki/OpenGL_Programming/Bounding_box
@@ -84,7 +85,6 @@ public:
 class OWENGINE_API AABB: public OWBounding
 {
 	static constexpr float _max = std::numeric_limits<float>::max();
-	static constexpr float _epsilon = 0.0001f;
 public:
 	AABB()
 		: mMinPoint(glm::vec3(_max)), mMaxPoint(glm::vec3(-_max))
@@ -123,7 +123,10 @@ public:
 		return	glm::all(glm::lessThanEqual(mMinPoint, point)) && 
 				glm::all(glm::greaterThanEqual(mMaxPoint, point));
 	}	
-	
+
+	// We may need to a new AABB that fits this if this was rotated.
+	AABB findBoundsIfRotated(float rot, const glm::vec3& rotAxis) const;
+
 	void move(const glm::vec3& moveBy)
 	{
 		mMinPoint += moveBy;
@@ -144,8 +147,8 @@ public:
 	}
 	bool operator==(const AABB& other) const
 	{
-		return glm::all(glm::epsilonEqual(mMinPoint, other.mMinPoint, _epsilon))
-			&& glm::all(glm::epsilonEqual(mMaxPoint, other.mMaxPoint, _epsilon));
+		return glm::all(glm::epsilonEqual(mMinPoint, other.mMinPoint, OWUtils::epsilon()))
+			&& glm::all(glm::epsilonEqual(mMaxPoint, other.mMaxPoint, OWUtils::epsilon()));
 	}
 	glm::vec3 extent() const 
 	{

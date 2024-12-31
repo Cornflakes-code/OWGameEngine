@@ -41,6 +41,7 @@ AABB NMSSplashScenePhysics::mWindowBounds;
 
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
+std::vector<OWMovableComponent*> addToOcTree;
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
 static unsigned int gOctTreeThreshhold = 4;
 static unsigned int gOctTreeMaxDepth = 5;
@@ -85,17 +86,38 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	fixedTimeStep(dummy, dt);
 }
 
+Box* bbp = nullptr;
+static int ii = 10000;
+static int off = 100;
 void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
+	// Make the bounds a bit bigger than where the planes are.
+	float bf = 1.2f;
+	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off * bf));
+	mOctTree->build(addToOcTree, gOctTreeThreshhold, gOctTreeMaxDepth, planeBounds);
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
 	auto ticker = [timeStep](OWActor* a)
 		{
 			a->tick(timeStep, OWActor::TickType::InitialTick);
 		};
+	if (ii == 5000)
+	{
+		if (bbp)
+			bbp->scale(glm::vec3(2));
+	}
+	if (ii == 1000)
+	{
+		if (bbp)
+			bbp->rotate(45, { 1,1,1 });
+	}
+	if (ii > 0)
+	{
+	}
+	//ii--;
 	owner()->traverseSceneGraph(ticker);
 
-	auto collider = [](OcTree* o)
+	auto collider = [dt](OcTree* o)
 		{
 			int inc = 0;
 			for (int i = 0; i < o->mPoints.size(); i++)
@@ -104,6 +126,10 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 				OWMovableComponent* a1 = o->mPoints[i];
 				if (a1->canCollide())
 				{
+					if (a1->name() == "box")
+					{
+						char s = 'a';
+					}
 					for (int j = inc; j < o->mPoints.size(); j++)
 					{
 						OWMovableComponent* a2 = o->mPoints[j];
@@ -199,19 +225,30 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	return false;
 }
 
-Plane* createBumperPlane(const std::string& _name, const glm::vec3& pos, float rotDegrees, const glm::vec3& rotAxis)
+Box* createBox(const std::string& _name, const glm::vec4& colour, const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
+{
+	Box* box = new Box(mScenery, origin);
+	box->name(_name);
+	box->prepare(colour);
+	box->scale({ 10,10,10 });
+	box->velocity(direction, speed);
+	//box->rotate
+	return box;
+}
+
+Plane* createBumperPlane(const std::string& _name, const glm::vec3& pos, float scale, float rotDegrees, const glm::vec3& rotAxis)
 {
 	Plane* p = new Plane(mScenery, pos);
 	p->name(_name);
-	p->scale(glm::vec3(std::abs(2 * pos.x)));
+	glm::vec4 colour({ 1.0f, 0.33f, 0.33f, 0.2f });
+	p->prepare(colour);
+	p->scale(glm::vec3(scale));
 	p->rotate(rotDegrees, rotAxis);
-	p->prepare();
 	return p;
 }
 
 void NMSSplashScenePhysics::setup()
 {
-	std::vector<OWMovableComponent*> addToOcTree;
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 200.0f;
@@ -264,15 +301,37 @@ void NMSSplashScenePhysics::setup()
 	welcome->prepare();
 	addToOcTree.push_back(welcome);
 #endif
-	Box* box = new Box(mScenery, origin);
-	box->name("box");
-	box->scale({ 0.5,2,1 });
-	glm::vec3 direction11 = Compass::Rose[Compass::North] +
-		Compass::Rose[Compass::West] +
-		Compass::Rose[Compass::In];
-	//box->velocity(direction11, mSpeed);
+	glm::vec3 scale1 = { 10, 10, 10 };
+	glm::vec3 scale2 = { 3, 3, 3 };
+	glm::vec3 scale3 = { 20, 20, 20 };
+	glm::vec3 randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.821 }, mSpeed * 0.8, scale1));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 0.8, scale1));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
+
+	addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.821 }, mSpeed * 1.8, scale2));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 3.8, scale2));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.1, scale3));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.3, scale3));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.5, scale3));
+	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale2));
+
+	//glm::vec3 direction11 = Compass::Rose[Compass::North] + Compass::Rose[Compass::West];
 	//box->rotate
-	box->prepare();
+//	bbp = box;
 
 #ifdef INCLUDE_ENJOY
 	glm::vec3 direction2 = Compass::Rose[Compass::South] +
@@ -307,27 +366,14 @@ void NMSSplashScenePhysics::setup()
 	mButtonData.mText = mEnjoyData;
 	mButtonData.mText.text("Click Me");
 #endif
-	int off = 100;
-	// Create planes at the boundaries of the world
-	/*
-	Plane* p1 = createBumperPlane("Plane1", glm::vec3(-off, -off, off), 0.0f, glm::vec3(1, 0, 0));
-	Plane* p2 = createBumperPlane("Plane2", glm::vec3(-off, -off, -off), 0.0f, glm::vec3(1, 0, 0));
-	Plane* p3 = createBumperPlane("Plane3", glm::vec3(-off, -off, off), 90.0f, glm::vec3(0, 1, 0));
-	Plane* p4 = createBumperPlane("Plane4", glm::vec3(off, -off, off), 90.0f, glm::vec3(0, 1, 0));
-	Plane* p5 = createBumperPlane("Plane5", glm::vec3(-off, -off, -off), 90.0f, glm::vec3(1, 0, 0));
-	Plane* p6 = createBumperPlane("Plane6", glm::vec3(-off, off, -off), 90.0f, glm::vec3(1, 0, 0));
-
-	addToOcTree.push_back(p1);
-	addToOcTree.push_back(p2);
-	addToOcTree.push_back(p3);
-	addToOcTree.push_back(p4);
-	addToOcTree.push_back(p5);
-	addToOcTree.push_back(p6);
-	*/
-	// Make the bounds a bit bigger than where the planes are.
-	float bf = 1.2f;
-	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off* bf));
-	mOctTree->build(addToOcTree, gOctTreeThreshhold, gOctTreeMaxDepth, planeBounds);
+	const float pos = off / 2.1f;
+	// Create a box of planes for the objects to bounce off
+	addToOcTree.push_back(createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
+	addToOcTree.push_back(createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::Out
+	addToOcTree.push_back(createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::East
+	addToOcTree.push_back(createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
+	addToOcTree.push_back(createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
+	addToOcTree.push_back(createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////

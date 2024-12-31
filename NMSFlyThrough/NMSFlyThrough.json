@@ -63,24 +63,14 @@
   },
   "KeyMapping": [
     {
-      "Key": "w",
+      "Key": "q",
       "Mods": [],
-      "Logical": "POVForward"
+      "Logical": "POVYawLeft"
     },
     {
-      "Key": "s",
-      "Mods": ["Shift"],
-      "Logical": "POVPitchUp"
-    },
-    {
-      "Key": "s",
+      "Key": "e",
       "Mods": [],
-      "Logical": "POVBack"
-    },
-    {
-      "Key": "w",
-      "Mods": ["Shift"],
-      "Logical": "POVPitchDown"
+      "Logical": "POVYawRight"
     },
     {
       "Key": "a",
@@ -93,14 +83,34 @@
       "Logical": "POVRight"
     },
     {
-      "Key": "q",
+      "Key": "r",
       "Mods": [],
-      "Logical": "POVYawLeft"
+      "Logical": "POVUp"
     },
     {
-      "Key": "e",
+      "Key": "f",
       "Mods": [],
-      "Logical": "POVYawRight"
+      "Logical": "POVDown"
+    },
+    {
+      "Key": "w",
+      "Mods": [],
+      "Logical": "POVForward"
+    },
+    {
+      "Key": "s",
+      "Mods": [],
+      "Logical": "POVBack"
+    },
+    {
+      "Key": "w",
+      "Mods": ["Shift"],
+      "Logical": "POVPitchUp"
+    },
+    {
+      "Key": "s",
+      "Mods": ["Shift"],
+      "Logical": "POVPitchDown"
     },
     {
       "Key": "r",

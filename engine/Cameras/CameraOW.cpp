@@ -50,7 +50,9 @@ static bool isDirectionKey(int key)
 	return key == UserInput::LogicalOperator::POVForward ||
 		key == UserInput::LogicalOperator::POVBack ||
 		key == UserInput::LogicalOperator::POVLeft ||
-		key == UserInput::LogicalOperator::POVRight;
+		key == UserInput::LogicalOperator::POVRight ||
+		key == UserInput::LogicalOperator::POVDown ||
+		key == UserInput::LogicalOperator::POVUp;
 }
 
 static bool isYawKey(int key)
@@ -169,6 +171,12 @@ void CameraOW::doProcessKeyboardInput(int userCommand, float seconds)
 		break;
 	case UserInput::LogicalOperator::POVRight:
 		mCurrent->move(OW_Camera::CameraDirection::RIGHT, seconds);
+		break;
+	case UserInput::LogicalOperator::POVDown:
+		mCurrent->move(OW_Camera::CameraDirection::DOWN, seconds);
+		break;
+	case UserInput::LogicalOperator::POVUp:
+		mCurrent->move(OW_Camera::CameraDirection::UP, seconds);
 		break;
 	case UserInput::LogicalOperator::POVPitchDown:
 		pitch(glm::radians(-1.0f));

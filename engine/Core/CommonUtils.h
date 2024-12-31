@@ -47,6 +47,11 @@ struct OWENGINE_API OWUtils
 		BRIGHT_WHITE
 	};
 
+	static constexpr float epsilon()
+	{
+		return 0.00001f;
+	} 
+
 	static glm::vec4 colour(SolidColours colour);
 	static std::string nowAsString();
 	static std::vector<std::string> split1(const std::string &s, char delim);
@@ -58,7 +63,7 @@ struct OWENGINE_API OWUtils
 
 	static std::vector<std::string> split(const std::string& s, char delim);
 
-	static bool nearlyEqual(Float a, Float b, Float epsilon)
+	static bool nearlyEqual(Float a, Float b, Float _epsilon)
 	{
 		// https://floating-point-gui.de/errors/comparison/
 		float absA = std::abs(a);
@@ -73,11 +78,11 @@ struct OWENGINE_API OWUtils
 		{
 			// a or b is zero or both are extremely close to it
 			// relative error is less meaningful here
-			return diff < (epsilon * std::numeric_limits<float>::denorm_min());
+			return diff < (_epsilon * std::numeric_limits<float>::denorm_min());
 		}
 		else 
 		{ // use relative error
-			return diff / std::min((absA + absB), std::numeric_limits<float>::max()) < epsilon;
+			return diff / std::min((absA + absB), std::numeric_limits<float>::max()) < _epsilon;
 		}
 	}
 

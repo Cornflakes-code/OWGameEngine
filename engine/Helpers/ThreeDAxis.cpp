@@ -59,6 +59,7 @@ void ThreeDAxis::createAxisData(const AABB& w)
 	lineShader->loadBoilerPlates();
 	lineShader->setStandardUniformNames("pvm");
 	MeshComponent* axis = new MeshComponent(this, glm::vec3(0));
+	axis->renderBoundingBox(false);
 	axis->name("Axis");
 	MeshDataLight lineData;
 	lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");

@@ -18,7 +18,7 @@ bool Box::intersects(const AABB& box) const
 	return false;
 }
 
-void Box::prepare()
+void Box::prepare(const glm::vec4& colour)
 {
 	std::vector<glm::vec3> vertices = GeometricShapes::cube();
 	AABB b = AABB(vertices);
@@ -37,7 +37,7 @@ void Box::prepare()
 
 	VAOBuffer* vao = new VAOBuffer(wireShader, VAOBuffer::DRAW_ARRAYS);
 	vao->add(&lineData);
-	auto pointRender = [](
+	auto pointRender = [colour](
 		const glm::mat4& OW_UNUSED(proj),
 		const glm::mat4& OW_UNUSED(view),
 		const glm::mat4& OW_UNUSED(model),
@@ -46,7 +46,7 @@ void Box::prepare()
 		{
 			shader->use();
 			shader->setVector4f("lightColor", OWUtils::colour(OWUtils::SolidColours::WHITE));
-			shader->setVector4f("objectColor", OWUtils::colour(OWUtils::SolidColours::RED));// glm::vec4(0.90f, 0.91f, 0.98f, 1.0f)); // silver
+			shader->setVector4f("objectColor", colour);// glm::vec4(0.90f, 0.91f, 0.98f, 1.0f)); // silver
 			shader->setVector3f("viewLightPos", glm::vec3(160.0f, 60.0f, 50.0f));
 			//shader->setVector3f("viewLightPos", cameraPos);
 		};

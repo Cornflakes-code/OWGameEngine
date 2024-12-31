@@ -27,7 +27,9 @@ public:
 		FORWARD,
 		BACK,
 		LEFT,
-		RIGHT
+		RIGHT,
+		DOWN,
+		UP
 	};
 
 	glm::mat4 view() const
@@ -107,6 +109,12 @@ public:
 			break;
 		case LEFT:
 			mPosition -= right() * velocity;
+			break;
+		case DOWN:
+			mPosition -= up() * velocity;
+			break;
+		case UP:
+			mPosition += up() * velocity;
 			break;
 		default:
 			throw NMSException(std::stringstream()

@@ -27,6 +27,7 @@ public:
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
 	void addLightSource(RendererBase* aLight);
 	virtual void prepare() override;
+	//void scale(const glm::vec3& factor);
 	virtual void doRender() const override;
 private:
 	void validate(const MeshDataLight* mdl);

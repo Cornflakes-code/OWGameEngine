@@ -17,6 +17,6 @@ class OWENGINE_API Box : public OWSceneComponent
 #pragma warning( pop )
 public:
 	Box(OWActor* _owner, const glm::vec3& _position);
-	void prepare();
+	void prepare(const glm::vec4& colour);
 	bool intersects(const AABB& box) const;
 };
