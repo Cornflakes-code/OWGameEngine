@@ -190,6 +190,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Core\CollisionSystem.h" />
     <ClInclude Include="..\Core\CommonUtils.h" />
     <ClInclude Include="..\Core\ErrorHandling.h" />
     <ClInclude Include="..\Core\GLApplication.h" />
@@ -258,6 +259,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
+    <ClCompile Include="..\Core\CollisionSystem.cpp" />
     <ClCompile Include="..\Core\CommonUtils.cpp" />
     <ClCompile Include="..\Core\ErrorHandling.cpp" />
     <ClCompile Include="..\Core\GLApplication.cpp" />

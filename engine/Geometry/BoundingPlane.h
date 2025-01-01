@@ -24,7 +24,8 @@ public:
 	, mDistance(glm::dot(mNormal, p1)) {}
 
 	bool intersects(const OWBounding* other) const override;
-	void move(const glm::vec3& pt) override;
+	void move(const glm::vec3& delta) override;
+	void moveTo(const glm::vec3& pt) override;
 	const glm::vec3& normal() const { return mNormal; }
 	float getSignedDistanceToPlane(const glm::vec3& point) const
 	{

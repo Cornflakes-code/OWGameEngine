@@ -110,7 +110,7 @@ public:
 
 	bool intersects(const OWBounding* other) const override;
 	bool intersects(const AABB& other) const;
-	Compass::Direction intersectionDirection(const AABB& other) const;
+
 	bool contains(const glm::vec3& pt) const
 	{
 		return (pt.x > mMinPoint.x && pt.x < mMaxPoint.x &&
@@ -127,11 +127,18 @@ public:
 	// We may need to a new AABB that fits this if this was rotated.
 	AABB findBoundsIfRotated(float rot, const glm::vec3& rotAxis) const;
 
-	void move(const glm::vec3& moveBy)
+	void move(const glm::vec3& delta) override
 	{
-		mMinPoint += moveBy;
-		mMaxPoint += moveBy;
+		mMinPoint += delta;
+		mMaxPoint += delta;
 	}
+	void moveTo(const glm::vec3& pt) override
+	{
+		glm::vec3 c = center();
+		mMinPoint = pt - c;
+		mMaxPoint = pt + c;
+	}
+
 	glm::vec3 center() const
 	{ 
 		glm::vec3 halfSize = size();

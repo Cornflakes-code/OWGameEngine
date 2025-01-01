@@ -234,6 +234,9 @@
     <ClInclude Include="..\Geometry\OWShape.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="..\Core\CollisionSystem.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -433,6 +436,9 @@
     </ClCompile>
     <ClCompile Include="..\Geometry\OWShape.cpp">
       <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\CollisionSystem.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

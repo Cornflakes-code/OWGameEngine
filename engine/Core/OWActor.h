@@ -47,7 +47,7 @@ public:
 		// returning false lets _ourComponent deal with it. I assume they just rebound.
 		return false;
 	}
-	virtual bool canCollide(OWMovableComponent* OW_UNUSED(_ourComponent), OWActor* other, OWMovableComponent* OW_UNUSED(otherComponent))
+	virtual bool canCollide(OWMovableComponent* OW_UNUSED(_ourComponent), OWActor* OW_UNUSED(other), OWMovableComponent* OW_UNUSED(otherComponent))
 	{
 		// for example our thigh and shin of same leg may interesect but they cannot collide
 		// but hands of different arms can.

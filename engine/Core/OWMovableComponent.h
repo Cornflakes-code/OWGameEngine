@@ -47,6 +47,8 @@ class OWENGINE_API OWMovableComponent : public OWComponent
 	glm::vec3 mSteerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
 	VAOBuffer* mBoundingBoxRenderer = nullptr;
 	bool validBoundingBox() const;
+	void move(const glm::vec3& moveStep);
+	void moveTo(const glm::vec3& moveStep);
 protected:
 	VAOBuffer* boundingBoxRenderer();
 	const AABB& boundBoxOriginal() const 

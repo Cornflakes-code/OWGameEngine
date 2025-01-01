@@ -86,49 +86,6 @@ bool AABB::intersects(const AABB& other) const
 		other.mMaxPoint.z > mMinPoint.z)
 		return true;
 	return false;
-
-	//if (mMinPoint.x < other.mMaxPoint.x &&
-	//	mMaxPoint.x > other.mMinPoint.x)
-	//	return false;
-	//if (mMinPoint.y < other.mMaxPoint.y &&
-	//	mMaxPoint.y > other.mMinPoint.y)
-	//	return false;
-	//if (mMinPoint.z < other.mMaxPoint.z &&
-	//	mMaxPoint.z > other.mMinPoint.z)
-	//	return false;
-	//return true;
-}
-
-Compass::Direction AABB::intersectionDirection(const AABB& other) const
-{
-	if (!intersects(other))
-		return Compass::Direction::NoDirection;
-	if (maxPoint().y > other.minPoint().y)
-		return Compass::Direction::North;
-	else if (minPoint().y < other.maxPoint().y)
-		return Compass::Direction::South;
-	else if (maxPoint().x > other.minPoint().x)
-		return Compass::Direction::East;
-	else if (maxPoint().x < other.maxPoint().x)
-		return Compass::Direction::West;
-	else if (other.maxPoint().z > maxPoint().z)
-		return Compass::Direction::In;
-	else if (other.minPoint().z < minPoint().z)
-		return Compass::Direction::Out;
-	return Compass::Direction::NoDirection;
-	//if (other.maxPoint().y >= maxPoint().y)
-	//	return Compass::Direction::North;
-	//else if (other.maxPoint().x >= maxPoint().x)
-	//	return Compass::Direction::East;
-	//else if (other.maxPoint().z >= maxPoint().z)
-	//	return Compass::Direction::In;
-	//else if (other.minPoint().y <= minPoint().y)
-	//	return Compass::Direction::South;
-	//else if (other.minPoint().x <= minPoint().x)
-	//	return Compass::Direction::West;
-	//else if (other.minPoint().z <= minPoint().z)
-	//	return Compass::Direction::Out;
-	//return Compass::Direction::NoDirection;
 }
 
 std::vector<glm::vec3> convertToV3(const std::vector<glm::vec4>& v4)

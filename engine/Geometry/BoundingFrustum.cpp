@@ -12,6 +12,30 @@ bool BoundingFrustum::intersects(const AABB& box) const
 		farFace.isOnOrForwardPlane(box) && nearFace.isOnOrForwardPlane(box);
 }
 
+void BoundingFrustum::move(const glm::vec3& delta)
+{
+	topFace.move(delta);
+	bottomFace.move(delta);
+
+	rightFace.move(delta);
+	leftFace.move(delta);
+
+	farFace.move(delta);
+	nearFace.move(delta);
+}
+
+void BoundingFrustum::moveTo(const glm::vec3& pt) 
+{
+	topFace.moveTo(pt);
+	bottomFace.moveTo(pt);
+
+	rightFace.moveTo(pt);
+	leftFace.moveTo(pt);
+
+	farFace.moveTo(pt);
+	nearFace.moveTo(pt);
+}
+
 
 /*
 constexpr float _max = std::numeric_limits<float>::max();

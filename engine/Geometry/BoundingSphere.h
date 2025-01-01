@@ -16,7 +16,8 @@ public:
 		:mPosition(_position), mRadius(_radius) {}
 	void radius(float _radius) { mRadius = _radius; }
 	void center(const glm::vec3& _value) { mPosition = _value; }
-	void move(const glm::vec3& delta) { mPosition += delta; }
+	void move(const glm::vec3& delta) override { mPosition += delta; }
+	void moveTo(const glm::vec3& pt) { mPosition = pt; }
 	bool intersects(const OWBounding* other) const override;
 	bool intersects(const AABB& box) const;
 	bool contains(const glm::vec3& pt) const

@@ -12,6 +12,7 @@
 #include <Core/GlobalSettings.h>
 #include <Core/Movie.h>
 #include <Core/OWActor.h>
+#include <Core/CollisionSystem.h>
 #include <Core/OcTree.h>
 #include <Geometry/Particle.h>
 #include <Geometry/Plane.h>
@@ -41,24 +42,9 @@ AABB NMSSplashScenePhysics::mWindowBounds;
 
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
-std::vector<OWMovableComponent*> addToOcTree;
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
-static unsigned int gOctTreeThreshhold = 4;
-static unsigned int gOctTreeMaxDepth = 5;
 
 OWActor* mScenery = nullptr;
-OcTree* mOctTree = nullptr;
-/*
-std::vector<OWActor*> mRootNode;
-void traverseSceneGraph(Scene::OWActorCallbackType cb)
-{
-	for (OWActor* a : mRootNode)
-	{
-		cb(a);
-	}
-}
-*/
-
 
 void makeGlobals(Scene* owner)
 {
@@ -66,7 +52,7 @@ void makeGlobals(Scene* owner)
 	{
 		mScenery = new OWActor(owner, glm::vec3(0));
 		mScenery->name("Scenery");
-		mOctTree = new OcTree();
+//		mOctTree = new OcTree();
 	}
 }
 
@@ -84,75 +70,22 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 {
 	std::string dummy;
 	fixedTimeStep(dummy, dt);
+	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
+	CollisionSystem::tick(timeStep);
+	CollisionSystem::collide();
 }
 
-Box* bbp = nullptr;
-static int ii = 10000;
-static int off = 100;
+static float off = 100;
 void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
 	// Make the bounds a bit bigger than where the planes are.
 	float bf = 1.2f;
 	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off * bf));
-	mOctTree->build(addToOcTree, gOctTreeThreshhold, gOctTreeMaxDepth, planeBounds);
+	CollisionSystem::refresh();
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
-	auto ticker = [timeStep](OWActor* a)
-		{
-			a->tick(timeStep, OWActor::TickType::InitialTick);
-		};
-	if (ii == 5000)
-	{
-		if (bbp)
-			bbp->scale(glm::vec3(2));
-	}
-	if (ii == 1000)
-	{
-		if (bbp)
-			bbp->rotate(45, { 1,1,1 });
-	}
-	if (ii > 0)
-	{
-	}
-	//ii--;
-	owner()->traverseSceneGraph(ticker);
-
-	auto collider = [dt](OcTree* o)
-		{
-			int inc = 0;
-			for (int i = 0; i < o->mPoints.size(); i++)
-			{
-				inc++;
-				OWMovableComponent* a1 = o->mPoints[i];
-				if (a1->canCollide())
-				{
-					if (a1->name() == "box")
-					{
-						char s = 'a';
-					}
-					for (int j = inc; j < o->mPoints.size(); j++)
-					{
-						OWMovableComponent* a2 = o->mPoints[j];
-						if (a2->canCollide())
-						{
-							if (a1->canCollide(a2))
-							{
-								if (a1->bounds().intersects(a2->bounds()))
-								{
-									if (a1->collides(a2))
-									{
-										a1->collided(a2);
-										a2->collided(a1);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			return true;
-		};
-	mOctTree->traverse(collider);
+	CollisionSystem::tick(timeStep);
+	CollisionSystem::collide();
 #ifdef INCLUDE_WELCOME
 //	mWelcomeMover.move(velocity);
 	//mWelcomeMover.bounceIfCollide(mWindowBounds);
@@ -230,7 +163,7 @@ Box* createBox(const std::string& _name, const glm::vec4& colour, const glm::vec
 	Box* box = new Box(mScenery, origin);
 	box->name(_name);
 	box->prepare(colour);
-	box->scale({ 10,10,10 });
+	box->scale(scale);
 	box->velocity(direction, speed);
 	//box->rotate
 	return box;
@@ -249,6 +182,7 @@ Plane* createBumperPlane(const std::string& _name, const glm::vec3& pos, float s
 
 void NMSSplashScenePhysics::setup()
 {
+	std::vector<OWMovableComponent*> addToOcTree;
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 200.0f;
@@ -304,34 +238,33 @@ void NMSSplashScenePhysics::setup()
 	glm::vec3 scale1 = { 10, 10, 10 };
 	glm::vec3 scale2 = { 3, 3, 3 };
 	glm::vec3 scale3 = { 20, 20, 20 };
-	glm::vec3 randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.821 }, mSpeed * 0.8, scale1));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 0.8, scale1));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale1));
+	int denom = 40;
+	glm::vec3 randorigin = { rand() % denom, rand() % denom, rand() % denom };
+	addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.21 }, mSpeed * 0.8f, scale1));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 0.8f, scale1));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
 
-	addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.821 }, mSpeed * 1.8, scale2));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 3.8, scale2));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.1, scale3));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.3, scale3));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.5, scale3));
-	randorigin = { rand() % 50, rand() % 50 , rand() % 50 };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8, scale2));
-
+	addToOcTree.push_back(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.821 }, mSpeed * 1.8f, scale2));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 3.8f, scale2));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.1f, scale3));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.42 }, mSpeed * 0.3f, scale3));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.27 }, mSpeed * 0.5f, scale3));
+	randorigin = { rand() % denom, rand() % denom , rand() % denom };
+	addToOcTree.push_back(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.134, 0.21, 0.37 }, mSpeed * 0.8f, scale2));
 	//glm::vec3 direction11 = Compass::Rose[Compass::North] + Compass::Rose[Compass::West];
 	//box->rotate
-//	bbp = box;
 
 #ifdef INCLUDE_ENJOY
 	glm::vec3 direction2 = Compass::Rose[Compass::South] +
@@ -374,6 +307,8 @@ void NMSSplashScenePhysics::setup()
 	addToOcTree.push_back(createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
 	addToOcTree.push_back(createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
 	addToOcTree.push_back(createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
+
+	CollisionSystem::build(addToOcTree);
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////
