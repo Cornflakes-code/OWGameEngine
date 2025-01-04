@@ -35,3 +35,4 @@ std::vector<glm::vec3> OWStar::vertices() const
 {
 	return mVertices;
 }
+

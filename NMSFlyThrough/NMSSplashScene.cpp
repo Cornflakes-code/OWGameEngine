@@ -75,7 +75,7 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	CollisionSystem::collide();
 }
 
-static float off = 100;
+static float off = 300;
 void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
@@ -172,6 +172,7 @@ Box* createBox(const std::string& _name, const glm::vec4& colour, const glm::vec
 Plane* createBumperPlane(const std::string& _name, const glm::vec3& pos, float scale, float rotDegrees, const glm::vec3& rotAxis)
 {
 	Plane* p = new Plane(mScenery, pos);
+	p->mMoveable = false;
 	p->name(_name);
 	glm::vec4 colour({ 1.0f, 0.33f, 0.33f, 0.2f });
 	p->prepare(colour);
@@ -185,7 +186,7 @@ void NMSSplashScenePhysics::setup()
 	std::vector<OWMovableComponent*> addToOcTree;
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
-	mSpeed = _world.size().x / 200.0f;
+	mSpeed = _world.size().x / 100.0f;
 
 #ifdef INCLUDE_FULLSCREEN
 #endif
@@ -239,30 +240,45 @@ void NMSSplashScenePhysics::setup()
 	glm::vec3 scale2 = { 3, 3, 3 };
 	glm::vec3 scale3 = { 20, 20, 20 };
 	int denom = 40;
-	glm::vec3 randorigin = { rand() % denom, rand() % denom, rand() % denom };
-	addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.21 }, mSpeed * 0.8f, scale1));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 0.8f, scale1));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.8f, scale1));
 
-	addToOcTree.push_back(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED), randorigin, { 0.34, 0.57, 0.821 }, mSpeed * 1.8f, scale2));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), randorigin, { 0.14, 0.27, 0.81 }, mSpeed * 3.8f, scale2));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), randorigin, { 0.34, 0.21, 0.57 }, mSpeed * 0.1f, scale3));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), randorigin, { 0.34, 0.21, 0.42 }, mSpeed * 0.3f, scale3));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), randorigin, { 0.34, 0.21, 0.27 }, mSpeed * 0.5f, scale3));
-	randorigin = { rand() % denom, rand() % denom , rand() % denom };
-	addToOcTree.push_back(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), randorigin, { 0.134, 0.21, 0.37 }, mSpeed * 0.8f, scale2));
+	for (int i = 0; i < 5; i++)
+	{
+		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
+		glm::vec3 rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f }; // random speed
+		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro, rs, mSpeed * 0.8f, scale1));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, rs, mSpeed * 0.8f, scale1));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), ro, rs, mSpeed * 0.8f, scale1));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), ro, rs, mSpeed * 0.8f, scale1));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), ro, rs, mSpeed * 0.8f, scale1));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), ro, rs, mSpeed * 0.8f, scale1));
+
+		addToOcTree.push_back(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED), ro, { rs }, mSpeed * 1.8f, scale2));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, { rs }, mSpeed * 3.8f, scale2));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), ro, { rs }, mSpeed * 0.1f, scale3));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), ro, { rs }, mSpeed * 0.3f, scale3));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), ro, { rs }, mSpeed * 0.5f, scale3));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		addToOcTree.push_back(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), ro, { rs }, mSpeed * 0.8f, scale2));
+	}
 	//glm::vec3 direction11 = Compass::Rose[Compass::North] + Compass::Rose[Compass::West];
 	//box->rotate
 

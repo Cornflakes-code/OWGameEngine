@@ -7,13 +7,16 @@
 #include "../Geometry/Box.h"
 #include "../Core/LogStream.h"
 
-#define SWEEP_AND_PRUNE
-//#define BASIC_COLLISIONS
-
+//#define SWEEP_AND_PRUNE
+//#define SWEEP_AND_PRUNE_EX
+#define BASIC_COLLISIONS
+//#define DYNAMIC_SPHERE_TREE
 
 namespace CollisionSystem
 {
 #ifdef SWEEP_AND_PRUNE
+	// Good discussion about different types of collision optimisations
+	// https://www.gamedev.net/forums/topic/328022-what-collision-method-is-better/
 	// https://leanrada.com/notes/sweep-and-prune-2/#final-code
 	struct Edge
 	{
@@ -58,55 +61,68 @@ namespace CollisionSystem
 	// https://gamedev.stackexchange.com/questions/211322/sweep-and-prune-algorithm-performance
 	// https://github.com/YulyaLesheva/Sweep-And-Prune-algorithm/blob/main/SAP_algorithm.cpp
 	// https://github.com/grynca/SAP/blob/master/include/SAP/SAP_internal.h
-	void sweepAndPrune(std::vector<Edge>& edges, OverlappingEdges& overlapping, bool firstTimeCalled)
+
+	void doInsertionSort(std::vector<Edge>& edges)
 	{
-		// Insertion sort
+		// Plain Insertion sort
 		for (int i = 1; i < edges.size(); i++)
 		{
 			for (int j = i - 1; j >= 0; j--)
 			{
-				if (edges[j].val() < edges[j + 1].val())
+				if (edges[j].val() <= edges[j + 1].val())
 					break;
 
 				// Swap
-				Edge temp = edges[j];
-				edges[j] = edges[j + 1];
-				edges[j + 1] = temp;
-
-				// --- Code up until this point is plain insertion sort ---
-
-				// These two edges have just swapped places, process it...
-				const Edge& edge1 = edges[j];
-				const Edge& edge2 = edges[j + 1];
-
-				if (edge1.isLeft && (!edge2.isLeft)) // case R-L ? L-R
-				{ 
-					// Mark as overlapping
-					if (firstTimeCalled)
-					{
-						if (edge1.o != edge2.o)
-						{
-							EdgePair overlap(edge1, edge2);
-							if (edge1.o->canCollide() && edge2.o->canCollide())
-							{
-								overlapping.insert(overlap);
-							}
-						}
-					}
-					else
-					{
-						// do nothing. If it is not already in there then it is not a candidate for a collision.
-					}
-				}
-				else if ((!edge1.isLeft) && edge2.isLeft) // case L-R ? R-L
-				{ 
-					// Unmark as overlapping
-					overlapping.erase({ edge1, edge2 });
-				}
+				std::swap(edges[j], edges[j + 1]);
 			}
 		}
 	}
 
+	void doSweepAndPrune(std::vector<Edge>& edges, OverlappingEdges& overlapping, bool firstTimeCalled)
+	{
+		for (int j = 0; j < edges.size()-1; j++)
+		{
+			const Edge& edge1 = edges[j];
+			const Edge& edge2 = edges[j + 1];
+			if (edge1.o == edge2.o)
+				continue;
+
+			if (edge1.isLeft && (!edge2.isLeft)) // case R-L ? L-R
+			{ 
+				// Mark as overlapping
+				if (true)
+				{
+					if (edge1.o->canCollide() && edge2.o->canCollide())
+					{
+						const Edge* e1 = edge1.o < edge2.o ? &edge1 : &edge2;
+						const Edge* e2 = edge1.o < edge2.o ? &edge2 : &edge1;
+						EdgePair overlap(*e1, *e2);
+						//EdgePair overlap(edge1, edge2);
+						overlapping.insert(overlap);
+					}
+				}
+				else
+				{
+					// do nothing. If it is not already in there then it is not a candidate for a collision.
+				}
+			}
+			else if ((!edge1.isLeft) && edge2.isLeft) // case L-R ? R-L
+			{ 
+				// Unmark as overlapping
+				const Edge* e1 = edge1.o < edge2.o ? &edge1 : &edge2;
+				const Edge* e2 = edge1.o < edge2.o ? &edge2 : &edge1;
+				EdgePair unlap(*e1, *e2);
+				overlapping.erase(unlap);
+			}
+		}
+	}
+
+	auto comp = [](const Edge& a, const Edge& b)
+		{
+			//				if (a.val() == b.val())
+			//					return a.o->name() < b.o->name();
+			return a.val() < b.val();
+		};
 	void buildSweepAndPrune(std::vector<OWMovableComponent*>& objects)
 	{
 		for (OWMovableComponent* o : objects)
@@ -120,17 +136,17 @@ namespace CollisionSystem
 			gEdgesZ.push_back({ o, 2, true });
 			gEdgesZ.push_back({ o, 2, false });
 		}
-		std::sort(gEdgesX.begin(), gEdgesX.end(), [](const Edge& a, const Edge& b) { return a.val() < b.val(); });
-		std::sort(gEdgesY.begin(), gEdgesY.end(), [](const Edge& a, const Edge& b) { return a.val() < b.val(); });
-		std::sort(gEdgesZ.begin(), gEdgesZ.end(), [](const Edge& a, const Edge& b) { return a.val() < b.val(); });
+		std::sort(gEdgesX.begin(), gEdgesX.end(), comp);
+		std::sort(gEdgesY.begin(), gEdgesY.end(), comp);
+		std::sort(gEdgesZ.begin(), gEdgesZ.end(), comp);
 	}
 
 	void collideSweepAndPrune()
 	{
 		OverlappingEdges colliding;
-		sweepAndPrune(gEdgesX, colliding, true);
-		sweepAndPrune(gEdgesY, colliding, false);
-		sweepAndPrune(gEdgesZ, colliding, false);
+		doSweepAndPrune(gEdgesX, colliding, true);
+		doSweepAndPrune(gEdgesY, colliding, false);
+		doSweepAndPrune(gEdgesZ, colliding, false);
 		if (colliding.size() > 0)
 		{
 			char s = 'p';
@@ -141,22 +157,25 @@ namespace CollisionSystem
 			OWMovableComponent* a2 = const_cast<EdgePair&>(const_pr).e2.o;
 			if (a1->collides(a2))
 			{
-				LogStream(LogStreamLevel::Info) << "collided [" + a1->name() + "] [" + a2->name() + "].\n";
+				//LogStream(LogStreamLevel::Info) << "collided [" + a1->name() + "] [" + a2->name() + "].\n";
 				a1->collided(a2);
 				a2->collided(a1);
 			}
 		}
+		std::sort(gEdgesX.begin(), gEdgesX.end(), comp);
+		std::sort(gEdgesY.begin(), gEdgesY.end(), comp);
+		std::sort(gEdgesZ.begin(), gEdgesZ.end(), comp);
+//		doInsertionSort(gEdgesX);
+//		doInsertionSort(gEdgesY);
+//		doInsertionSort(gEdgesZ);
 	}
 
 	void sweepAndPruneTick(float timeStep)
 	{
-		auto ticker = [timeStep](OWMovableComponent* a)
-			{
-				a->tick(timeStep);
-			};
 		for (Edge& e : gEdgesX)
 		{
-			ticker(e.o);
+			if (e.isLeft)
+				e.o->tick(timeStep);
 		}
 	}
 
@@ -252,7 +271,7 @@ namespace CollisionSystem
 							{
 								if (a1->collides(a2))
 								{
-									//a1->collided(a2);
+									a1->collided(a2);
 									a2->collided(a1);
 								}
 							}
@@ -288,46 +307,23 @@ namespace CollisionSystem
 			}
 		}
 	}
-	/*
-		auto collider = [](OcTree* o)
-			{
-				int inc = 0;
-				for (int i = 0; i < o->mPoints.size(); i++)
-				{
-					inc++;
-					OWMovableComponent* a1 = o->mPoints[i];
-					if (a1->canCollide())
-					{
-						if (a1->name() == "box")
-						{
-							char s = 'a';
-						}
-						for (int j = inc; j < o->mPoints.size(); j++)
-						{
-							OWMovableComponent* a2 = o->mPoints[j];
-							if (a2->canCollide())
-							{
-								if (a1->canCollide(a2))
-								{
-									if (a1->bounds().intersects(a2->bounds()))
-									{
-										if (a1->collides(a2))
-										{
-											a1->collided(a2);
-											a2->collided(a1);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				return true;
-			};
-		mOctTree->traverse(collider);
-	*/
+	
 #endif
 
+#ifdef SWEEP_AND_PRUNE_EX
+
+
+	void buildSweepAndPruneEx(std::vector<OWMovableComponent*>& objects)
+	{
+	}
+	void collideSweepAndPruneEx()
+	{
+	}
+	void sweepAndPruneTickEx(float timeStep)
+	{
+	}
+
+#endif
 	void build(std::vector<OWMovableComponent*>& objects)
 	{
 #ifdef BASIC_COLLISIONS
@@ -335,6 +331,9 @@ namespace CollisionSystem
 #endif
 #ifdef SWEEP_AND_PRUNE
 		buildSweepAndPrune(objects);
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+		buildSweepAndPruneEx(objects);
 #endif
 	}
 
@@ -346,6 +345,9 @@ namespace CollisionSystem
 #ifdef SWEEP_AND_PRUNE
 		collideSweepAndPrune();
 #endif
+#ifdef SWEEP_AND_PRUNE_EX
+		collideSweepAndPruneEx();
+#endif
 	}
 
 	void tick(float timeStep)
@@ -355,6 +357,9 @@ namespace CollisionSystem
 #endif
 #ifdef SWEEP_AND_PRUNE
 		sweepAndPruneTick(timeStep);
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+		sweepAndPruneTickEx(timeStep);
 #endif
 	}
 

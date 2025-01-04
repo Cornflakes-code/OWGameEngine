@@ -38,6 +38,13 @@ namespace Compass
 // And the following is also good
 // https://github.com/iauns/cpm-glm-aabb/blob/master/glm-aabb/AABB.hpp
 // https://gist.github.com/yomotsu/d845f21e2e1eb49f647f
+
+AABB::AABB(const glm::vec3& size)
+{
+	mMinPoint = size / -2.0f;
+	mMaxPoint = size / 2.0f;
+}
+
 AABB::AABB(const std::vector<glm::vec3>& v)
 {
 	// Note: No depth value: default to 0;

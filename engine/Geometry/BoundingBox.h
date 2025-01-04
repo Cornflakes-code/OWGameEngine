@@ -93,13 +93,13 @@ public:
 	AABB(float _value)
 		: mMinPoint(glm::vec3(_value)), mMaxPoint(glm::vec3(-_value))
 	{}
-
 	AABB(const glm::vec3& _minPoint, const glm::vec3& _maxPoint, bool validate = true)
 	: mMinPoint(_minPoint), mMaxPoint(_maxPoint)
 	{
 		if (validate)
 			isValid();
 	}
+	AABB(const glm::vec3& size);
 	AABB(const std::vector<glm::vec3>& v);
 	AABB(const std::vector<glm::vec4>& v);
 	AABB(const std::vector<AABB>& v);
@@ -132,19 +132,21 @@ public:
 		mMinPoint += delta;
 		mMaxPoint += delta;
 	}
+
 	void moveTo(const glm::vec3& pt) override
 	{
 		glm::vec3 c = center();
-		mMinPoint = pt - c;
-		mMaxPoint = pt + c;
+		mMinPoint = mMinPoint - c + pt;
+		mMaxPoint = mMaxPoint - c + pt;
 	}
 
 	glm::vec3 center() const
-	{ 
+	{
 		glm::vec3 halfSize = size();
 		halfSize /= 2.0f;
 		return mMinPoint + halfSize;
 	}
+
 	// 6 vectors of a surfaces four points. The points are clockwise as viewed from the center
 	std::vector<std::vector<glm::vec3>> surfaces() const;
 	void isValid() const

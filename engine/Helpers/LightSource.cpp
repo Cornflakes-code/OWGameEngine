@@ -9,6 +9,8 @@
 
 #define GLSL(src) "#version 330 core\n" #src
 
+// deferred rendering
+// https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/deferredrendering/Tutorial%2015%20-%20Deferred%20Rendering.pdf
 const std::string& lightSourceVertexShader()
 {
     static std::string s =

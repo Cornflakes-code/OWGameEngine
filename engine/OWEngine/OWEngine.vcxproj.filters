@@ -237,6 +237,9 @@
     <ClInclude Include="..\Core\CollisionSystem.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\Geometry\OWRay.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -439,6 +442,9 @@
     </ClCompile>
     <ClCompile Include="..\Core\CollisionSystem.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\OWRay.cpp">
+      <Filter>Source Files\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

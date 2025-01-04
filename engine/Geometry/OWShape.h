@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "../OWEngine/OWEngine.h"
+#include "BoundingBox.h"
 
 class OWENGINE_API OWShape
 {

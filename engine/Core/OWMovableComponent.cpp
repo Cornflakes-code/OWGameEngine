@@ -8,6 +8,7 @@
 #include "../Helpers/Shader.h"
 #include "../Geometry/Ray.h"
 #include "../Core/LogStream.h"
+#include "../Geometry/OWRay.h"
 
 static glm::vec3 gZero = glm::vec3(0.0f);
 
@@ -64,6 +65,27 @@ VAOBuffer* OWMovableComponent::boundingBoxRenderer()
 
 void OWMovableComponent::collided(OWMovableComponent* other)
 {
+	if (!mMoveable)
+		return;
+	// https://gamedev.stackexchange.com/questions/47888/find-the-contact-normal-of-rectangle-collision?noredirect=1&lq=1
+	glm::vec3 relVel = mCurrent.mVelocity - other->mCurrent.mVelocity;
+	glm::vec3 compoundSize(bounds().size() + other->bounds().size());
+	AABB compoundAABB(compoundSize);
+	glm::vec3 jfw = bounds().center();
+	compoundAABB.moveTo(bounds().center());
+	glm::vec3 normal1, normal2;
+	float distance1, distance2;
+
+	OWRay r1(bounds().center(), relVel);
+	if (!r1.intersects(bounds(), normal1, distance1))
+	{
+		return;
+	}
+	OWRay r31(bounds().center(), relVel);
+	if (!r1.intersects(compoundAABB, normal2, distance2))
+	{
+		return;
+	}
 	// Various collision detection algorythmns
 	// https://developer.nvidia.com/gpugems/gpugems3/part-v-physics-simulation/chapter-32-broad-phase-collision-detection-cuda
 	// https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
@@ -72,7 +94,9 @@ void OWMovableComponent::collided(OWMovableComponent* other)
 	float distance;
 	if (glm::all(glm::epsilonEqual(v, glm::vec3(0), OWUtils::epsilon())))
 		return;
-	if (!Ray::rayIntersectsBox(bounds().center(), v, other->bounds(), normal, distance))
+	glm::vec3 c1 = other->bounds().minPoint() - glm::vec3(2, 2, 2);
+	OWRay r2(bounds().center(), v);
+	if (!r2.intersects(other->bounds(), normal, distance))
 	{
 		return;
 		// throw NMSLogicException("Object [" + name() + "] collided by ray intersection failed");
@@ -84,10 +108,14 @@ void OWMovableComponent::collided(OWMovableComponent* other)
 	glm::vec3 reboundDir  = notPerfectBounce * (v - 2 * glm::dot(v, normal) * normal);
 	glm::vec3 ourCenter = bounds().center();
 	glm::vec3 otherCenter = other->bounds().center();
+	float dist = glm::length(ourCenter - otherCenter);
+	float fullTimeStep = glm::length(previousPosition() - position()) / glm::length(mCurrent.mVelocity);
+	float curtailedTimeStep = glm::length(distance) / glm::length(mCurrent.mVelocity);
 	// jfw prorataDistance is wrong.
 	float len = glm::length(ourCenter - otherCenter);
-	float prorataDistance = distance / len;
-	move(prorataDistance * glm::normalize(reboundDir));
+	float len2 = glm::length(ourCenter - position());
+	float prorataTimeStep = distance / len;// curtailedTimeStep / fullTimeStep;
+	move(prorataTimeStep * glm::length(mCurrent.mVelocity) * glm::normalize(reboundDir));
 	mCurrent.mVelocity = reboundDir * glm::length(mCurrent.mVelocity);
 }
 

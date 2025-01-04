@@ -56,7 +56,9 @@ protected:
 		return mBoundBoxOriginal;
 	}
 	bool mRenderBoundingBox = true;
+	const glm::vec3& previousPosition() const { return mPrevious.mPosition; }
 public:
+	bool mMoveable = true;
 	OWMovableComponent(OWActor* _owner, const glm::vec3& _position)
 		: OWComponent(_owner)
 	{

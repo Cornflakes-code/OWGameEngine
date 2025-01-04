@@ -9,7 +9,7 @@ Ray::Ray(OWActor* _owner, const glm::vec3& origin, const glm::vec3& dir)
 	mSign[2] = (mInvDir.z < 0) ? 1 : 0;
 }
 
-glm::vec3 findNormal(float distance, float t1, float t2, float t3, float t4, float t5, float t6)
+static glm::vec3 findNormal(float distance, float t1, float t2, float t3, float t4, float t5, float t6)
 {
 	if (glm::epsilonEqual(distance, t1, OWUtils::epsilon()))
 		return glm::vec3(1, 0, 0);
@@ -27,7 +27,7 @@ glm::vec3 findNormal(float distance, float t1, float t2, float t3, float t4, flo
 		return glm::vec3(0, 0, 0);
 }
 
-bool doIntersection(const glm::vec3& invDir, const glm::vec3& origin, const AABB& box, glm::vec3& normal, float& distance)
+static bool doIntersection(const glm::vec3& invDir, const glm::vec3& origin, const AABB& box, glm::vec3& normal, float& distance)
 {
 	// https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
 	// https://gamedev.stackexchange.com/questions/47888/find-the-contact-normal-of-rectangle-collision?noredirect=1&lq=1
