@@ -5,6 +5,8 @@
 #include <functional>
 #include <filesystem>
 
+#include <glm/glm.hpp>
+
 #include "../OWEngine/OWEngine.h"
 
 // https://stackoverflow.com/questions/1760726/how-can-i-compose-output-streams-so-output-goes-multiple-places-at-once
@@ -60,6 +62,10 @@ public:
 	static std::ostream* logFile();
 	static void setLogFile(const std::filesystem::path& path);
 	static void closeLogFile();
+	friend OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec3& v);
 private:
 	static void linkStream();
 };
+
+
+OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec3& v);

@@ -13,6 +13,7 @@
 * Very Modern OpenGL
 https://www.reddit.com/r/opengl/comments/18rkgg3/one_vao_for_multiple_vbos/
 https://github.com/fendevel/Guide-to-Modern-OpenGL-Functions#glbuffer
+https://fgiesen.wordpress.com/2011/07/01/a-trip-through-the-graphics-pipeline-2011-part-1/
 */
 
 unsigned int VAOBuffer::mPrimitiveRestart = 0xFFFF;

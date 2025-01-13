@@ -7,12 +7,20 @@
 #include "../Core/Logger.h"
 #include "../Core/LogStream.h"
 #include "../Geometry/BoundingFrustum.h"
+#include "../Core/UserInput.h"
 
 CameraMazhar::CameraMazhar()
 {
 	mCurrent->Update();
 }
 
+
+void CameraMazhar::bindResize(UserInput* app) 
+{
+	auto cb = std::bind(&CameraMazhar::resizeCallback, this,
+		std::placeholders::_1, std::placeholders::_2);
+	app->addWindowResizeListener(cb, this);
+}
 
 bool CameraMazhar::processInput(UserInput::AnyInput input, float seconds)
 {
@@ -83,6 +91,30 @@ static bool conditionalAdd(KeyTest condition, int key, int& keyStore)
 		keyStore = key;
 	return foundKey;
 }
+
+BoundingFrustum CameraMazhar::createFrustum(float aspect, float fovY,
+	float zNear, float zFar) const
+{
+	BoundingFrustum frustum;
+	const float halfVSide = zFar * tanf(fovY * .5f);
+	const float halfHSide = halfVSide * aspect;
+	const glm::vec3 frontMultFar = zFar * front();
+
+	glm::vec3 _front = front();
+	frustum.nearFace = { position() + zNear * _front, _front };
+	frustum.farFace = { position() + frontMultFar, -_front };
+	frustum.rightFace = { position(),
+							glm::cross(frontMultFar - right() * halfHSide, up()) };
+	frustum.leftFace = { position(),
+							glm::cross(up(),frontMultFar + right() * halfHSide) };
+	frustum.topFace = { position(),
+							glm::cross(right(), frontMultFar - up() * halfVSide) };
+	frustum.bottomFace = { position(),
+							glm::cross(frontMultFar + up() * halfVSide, right()) };
+
+	return frustum;
+}
+
 /*
 	For example, the user can press yaw and roll at the same time 
 	but pressing rollLeft and rollRight. This applies to all four 
@@ -139,29 +171,6 @@ bool CameraMazhar::processKeyboardInput(
 	return foundKey;
 }
 
-BoundingFrustum CameraMazhar::createFrustum(float aspect, float fovY,
-	float zNear, float zFar) const
-{
-	BoundingFrustum frustum;
-	const float halfVSide = zFar * tanf(fovY * .5f);
-	const float halfHSide = halfVSide * aspect;
-	const glm::vec3 frontMultFar = zFar * front();
-
-	glm::vec3 _front = front();
-	frustum.nearFace = { position() + zNear * _front, _front };
-	frustum.farFace = { position() + frontMultFar, -_front};
-	frustum.rightFace = { position(),
-							glm::cross(frontMultFar - right() * halfHSide, up()) };
-	frustum.leftFace = { position(),
-							glm::cross(up(),frontMultFar + right() * halfHSide)};
-	frustum.topFace = { position(),
-							glm::cross(right(), frontMultFar - up() * halfVSide)};
-	frustum.bottomFace = { position(),
-							glm::cross(frontMultFar + up() * halfVSide, right()) };
-
-	return frustum;
-}
-
 void CameraMazhar::doProcessKeyboardInput(int userCommand, float seconds)
 {
 	switch (userCommand)
@@ -207,9 +216,6 @@ void CameraMazhar::doProcessKeyboardInput(int userCommand, float seconds)
 			<< "Invalid keyboard Input ["
 			<< userCommand << "] stored in Camera.\n");
 	}
-	const glm::vec3 v3 = mCurrent->position();
-	LogStream(LogStreamLevel::Info) << "Camera position ["
-		<< glm::to_string(v3) << "]\n";
 }
 
 //bool CameraMazhar::processKeyboardInput1(

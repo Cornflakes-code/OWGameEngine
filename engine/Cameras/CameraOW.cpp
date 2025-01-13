@@ -161,22 +161,22 @@ void CameraOW::doProcessKeyboardInput(int userCommand, float seconds)
 	switch (userCommand)
 	{
 	case UserInput::LogicalOperator::POVForward:
-		mCurrent->move(OW_Camera::CameraDirection::FORWARD, seconds);
+		mCurrent->move(CameraOWImp::CameraDirection::FORWARD, seconds);
 		break;
 	case UserInput::LogicalOperator::POVBack:
-		mCurrent->move(OW_Camera::CameraDirection::BACK, seconds);
+		mCurrent->move(CameraOWImp::CameraDirection::BACK, seconds);
 		break;
 	case UserInput::LogicalOperator::POVLeft:
-		mCurrent->move(OW_Camera::CameraDirection::LEFT, seconds);
+		mCurrent->move(CameraOWImp::CameraDirection::LEFT, seconds);
 		break;
 	case UserInput::LogicalOperator::POVRight:
-		mCurrent->move(OW_Camera::CameraDirection::RIGHT, seconds);
+		mCurrent->move(CameraOWImp::CameraDirection::RIGHT, seconds);
 		break;
 	case UserInput::LogicalOperator::POVDown:
-		mCurrent->move(OW_Camera::CameraDirection::DOWN, seconds);
+		mCurrent->move(CameraOWImp::CameraDirection::DOWN, seconds);
 		break;
 	case UserInput::LogicalOperator::POVUp:
-		mCurrent->move(OW_Camera::CameraDirection::UP, seconds);
+		mCurrent->move(CameraOWImp::CameraDirection::UP, seconds);
 		break;
 	case UserInput::LogicalOperator::POVPitchDown:
 		pitch(glm::radians(-1.0f));
@@ -201,9 +201,6 @@ void CameraOW::doProcessKeyboardInput(int userCommand, float seconds)
 			<< "Invalid keyboard Input ["
 			<< userCommand << "] stored in Camera.\n");
 	}
-	const glm::vec3 v3 = mCurrent->position();
-	LogStream(LogStreamLevel::Info) << "Camera position ["
-		<< glm::to_string(v3) << "]\n";
 }
 
 BoundingFrustum CameraOW::createFrustum(float aspect, float fovY,

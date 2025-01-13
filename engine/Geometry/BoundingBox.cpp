@@ -45,18 +45,17 @@ AABB::AABB(const glm::vec3& size)
 	mMaxPoint = size / 2.0f;
 }
 
-AABB::AABB(const std::vector<glm::vec3>& v)
+AABB::AABB(std::vector<glm::vec3>::const_iterator begin, std::vector<glm::vec3>::const_iterator end)
 {
-	// Note: No depth value: default to 0;
 	mMinPoint = glm::vec3(_max);
 	mMaxPoint = glm::vec3(-_max);
-
-	for (const glm::vec3& point : v)
+	for (std::vector<glm::vec3>::const_iterator i = begin; i != end; ++i)
 	{
-		mMinPoint = glm::min(point, mMinPoint);
-		mMaxPoint = glm::max(point, mMaxPoint);
+		mMinPoint = glm::min(*i, mMinPoint);
+		mMaxPoint = glm::max(*i, mMaxPoint);
 	}
 }
+
 
 AABB::AABB(const std::vector<glm::vec4>& v)
 	:AABB(convertToV3(v))

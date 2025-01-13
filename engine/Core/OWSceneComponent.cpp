@@ -1,4 +1,5 @@
 #include "OWSceneComponent.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -80,6 +81,22 @@ void OWSceneComponent::render(const glm::mat4& proj,
 			glm::mat4 s2 = glm::scale(model, newScaling);
 			glm::mat4 t2 = glm::translate(I2, position());
 			glm::mat4 model2 = t2 * s2;
+/*
+			// http://www.geeks3d.com/20140815/particle-billboarding-with-the-geometry-shader-glsl/
+			glm::vec3 right, up;
+			right.x = model2[0][0];  // 0
+			right.y = model2[1][0];  // 4
+			right.z = model2[2][0];  // 8
+
+			up.x = model2[0][1];  // 1
+			up.y = model2[1][1];  // 5
+			up.z = model2[2][1];  // 9
+			float size = 1.0f;
+			glm::vec3 a = P - (right + up) * size;
+			glm::vec3 b = P - (right - up) * size;
+			glm::vec3 d = P + (right - up) * size;
+			glm::vec3 c = P + (right + up) * size;
+*/
 			boundingBoxRenderer()->render(proj, view, model2, cameraPos, renderCb, resizeCb);
 		}
 	}

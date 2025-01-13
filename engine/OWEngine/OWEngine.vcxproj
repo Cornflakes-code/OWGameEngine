@@ -225,6 +225,7 @@
     <ClInclude Include="..\Geometry\OWBounding.h" />
     <ClInclude Include="..\Geometry\OWRay.h" />
     <ClInclude Include="..\Geometry\OWShape.h" />
+    <ClInclude Include="..\Geometry\OWSphere.h" />
     <ClInclude Include="..\Geometry\Particle.h" />
     <ClInclude Include="..\Geometry\Plane.h" />
     <ClInclude Include="..\Geometry\Ray.h" />
@@ -295,6 +296,7 @@
     <ClCompile Include="..\Geometry\OWBounding.cpp" />
     <ClCompile Include="..\Geometry\OWRay.cpp" />
     <ClCompile Include="..\Geometry\OWShape.cpp" />
+    <ClCompile Include="..\Geometry\OWSphere.cpp" />
     <ClCompile Include="..\Geometry\Particle.cpp" />
     <ClCompile Include="..\Geometry\Plane.cpp" />
     <ClCompile Include="..\Geometry\Ray.cpp" />

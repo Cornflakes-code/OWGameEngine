@@ -13,9 +13,9 @@
 */
 class CameraOW : public Camera, public ListenerHelper
 {
-	OW_Camera mTempRenderTarget;
-	OW_Camera mCurrentTarget;
-	OW_Camera* mCurrent = &mCurrentTarget;
+	CameraOWImp mTempRenderTarget;
+	CameraOWImp mCurrentTarget;
+	CameraOWImp* mCurrent = &mCurrentTarget;
 
 public:
 	CameraOW();

@@ -18,9 +18,11 @@
 #include <Geometry/Plane.h>
 #include <Geometry/Box.h>
 #include <Core/MeshComponent.h>
+#include <Core/LogStream.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Geometry/GeometricShapes.h>
+#include <Geometry/Ray.h>
 #include <Helpers/ModelData.h>
 #include <Helpers/ModelFactory.h>
 #include <Helpers/ThreeDAxis.h>
@@ -32,8 +34,8 @@
 #include "NMSRopeScene.h"
 
 //#define INCLUDE_FULLSCREEN
-//#define INCLUDE_WELCOME
-//#define INCLUDE_ENJOY
+#define INCLUDE_WELCOME
+#define INCLUDE_ENJOY
 #define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
@@ -75,7 +77,7 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	CollisionSystem::collide();
 }
 
-static float off = 300;
+static float off = 500;
 void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
@@ -87,14 +89,8 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	CollisionSystem::tick(timeStep);
 	CollisionSystem::collide();
 #ifdef INCLUDE_WELCOME
-//	mWelcomeMover.move(velocity);
-	//mWelcomeMover.bounceIfCollide(mWindowBounds);
-	//mWelcome->translate(mWelcomeMover.translateVector());
 #endif
 #ifdef INCLUDE_ENJOY
-//	mEnjoyMover.move(velocity);
-	//mEnjoyMover.bounceIfCollide(mWindowBounds);
-	//mEnjoy->translate(mEnjoyMover.translateVector());
 #endif
 }
 
@@ -116,17 +112,28 @@ ScenePhysicsState* NMSSplashScenePhysics::clone()
 }
 
 bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userInput,
-					std::string& nextScene, 
-					Camera* camera)
+	std::string& nextScene,
+	Camera* camera)
 {
-	float speed = camera->moveScale();
-	if (speed < 201.00f)
-		camera->moveScale(speed * 5.0f);
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
 	{
-//		glm::ivec2 v2 = 
-	//	glfwGetWindowSize(win, &screen_w, &screen_h); // better use the callback and cache the values 
-		//glfwGetFramebufferSize(win, &pixel_w, &pixel_h); // better use the callback and cache the values 
+		//		glm::ivec2 v2 = 
+			//	glfwGetWindowSize(win, &screen_w, &screen_h); // better use the callback and cache the values 
+				//glfwGetFramebufferSize(win, &pixel_w, &pixel_h); // better use the callback and cache the values 
+		if (userInput.mouseInput.action == UserInput::PointingDeviceAction::LeftMouseButtonClick)
+		{
+			glm::vec3 mousePos = globals->mouseToWorld(userInput.mouseInput.pos);
+			mousePos.x *= NMSScene::world().size().x;
+			mousePos.y *= NMSScene::world().size().y;
+			//mousePos *= NMSScene::world().size();
+			//mousePos.z = 1;
+			LogStream(LogStreamLevel::Info) << "MouseToWorld Position " << mousePos << "\n";
+			glm::vec3 normMouse = glm::normalize(mousePos);
+			glm::vec3 cam_pos = camera->position();
+			glm::vec3 dir = mousePos - cam_pos;
+			Ray* r = new Ray(mScenery, cam_pos, mousePos);
+			r->prepare({ 0.7, 0.7, 0.0, 1.0f });
+		}
 	}
 	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
 	{
@@ -228,7 +235,7 @@ void NMSSplashScenePhysics::setup()
 		Compass::Rose[Compass::East] +
 		Compass::Rose[Compass::In];
 	TextData* welcome = new TextData(mScenery, glm::vec3(0), TextData::Dynamic);
-	welcome->velocity(direction1, mSpeed);
+	//welcome->velocity(direction1, mSpeed);
 	welcome->font("arial.ttf", fontHeight);
 	welcome->colour({ 0.0, 0.0, 0.0, 1.0f });
 	welcome->spacing(10 * nice.x, 10 * nice.y, scale);
@@ -236,16 +243,32 @@ void NMSSplashScenePhysics::setup()
 	welcome->prepare();
 	addToOcTree.push_back(welcome);
 #endif
+	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
+	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
+#ifdef INCLUDE_ENJOY
+	glm::vec3 direction2 = Compass::Rose[Compass::South] +
+		Compass::Rose[Compass::West];
+	TextData* enjoy = new TextData(mScenery, glm::vec3(100), TextData::Static);
+	enjoy->velocity(direction2, mSpeed / 20.0F);
+	enjoy->font("arial.ttf", fontHeight);
+	enjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
+	enjoy->spacing(nice.x, nice.y, scale);
+	enjoy->text("Enjoy it while you can");
+	enjoy->prepare();
+	addToOcTree.push_back(enjoy);
+#endif
+
 	glm::vec3 scale1 = { 10, 10, 10 };
 	glm::vec3 scale2 = { 3, 3, 3 };
 	glm::vec3 scale3 = { 20, 20, 20 };
 	int denom = 40;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
 		glm::vec3 rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f }; // random speed
-		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro, rs, mSpeed * 0.8f, scale1));
+		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro, rs, mSpeed * 0.0f, scale3));
+		break;
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, rs, mSpeed * 0.8f, scale1));
@@ -282,19 +305,6 @@ void NMSSplashScenePhysics::setup()
 	//glm::vec3 direction11 = Compass::Rose[Compass::North] + Compass::Rose[Compass::West];
 	//box->rotate
 
-#ifdef INCLUDE_ENJOY
-	glm::vec3 direction2 = Compass::Rose[Compass::South] +
-		Compass::Rose[Compass::West];
-	TextData* enjoy = new TextData(mScenery, glm::vec3(0), TextData::Static);
-	enjoy->velocity(direction2, mSpeed);
-	enjoy->font("arial.ttf", fontHeight);
-	enjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
-	enjoy->spacing(nice.x, nice.y, scale);
-	enjoy->text("Enjoy it while you can");
-	enjoy->prepare();
-	addToOcTree.push_back(enjoy);
-#endif
-
 #ifdef INCLUDE_IMPORTED_MODEL
 	MeshComponent* dice = new MeshComponent(mScenery, glm::vec3(0));
 	dice->name("Dice");
@@ -317,12 +327,12 @@ void NMSSplashScenePhysics::setup()
 #endif
 	const float pos = off / 2.1f;
 	// Create a box of planes for the objects to bounce off
-	addToOcTree.push_back(createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
-	addToOcTree.push_back(createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::Out
-	addToOcTree.push_back(createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::East
-	addToOcTree.push_back(createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
-	addToOcTree.push_back(createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
-	addToOcTree.push_back(createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
+	//addToOcTree.push_back(createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
+	//addToOcTree.push_back(createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::Out
+	//addToOcTree.push_back(createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::East
+	//addToOcTree.push_back(createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
+	//addToOcTree.push_back(createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
+	//addToOcTree.push_back(createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
 
 	CollisionSystem::build(addToOcTree);
 }
@@ -452,10 +462,15 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 
 							  ScenePhysicsState* OW_UNUSED(state),
-							  Camera* OW_UNUSED(camera),
+							  Camera* camera,
 							  unsigned int OW_UNUSED(callCount))
 {
 	//globals->application()->backgroundColour(glm::vec4(0, 0, 0, 1));
+	camera->position({ 0,0,100 });
+	camera->lookAt({ 0,0,0 });
+	float speed = camera->moveScale();
+	if (speed < 201.00f)
+		camera->moveScale(speed * 5.0f);
 }
 
 void NMSSplashScene::deActivate(const Camera* OW_UNUSED(camera), 

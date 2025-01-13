@@ -9,7 +9,7 @@
 /*
 	Implements the Camera interface with class MazharCamera providing the functionality.
 */
-class CameraMazhar : public Camera
+class CameraMazhar : public Camera, public ListenerHelper
 {
 	MazharCamera mTempRenderTarget;
 	MazharCamera mCurrentTarget;
@@ -17,6 +17,7 @@ class CameraMazhar : public Camera
 
 public:
 	CameraMazhar();
+	void bindResize(UserInput* app) override;
 	void update()
 	{
 		mCurrent->Update();
@@ -117,6 +118,10 @@ public:
 	{
 		mCurrent->changeHeading(radians);
 	}
+	void roll(float radians) override
+	{
+		mCurrent->roll(radians);
+	}
 	void aspectRatio(float newValue) override
 	{
 		mCurrent->aspectRatio(newValue);
@@ -128,6 +133,14 @@ public:
 	BoundingFrustum createFrustum(float aspect, float fovY,
 		float zNear, float zFar) const override;
 private:
+	void resizeCallback(void* OW_UNUSED(window), glm::ivec2 dimensions)
+	{
+		// There is a lot of interaction here between:
+		// 1. mAspectRatio.
+		// 2. call to setViewport in Movie.cpp
+		// 3. camera projection call passed to render.
+		mCurrent->aspectRatio(dimensions.x / (dimensions.y * 1.0f));
+	}
 	bool processKeyboardInput(
 		UserInput::UserCommandCallbackData keyInput, float seconds);
 	//bool processKeyboardInput1(

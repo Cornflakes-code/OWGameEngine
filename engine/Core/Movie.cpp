@@ -243,22 +243,7 @@ void Movie::add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent)
 
 void Movie::pushUserInput(const UserInput::AnyInput& userInput)
 {
-	// TODO: inefficient. Used for debugging
-	if (mUserInput.empty())
-	{
-		if (int(userInput.inputType) == int(UserInput::InputAction::Press))
-			mUserInput.push(userInput);
-		else
-			mUserInput.push(userInput);
-	}
-	else
-	{
-//		UserInput::AnyInput& front = mUserInput.front();
-		if (int(userInput.inputType) == int(UserInput::InputAction::Press))
-			mUserInput.push(userInput);
-//		else
-//			mUserInput.push(userInput);
-	}
+	mUserInput.push(userInput);
 }
 
 void Movie::processUserInput(std::string& nextScene, OWUtils::Time::duration dt)
@@ -268,8 +253,7 @@ void Movie::processUserInput(std::string& nextScene, OWUtils::Time::duration dt)
 	while (!mUserInput.empty())
 	{
 		UserInput::AnyInput& input = mUserInput.front();
-		LogStream(LogStreamLevel::Info) << "User Input ["
-				<< input.keyInput.userCommand << "]\n";
+		//LogStream(LogStreamLevel::Info) << "User Input [" << input.keyInput.userCommand << "]\n";
 		if (!mCurrent->logic.current->processUserCommands(input, nextScene, mCamera))
 		{
 			mCamera->processInput(input, timeStep);

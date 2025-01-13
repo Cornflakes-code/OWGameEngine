@@ -154,49 +154,60 @@ void UserInput::init(GLApplication* app)
 {
 }
 
-UserInput::PointingDeviceAction getMouseButton(int button)
+UserInput::PointingDeviceAction getMouseButtonAction(int button, int action)
 {
 	switch (button)
 	{
-	case GLFW_MOUSE_BUTTON_LEFT:
-		return UserInput::PointingDeviceAction::LeftMouseButtonClick;
-	case GLFW_MOUSE_BUTTON_RIGHT:
-		return UserInput::PointingDeviceAction::RightMouseButtonClick;
-	case GLFW_MOUSE_BUTTON_MIDDLE:
-		return UserInput::PointingDeviceAction::MiddleMouseButtonClick;
-	default:
-		return UserInput::PointingDeviceAction::Unknown;
+		case GLFW_MOUSE_BUTTON_LEFT:
+		{
+			if (action == GLFW_PRESS)
+				return UserInput::PointingDeviceAction::LeftMouseButtonClick;
+			else if (action == GLFW_RELEASE)
+				return UserInput::PointingDeviceAction::LeftMouseButtonRelease;
+			else 
+				return UserInput::PointingDeviceAction::Unknown;
+		}
+		case GLFW_MOUSE_BUTTON_RIGHT:
+		{
+			if (action == GLFW_PRESS)
+				return UserInput::PointingDeviceAction::RightMouseButtonClick;
+			else if (action == GLFW_RELEASE)
+				return UserInput::PointingDeviceAction::RightMouseButtonRelease;
+			else
+				return UserInput::PointingDeviceAction::Unknown;
+		}
+		case GLFW_MOUSE_BUTTON_MIDDLE:
+		{
+			if (action == GLFW_PRESS)
+				return UserInput::PointingDeviceAction::MiddleMouseButtonClick;
+			else if (action == GLFW_RELEASE)
+				return UserInput::PointingDeviceAction::MiddleMouseButtonRelease;
+			else
+				return UserInput::PointingDeviceAction::Unknown;
+		}
+		default:
+			return UserInput::PointingDeviceAction::Unknown;
 	}
 }
 
 void UserInput::pointingDevice(void* window, int button, int action, 
 				int mods, const glm::vec3& pos)
 {
-	if (action == GLFW_PRESS)
-	{
-		PointingDeviceCallbackData data;
-		data.pos = pos;
-		data.action = getMouseButton(button);
-		data.mods = mods;
-
-		for (auto& cb : mPointingDeviceCallbacks)
-		{
-			cb.first(data);
-		}
-	}
-}
-
-void UserInput::cursorPosition(void* window, double x, double y)
-{
-	PointingDeviceCallbackData data;
-	data.action = UserInput::PointingDeviceAction::MouseMove;
-	data.pos = glm::vec3(x, y, 0);
+	PointingDeviceCallbackData data(pos, mods, getMouseButtonAction(button, action));
 	for (auto& cb : mPointingDeviceCallbacks)
 	{
 		cb.first(data);
 	}
 }
 
+void UserInput::cursorPosition(void* window, const glm::vec3& p)
+{
+	PointingDeviceCallbackData data(p, 0, UserInput::PointingDeviceAction::MouseMove);
+	for (auto& cb : mPointingDeviceCallbacks)
+	{
+		cb.first(data);
+	}
+}
 
 void UserInput::keyboard(unsigned int codepoint,
 						int key, int scancode, int action, int mods)

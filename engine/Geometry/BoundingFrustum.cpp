@@ -1,5 +1,6 @@
 #include "BoundingFrustum.h"
 
+// https://fgiesen.wordpress.com/2012/08/31/frustum-planes-from-the-projection-matrix/
 bool BoundingFrustum::intersects(const OWBounding* other) const
 {
 	return false;

@@ -35,20 +35,6 @@ void NMSMovie::preRun()
 	// Maybe could be in a config file loaded at start up?
 	FreeTypeFontAtlas::FontDetails::pleasingSpacing(24, 0.00625f, 0.00625f * 2);
 	FreeTypeFontAtlas::FontDetails::pleasingSpacing(12, 0.00625f, 0.00625f * 2);
-	std::string activeScene = globals->saveAndRestore()->activeScene();
-	NMSScene* s = new NMSSplashScene(this);
-
-	this->add(s, new NMSSplashScenePhysics(s), s->name() == activeScene);
-
-	s = new NMSMainScene(this);
-
-	this->add(s, new NMSMainScenePhysics(s), s->name() == activeScene);
-
-	s = new NMSEndScene(this);
-
-	this->add(s, new NMSEndScenePhysics(s), s->name() == activeScene);
-
-	s = new NMSRopeScene(this);
 
 	Camera* _camera = camera();
 	_camera->aspectRatio(globals->physicalWindowSize().x /
@@ -65,6 +51,21 @@ void NMSMovie::preRun()
 
 	_camera->clipping(0.01f, 1200.0f);
 	_camera->FOV(glm::radians(45.0f));
+
+	std::string activeScene = globals->saveAndRestore()->activeScene();
+	NMSScene* s = new NMSSplashScene(this);
+
+	this->add(s, new NMSSplashScenePhysics(s), s->name() == activeScene);
+
+	s = new NMSMainScene(this);
+
+	this->add(s, new NMSMainScenePhysics(s), s->name() == activeScene);
+
+	s = new NMSEndScene(this);
+
+	this->add(s, new NMSEndScenePhysics(s), s->name() == activeScene);
+
+	s = new NMSRopeScene(this);
 
 	this->add(s, new NMSRopeScenePhysics(s), s->name() == activeScene);
 }

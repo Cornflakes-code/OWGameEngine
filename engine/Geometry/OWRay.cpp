@@ -1,10 +1,10 @@
 #include "OWRay.h"
 
+
 OWRay::OWRay(const glm::vec3& _origin, const glm::vec3& _direction)
 	: mOrigin(_origin), mDirection(glm::normalize(_direction))
 {
 	mInvDir = 1.0f / mDirection;
-	mVertices.push_back(_origin);
 }
 
 static glm::vec3 findNormal(float distance, float t1, float t2, float t3, float t4, float t5, float t6)
@@ -42,7 +42,7 @@ static glm::vec3 findNormal(float distance, float t1, float t2, float t3, float 
 	* @see <a href = "https://stackoverflow.com/a/31254199/2668213">based on< / a>
 */
 
-bool OWRay::internalIntersects(const AABB& box, glm::vec3& normal, float& distance)
+bool OWRay::internalIntersects(const AABB& box, glm::vec3& normal, float& distance) const
 {
 	// https://stackoverflow.com/questions/51252535/exit-point-of-an-arbitrary-ray-within-a-cube
 	glm::vec3 dim = box.size() / 2.0f;
@@ -55,7 +55,7 @@ bool OWRay::internalIntersects(const AABB& box, glm::vec3& normal, float& distan
 	return false;
 }
 
-bool OWRay::fasterExternalIntersects(const AABB& box, glm::vec3& normal, float& distance)
+bool OWRay::fasterExternalIntersects(const AABB& box, glm::vec3& normal, float& distance) const
 {
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.html
 
@@ -94,7 +94,7 @@ bool OWRay::fasterExternalIntersects(const AABB& box, glm::vec3& normal, float& 
 	return false;
 }
 
-bool OWRay::externalIntersects(const AABB& box, glm::vec3& normal, float& distance)
+bool OWRay::externalIntersects(const AABB& box, glm::vec3& normal, float& distance) const
 {
 	// https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
 	// https://gamedev.stackexchange.com/questions/47888/find-the-contact-normal-of-rectangle-collision?noredirect=1&lq=1
@@ -133,7 +133,7 @@ bool OWRay::externalIntersects(const AABB& box, glm::vec3& normal, float& distan
 }
 
 
-bool OWRay::intersects(const AABB& box, glm::vec3& normal, float& distance)
+bool OWRay::intersects(const AABB& box, glm::vec3& normal, float& distance) const
 {
 	if (false)//box.contains(mOrigin))
 	{
@@ -145,7 +145,48 @@ bool OWRay::intersects(const AABB& box, glm::vec3& normal, float& distance)
 	}
 }
 
-std::vector<glm::vec3> OWRay::vertices() const
+std::vector<glm::vec3> OWRay::vertices()
 {
+	if (!mVertices.size())
+	{
+		// https://github.com/atomic/OpenGL/blob/master/openGLexamples/tetrahedron.cpp
+		const float p = 0.010f;
+		const std::vector<glm::vec3> tetStart =
+		{
+			{ p, p, p }, { p, -p, -p }, { -p, p, -p }, { -p, -p, p }
+		};
+
+		const std::vector<glm::vec3> tetTriangles =
+		{
+			tetStart[0], tetStart[1], tetStart[2],
+			tetStart[1], tetStart[2], tetStart[3],
+			tetStart[2], tetStart[3], tetStart[0],
+			tetStart[3], tetStart[0], tetStart[1]
+		};
+		glm::vec3 beamEnd = glm::normalize(mDirection) * 1000.0f;
+		std::vector<glm::vec3> beam;
+		const glm::vec3 off = mOrigin;
+		beam.push_back(tetStart[0]);
+		beam.push_back(beamEnd);
+		beam.push_back(tetStart[1]);
+
+		beam.push_back(tetStart[1]);
+		beam.push_back(beamEnd);
+		beam.push_back(tetStart[2]);
+
+		beam.push_back(tetStart[2]);
+		beam.push_back(beamEnd);
+		beam.push_back(tetStart[3]);
+
+		beam.push_back(tetStart[3]);
+		beam.push_back(beamEnd);
+		beam.push_back(tetStart[0]);
+
+		mVertices.insert(mVertices.end(), tetTriangles.begin(), tetTriangles.end());
+		mVertices.insert(mVertices.end(), beam.begin(), beam.end());
+		std::for_each(mVertices.begin(), mVertices.end(),
+			[off](glm::vec3& elm) { elm += off; });
+	}
+
 	return mVertices;
 }

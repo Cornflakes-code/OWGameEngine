@@ -217,36 +217,50 @@ void GLApplication::onFrameBufferResizeCallback(GLFWwindow* window,
 	mUserInput->windowResize(window, glm::ivec2(width, height));
 }
 
+glm::vec3 GLApplication::screenToWorld(GLFWwindow* window, double xpos, double ypos) const
+{
+	glm::vec2 screen_pos = glm::vec2(xpos, ypos);
+	glm::vec2 pixel_pos
+		= screen_pos * glm::vec2(mFrameBuffer.x, mFrameBuffer.y) /
+		glm::vec2(mWindowSize.x, mWindowSize.y);
+	// shift to GL's center convention
+	constexpr glm::vec2 pixelToPointOffset = { 0.5f, 0.5f };
+	pixel_pos = pixel_pos + pixelToPointOffset;
+
+	return glm::vec3(pixel_pos.x, mFrameBuffer.y - pixel_pos.y, 0.0f);
+}
+
 void GLApplication::onPointingDeviceCallback(GLFWwindow* window, 
 										int button, int action, int mods)
 {
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+	glm::vec3 pos(x, y, 1.0f);// = screenToWorld(window, xpos, ypos);
 	if (action == GLFW_PRESS)
 	{
 		// https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates
 		// https://stackoverflow.com/questions/11277501/how-to-recover-view-space-position-given-view-space-depth-value-and-ndc-xy?noredirect=1&lq=1
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		glm::vec2 screen_pos = glm::vec2(xpos, ypos);
-		glm::vec2 pixel_pos
-			= screen_pos * glm::vec2(mFrameBuffer.x, mFrameBuffer.y) /
-			glm::vec2(mWindowSize.x, mWindowSize.y);
-		// shift to GL's center convention
-		pixel_pos = pixel_pos + glm::vec2(0.5f, 0.5f);
 
-		glm::vec3 pos = glm::vec3(pixel_pos.x, mWindowSize.y - pixel_pos.y, 0.0f);
-
-		glReadPixels(static_cast<GLint>(xpos), static_cast<GLint>(ypos), 1, 1,
-			GL_DEPTH_COMPONENT, GL_FLOAT, &pos.z);
-
+//		glReadPixels(static_cast<GLint>(xpos), static_cast<GLint>(ypos), 1, 1,
+//			GL_DEPTH_COMPONENT, GL_FLOAT, &pos.z);
+		LogStream(LogStreamLevel::Info) << "Mouse Press Position " << pos << "\n";
 		mUserInput->pointingDevice(window, button, action, mods, pos);
+	}
+	else if (action == GLFW_RELEASE)
+	{
+		LogStream(LogStreamLevel::Info) << "Mouse Release Position " << pos << "\n";
+		mUserInput->pointingDevice(window, button, action, mods, pos);
+	}
+	else
+	{
+		LogStream(LogStreamLevel::Info) << "GLFW Action [" << action << "]\n";
 	}
 }
 
 void GLApplication::onPointingDevicePositionCallback(GLFWwindow* window, double x, double y)
 {
-	globals->mPointingDevicePosition.x = static_cast<glm::vec2::value_type>(x);
-	globals->mPointingDevicePosition.y = static_cast<glm::vec2::value_type>(y);
-	mUserInput->cursorPosition(window, x, y);
+	glm::vec3 pos(x, y, 0.0f);// = screenToWorld(window, x, y);
+	mUserInput->cursorPosition(window, pos);
 }
 
 void GLApplication::onCharCallback(GLFWwindow* OW_UNUSED(window), unsigned int codepoint)

@@ -61,6 +61,7 @@ private:
 	// commands to logical commands. UserInput could be subclassed to handle different
 	// types of physical systems.
 	UserInput* mUserInput;
+	glm::vec3 screenToWorld(GLFWwindow* window, double xpos, double ypos) const;
 
 	void enableCallbacks(); 
 

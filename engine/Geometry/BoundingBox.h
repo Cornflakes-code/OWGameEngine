@@ -100,7 +100,10 @@ public:
 			isValid();
 	}
 	AABB(const glm::vec3& size);
-	AABB(const std::vector<glm::vec3>& v);
+	AABB(const std::vector<glm::vec3>& v)
+		: AABB(v.begin(), v.end()) 
+	{}
+	AABB(std::vector<glm::vec3>::const_iterator begin, std::vector<glm::vec3>::const_iterator end);
 	AABB(const std::vector<glm::vec4>& v);
 	AABB(const std::vector<AABB>& v);
 

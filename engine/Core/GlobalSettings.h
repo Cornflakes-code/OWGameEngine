@@ -30,7 +30,6 @@ public:
 	void loadSettings(const std::filesystem::path& configFile);
 	// convenience methods. If the host exe does not create GLApplication then
 	// these may be invalid.
-	glm::vec2 pointingDevicePosition() const { return mPointingDevicePosition; }
 	float aspectRatio() const
 	{
 		return static_cast<float>(globals->physicalWindowSize().x / globals->physicalWindowSize().y);
@@ -39,6 +38,12 @@ public:
 	void clearAspectRatioChangedFlag() { mAspectRatioChanged = false; }
 	float secondsSinceLoad();
 	const glm::uvec2& physicalWindowSize() const { return mPhysicalWindowSize; }
+
+	// Handy for converting mouse position to World Space
+	glm::vec3 mouseToWorld(const glm::vec3& mouseCoord) const;
+	glm::vec3 normalisedDeviceCoordinates(const glm::vec3& mouseCoord) const;
+	glm::vec4 toEyeCoords(const glm::vec4& clipCoords) const;
+	glm::vec3 toWorldCoords(const glm::vec4& eyeCoords) const;
 	void physicalWindowSize(const glm::uvec2& newValue)
 	{
 		mAspectRatioChanged = true;
@@ -73,7 +78,6 @@ private:
 	SaveAndRestore* mSaveAndRestore = nullptr;
 	Camera* mCamera = nullptr;
 	glm::uvec2 mPhysicalWindowSize;
-	glm::vec2 mPointingDevicePosition;
 	static OWUtils::Time::time_point mLoadTime; 
 	bool mAspectRatioChanged = false;
 	bool mMinimised = false;

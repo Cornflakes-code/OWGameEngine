@@ -84,6 +84,9 @@ public:
 		LeftMouseButtonClick,
 		RightMouseButtonClick,
 		MiddleMouseButtonClick,
+		LeftMouseButtonRelease,
+		RightMouseButtonRelease,
+		MiddleMouseButtonRelease,
 		LeftMouseButtonDrag,
 		RightMouseButtonDrag,
 		MouseMove,
@@ -100,6 +103,12 @@ public:
 		glm::vec3 pos;
 		int mods;
 		PointingDeviceAction action;
+		PointingDeviceCallbackData()
+		: pos({0,0,0}), mods(0), action(PointingDeviceAction::Unknown)
+		{ }
+		PointingDeviceCallbackData(const glm::vec3& _pos, int _mods, PointingDeviceAction _action)
+			:pos(_pos), mods(_mods), action(_action)
+		{ }
 	};
 	struct AnyInput
 	{
@@ -193,7 +202,7 @@ private:
 	std::vector<std::pair<WindowResizeCallbackType, size_t>> mWindowResizeCallbacks;
 	void windowResize(void* window, const glm::ivec2& widthHeight);
 	void pointingDevice(void* window, int button, int action, int mods, const glm::vec3& pos);
-	void cursorPosition(void* window, double x, double y);
+	void cursorPosition(void* window, const glm::vec3& p);
 	void keyboard(unsigned int codepoint, int key, int scancode, int action, int mods);
 	void closeWindow(void* window);
 

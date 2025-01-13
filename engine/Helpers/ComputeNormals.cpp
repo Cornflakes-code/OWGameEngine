@@ -5,7 +5,8 @@
 
 namespace GLMHelpers
 {
-
+	// This may hae some info
+	// https://iquilezles.org/articles/normals/
     std::vector<glm::vec3> createNormals(const std::vector<glm::vec3>& tris)
     {
         std::vector<glm::vec3> vertPlusNormals;

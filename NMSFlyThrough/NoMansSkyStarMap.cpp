@@ -128,8 +128,8 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 			glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 			shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
 			shader->setFloat("u_time", globals->secondsSinceLoad());
-			glm::vec2 v2 = globals->pointingDevicePosition();
-			shader->setVector2f("u_mouse", v2);
+			//glm::vec2 v2 = globals->pointingDevicePosition();
+			//shader->setVector2f("u_mouse", v2);
 			shader->setVector2f("u_resolution", w);
 			// Colours are set via mdi.colours
 			//shader->setVector4f("color", OWUtils::colour(OWUtils::SolidColours::YELLOW));

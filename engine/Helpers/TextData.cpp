@@ -1,7 +1,7 @@
 #include "TextData.h"
 
-#include <Renderers/TextRendererDynamic.h>
-#include <Renderers/TextRendererStatic.h>
+#include "../Renderers/TextRendererDynamic.h"
+#include "../Renderers/TextRendererStatic.h"
 
 void TextData::prepare()
 {

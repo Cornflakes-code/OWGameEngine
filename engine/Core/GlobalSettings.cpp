@@ -329,3 +329,39 @@ void GlobalSettings::configAndSet(UserInput* ui)
 		ui->addKeyMapping(var.key, var.mods, var.logical);
 	}
 }
+
+glm::vec3 GlobalSettings::mouseToWorld(const glm::vec3& mouseCoord) const
+{
+	// https://www.dropbox.com/scl/fi/9sqt4tem87aij6q0es3mo/MousePicker-Code.txt?rlkey=9955tdhmc3py83sbuf1m8zmv5&e=2&dl=0
+
+	// https://antongerdelan.net/opengl/raycasting.html
+
+	glm::vec3 normalizedCoords = normalisedDeviceCoordinates(mouseCoord);
+	LogStream(LogStreamLevel::Info) << "\nMouse normalizedCoords " << normalizedCoords << "\n";
+	glm::vec4 clipCoords = glm::vec4(normalizedCoords, 1.0f);
+	glm::vec4 eyeCoords = toEyeCoords(clipCoords);
+	return toWorldCoords(eyeCoords);
+}
+
+glm::vec3 GlobalSettings::normalisedDeviceCoordinates(const glm::vec3& mouseCoord) const
+{
+	float x = (2.0f * mouseCoord.x) / mPhysicalWindowSize.x - 1.0f;
+	float y = 1.0f - (2.0f * mouseCoord.y) / mPhysicalWindowSize.y;
+	return glm::vec3(x, y, 1.0);
+}
+
+glm::vec4 GlobalSettings::toEyeCoords(const glm::vec4& clipCoords) const
+{
+	glm::mat4 proj = camera()->projection();
+	glm::mat4 invertedProjection = glm::inverse(camera()->projection());
+	glm::vec4 eyeCoords = invertedProjection * clipCoords;
+	return glm::vec4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
+}
+
+glm::vec3 GlobalSettings::toWorldCoords(const glm::vec4& eyeCoords) const
+{
+	glm::mat4 view = camera()->view();
+	glm::mat4 invertedView = glm::inverse(camera()->view());
+	glm::vec4 world = invertedView * eyeCoords;
+	return glm::vec3(world.x, world.y, world.z);
+}

@@ -13,7 +13,7 @@ protected:
 	std::vector<glm::vec3> mVertices;
 public:
 	virtual bool intersects(const OWShape* other) const { return false; }
-	virtual std::vector<glm::vec3> vertices() const = 0;
+	virtual std::vector<glm::vec3> vertices() = 0;
 };
 
 class OWENGINE_API OWCircle: public OWShape
@@ -25,7 +25,7 @@ public:
 		:mRadius(radius), mArcRadians(arcRadians) 
 	{}
 	virtual bool intersects(const OWShape* other) const { return other->intersects(this); }
-	std::vector<glm::vec3> vertices() const override;
+	std::vector<glm::vec3> vertices() override;
 };
 
 class OWENGINE_API OWTorus: public OWShape
@@ -39,7 +39,7 @@ public:
 		mOuterRadius(outerRadius),
 		mArcRadians(arcRadians)
 	{}
-	std::vector<glm::vec3> vertices() const override;
+	std::vector<glm::vec3> vertices() override;
 };
 
 class OWENGINE_API OWRectangle : public OWShape
@@ -50,7 +50,7 @@ public:
 		: mDims(dims)
 	{
 	}
-	std::vector<glm::vec3> vertices() const override;
+	std::vector<glm::vec3> vertices() override;
 };
 
 class OWENGINE_API OWGoldenRectangle: public OWShape
@@ -61,20 +61,7 @@ public:
 		: mScale(scale)
 	{
 	}
-	std::vector<glm::vec3> vertices() const override;
-};
-
-class OWENGINE_API OWSphere : public OWShape
-{
-	float mRadius;
-public:
-	OWSphere(float radius)
-		: mRadius(radius)
-	{
-	}
-	std::vector<glm::vec3> vertices() const override;
-	//std::vector<glm::vec3> pointsOnSphere( int numHoroSegments, int numVertSegments, float TAU);
-	//std::vector<glm::vec3> fibonacciSphere(int numPoints, float TAU);
+	std::vector<glm::vec3> vertices() override;
 };
 
 class OWENGINE_API OWCube: public OWShape
@@ -85,7 +72,7 @@ public:
 	: mScale(scale)
 	{
 	}
-	std::vector<glm::vec3> vertices() const override;
+	std::vector<glm::vec3> vertices() override;
 };
 
 class OWENGINE_API OWStar: public OWShape
@@ -101,5 +88,5 @@ public:
 	mNumPoints(numPoints)
 	{}
 
-	std::vector<glm::vec3> vertices() const override;
+	std::vector<glm::vec3> vertices() override;
 };

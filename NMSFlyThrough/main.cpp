@@ -91,7 +91,9 @@ int main(int argc, char* argv[])
 		MacroRecorder recorder;
 		Logger logger;
 		NMSUserInput ui;
-		CameraOW camera;
+//		CameraOW camera;
+		CameraMazhar camera;
+
 		globals->loadSettings(exePath);
 		GLApplication app(&ui);
 		NMSMovie nms(&camera, &logger);
