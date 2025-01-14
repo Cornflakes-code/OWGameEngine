@@ -40,9 +40,11 @@ public:
 	const glm::uvec2& physicalWindowSize() const { return mPhysicalWindowSize; }
 
 	// Handy for converting mouse position to World Space
-	glm::vec3 mouseToWorld(const glm::vec3& mouseCoord) const;
+	// If we want to calculate a direction (ie ray) then calcPoint = false
+	// If we want to calculate a point then calcPoint = true
+	glm::vec3 mouseToWorld(const glm::vec3& mouseCoord, bool calcPoint) const;
 	glm::vec3 normalisedDeviceCoordinates(const glm::vec3& mouseCoord) const;
-	glm::vec4 toEyeCoords(const glm::vec4& clipCoords) const;
+	glm::vec4 toEyeCoords(const glm::vec4& clipCoords, bool calcPoint) const;
 	glm::vec3 toWorldCoords(const glm::vec4& eyeCoords) const;
 	void physicalWindowSize(const glm::uvec2& newValue)
 	{

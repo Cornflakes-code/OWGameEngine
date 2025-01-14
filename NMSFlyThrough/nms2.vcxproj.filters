@@ -28,16 +28,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\engine\Cameras\CameraMazhar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Cameras\CameraOW.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Cameras\Mazhar_Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NMSEndScene.cpp">
@@ -82,20 +73,26 @@
     <ClCompile Include="RopeNormaliser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\engine\Cameras\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Cameras\CameraMazhar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Cameras\CameraMazharImp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Cameras\CameraOW.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Cameras\CameraOWImp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Cameras\CameraEZ.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Cameras\CameraMazhar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Cameras\OW_Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\engine\Cameras\CameraOW.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NMSEndScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -136,6 +133,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RopeNormaliser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Cameras\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Cameras\CameraMazhar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Cameras\CameraMazharImp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Cameras\CameraOW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Cameras\CameraOWImp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Cameras\CameraEZ.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

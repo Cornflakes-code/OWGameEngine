@@ -21,7 +21,7 @@
 /*
 	Experimentation of Camera functionality. Will not survive future iterations
 */
-class MazharCamera
+class CameraMazharImp
 {
 //	const int GLUT_DOWN = 1;
 //	const int GLUT_UP = 1;
@@ -36,8 +36,8 @@ public:
 		UP, DOWN, LEFT, RIGHT, FORWARD, BACK
 	};
 	
-	MazharCamera();
-	~MazharCamera();
+	CameraMazharImp();
+	~CameraMazharImp();
 	void move(CameraDirection dir, float seconds);
 	void Update();
 	void GetMatricies(glm::mat4 &P, glm::mat4 &V) const;

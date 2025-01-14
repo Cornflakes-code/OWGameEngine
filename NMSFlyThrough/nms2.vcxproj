@@ -249,9 +249,12 @@ del /q "$(TargetDir)\config*.json"
     <None Include="..\engine\vao.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\engine\Cameras\Camera.cpp" />
+    <ClCompile Include="..\engine\Cameras\CameraEZ.cpp" />
     <ClCompile Include="..\engine\Cameras\CameraMazhar.cpp" />
+    <ClCompile Include="..\engine\Cameras\CameraMazharImp.cpp" />
     <ClCompile Include="..\engine\Cameras\CameraOW.cpp" />
-    <ClCompile Include="..\engine\Cameras\Mazhar_Camera.cpp" />
+    <ClCompile Include="..\engine\Cameras\CameraOWImp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NMSEndScene.cpp" />
     <ClCompile Include="NMSMainScene.cpp" />
@@ -269,10 +272,12 @@ del /q "$(TargetDir)\config*.json"
     <ClCompile Include="rope_quick.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\engine\Cameras\Camera.h" />
+    <ClInclude Include="..\engine\Cameras\CameraEZ.h" />
     <ClInclude Include="..\engine\Cameras\CameraMazhar.h" />
+    <ClInclude Include="..\engine\Cameras\CameraMazharImp.h" />
     <ClInclude Include="..\engine\Cameras\CameraOW.h" />
-    <ClInclude Include="..\engine\Cameras\Mazhar_Camera.h" />
-    <ClInclude Include="..\engine\Cameras\OW_Camera.h" />
+    <ClInclude Include="..\engine\Cameras\CameraOWImp.h" />
     <ClInclude Include="NMSEndScene.h" />
     <ClInclude Include="NMSMainScene.h" />
     <ClInclude Include="NMSMovie.h" />

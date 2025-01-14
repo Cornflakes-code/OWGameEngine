@@ -1,4 +1,4 @@
-#include "Mazhar_Camera.h"
+#include "CameraMazharImp.h"
 
 #include <iostream>
 
@@ -8,18 +8,18 @@
 // Also see:
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_model_view_projection
-MazharCamera::MazharCamera()
+CameraMazharImp::CameraMazharImp()
 {
 }
 
-MazharCamera::~MazharCamera() {
+CameraMazharImp::~CameraMazharImp() {
 }
 
-void MazharCamera::Reset()
+void CameraMazharImp::Reset()
 {
 }
 
-void MazharCamera::Update()
+void CameraMazharImp::Update()
 {
 	camera_direction = direction();
 
@@ -57,7 +57,7 @@ void MazharCamera::Update()
 	view = glm::lookAt(camera_position, camera_look_at, camera_up);
 }
 
-void MazharCamera::move(CameraDirection dir, float seconds)
+void CameraMazharImp::move(CameraDirection dir, float seconds)
 {
 	if (camera_mode == FREE) 
 	{
@@ -86,7 +86,7 @@ void MazharCamera::move(CameraDirection dir, float seconds)
 	}
 }
 
-void MazharCamera::changePitch(float radians)
+void CameraMazharImp::changePitch(float radians)
 {
 	//Check bounds with the max pitch rate so that we aren't moving too fast
 	if (radians < -max_pitch_rate)
@@ -110,7 +110,7 @@ void MazharCamera::changePitch(float radians)
 	Update();
 }
 
-void MazharCamera::changeHeading(float radiansDelta)
+void CameraMazharImp::changeHeading(float radiansDelta)
 {
 	//Check bounds with the max heading rate so that we aren't moving too fast
 	if (radiansDelta < -max_heading_rate) {
@@ -142,7 +142,7 @@ void MazharCamera::changeHeading(float radiansDelta)
 	}
 }
 
-void MazharCamera::roll(float radiansDelta)
+void CameraMazharImp::roll(float radiansDelta)
 {
 	camera_up = glm::rotate(camera_up, radiansDelta, camera_direction);
 
@@ -154,7 +154,7 @@ void MazharCamera::roll(float radiansDelta)
 	//camera_up = glm::rotate(trans, radiansDelta, camera_up);
 }
 
-void MazharCamera::Move2D(int x, int y)
+void CameraMazharImp::Move2D(int x, int y)
 {
 	//compute the mouse delta from the previous mouse position
 	glm::vec3 mouse_delta = mouse_position - glm::vec3(x, y, 0);
@@ -181,7 +181,7 @@ void MazharCamera::Move2D(int x, int y)
 //	mouse_position = glm::vec3(screenX, screenY, 0);
 //}
 
-void MazharCamera::GetMatricies(glm::mat4 &P, glm::mat4 &V) const
+void CameraMazharImp::GetMatricies(glm::mat4 &P, glm::mat4 &V) const
 {
 	P = projection;
 	V = view;

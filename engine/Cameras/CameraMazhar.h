@@ -4,16 +4,16 @@
 #include "../Cameras/Camera.h"
 #include "../Core/ErrorHandling.h"
 
-#include "Mazhar_Camera.h"
+#include "CameraMazharImp.h"
 
 /*
 	Implements the Camera interface with class MazharCamera providing the functionality.
 */
 class CameraMazhar : public Camera, public ListenerHelper
 {
-	MazharCamera mTempRenderTarget;
-	MazharCamera mCurrentTarget;
-	MazharCamera* mCurrent = &mCurrentTarget;
+	CameraMazharImp mTempRenderTarget;
+	CameraMazharImp mCurrentTarget;
+	CameraMazharImp* mCurrent = &mCurrentTarget;
 
 public:
 	CameraMazhar();

@@ -41,7 +41,9 @@
 //#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
-
+Box* gBox = nullptr;
+TextData* gWelcome = nullptr;
+TextData* gEnjoy = nullptr;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
@@ -122,17 +124,26 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 				//glfwGetFramebufferSize(win, &pixel_w, &pixel_h); // better use the callback and cache the values 
 		if (userInput.mouseInput.action == UserInput::PointingDeviceAction::LeftMouseButtonClick)
 		{
-			glm::vec3 mousePos = globals->mouseToWorld(userInput.mouseInput.pos);
-			mousePos.x *= NMSScene::world().size().x;
-			mousePos.y *= NMSScene::world().size().y;
-			//mousePos *= NMSScene::world().size();
-			//mousePos.z = 1;
+			glm::vec3 mousePos = globals->mouseToWorld(userInput.mouseInput.pos, false);
+			LogStream(LogStreamLevel::Info) << "userInput.mouseInput Position " << userInput.mouseInput.pos << "\n";
 			LogStream(LogStreamLevel::Info) << "MouseToWorld Position " << mousePos << "\n";
 			glm::vec3 normMouse = glm::normalize(mousePos);
 			glm::vec3 cam_pos = camera->position();
 			glm::vec3 dir = mousePos - cam_pos;
-			Ray* r = new Ray(mScenery, cam_pos, mousePos);
+			Ray* r = new Ray(mScenery, cam_pos, normMouse);
 			r->prepare({ 0.7, 0.7, 0.0, 1.0f });
+
+			glm::vec3 normal;
+			float distance;
+			bool intersects = r->intersects(gBox->bounds(), normal, distance);
+			glm::vec3 intersectPoint = cam_pos + normMouse * distance;
+			LogStream(LogStreamLevel::Info) << "box intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+			intersects = r->intersects(gWelcome->bounds(), normal, distance);
+			intersectPoint = cam_pos + normMouse * distance;
+			LogStream(LogStreamLevel::Info) << "Welcome intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+			intersects = r->intersects(gEnjoy->bounds(), normal, distance);
+			intersectPoint = cam_pos + normMouse * distance;
+			LogStream(LogStreamLevel::Info) << "Enjoy intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
 		}
 	}
 	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
@@ -173,6 +184,7 @@ Box* createBox(const std::string& _name, const glm::vec4& colour, const glm::vec
 	box->scale(scale);
 	box->velocity(direction, speed);
 	//box->rotate
+	gBox = box;
 	return box;
 }
 
@@ -242,6 +254,7 @@ void NMSSplashScenePhysics::setup()
 	welcome->text("Welcome to reality.");
 	welcome->prepare();
 	addToOcTree.push_back(welcome);
+	gWelcome = welcome;
 #endif
 	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
 	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
@@ -256,6 +269,7 @@ void NMSSplashScenePhysics::setup()
 	enjoy->text("Enjoy it while you can");
 	enjoy->prepare();
 	addToOcTree.push_back(enjoy);
+	gEnjoy = enjoy;
 #endif
 
 	glm::vec3 scale1 = { 10, 10, 10 };
@@ -466,7 +480,7 @@ void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene),
 							  unsigned int OW_UNUSED(callCount))
 {
 	//globals->application()->backgroundColour(glm::vec4(0, 0, 0, 1));
-	camera->position({ 0,0,100 });
+	camera->position({ 0, 0,200 });
 	camera->lookAt({ 0,0,0 });
 	float speed = camera->moveScale();
 	if (speed < 201.00f)

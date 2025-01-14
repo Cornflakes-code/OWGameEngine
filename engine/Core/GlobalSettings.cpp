@@ -330,16 +330,20 @@ void GlobalSettings::configAndSet(UserInput* ui)
 	}
 }
 
-glm::vec3 GlobalSettings::mouseToWorld(const glm::vec3& mouseCoord) const
+glm::vec3 GlobalSettings::mouseToWorld(const glm::vec3& mouseCoord, bool calcPoint) const
 {
 	// https://www.dropbox.com/scl/fi/9sqt4tem87aij6q0es3mo/MousePicker-Code.txt?rlkey=9955tdhmc3py83sbuf1m8zmv5&e=2&dl=0
 
 	// https://antongerdelan.net/opengl/raycasting.html
 
+	if (calcPoint)
+	{
+		throw NMSException("Code is wrong for calculating as point.");
+
+	}
 	glm::vec3 normalizedCoords = normalisedDeviceCoordinates(mouseCoord);
-	LogStream(LogStreamLevel::Info) << "\nMouse normalizedCoords " << normalizedCoords << "\n";
-	glm::vec4 clipCoords = glm::vec4(normalizedCoords, 1.0f);
-	glm::vec4 eyeCoords = toEyeCoords(clipCoords);
+	glm::vec4 clipCoords = glm::vec4(normalizedCoords.x, normalizedCoords.y, -1.0, 1.0f);
+	glm::vec4 eyeCoords = toEyeCoords(clipCoords, calcPoint);
 	return toWorldCoords(eyeCoords);
 }
 
@@ -350,11 +354,17 @@ glm::vec3 GlobalSettings::normalisedDeviceCoordinates(const glm::vec3& mouseCoor
 	return glm::vec3(x, y, 1.0);
 }
 
-glm::vec4 GlobalSettings::toEyeCoords(const glm::vec4& clipCoords) const
+glm::vec4 GlobalSettings::toEyeCoords(const glm::vec4& clipCoords, bool calcPoint) const
 {
+	// https://www.reddit.com/r/opengl/comments/1cptjop/mouse_coordinates_to_world_space_coordinates/
 	glm::mat4 proj = camera()->projection();
 	glm::mat4 invertedProjection = glm::inverse(camera()->projection());
 	glm::vec4 eyeCoords = invertedProjection * clipCoords;
+	if (calcPoint)
+	{
+		eyeCoords = eyeCoords / eyeCoords.w;
+		return eyeCoords;
+	}
 	return glm::vec4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
 }
 
@@ -363,5 +373,7 @@ glm::vec3 GlobalSettings::toWorldCoords(const glm::vec4& eyeCoords) const
 	glm::mat4 view = camera()->view();
 	glm::mat4 invertedView = glm::inverse(camera()->view());
 	glm::vec4 world = invertedView * eyeCoords;
+	
 	return glm::vec3(world.x, world.y, world.z);
 }
+

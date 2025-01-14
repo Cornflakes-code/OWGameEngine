@@ -1,12 +1,12 @@
 #pragma once
 #include <set>
 
-#include <Cameras/Camera.h>
+#include "Camera.h"
+#include "CameraOWImp.h"
 #include <Core/ErrorHandling.h>
 #include <Core/ListenerHelper.h>
 #include <Core/UserInput.h>
 
-#include "OW_Camera.h"
 
 /*
 	Implements the Camera interface with class OW_Camera providing the functionality.

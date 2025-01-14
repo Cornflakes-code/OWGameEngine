@@ -1,7 +1,6 @@
 #include "CameraOW.h"
 
 #include <glm/gtx/string_cast.hpp>
-
 #include <GLFW/glfw3.h>
 
 #include "../Core/GlobalSettings.h"

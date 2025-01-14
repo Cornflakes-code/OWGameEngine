@@ -176,22 +176,22 @@ void CameraMazhar::doProcessKeyboardInput(int userCommand, float seconds)
 	switch (userCommand)
 	{
 	case UserInput::LogicalOperator::POVForward:
-		mCurrent->move(MazharCamera::CameraDirection::FORWARD, seconds);
+		mCurrent->move(CameraMazharImp::CameraDirection::FORWARD, seconds);
 		break;
 	case UserInput::LogicalOperator::POVBack:
-		mCurrent->move(MazharCamera::CameraDirection::BACK, seconds);
+		mCurrent->move(CameraMazharImp::CameraDirection::BACK, seconds);
 		break;
 	case UserInput::LogicalOperator::POVLeft:
-		mCurrent->move(MazharCamera::CameraDirection::LEFT, seconds);
+		mCurrent->move(CameraMazharImp::CameraDirection::LEFT, seconds);
 		break;
 	case UserInput::LogicalOperator::POVRight:
-		mCurrent->move(MazharCamera::CameraDirection::RIGHT, seconds);
+		mCurrent->move(CameraMazharImp::CameraDirection::RIGHT, seconds);
 		break;
 	case UserInput::LogicalOperator::POVDown:
-		mCurrent->move(MazharCamera::CameraDirection::DOWN, seconds);
+		mCurrent->move(CameraMazharImp::CameraDirection::DOWN, seconds);
 		break;
 	case UserInput::LogicalOperator::POVUp:
-		mCurrent->move(MazharCamera::CameraDirection::UP, seconds);
+		mCurrent->move(CameraMazharImp::CameraDirection::UP, seconds);
 		break;
 	case UserInput::LogicalOperator::POVPitchDown:
 		pitch(glm::radians(-1.0f));

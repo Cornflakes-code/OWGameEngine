@@ -341,6 +341,25 @@ namespace CollisionSystem
 		buildSweepAndPruneEx(objects);
 #endif
 	}
+    void addRay(OWRay* r)
+    {
+#ifdef BASIC_COLLISIONS
+#endif
+#ifdef SWEEP_AND_PRUNE
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+#endif
+    }
+
+    void deleteRay(OWRay* r)
+    {
+#ifdef BASIC_COLLISIONS
+#endif
+#ifdef SWEEP_AND_PRUNE
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+#endif
+    }
 
 	void collide()
 	{

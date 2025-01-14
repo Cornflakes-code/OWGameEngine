@@ -233,9 +233,11 @@ glm::vec3 GLApplication::screenToWorld(GLFWwindow* window, double xpos, double y
 void GLApplication::onPointingDeviceCallback(GLFWwindow* window, 
 										int button, int action, int mods)
 {
+	// object space -> {MODEL} -> World Space -> {VIEW} -> Eye Space -> {PROJ} -> Clip Space -> {perspective divide} -> NDC -> {Viewport / DepthRange} -> Window Space
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	glm::vec3 pos(x, y, 1.0f);// = screenToWorld(window, xpos, ypos);
+	glm::vec3 pos(x, y, 1.0f);
+	//pos = screenToWorld(window, x, y);
 	if (action == GLFW_PRESS)
 	{
 		// https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates
@@ -248,7 +250,7 @@ void GLApplication::onPointingDeviceCallback(GLFWwindow* window,
 	}
 	else if (action == GLFW_RELEASE)
 	{
-		LogStream(LogStreamLevel::Info) << "Mouse Release Position " << pos << "\n";
+		//LogStream(LogStreamLevel::Info) << "Mouse Release Position " << pos << "\n";
 		mUserInput->pointingDevice(window, button, action, mods, pos);
 	}
 	else

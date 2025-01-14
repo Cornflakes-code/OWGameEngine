@@ -51,7 +51,7 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	{
 		glm::vec3 p = position();
 	}
-	if (ss == "Text:X")
+	if (ss == "Text:Enjoy it while you can")
 		ss = "Text:X";
 	if (!mReadyForRender)
 	{

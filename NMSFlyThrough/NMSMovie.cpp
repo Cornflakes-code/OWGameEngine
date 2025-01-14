@@ -49,7 +49,7 @@ void NMSMovie::preRun()
 	_camera->lookAt(NMSScene::world().center());
 	//_camera->roll(3.141592653/4); // PI
 
-	_camera->clipping(0.01f, 1200.0f);
+	_camera->clipping(0.01f, 5000.0f);
 	_camera->FOV(glm::radians(45.0f));
 
 	std::string activeScene = globals->saveAndRestore()->activeScene();
