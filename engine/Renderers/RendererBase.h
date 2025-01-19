@@ -32,6 +32,21 @@ public:
 		mDfactor = dfactor;
 	}
 	virtual void prepare() {}
+	/*
+		virtual void buildBoundingBox(AABB& bb, const glm::mat4& proj,
+		const glm::mat4& view,
+		const glm::mat4& model,
+		const glm::vec3& cameraPos,
+		RenderTypes::ShaderMutator renderCb = nullptr,
+		RenderTypes::ShaderResizer resizeCb = nullptr);
+
+	virtual void renderBoundingBox(const AABB& bb, const glm::mat4& proj,
+		const glm::mat4& view,
+		const glm::mat4& model,
+		const glm::vec3& cameraPos,
+		RenderTypes::ShaderMutator renderCb = nullptr,
+		RenderTypes::ShaderResizer resizeCb = nullptr);
+*/
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,

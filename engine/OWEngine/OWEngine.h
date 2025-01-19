@@ -12,6 +12,7 @@
 #       define OW_UNUSED         __attribute__((__unused__))
 #else
 #       define OW_UNUSED(x)
+//template <class T> void OW_UNUSED(const T&) { }
 #endif
 
 #if _WIN32 || _WIN64

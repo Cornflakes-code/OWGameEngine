@@ -52,10 +52,10 @@ public:
 		mFontHeight = fontHeight;
 		mModified = true;
 	}
-	void spacing(float sx, float sy, const glm::vec2& scale = glm::vec2(1.0, 1.0), 
+	void spacing(float sx, float sy, const glm::vec2& _scale = glm::vec2(1.0, 1.0), 
 				unsigned int referencePos = PositionType::Center)
 	{
-		mX = sx; mY = sy; mScale = scale;
+		mX = sx; mY = sy; scale(glm::vec3(_scale, 1.0f));
 		// If both left and right then remove them
 		if (((referencePos & TextData::PositionType::Left) && 
 			(referencePos & TextData::PositionType::Right)))
@@ -83,15 +83,19 @@ public:
 		mColour = colour;
 		mModified = true;
 	}
-	glm::vec2 scale() const { return mScale; }
 	void prepare();
+	void render(const glm::mat4& proj,
+		const glm::mat4& view,
+		const glm::mat4& model,
+		const glm::vec3& cameraPos,
+		RenderTypes::ShaderMutator renderCb = nullptr,
+		RenderTypes::ShaderResizer resizeCb = nullptr) override;
 protected:
 private:
 	TextDisplayType mDynamicSize = Dynamic;
 	std::string mText;
 	std::string mFontFileName = "arial.ttf";
 	glm::vec4 mColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK);
-	glm::vec2 mScale = glm::vec2({ 1.0, 1.0 });
 	unsigned int mReferencePos = PositionType(PositionType::Center & 0xC);
 	float mX = 0.0f;
 	float mY = 0.0f;

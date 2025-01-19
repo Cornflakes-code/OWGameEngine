@@ -113,6 +113,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	starShader->setStandardUniformNames("VP");
 	MeshComponent* stars = new MeshComponent(this, glm::vec3(0));
 	stars->name("stars");
+	stars->renderBoundingBox(false);
 	stars->setup(&mdi, starShader);
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](

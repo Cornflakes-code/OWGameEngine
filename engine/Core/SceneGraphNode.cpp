@@ -40,7 +40,7 @@ void SceneGraphNode::render(const glm::mat4& proj,
 	}
 	glm::mat4 model = glm::scale(_model, mScaleFactor);
 	model = glm::translate(model, mTranslateVector);
-	if (!mReadyForRender && mParent != nullptr)
+	if (!readyForRender() && mParent != nullptr)
 	{
 		throw NMSLogicException("Actor: " + mName + " not ready for render.");
 	}

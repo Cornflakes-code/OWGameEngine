@@ -44,7 +44,8 @@ public:
 		mActors.push_back(toAdd);
 		return mActors.size() - 1;
 	}
-	void readyForRender() { mReadyForRender = true; }
+	void readyForRender(bool newValue) { mReadyForRender = newValue; }
+	bool readyForRender() const { return mReadyForRender; }
 	void render(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4& model,
 		const glm::vec3& cameraPos,

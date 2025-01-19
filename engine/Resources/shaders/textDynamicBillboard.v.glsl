@@ -1,6 +1,6 @@
 #version 330 core
 
-// Input vertex data, different for all executions of this shader.
+// textDynamicBillboard.v.glsl
 layout(location = 0) in vec4 coord;
 
 // Output data ; will be interpolated for each fragment.

@@ -48,7 +48,7 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder,
 		// https://antongerdelan.net/opengl/glcontext2.html
 		// You'll find a list of all the key codes and other input handling commands 
 		// at http://www.glfw.org/docs/latest/group__input.html. 
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -92,7 +92,7 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder,
 		// mFrameBufferSize and mWindowSize may differ. See:
 		// (https://stackoverflow.com/questions/45796287/screen-coordinates-to-world-coordinates)
 		globals->configAndSet(ui);
-		globals->mLogger->log_gl_params();
+		//globals->mLogger->log_gl_params();
 		enableCallbacks();
 		try
 		{
@@ -151,12 +151,14 @@ void GLApplication::enableCallbacks()
 		// initialize debug output 
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-//		GLuint ignore = { 131185 }; // NVidia telling us that a buffer was successfully created.
-//		int count = sizeof(ignore) / sizeof(GLuint);
-		glDebugMessageCallback(debugMessageCallback, nullptr);
+		GLuint ignore = { 131185 }; // NVidia telling us that a buffer was successfully created.
+		int count = 0;// sizeof(ignore) / sizeof(GLuint);
 		// Does not seem to be working
-//		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
-//				GL_DONT_CARE, count, &ignore, GL_FALSE);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
+				GL_DONT_CARE, count, &ignore, GL_TRUE);
+		checkGLError();
+		glDebugMessageCallback(debugMessageCallback, nullptr);
+		checkGLError();
 	}
 	
 	glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* window) {

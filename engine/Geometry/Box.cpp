@@ -53,5 +53,5 @@ void Box::prepare(const glm::vec4& colour)
 	vao->prepare();
 	wireShader->appendMutator(pointRender);
 	addRenderer(vao);
-	readyForRender();
+	readyForRender(true);
 }

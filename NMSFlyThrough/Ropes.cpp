@@ -165,7 +165,8 @@ OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::
 		break;
 	}
 	MeshComponent* m = new MeshComponent(this, glm::vec3(0));
-	m->name("RopeEnds");
+	m->name("Rope Ends");
+	m->renderBoundingBox(false);
 	m->setup(vao, lineShader);
 	return m;
 }
@@ -227,6 +228,8 @@ OWSceneComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm:
 		}
 	}
 	MeshComponent* m = new MeshComponent(this, glm::vec3(0));
+	m->name("Rope Lines");
+	m->renderBoundingBox(false);
 	m->setup(vao, lineShader);
 	return m;
 }
@@ -383,6 +386,8 @@ OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<g
 			//shader->setVector3f("viewLightPos", cameraPos);
 		};
 	MeshComponent* m = new MeshComponent(this, glm::vec3(0));
+	m->name("Rope Surfaces");
+	m->renderBoundingBox(false);
 	m->setup(vao);
 	wireShader->appendMutator(pointRender);
 	return m;

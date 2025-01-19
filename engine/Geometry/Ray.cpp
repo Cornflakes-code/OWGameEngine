@@ -31,5 +31,5 @@ void Ray::prepare(const glm::vec4& colour)
     vao->add(&lineData);
     vao->prepare();
     addRenderer(vao);
-    readyForRender();
+    readyForRender(true);
 }

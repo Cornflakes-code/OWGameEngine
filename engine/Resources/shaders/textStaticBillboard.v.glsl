@@ -1,6 +1,6 @@
 #version 330 core
 
-// Input vertex data, different for all executions of this shader.
+// textStaticBillboard.v.glsl
 layout(location = 0) in vec4 coord;
 
 // Output data ; will be interpolated for each fragment.
@@ -15,15 +15,13 @@ uniform vec2 BillboardSize; // Size of the billboard, in world units (probably m
 
 void main()
 {
-	vec3 vertexPosition_worldspace = BillboardPos;
-
 	// Output position of the vertex
-	gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
+	gl_Position = VP * vec4(BillboardPos, 1.0f);
 	gl_Position /= gl_Position.w;
 	gl_Position.xy += coord.xy * BillboardSize; 
 
 	// Or, if BillboardSize is in percentage of the screen size (1,1 for fullscreen) :
-	//gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f); // Get the screen-space position of the particle's center
+	//gl_Position = VP * vec4(BillboardPos, 1.0f); // Get the screen-space position of the particle's center
 	
 	// Or, if BillboardSize is in pixels : 
 	// Same thing, just use (ScreenSizeInPixels / BillboardSizeInPixels) instead of BillboardSizeInScreenPercentage.

@@ -32,7 +32,7 @@ void TextRendererDynamic::doSetup(const TextData* td, const glm::vec3& initialPo
 	});
 	
 	AABB bounds = mBounds;
-	glm::vec2 scale = td->scale();
+	glm::vec3 scale = td->scale();
 	shader()->appendResizer([bounds, scale](const Shader* shader,
 			RenderTypes::ScaleByAspectRatioType scaler,
 			float aspectRatio)

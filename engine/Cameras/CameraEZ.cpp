@@ -1,9 +1,55 @@
-/*
-#include <Core/CorePCH.h>
+#include "CameraEZ.h"
 
-#include <Core/Graphics/Camera.h>
-#include <Core/World/CoordinateSystem.h>
-#include <Foundation/Utilities/GraphicsUtils.h>
+#include <glm/glm.hpp>
+
+/*
+
+//#include <Core/Graphics/Camera.h>
+//#include <Core/World/CoordinateSystem.h>
+//#include <Foundation/Utilities/GraphicsUtils.h>
+
+
+struct ezCoordinateSystem
+{
+    glm::vec3 m_vForwardDir;
+    glm::vec3 m_vRightDir;
+    glm::vec3 m_vUpDir;
+};
+
+class ezCoordinateSystemProvider
+{
+public:
+    ezCoordinateSystemProvider()
+    {
+    }
+
+    virtual void GetCoordinateSystem(const glm::vec3& vGlobalPosition, ezCoordinateSystem& out_coordinateSystem) const 
+    {
+        out_coordinateSystem.m_vForwardDir = ezBasisAxis::GetBasisVector(m_ForwardAxis);
+        out_coordinateSystem.m_vRightDir = ezBasisAxis::GetBasisVector(m_RightAxis);
+        out_coordinateSystem.m_vUpDir = ezBasisAxis::GetBasisVector(m_UpAxis);
+    }
+
+    ezBasisAxis::Enum m_ForwardAxis = ezBasisAxis::PositiveX;
+    ezBasisAxis::Enum m_RightAxis = ezBasisAxis::PositiveY;
+    ezBasisAxis::Enum m_UpAxis = ezBasisAxis::PositiveZ;
+};
+
+{
+public:
+  ezCoordinateSystemProvider(const ezWorld * pOwnerWorld)
+    : m_pOwnerWorld(pOwnerWorld)
+  {
+  }
+
+  virtual ~ezCoordinateSystemProvider() = default;
+
+  virtual void GetCoordinateSystem(const glm::vec3& vGlobalPosition, ezCoordinateSystem& out_coordinateSystem) const = 0;
+
+protected:
+  friend class ezWorld;
+
+  const ezWorld* m_pOwnerWorld;
 class RemapCoordinateSystemProvider : public ezCoordinateSystemProvider
 {
 public:
@@ -12,7 +58,7 @@ public:
   {
   }
 
-  virtual void GetCoordinateSystem(const ezVec3& vGlobalPosition, ezCoordinateSystem& out_coordinateSystem) const override
+  virtual void GetCoordinateSystem(const glm::vec3& vGlobalPosition, ezCoordinateSystem& out_coordinateSystem) const override
   {
     EZ_IGNORE_UNUSED(vGlobalPosition);
 
@@ -62,65 +108,65 @@ void ezCamera::SetCoordinateSystem(const ezSharedPtr<ezCoordinateSystemProvider>
   m_pCoordinateSystem = pProvider;
 }
 
-ezVec3 ezCamera::GetPosition(ezCameraEye eye) const
+glm::vec3 ezCamera::GetPosition(ezCameraEye eye) const
 {
   return MapInternalToExternal(m_vCameraPosition[static_cast<int>(eye)]);
 }
 
-ezVec3 ezCamera::GetDirForwards(ezCameraEye eye) const
+glm::vec3 ezCamera::GetDirForwards(ezCameraEye eye) const
 {
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[static_cast<int>(eye)], ezHandedness::LeftHanded);
 
   return MapInternalToExternal(decFwd);
 }
 
-ezVec3 ezCamera::GetDirUp(ezCameraEye eye) const
+glm::vec3 ezCamera::GetDirUp(ezCameraEye eye) const
 {
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[static_cast<int>(eye)], ezHandedness::LeftHanded);
 
   return MapInternalToExternal(decUp);
 }
 
-ezVec3 ezCamera::GetDirRight(ezCameraEye eye) const
+glm::vec3 ezCamera::GetDirRight(ezCameraEye eye) const
 {
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[static_cast<int>(eye)], ezHandedness::LeftHanded);
 
   return MapInternalToExternal(decRight);
 }
 
-ezVec3 ezCamera::InternalGetPosition(ezCameraEye eye) const
+glm::vec3 ezCamera::InternalGetPosition(ezCameraEye eye) const
 {
   return m_vCameraPosition[static_cast<int>(eye)];
 }
 
-ezVec3 ezCamera::InternalGetDirForwards(ezCameraEye eye) const
+glm::vec3 ezCamera::InternalGetDirForwards(ezCameraEye eye) const
 {
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[static_cast<int>(eye)], ezHandedness::LeftHanded);
 
   return decFwd;
 }
 
-ezVec3 ezCamera::InternalGetDirUp(ezCameraEye eye) const
+glm::vec3 ezCamera::InternalGetDirUp(ezCameraEye eye) const
 {
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[static_cast<int>(eye)], ezHandedness::LeftHanded);
 
   return decUp;
 }
 
-ezVec3 ezCamera::InternalGetDirRight(ezCameraEye eye) const
+glm::vec3 ezCamera::InternalGetDirRight(ezCameraEye eye) const
 {
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[static_cast<int>(eye)], ezHandedness::LeftHanded);
 
   return -decRight;
 }
 
-ezVec3 ezCamera::MapExternalToInternal(const ezVec3& v) const
+glm::vec3 ezCamera::MapExternalToInternal(const glm::vec3& v) const
 {
   if (m_pCoordinateSystem)
   {
@@ -138,7 +184,7 @@ ezVec3 ezCamera::MapExternalToInternal(const ezVec3& v) const
   return v;
 }
 
-ezVec3 ezCamera::MapInternalToExternal(const ezVec3& v) const
+glm::vec3 ezCamera::MapInternalToExternal(const glm::vec3& v) const
 {
   if (m_pCoordinateSystem)
   {
@@ -232,7 +278,7 @@ void ezCamera::SetCameraMode(ezCameraMode::Enum mode, float fFovOrDim, float fNe
   CameraSettingsChanged();
 }
 
-void ezCamera::SetStereoProjection(const ezMat4& mProjectionLeftEye, const ezMat4& mProjectionRightEye, float fAspectRatioWidthDivHeight)
+void ezCamera::SetStereoProjection(const glm::mat4& mProjectionLeftEye, const glm::mat4& mProjectionRightEye, float fAspectRatioWidthDivHeight)
 {
   m_mStereoProjectionMatrix[static_cast<int>(ezCameraEye::Left)] = mProjectionLeftEye;
   m_mStereoProjectionMatrix[static_cast<int>(ezCameraEye::Right)] = mProjectionRightEye;
@@ -241,11 +287,11 @@ void ezCamera::SetStereoProjection(const ezMat4& mProjectionLeftEye, const ezMat
   CameraSettingsChanged();
 }
 
-void ezCamera::LookAt(const ezVec3& vCameraPos0, const ezVec3& vTargetPos0, const ezVec3& vUp0)
+void ezCamera::LookAt(const glm::vec3& vCameraPos0, const glm::vec3& vTargetPos0, const glm::vec3& vUp0)
 {
-  const ezVec3 vCameraPos = MapExternalToInternal(vCameraPos0);
-  const ezVec3 vTargetPos = MapExternalToInternal(vTargetPos0);
-  const ezVec3 vUp = MapExternalToInternal(vUp0);
+  const glm::vec3 vCameraPos = MapExternalToInternal(vCameraPos0);
+  const glm::vec3 vTargetPos = MapExternalToInternal(vTargetPos0);
+  const glm::vec3 vUp = MapExternalToInternal(vUp0);
 
   if (m_Mode == ezCameraMode::Stereo)
   {
@@ -260,13 +306,13 @@ void ezCamera::LookAt(const ezVec3& vCameraPos0, const ezVec3& vTargetPos0, cons
   CameraOrientationChanged();
 }
 
-void ezCamera::SetViewMatrix(const ezMat4& mLookAtMatrix, ezCameraEye eye)
+void ezCamera::SetViewMatrix(const glm::mat4& mLookAtMatrix, ezCameraEye eye)
 {
   const int iEyeIdx = static_cast<int>(eye);
 
   m_mViewMatrix[iEyeIdx] = mLookAtMatrix;
 
-  ezVec3 decFwd, decRight, decUp;
+  glm::vec3 decFwd, decRight, decUp;
   ezGraphicsUtils::DecomposeViewMatrix(
     m_vCameraPosition[iEyeIdx], decFwd, decRight, decUp, m_mViewMatrix[static_cast<int>(eye)], ezHandedness::LeftHanded);
 
@@ -279,7 +325,7 @@ void ezCamera::SetViewMatrix(const ezMat4& mLookAtMatrix, ezCameraEye eye)
   CameraOrientationChanged();
 }
 
-void ezCamera::GetProjectionMatrix(float fAspectRatioWidthDivHeight, ezMat4& out_mProjectionMatrix, ezCameraEye eye, ezClipSpaceDepthRange::Enum depthRange) const
+void ezCamera::GetProjectionMatrix(float fAspectRatioWidthDivHeight, glm::mat4& out_mProjectionMatrix, ezCameraEye eye, ezClipSpaceDepthRange::Enum depthRange) const
 {
   switch (m_Mode)
   {
@@ -330,10 +376,10 @@ void ezCamera::CameraSettingsChanged()
 
 void ezCamera::MoveLocally(float fForward, float fRight, float fUp)
 {
-  m_mViewMatrix[0].SetTranslationVector(m_mViewMatrix[0].GetTranslationVector() - ezVec3(fRight, fUp, fForward));
+  m_mViewMatrix[0].SetTranslationVector(m_mViewMatrix[0].GetTranslationVector() - glm::vec3(fRight, fUp, fForward));
   m_mViewMatrix[1].SetTranslationVector(m_mViewMatrix[0].GetTranslationVector());
 
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[0], ezHandedness::LeftHanded);
 
   m_vCameraPosition[0] = m_vCameraPosition[1] = decPos;
@@ -343,9 +389,9 @@ void ezCamera::MoveLocally(float fForward, float fRight, float fUp)
 
 void ezCamera::MoveGlobally(float fForward, float fRight, float fUp)
 {
-  ezVec3 vMove(fForward, fRight, fUp);
+  glm::vec3 vMove(fForward, fRight, fUp);
 
-  ezVec3 decFwd, decRight, decUp, decPos;
+  glm::vec3 decFwd, decRight, decUp, decPos;
   ezGraphicsUtils::DecomposeViewMatrix(decPos, decFwd, decRight, decUp, m_mViewMatrix[0], ezHandedness::LeftHanded);
 
   m_vCameraPosition[0] += vMove;
@@ -369,7 +415,7 @@ void ezCamera::ClampRotationAngles(bool bLocalSpace, ezAngle& forwardAxis, ezAng
     {
       // Limit how much the camera can look up and down, to prevent it from overturning
 
-      const float fDot = InternalGetDirForwards().Dot(ezVec3(0, 0, -1));
+      const float fDot = InternalGetDirForwards().Dot(glm::vec3(0, 0, -1));
       const ezAngle fCurAngle = ezMath::ACos(fDot) - ezAngle::MakeFromDegree(90.0f);
       const ezAngle fNewAngle = fCurAngle + rightAxis;
 
@@ -384,9 +430,9 @@ void ezCamera::RotateLocally(ezAngle forwardAxis, ezAngle rightAxis, ezAngle axi
 {
   ClampRotationAngles(true, forwardAxis, rightAxis, axis);
 
-  ezVec3 vDirForwards = InternalGetDirForwards();
-  ezVec3 vDirUp = InternalGetDirUp();
-  ezVec3 vDirRight = InternalGetDirRight();
+  glm::vec3 vDirForwards = InternalGetDirForwards();
+  glm::vec3 vDirUp = InternalGetDirUp();
+  glm::vec3 vDirRight = InternalGetDirRight();
 
   if (forwardAxis.GetRadian() != 0.0f)
   {
@@ -425,8 +471,8 @@ void ezCamera::RotateGlobally(ezAngle forwardAxis, ezAngle rightAxis, ezAngle ax
 {
   ClampRotationAngles(false, forwardAxis, rightAxis, axis);
 
-  ezVec3 vDirForwards = InternalGetDirForwards();
-  ezVec3 vDirUp = InternalGetDirUp();
+  glm::vec3 vDirForwards = InternalGetDirForwards();
+  glm::vec3 vDirUp = InternalGetDirUp();
 
   if (forwardAxis.GetRadian() != 0.0f)
   {
@@ -464,7 +510,4 @@ void ezCamera::RotateGlobally(ezAngle forwardAxis, ezAngle rightAxis, ezAngle ax
   CameraOrientationChanged();
 }
 
-
-
-EZ_STATICLINK_FILE(Core, Core_Graphics_Implementation_Camera);
 */

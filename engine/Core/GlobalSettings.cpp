@@ -338,16 +338,16 @@ glm::vec3 GlobalSettings::mouseToWorld(const glm::vec3& mouseCoord, bool calcPoi
 
 	if (calcPoint)
 	{
-		throw NMSException("Code is wrong for calculating as point.");
+		;// throw NMSException("Code is wrong for calculating as point.");
 
 	}
-	glm::vec3 normalizedCoords = normalisedDeviceCoordinates(mouseCoord);
+	glm::vec3 normalizedCoords = toNormalisedDeviceCoordinates(mouseCoord);
 	glm::vec4 clipCoords = glm::vec4(normalizedCoords.x, normalizedCoords.y, -1.0, 1.0f);
 	glm::vec4 eyeCoords = toEyeCoords(clipCoords, calcPoint);
 	return toWorldCoords(eyeCoords);
 }
 
-glm::vec3 GlobalSettings::normalisedDeviceCoordinates(const glm::vec3& mouseCoord) const
+glm::vec3 GlobalSettings::toNormalisedDeviceCoordinates(const glm::vec3& mouseCoord) const
 {
 	float x = (2.0f * mouseCoord.x) / mPhysicalWindowSize.x - 1.0f;
 	float y = 1.0f - (2.0f * mouseCoord.y) / mPhysicalWindowSize.y;

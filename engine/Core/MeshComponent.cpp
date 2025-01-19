@@ -11,7 +11,7 @@ void MeshComponent::setup(const MeshDataHeavy* md, Shader* shader, unsigned int 
 	r->setup(md, vertexMode, vertexLocation);
 	bounds(md->bounds());
 	addRenderer(r);
-	readyForRender();
+	readyForRender(true);
 }
 
 void MeshComponent::setup(const MeshDataLight* md, Shader* shader)
@@ -20,7 +20,7 @@ void MeshComponent::setup(const MeshDataLight* md, Shader* shader)
 	r->setup(md);
 	bounds(md->bounds());
 	addRenderer(r);
-	readyForRender();
+	readyForRender(true);
 }
 
 void MeshComponent::setup(const std::vector<glm::vec4>& v, Shader* shader,
@@ -30,7 +30,7 @@ void MeshComponent::setup(const std::vector<glm::vec4>& v, Shader* shader,
 	r->setup(v, vertexMode, vertexLocation);
 	bounds(convertToV3(v));
 	addRenderer(r);
-	readyForRender();
+	readyForRender(true);
 }
 
 void MeshComponent::setup(const MeshDataInstance* md, Shader* shader)
@@ -39,7 +39,7 @@ void MeshComponent::setup(const MeshDataInstance* md, Shader* shader)
 	r->setup(md);
 	mCanCollide = false;
 	addRenderer(r);
-	readyForRender();
+	readyForRender(true);
 }
 
 void MeshComponent::setup(VAOBuffer* vao, Shader* shader)
@@ -48,6 +48,6 @@ void MeshComponent::setup(VAOBuffer* vao, Shader* shader)
 		vao->shader(shader);
 	vao->prepare();
 	addRenderer(vao);
-	readyForRender();
+	readyForRender(true);
 }
 

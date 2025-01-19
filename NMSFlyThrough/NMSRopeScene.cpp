@@ -31,7 +31,7 @@ void NMSRopeScenePhysics::setup()
 	* 9239 - Original used for testing
 	*/
 	rope->prepareRope(9239, ropeZoom.x, ropeZoom.y, 45, fontHeight, niceTextSpacing, niceTextScale);
-	rope->visualComponents(true, true, true, true);
+	rope->visualComponents(true, false, true, false);
 	owner()->mRootNode.push_back(rope);
 	mCameraFocus = rope->bounds().center();
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);

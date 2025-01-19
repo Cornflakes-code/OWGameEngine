@@ -33,9 +33,10 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-//#define INCLUDE_FULLSCREEN
+#define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
 #define INCLUDE_ENJOY
+int GDEBUG_PICKING = 1;
 #define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
@@ -135,15 +136,26 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 
 			glm::vec3 normal;
 			float distance;
-			bool intersects = r->intersects(gBox->bounds(), normal, distance);
-			glm::vec3 intersectPoint = cam_pos + normMouse * distance;
-			LogStream(LogStreamLevel::Info) << "box intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
-			intersects = r->intersects(gWelcome->bounds(), normal, distance);
-			intersectPoint = cam_pos + normMouse * distance;
-			LogStream(LogStreamLevel::Info) << "Welcome intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
-			intersects = r->intersects(gEnjoy->bounds(), normal, distance);
-			intersectPoint = cam_pos + normMouse * distance;
-			LogStream(LogStreamLevel::Info) << "Enjoy intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+			bool intersects = false;
+			glm::vec3 intersectPoint(0);
+			if (gBox != nullptr)
+			{
+				intersects = r->intersects(gBox->bounds(), normal, distance);
+				intersectPoint = cam_pos + normMouse * distance;
+				LogStream(LogStreamLevel::Info) << "box intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+			}
+			if (gWelcome != nullptr)
+			{
+				intersects = r->intersects(gWelcome->bounds(), normal, distance);
+				intersectPoint = cam_pos + normMouse * distance;
+				LogStream(LogStreamLevel::Info) << "Welcome intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+			}
+			if (gEnjoy != nullptr)
+			{
+				intersects = r->intersects(gEnjoy->bounds(), normal, distance);
+				intersectPoint = cam_pos + normMouse * distance;
+				LogStream(LogStreamLevel::Info) << "Enjoy intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+			}
 		}
 	}
 	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
@@ -261,12 +273,12 @@ void NMSSplashScenePhysics::setup()
 #ifdef INCLUDE_ENJOY
 	glm::vec3 direction2 = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West];
-	TextData* enjoy = new TextData(mScenery, glm::vec3(100), TextData::Static);
-	enjoy->velocity(direction2, mSpeed / 20.0F);
+	TextData* enjoy = new TextData(mScenery, glm::vec3(0, 0, 0), TextData::Static);
+	//enjoy->velocity(direction2, mSpeed / 20.0F);
 	enjoy->font("arial.ttf", fontHeight);
 	enjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
 	enjoy->spacing(nice.x, nice.y, scale);
-	enjoy->text("Enjoy it while you can");
+	enjoy->text("Enjoy it while you can.");
 	enjoy->prepare();
 	addToOcTree.push_back(enjoy);
 	gEnjoy = enjoy;
@@ -277,7 +289,7 @@ void NMSSplashScenePhysics::setup()
 	glm::vec3 scale3 = { 20, 20, 20 };
 	int denom = 40;
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < GDEBUG_PICKING; i++)
 	{
 		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
 		glm::vec3 rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f }; // random speed
@@ -373,6 +385,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 #ifdef INCLUDE_FULLSCREEN
 	MeshComponent* fullScreen = new MeshComponent(mScenery, glm::vec3(0));
 	fullScreen->name("Fullscreen");
+	fullScreen->renderBoundingBox(false);
 	Shader* sh = new Shader("thebookofshaders.v.glsl",
 		"thebookofshaders.f.glsl",
 		"thebookofshaders_square.g.glsl");
@@ -387,7 +400,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		const glm::vec3& OW_UNUSED(cameraPos),
 		const Shader* shader)
 		{
-			shader->setVector2f("u_mouse", globals->pointingDevicePosition());
+			//shader->setVector2f("u_mouse", globals->pointingDevicePosition());
 			shader->setFloat("u_time", globals->secondsSinceLoad());
 		};
 	auto fullScreenResize = [](const Shader* shader,
