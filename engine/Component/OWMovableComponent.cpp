@@ -2,8 +2,8 @@
 
 #include <glm/gtc/epsilon.hpp>
 
-#include "OWActor.h"
-#include "CommonUtils.h"
+#include "../Actor/OWActor.h"
+#include "../Core/CommonUtils.h"
 #include "../Renderers/VAOBuffer.h"
 #include "../Helpers/Shader.h"
 #include "../Geometry/Ray.h"
@@ -108,12 +108,12 @@ void OWMovableComponent::collided(OWMovableComponent* other)
 	glm::vec3 reboundDir  = notPerfectBounce * (v - 2 * glm::dot(v, normal) * normal);
 	glm::vec3 ourCenter = bounds().center();
 	glm::vec3 otherCenter = other->bounds().center();
-	float dist = glm::length(ourCenter - otherCenter);
-	float fullTimeStep = glm::length(previousPosition() - position()) / glm::length(mCurrent.mVelocity);
-	float curtailedTimeStep = glm::length(distance) / glm::length(mCurrent.mVelocity);
+	//float dist = glm::length(ourCenter - otherCenter);
+	//float fullTimeStep = glm::length(previousPosition() - position()) / glm::length(mCurrent.mVelocity);
+	//float curtailedTimeStep = glm::length(distance) / glm::length(mCurrent.mVelocity);
 	// jfw prorataDistance is wrong.
 	float len = glm::length(ourCenter - otherCenter);
-	float len2 = glm::length(ourCenter - position());
+	//float len2 = glm::length(ourCenter - position());
 	float prorataTimeStep = distance / len;// curtailedTimeStep / fullTimeStep;
 	move(prorataTimeStep * glm::length(mCurrent.mVelocity) * glm::normalize(reboundDir));
 	mCurrent.mVelocity = reboundDir * glm::length(mCurrent.mVelocity);

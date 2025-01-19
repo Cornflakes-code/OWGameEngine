@@ -5,7 +5,7 @@
 #include "../OWEngine/OWEngine.h"
 #include "BoundingBox.h"
 #include "../Core/Renderable.h"
-#include "../Core/OWSceneComponent.h"
+#include "../Component/OWSceneComponent.h"
 #include "OWRay.h"
 
 class OWENGINE_API Ray: public OWSceneComponent

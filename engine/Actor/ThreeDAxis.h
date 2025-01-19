@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include <Core/OWActor.h>
+#include <Actor/OWActor.h>
 #include <Geometry/GeometricShapes.h>
 
 class TextData;

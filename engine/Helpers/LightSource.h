@@ -1,11 +1,11 @@
 #pragma once
-#include "../OWEngine/OWEngine.h"
-
 #include <string>
 #include <glm/glm.hpp>
 #include <json/single_include/nlohmann/json.hpp>
 
-#include "../Core/OWSceneComponent.h"
+#include "../OWEngine/OWEngine.h"
+
+#include "../Component/OWSceneComponent.h"
 
 class OWENGINE_API LightSource : public OWSceneComponent
 {

@@ -7,12 +7,10 @@
 #include <glm/gtx/quaternion.hpp>
 
 
-#include "MovableObject.h"
 #include "ErrorHandling.h"
-#include "../Geometry/BoundingBox.h"
-
 #include "Renderable.h"
-
+#include "../Component/MovableObject.h"
+#include "../Geometry/BoundingBox.h"
 #include "../Renderers/RendererBase.h"
 
 class SceneGraphNode;

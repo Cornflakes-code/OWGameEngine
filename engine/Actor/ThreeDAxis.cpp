@@ -1,15 +1,15 @@
 #include "ThreeDAxis.h"
 
 #include <Cameras/Camera.h>
-#include <Core/OWActor.h>
+#include <Actor/OWActor.h>
 #include <Core/GlobalSettings.h>
 #include <Helpers/FreeTypeFontAtlas.h>
-#include <Helpers/TextData.h>
+#include <Renderers/TextData.h>
 #include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
 #include <Renderers/VAOBuffer.h>
 #include <Renderers/TextRendererStatic.h>
-#include <Core/MeshComponent.h>
+#include <Component/MeshComponent.h>
 
 ThreeDAxis::ThreeDAxis(Scene* _owner, const glm::vec3& _position)
 	: OWActor(_owner, _position)

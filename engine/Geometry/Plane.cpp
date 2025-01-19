@@ -19,8 +19,8 @@ void Plane::prepare(const glm::vec4& colour)
     lineShader->setStandardUniformNames("pvm");
     // Now that we have copied the vertices into lineData, munge them a little bit so that the 
     // AABB is three dimensional;
-    vertices[0].z -= 0.01;
-    vertices[1].z += 0.01;
+    vertices[0].z -= 0.01f;
+    vertices[1].z += 0.01f;
     AABB b = AABB(vertices);
     bounds(b);
     VAOBuffer* vao = new VAOBuffer(lineShader, VAOBuffer::DRAW_ARRAYS);

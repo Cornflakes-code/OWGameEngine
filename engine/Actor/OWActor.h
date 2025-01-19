@@ -1,13 +1,13 @@
 #pragma once
 
-#include "OWObject.h"
+#include "../Core/OWObject.h"
 #include <vector>
 
 #include "../OWEngine/OWEngine.h"
 
-#include "OWComponent.h"
-#include "OWMovableComponent.h"
-#include "OWSceneComponent.h"
+#include "../Component/OWComponent.h"
+#include "../Component/OWMovableComponent.h"
+#include "../Component/OWSceneComponent.h"
 #include "../Renderers/OWRenderable.h"
 
 class Scene;

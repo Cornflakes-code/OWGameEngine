@@ -6,7 +6,7 @@
 
 #include "../Renderers/VAOBuffer.h"
 
-#include "OWActor.h"
+#include "../Actor/OWActor.h"
 
 OWSceneComponent::OWSceneComponent(OWActor* _owner, const glm::vec3& _position)
 	: OWMovableComponent(_owner, _position) 
@@ -26,7 +26,7 @@ void OWSceneComponent::scale(const glm::vec3& factor)
 	mScale *= factor;
 }
 
-constexpr float M_TWO_PI = 2 * M_PI;
+constexpr float M_TWO_PI = 2.0f * M_PI;
 void OWSceneComponent::rotate(float degrees, const glm::vec3& axis)
 {
 	AABB newBounds = bounds().findBoundsIfRotated(glm::radians(degrees), axis);

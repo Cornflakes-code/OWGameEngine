@@ -7,7 +7,7 @@
 
 #include "../Helpers/MeshDataLight.h"
 #include "../Helpers/Shader.h"
-#include "../Helpers/TextData.h"
+#include "../Renderers/TextData.h"
 
 TextRendererDynamic::TextRendererDynamic()
 	: TextRenderer(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""), 

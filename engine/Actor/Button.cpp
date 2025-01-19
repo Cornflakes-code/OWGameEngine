@@ -2,10 +2,10 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "Shader.h"
+#include "../Helpers/Shader.h"
 #include "../Renderers/VAOBuffer.h"
 #include "../Renderers/TextRendererStatic.h"
-#include "TextData.h"
+#include "../Renderers/TextData.h"
 
 OWButton::OWButton(Scene* _owner, const glm::vec3& _position, const std::string& _displayText)
 	: OWActor(_owner, _position)

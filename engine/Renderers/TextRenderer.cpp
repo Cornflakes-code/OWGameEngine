@@ -5,7 +5,7 @@
 #include "../Helpers/FontFactory.h"
 #include "../Helpers/MeshDataLight.h"
 #include "../Helpers/Shader.h"
-#include "../Helpers/TextData.h"
+#include "../Renderers/TextData.h"
 
 AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 {

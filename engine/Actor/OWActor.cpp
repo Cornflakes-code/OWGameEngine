@@ -10,9 +10,9 @@ void OWActor::render(const glm::mat4& proj,
 	std::string s = name();
 	if (s == "stars")
 		s = "stars";
-	if (s == "Text: Enjoy it while you can")
+	if (s == "Text: Enjoy it while you can.")
 	{
-		std::string s = "Text: Enjoy it while you can";
+		s = "Text: Enjoy it while you can.";
 	}
 	for (OWSceneComponent* c : mSceneComponents)
 	{

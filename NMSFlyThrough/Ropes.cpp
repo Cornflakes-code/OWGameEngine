@@ -1,13 +1,13 @@
 #include "Ropes.h"
 #include <string>
 
-#include <Helpers/TextData.h>
+#include <Renderers/TextData.h>
 #include <Helpers/ShaderFactory.h>
 #include <Helpers/Shader.h>
 #include <Helpers/MeshDataLight.h>
 #include <Renderers/VAOBuffer.h>
 
-#include <Core/MeshComponent.h>
+#include <Component/MeshComponent.h>
 #include "./../NMSFlyThrough/rope_interface_test.h"
 #include "./../NMSFlyThrough/rope_quick.h"
 #include "RopeNormaliser.h"

@@ -1,13 +1,11 @@
 #pragma once
-#include "../OWEngine/OWEngine.h"
 
 #include <string>
 #include <map>
-
 #include <json/single_include/nlohmann/json.hpp>
-
 #include <glm/glm.hpp>
 
+#include "../OWEngine/OWEngine.h"
 #include "../Renderers/RenderTypes.h"
 
 using json = nlohmann::json;
@@ -27,10 +25,10 @@ class OWENGINE_API Shader //: public ResourceSource
 		CameraPosition
 	};
 	std::map<StandardUniforms, std::string> mUniforms;
-#pragma warning( pop )
 	std::vector<RenderTypes::ShaderMutator> mMutatorCallbacks;
 	std::vector<RenderTypes::ShaderResizer> mResizeCallbacks;
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
+#pragma warning( pop )
 	// After scene::setup it is Ok to modify Renderers
 	// but only for efficiency reasons. Modifications
 	// cannot change what is happenning else the game 

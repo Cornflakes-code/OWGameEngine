@@ -11,13 +11,13 @@
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
 #include <Core/Movie.h>
-#include <Core/OWActor.h>
-#include <Core/CollisionSystem.h>
-#include <Core/OcTree.h>
+#include <Actor/OWActor.h>
+#include <Actor/CollisionSystem.h>
+#include <Actor/OcTree.h>
 #include <Geometry/Particle.h>
 #include <Geometry/Plane.h>
 #include <Geometry/Box.h>
-#include <Core/MeshComponent.h>
+#include <Component/MeshComponent.h>
 #include <Core/LogStream.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
@@ -25,10 +25,10 @@
 #include <Geometry/Ray.h>
 #include <Helpers/ModelData.h>
 #include <Helpers/ModelFactory.h>
-#include <Helpers/ThreeDAxis.h>
-#include <Helpers/Button.h>
+#include <Actor/ThreeDAxis.h>
+#include <Actor/Button.h>
 #include <Helpers/Shader.h>
-#include <Helpers/TextData.h>
+#include <Renderers/TextData.h>
 
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"

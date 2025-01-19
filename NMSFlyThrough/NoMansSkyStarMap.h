@@ -8,7 +8,7 @@
 
 #include <Geometry/BoundingBox.h>
 
-#include <Core/OWActor.h>
+#include <Actor/OWActor.h>
 
 class Shader;
 class TextRenderer;

@@ -19,12 +19,12 @@
 
 #include <Geometry/GeometricShapes.h>
 #include <Helpers/Shader.h>
-#include <Helpers/TextData.h>
+#include <Renderers/TextData.h>
 
 #include <Renderers/InstanceRenderer.h>
 #include <Renderers/TextRendererStatic.h>
 #include <Renderers/LightRenderer.h>
-#include <Core/MeshComponent.h>
+#include <Component/MeshComponent.h>
 
 #define DEBUG_GRID
 #define DEBUG_STARS

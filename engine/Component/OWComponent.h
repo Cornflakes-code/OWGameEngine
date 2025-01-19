@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../OWEngine/OWEngine.h"
-#include "OWObject.h"
+#include "../Core/OWObject.h"
 
 class OWActor;
 class OWENGINE_API OWComponent : public OWObject

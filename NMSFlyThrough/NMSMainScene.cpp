@@ -8,7 +8,7 @@
 #include <Core/GlobalSettings.h>
 #include <Core/ResourcePathFactory.h>
 
-#include <Helpers/ThreeDAxis.h>
+#include <Actor/ThreeDAxis.h>
 
 #include "NMSUserInput.h"
 #include "NoMansSkyStarMap.h"

@@ -6,11 +6,10 @@
 #include <string>
 #include <queue>
 
-#include "../OWEngine/OWEngine.h"
-
-#include "../Geometry/BoundingBox.h"
-
 #include "ScenePhysicsState.h"
+
+#include "../OWEngine/OWEngine.h"
+#include "../Geometry/BoundingBox.h"
 
 
 class Scene;

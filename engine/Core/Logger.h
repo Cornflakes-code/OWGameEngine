@@ -10,9 +10,8 @@
 
 #include <glm/glm.hpp>
 
-#include "../OWEngine/OWEngine.h"
-
 #include "CommonUtils.h"
+#include "../OWEngine/OWEngine.h"
 
 struct GLFWwindow;
 /*

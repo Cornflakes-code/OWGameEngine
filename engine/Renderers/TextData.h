@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-#include <Core/OWSceneComponent.h>
+#include <Component/OWSceneComponent.h>
 #include <Core/CommonUtils.h>
 
 class OWENGINE_API TextData: public OWSceneComponent

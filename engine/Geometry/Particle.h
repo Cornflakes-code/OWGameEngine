@@ -9,7 +9,7 @@
 #include "BoundingSphere.h"
 #include "../Core/CommonUtils.h"
 #include "../Cameras/Camera.h"
-#include "../Core/OWMovableComponent.h"
+#include "../Component/OWMovableComponent.h"
 
 
 class OWENGINE_API PhysicalX: public OWMovableComponent

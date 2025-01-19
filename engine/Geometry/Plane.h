@@ -4,7 +4,7 @@
 #include "BoundingBox.h"
 #include "BoundingPlane.h"
 #include "../Core/Renderable.h"
-#include "../Core/OWSceneComponent.h"
+#include "../Component/OWSceneComponent.h"
 
 class OWENGINE_API Plane: public OWSceneComponent
 {

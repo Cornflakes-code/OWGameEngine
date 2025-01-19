@@ -3,7 +3,7 @@
 #include <Cameras/Camera.h>
 #include <Core/GlobalSettings.h>
 
-#include <Helpers/TextData.h>
+#include <Renderers/TextData.h>
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/MeshDataLight.h>
 #include <Helpers/ShaderFactory.h>

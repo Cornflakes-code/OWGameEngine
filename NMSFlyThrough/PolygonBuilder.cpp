@@ -80,7 +80,7 @@ void PolygonBuilder::doPopulate(RopeBuf* buffer, std::vector<std::vector<WireSli
 {
 	RopeBuf* p = buffer;
 	int numPolys = *((int*)(p++));
-	int jfw = *((int*)(p++));
+	int jfw = *((int*)(p++)); // needed to extract debug var in C# RCPolygonBuilder.getMemory()
 	for (int i = 0; i < numPolys; i++)
 	{
 		RopeBuf* elm = (RopeBuf*)(*p++);

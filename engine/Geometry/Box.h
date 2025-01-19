@@ -6,7 +6,7 @@
 #include "../OWEngine/OWEngine.h"
 #include "BoundingBox.h"
 #include "../Core/Renderable.h"
-#include "../Core/OWSceneComponent.h"
+#include "../Component/OWSceneComponent.h"
 
 // A box has parrellel sides
 class OWENGINE_API Box : public OWSceneComponent

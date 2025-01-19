@@ -2,10 +2,10 @@
 
 #include <Cameras/Camera.h>
 #include <Core/GlobalSettings.h>
-#include <Core/OWActor.h>
+#include <Actor/OWActor.h>
 
 #include <Helpers/Shader.h>
-#include <Helpers/TextData.h>
+#include <Renderers/TextData.h>
 
 #include "NMSUserInput.h"
 

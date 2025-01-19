@@ -3,7 +3,7 @@
 #include <set>
 #include <algorithm>
 #include "OWActor.h"
-#include "OWMovableComponent.h"
+#include "../Component/OWMovableComponent.h"
 #include "../Geometry/Box.h"
 #include "../Core/LogStream.h"
 

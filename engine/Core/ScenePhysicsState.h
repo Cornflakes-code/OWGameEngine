@@ -3,7 +3,6 @@
 #include "../OWEngine/OWEngine.h"
 
 #include "CommonUtils.h"
-
 #include "UserInput.h"
 
 class Scene;

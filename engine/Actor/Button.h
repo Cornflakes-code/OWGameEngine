@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 
-#include "../Core/OWActor.h"
+#include "../Actor/OWActor.h"
 
 class TextData;
 
