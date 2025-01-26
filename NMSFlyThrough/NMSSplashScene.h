@@ -12,7 +12,7 @@
 	An implementation of a Scene for the NMS game.
 */
 
-class TextData;
+class TextComponent;
 struct ButtonData;
 class MeshDataInstance;
 

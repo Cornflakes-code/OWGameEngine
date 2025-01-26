@@ -5,13 +5,11 @@
 #include "../Helpers/Shader.h"
 #include "../Renderers/VAOBuffer.h"
 #include "../Renderers/TextRendererStatic.h"
-#include "../Renderers/TextData.h"
+#include "../Component/TextData.h"
 
-OWButton::OWButton(Scene* _owner, const glm::vec3& _position, const std::string& _displayText)
-	: OWActor(_owner, _position)
-{
-	throw NMSException("Incomplete class");
-}
+OWButton::OWButton(Scene* _owner, ButtonScript* _data)
+	:OWActor(_owner, _data)
+{ }
 
 bool ButtonData::intersectArea(const glm::vec3& pt)
 {
@@ -21,15 +19,17 @@ bool ButtonData::intersectArea(const glm::vec3& pt)
 void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 {
 	throw NMSException("Incomplete function");
-		Shader* sh = new Shader("button.v.glsl", "button.f.glsl", "");
-	sh->setStandardUniformNames("pvm");
+	ShaderData* shd = new ShaderData("button.v.glsl", "button.f.glsl", "", "pvm");
+	Shader* sh = new Shader(shd);
 	VAOBuffer* vao = new VAOBuffer(sh, VAOBuffer::DRAW_ARRAYS);
 	MeshDataLight lineData;
 	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
 	lineData.polygonMode(GL_FILL);
 	vao->add(&lineData);
-	TextData* td = new TextData(this, glm::vec3(10), TextData::Static);
-	//td->set(mDisplayText, glm::vec3(10));
+	TextComponentData* tdc = new TextComponentData();
+	tdc->textData.tdt = TextData::TextDisplayType::Static;
+	tdc->position = glm::vec3(10);
+	TextComponent* td = new TextComponent(this, tdc);
 	if (false)
 	{
 		sh->appendMutator([position](const glm::mat4& proj, const glm::mat4& view,

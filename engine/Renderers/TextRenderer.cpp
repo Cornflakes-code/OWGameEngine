@@ -12,11 +12,11 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	AABB bounds(v4);
 
 	glm::vec4 displacement = glm::vec4(0);
-	if (mReferencePos  & TextData::PositionType::Left)
+	if (mReferencePos  & TextComponent::PositionType::Left)
 	{
 		displacement.x = -bounds.minPoint().x;
 	}
-	else if (mReferencePos & TextData::PositionType::Right)
+	else if (mReferencePos & TextComponent::PositionType::Right)
 	{
 		displacement.x = -bounds.maxPoint().x;
 	}
@@ -24,11 +24,11 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	{
 		displacement.x = -bounds.center().x;
 	}
-	if (mReferencePos & TextData::PositionType::Bottom)
+	if (mReferencePos & TextComponent::PositionType::Bottom)
 	{
 		displacement.y = -bounds.minPoint().y;
 	}
-	else if (mReferencePos & TextData::PositionType::Right)
+	else if (mReferencePos & TextComponent::PositionType::Right)
 	{
 		displacement.y = -bounds.maxPoint().y;
 	}
@@ -51,7 +51,7 @@ TextRenderer::TextRenderer(Shader* sh, const std::string& pvm)
 		sh->setStandardUniformNames(pvm);
 }
 
-void TextRenderer::setup(const TextData* td, const glm::vec3& initialPosition)
+void TextRenderer::setup(const TextComponent* td, const glm::vec3& initialPosition)
 {
 	validate(td);
 	const FreeTypeFontAtlas::FontDetails* fontData
@@ -118,7 +118,7 @@ void TextRenderer::doRender() const
 	glBindTexture(mTexture.target(), 0);
 }
 
-void TextRenderer::validate(const TextData* td) const
+void TextRenderer::validate(const TextComponent* td) const
 {
 	validateBase();
 	if (td->mText.empty())

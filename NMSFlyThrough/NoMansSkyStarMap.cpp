@@ -18,22 +18,20 @@
 #include <Core/GlobalSettings.h>
 
 #include <Geometry/GeometricShapes.h>
-#include <Helpers/Shader.h>
-#include <Renderers/TextData.h>
+#include <Component/TextData.h>
 
 #include <Renderers/InstanceRenderer.h>
 #include <Renderers/TextRendererStatic.h>
 #include <Renderers/LightRenderer.h>
-#include <Component/MeshComponent.h>
 
 #define DEBUG_GRID
 #define DEBUG_STARS
 
-NoMansSky::NoMansSky(Scene* _owner, const glm::vec3& _position)
-: OWActor(_owner, _position)
+NoMansSky::NoMansSky(Scene* _owner, NMSScript* _data)
+: OWActor(_owner, _data)
 {
 	mStarRadius = glm::vec2(0, 0);
-	name("NMS Map");
+	name(data()->name);
 }
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
@@ -44,14 +42,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
-	MeshComponent* grid = new MeshComponent(this, glm::vec3(0));
-	grid->name("grid");
-	MeshDataLight gridData;
-	gridData.vertices(mGrid, GL_LINES, 0);
-	gridData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
-	Shader* shader = new Shader("Lines.v.glsl", "Lines.f.glsl", "");
-	shader->setStandardUniformNames("pvm");
-	grid->setup(&gridData, shader);
+	MeshComponent* grid = new MeshComponent(this, data()->meshData);
 #endif
 
 #ifdef DEBUG_STARS
@@ -65,13 +56,6 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 
 	const int numStars = 500000;
 	mRandomMinorStars = createRandomVectors(NMSSize, numStars, scaleNMStoWorld);
-	std::vector<glm::vec3> starPositions;
-	starPositions.push_back({ 0,0,0 });
-	starPositions.push_back({ 100,0,0 });
-	starPositions.push_back({ 0,100,0 });
-	starPositions.push_back({ 0,0,100 });
-
-
 	mdi.positions(mRandomMinorStars, 1, 1);
 
 	const int numColours = 4;
@@ -88,33 +72,8 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	}
 	mdi.colours(instanceColours, instanceColours.size(), 2);
 
-	Shader* starShader = nullptr;
-#define SHADERX 2
-#if SHADERX == 1
-	starShader = new Shader("thebookofshaders.v.glsl",
-		"solarSuns.f.glsl",
-		"thebookofshaders_circle.g.glsl");
-#elif SHADERX == 2
-	starShader = new Shader(
-		"instanced.v.glsl",
-		"glow.f.glsl");
-#elif SHADERX == 3
-	starShader = new Shader(
-		"oneLight.f.glsl",
-		"lightInSmoke.f.glsl"
-		"instanced.f.glsl");
-#elif SHADERX == 4
-	starShader = new Shader(
-		"instanced.v.glsl",
-		"twinklyStars.f.glsl");
-#endif
-	
-	starShader->setFloat("cutoffRadius", mStarRadius.x, true);
-	starShader->setStandardUniformNames("VP");
-	MeshComponent* stars = new MeshComponent(this, glm::vec3(0));
-	stars->name("stars");
-	stars->renderBoundingBox(false);
-	stars->setup(&mdi, starShader);
+	Shader* starShader = new Shader(data()->starShader);
+	MeshComponent* stars = new MeshComponent(this, data()->meshData);
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),
@@ -129,11 +88,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 			glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 			shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
 			shader->setFloat("u_time", globals->secondsSinceLoad());
-			//glm::vec2 v2 = globals->pointingDevicePosition();
-			//shader->setVector2f("u_mouse", v2);
 			shader->setVector2f("u_resolution", w);
-			// Colours are set via mdi.colours
-			//shader->setVector4f("color", OWUtils::colour(OWUtils::SolidColours::YELLOW));
 		};
 	starShader->appendMutator(pointRender);
 #endif
@@ -176,8 +131,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 						  const AABB& OW_UNUSED(nmsSpace),
 						  float scaleToWorld)
 {
-	int fontHeight = 12;
-	glm::vec2 nice = { 0.00625f, 2 * 0.00625f };
+	const glm::vec2 niceFontSpacing = { 0.00625f, 2 * 0.00625f };
 
 	std::string line;
 	std::ifstream myfile(fileName);
@@ -292,12 +246,14 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
-			TextData* td = new TextData(this, point, TextData::Static);
-			td->text(elms[0]);
-			td->font("arial.ttf", fontHeight);
-			td->colour({ 0.0, 0.0, 0.0, 1.0f });
-			td->spacing(nice.x, nice.y, { 1.0,1.0 }, TextData::Right);
-			td->prepare();
+			TextComponentData* d = new TextComponentData();
+			d->textData.tdt = TextData::TextDisplayType::Static;
+			d->textData.text = elms[0];
+			d->textData.colour = { 0.0, 0.0, 0.0, 1.0f };
+			d->textData.fontSpacing = niceFontSpacing;
+			d->textData.fontScale = { 1.0,1.0 };
+			d->textData.referencePos = TextData::PositionType::Right;
+			TextComponent* td = new TextComponent(this, d);
 		}
 
 		myfile.close();

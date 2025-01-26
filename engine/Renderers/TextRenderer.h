@@ -13,18 +13,18 @@
 
 #include "RendererBase.h"
 
-class TextData;
+class TextComponent;
 
 class OWENGINE_API TextRenderer: public RendererBase
 {
 public:
 	TextRenderer(Shader* shader, const std::string& pvm);
-	void setup(const TextData* td, 
+	void setup(const TextComponent* td, 
 				const glm::vec3& initialPosition = glm::vec3(0.0f, 0.0f, 0.0f));
 	AABB bounds() const { return mBounds; }
 	virtual void doRender() const override;
 protected:
-	virtual void doSetup(const TextData* td, const glm::vec3& initialPosition) = 0;
+	virtual void doSetup(const TextComponent* td, const glm::vec3& initialPosition) = 0;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	glm::vec4 mColour = glm::vec4();
@@ -35,5 +35,5 @@ protected:
 	unsigned int mVbo = 0;
 #pragma warning( pop )
 private:
-	void validate(const TextData* td) const;
+	void validate(const TextComponent* td) const;
 };

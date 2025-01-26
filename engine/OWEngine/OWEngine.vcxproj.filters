@@ -49,6 +49,12 @@
     <Filter Include="Header Files\Component">
       <UniqueIdentifier>{b4cbe810-ca26-4db9-8b9b-2182881a4f30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scripting">
+      <UniqueIdentifier>{ce9cb59c-cdf1-442b-ab44-183803cc0ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scripting">
+      <UniqueIdentifier>{eebcf609-4029-47ad-b0a1-480b166ad545}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -168,9 +174,6 @@
     <ClInclude Include="..\Helpers\LightSource.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Helpers\ThreeDAxis.h">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\Renderable.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -234,9 +237,6 @@
     <ClInclude Include="..\Component\MovableObject.h">
       <Filter>Header Files\Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\Component\MeshComponent.h">
-      <Filter>Header Files\Component</Filter>
-    </ClInclude>
     <ClInclude Include="..\Component\OWComponent.h">
       <Filter>Header Files\Component</Filter>
     </ClInclude>
@@ -246,9 +246,6 @@
     <ClInclude Include="..\Component\OWSceneComponent.h">
       <Filter>Header Files\Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderers\TextData.h">
-      <Filter>Header Files\Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Actor\ThreeDAxis.h">
       <Filter>Header Files\Actor</Filter>
     </ClInclude>
@@ -257,6 +254,45 @@
     </ClInclude>
     <ClInclude Include="..\Actor\OcTree.h">
       <Filter>Header Files\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\BB2DRenderer.h">
+      <Filter>Header Files\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\BB3DRenderer.h">
+      <Filter>Header Files\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\OWRenderableComponent.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\CollisionActor.h">
+      <Filter>Header Files\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="OWGameIFace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Scripting\OWActorScript.h">
+      <Filter>Header Files\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Scripting\OWScript.h">
+      <Filter>Header Files\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\TextData.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\MeshComponentHeavy.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\MeshComponentInstance.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\MeshComponentLight.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\MeshComponentVAO.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\MeshComponentVec4.h">
+      <Filter>Header Files\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -443,9 +479,6 @@
     <ClCompile Include="..\Component\MovableObject.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\Component\MeshComponent.cpp">
-      <Filter>Source Files\Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\Component\OWComponent.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
@@ -455,9 +488,6 @@
     <ClCompile Include="..\Component\OWSceneComponent.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderers\TextData.cpp">
-      <Filter>Source Files\Renderers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Actor\ThreeDAxis.cpp">
       <Filter>Source Files\Actor</Filter>
     </ClCompile>
@@ -466,6 +496,42 @@
     </ClCompile>
     <ClCompile Include="..\Actor\OcTree.cpp">
       <Filter>Source Files\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\BB2DRenderer.cpp">
+      <Filter>Source Files\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\BB3DRenderer.cpp">
+      <Filter>Source Files\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\OWRenderableComponent.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\CollisionActor.cpp">
+      <Filter>Source Files\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Scripting\OWActorScript.cpp">
+      <Filter>Source Files\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Scripting\OWScript.cpp">
+      <Filter>Source Files\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\TextData.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\MeshComponentHeavy.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\MeshComponentInstance.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\MeshComponentLight.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\MeshComponentVAO.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\MeshComponentVec4.cpp">
+      <Filter>Source Files\Component</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

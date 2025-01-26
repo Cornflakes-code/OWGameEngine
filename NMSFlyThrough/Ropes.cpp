@@ -25,6 +25,12 @@ static std::string gRopeEnds = "RopeEnds";
 static std::string gRopeLines = "RopeLines";
 static std::string gRopeSurfaces = "RopeSurfaces";
 
+Rope::Rope(Scene* _scene, OWRopeScript* _script)
+	: OWActor(_scene, _script) 
+{
+
+}
+
 void Rope::visualComponents(bool _ends, bool _lines, bool _surfaces, bool _labels)
 {
 	if (mEnds != _ends)
@@ -114,7 +120,7 @@ void Rope::makeBanner(const std::string& s, int height,
 	const std::string& f,
 	const glm::vec4& col)
 {
-	TextData* textData = new TextData(this, { 0.0f, 0.0f, 0.0f }, TextData::Dynamic);
+	TextComponent* textData = new TextComponent(this, { 0.0f, 0.0f, 0.0f }, TextComponent::Dynamic);
 	textData->typeSetDetails(s, height, _spacing, scale);
 	textData->prepare();
 }
@@ -123,7 +129,7 @@ void Rope::labels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 {
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
-		TextData* td = new TextData(this, si.pos, TextData::Dynamic);
+		TextComponent* td = new TextComponent(this, si.pos, TextComponent::Dynamic);
 		td->typeSetDetails(std::to_string(si.id), 10, textSpacing * 10.0f, textScale);
 		td->prepare();
 	}
@@ -158,7 +164,8 @@ OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::
 		for (auto& polygon : slice)
 		{
 			MeshDataLight lineData;
-			lineData.colour(OWUtils::colour(OWUtils::SolidColours::RED), "colour");
+			glm::vec4 colour = data()->Colour;
+			lineData.colour(colour, "colour");
 			lineData.vertices(polygon, GL_LINE_LOOP);
 			vao->add(&lineData);
 		}

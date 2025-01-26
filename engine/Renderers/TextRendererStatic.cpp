@@ -12,7 +12,7 @@ TextRendererStatic::TextRendererStatic()
 				"VP")
 {}
 
-void TextRendererStatic::doSetup(const TextData* td, const glm::vec3& initialPosition)
+void TextRendererStatic::doSetup(const TextComponent* td, const glm::vec3& initialPosition)
 {
 	glm::vec3 position = glm::vec3(mBounds.center()) + initialPosition;
 	shader()->appendMutator([position](const glm::mat4& proj, const glm::mat4& view,

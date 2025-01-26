@@ -7,13 +7,15 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "RenderTypes.h"
-#include "../Renderers/RenderTypes.h"
 
 class Shader;
-class OWENGINE_API OWRenderable
+class OWENGINE_API OWIRenderable
 {
+	bool mRenderThis = true;
 protected:
+	bool renderThis() const { return mRenderThis;  }
 public:
+	void renderThis(bool newValue) { mRenderThis = newValue; }
 	virtual void render(const glm::mat4& proj,
 		const glm::mat4& view,
 		const glm::mat4& model,

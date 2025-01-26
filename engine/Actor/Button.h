@@ -7,9 +7,9 @@
 
 #include "../Actor/OWActor.h"
 
-class TextData;
+class TextComponent;
 
-struct ButtonData
+struct OWENGINE_API ButtonData: public OWActorData
 {
 	enum ClickState
 	{
@@ -18,16 +18,31 @@ struct ButtonData
 	};
 
 	std::vector<glm::vec3> mButtonShape;
-	TextData* mText = nullptr;
+	TextComponent* mText = nullptr;
 	bool intersectArea(const glm::vec3& pt);
 	ClickState mClickState;
 };
 
+class OWENGINE_API ButtonScript: public OWActorScript
+{
+protected:
+	ButtonData* mData = nullptr;
+public:
+	friend class OWActor;
+};
+
 class OWButton : public OWActor
 {
-	ButtonData mData;
+	virtual ButtonData* data()
+	{
+		return static_cast<ButtonData*>(script()->data());
+	}
 public:
-	OWButton(Scene* _owner, const glm::vec3& _position, const std::string& _displayText);
+	OWButton(Scene* _owner, ButtonScript* _data);
+	virtual const ButtonData* data() const
+	{
+		return static_cast<const ButtonData*>(script()->data());
+	}
 	void setup(const ButtonData& data, const glm::vec3& position);
 	void textures();
 	void text();

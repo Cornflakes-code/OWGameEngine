@@ -14,14 +14,14 @@ OcTree::~OcTree()
 {
 }
 
-void OcTree::add(OWMovableComponent* mc, unsigned int threshold,
+void OcTree::add(OWCollisionData* mc, unsigned int threshold,
     unsigned int maximumDepth)
 {
-    std::vector<OWMovableComponent*> toAdd;
+    std::vector<OWCollisionData*> toAdd;
     toAdd.push_back(mc);
 }
 
-void OcTree::add(const std::vector<OWMovableComponent*>& toAdd, unsigned int threshold,
+void OcTree::add(const std::vector<OWCollisionData*>& toAdd, unsigned int threshold,
     unsigned int maximumDepth)
 {
     build(toAdd, threshold, maximumDepth, mBounds, 0);
@@ -29,7 +29,7 @@ void OcTree::add(const std::vector<OWMovableComponent*>& toAdd, unsigned int thr
 
 const AABB negative(glm::vec3(-1), glm::vec3(-1));
 
-void OcTree::addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableComponent*>>& childBin)
+void OcTree::addToBin(OWCollisionData* a, std::vector<std::vector<OWCollisionData*>>& childBin)
 {
     // Center of this node
     glm::vec3 center = mBounds.center();
@@ -40,11 +40,11 @@ void OcTree::addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableCo
     // do this, we build an index into the child bucket using the
     // relative position of the point to the center of the current
     // node
-    if (a->bounds() == negative)
+    if (a->boundingBox == negative)
     {
         throw NMSLogicException("Bounds for particle not set.");
     }
-    const glm::vec3 pc = a->bounds().center();
+    const glm::vec3 pc = a->boundingBox.center();
     // 'p' can be in multiple areas
     // If a part of Actor is in an area then add it to the area.
     // Y
@@ -58,21 +58,21 @@ void OcTree::addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableCo
 
     std::vector<int> code(8, 1);
     // If all of a->bounds is > than the center then p cannot be in bins 0, 2, 4, 6
-    if (a->bounds().minPoint().x > center.x)
+    if (a->boundingBox.minPoint().x > center.x)
         code[0] = code[2] = code[4] = code[6] = 0;
     // If all of a->bounds is < than the center p then cannot be in bins 1, 3, 5, 7
-    if (a->bounds().maxPoint().x < center.x)
+    if (a->boundingBox.maxPoint().x < center.x)
         code[1] = code[3] = code[5] = code[7] = 0;
 
     // ... and same logic for y and z.
-    if (a->bounds().minPoint().y > center.y)
+    if (a->boundingBox.minPoint().y > center.y)
         code[2] = code[3] = code[6] = code[7] = 0;
-    if (a->bounds().maxPoint().y < center.y)
+    if (a->boundingBox.maxPoint().y < center.y)
         code[0] = code[1] = code[4] = code[5] = 0;
 
-    if (a->bounds().minPoint().z > center.z)
+    if (a->boundingBox.minPoint().z > center.z)
         code[0] = code[1] = code[2] = code[3] = 0;
-    if (a->bounds().maxPoint().z < center.z)
+    if (a->boundingBox.maxPoint().z < center.z)
         code[4] = code[5] = code[6] = code[7] = 0;
 
     for (unsigned int i = 0; i < 8; i++)
@@ -82,7 +82,7 @@ void OcTree::addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableCo
     }
 }
 
-void OcTree::addBinToChildren(const std::vector<std::vector<OWMovableComponent*>>& bin,
+void OcTree::addBinToChildren(const std::vector<std::vector<OWCollisionData*>>& bin,
                                 unsigned int threshold, unsigned int maximumDepth,
                                 const AABB& bounds, unsigned int currentDepth)
 {
@@ -117,7 +117,7 @@ void OcTree::addBinToChildren(const std::vector<std::vector<OWMovableComponent*>
     }
 }
 
-void OcTree::build(const std::vector<OWMovableComponent*>& points,
+void OcTree::build(const std::vector<OWCollisionData*>& points,
     unsigned int threshold,
     unsigned int maximumDepth,
     const AABB& bounds,
@@ -142,9 +142,9 @@ void OcTree::build(const std::vector<OWMovableComponent*>& points,
         return;
     }
 
-    std::vector<std::vector<OWMovableComponent*>> bin(8);
+    std::vector<std::vector<OWCollisionData*>> bin(8);
 
-    for (OWMovableComponent* a : points)
+    for (OWCollisionData* a : points)
         addToBin(a, bin);
     addBinToChildren(bin, threshold, maximumDepth, bounds, currentDepth + 1);
 }

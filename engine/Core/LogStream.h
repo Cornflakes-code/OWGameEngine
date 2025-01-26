@@ -62,10 +62,22 @@ public:
 	static std::ostream* logFile();
 	static void setLogFile(const std::filesystem::path& path);
 	static void closeLogFile();
+	friend OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec4& v);
 	friend OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec3& v);
+	friend OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec2& v);
+
+	friend OWENGINE_API std::istream& operator>>(std::istream& os, glm::vec4& v);
+	friend OWENGINE_API std::istream& operator>>(std::istream& os, glm::vec3& v);
+	friend OWENGINE_API std::istream& operator>>(std::istream& os, glm::vec2& v);
 private:
 	static void linkStream();
 };
 
 
+OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec4& v);
 OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec3& v);
+OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec2& v);
+
+OWENGINE_API std::istream& operator>>(std::istream& is, glm::vec4& v);
+OWENGINE_API std::istream& operator>>(std::istream& is, glm::vec3& v);
+OWENGINE_API std::istream& operator>>(std::istream& is, glm::vec2& v);

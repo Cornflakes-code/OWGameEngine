@@ -6,6 +6,8 @@
 //std::vector<glm::vec3> pointsOnSphere( int numHoroSegments, int numVertSegments, float TAU);
 //std::vector<glm::vec3> fibonacciSphere(int numPoints, float TAU);
 
+
+// ico Sphere has triangles on the surface icospherecreator github
 void OWSphere::drawSphere(int lats, int longs) 
 {
     // https://stackoverflow.com/questions/7687148/drawing-sphere-in-opengl-without-using-glusphere

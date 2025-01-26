@@ -33,18 +33,18 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-#define INCLUDE_FULLSCREEN
+//#define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
-#define INCLUDE_ENJOY
+//#define INCLUDE_ENJOY
 int GDEBUG_PICKING = 1;
-#define INCLUDE_XYZ_AXIS
+//#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
 Box* gBox = nullptr;
-TextData* gWelcome = nullptr;
-TextData* gEnjoy = nullptr;
+TextComponent* gWelcome = nullptr;
+TextComponent* gEnjoy = nullptr;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
@@ -258,7 +258,7 @@ void NMSSplashScenePhysics::setup()
 	glm::vec3 direction1 = Compass::Rose[Compass::North] +
 		Compass::Rose[Compass::East] +
 		Compass::Rose[Compass::In];
-	TextData* welcome = new TextData(mScenery, glm::vec3(0), TextData::Dynamic);
+	TextComponent* welcome = new TextComponent(mScenery, glm::vec3(0), TextComponent::Dynamic);
 	//welcome->velocity(direction1, mSpeed);
 	welcome->font("arial.ttf", fontHeight);
 	welcome->colour({ 0.0, 0.0, 0.0, 1.0f });
@@ -273,7 +273,7 @@ void NMSSplashScenePhysics::setup()
 #ifdef INCLUDE_ENJOY
 	glm::vec3 direction2 = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West];
-	TextData* enjoy = new TextData(mScenery, glm::vec3(0, 0, 0), TextData::Static);
+	TextComponent* enjoy = new TextComponent(mScenery, glm::vec3(0, 0, 0), TextComponent::Static);
 	//enjoy->velocity(direction2, mSpeed / 20.0F);
 	enjoy->font("arial.ttf", fontHeight);
 	enjoy->colour({ 0.1, 0.9, 0.1, 1.0 });

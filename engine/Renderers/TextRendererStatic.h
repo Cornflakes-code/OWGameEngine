@@ -9,13 +9,13 @@
 
 #include "TextRenderer.h"
 
-class TextData;
+class TextComponent;
 
 class OWENGINE_API TextRendererStatic: public TextRenderer
 {
 public:
 	TextRendererStatic();
 protected:
-	void doSetup(const TextData* td, const glm::vec3& initialPosition) override;
+	void doSetup(const TextComponent* td, const glm::vec3& initialPosition) override;
 private:
 };

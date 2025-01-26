@@ -111,6 +111,7 @@ public:
 	const glm::vec3 minPoint() const { return mMinPoint; }
 	const glm::vec3 maxPoint() const { return mMaxPoint; }
 
+	AABB scale(const glm::vec3& factor) const;
 	bool intersects(const OWBounding* other) const override;
 	bool intersects(const AABB& other) const;
 

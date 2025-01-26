@@ -4,39 +4,42 @@
 #include <Actor/OWActor.h>
 #include <Core/GlobalSettings.h>
 #include <Helpers/FreeTypeFontAtlas.h>
-#include <Renderers/TextData.h>
+#include <Component/TextData.h>
 #include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
 #include <Renderers/VAOBuffer.h>
 #include <Renderers/TextRendererStatic.h>
-#include <Component/MeshComponent.h>
+#include <Component/MeshComponentLight.h>
+#include <Core/Scene.h>
 
-ThreeDAxis::ThreeDAxis(Scene* _owner, const glm::vec3& _position)
-	: OWActor(_owner, _position)
+ThreeDAxis::ThreeDAxis(Scene* _scene, OWThreeDAxisScript* _script)
+	: OWActor(_scene, _script)
 {
 	name("Labelled 3DAxis");
+	
+	const AABB& bb = data()->axisSize;
+	createAxisData(bb);
 }
 
-TextData* ThreeDAxis::createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b)
+TextComponent* ThreeDAxis::createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b)
 {
 	int fontHeight = 12;
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());
 
-	float scale = 1.0;
-	TextData* td = new TextData(this, pos, TextData::Static);
-	td->font("arial.ttf", fontHeight);
-	td->colour({ 1.0, 0.0, 0.0, 1.0f });
-//	td->colour({ 0.3, 0.45, 0.7, 1.0f });
-	td->spacing(nice.x, nice.y, glm::vec2(scale, scale), refPos);
-	td->text(s);
-	td->prepare();
-	b = td->bounds();
-	return td;
+	TextComponentData* td = new TextComponentData();
+	td->textData.fontSpacing = nice;
+	td->textData.referencePos = refPos;
+	td->textData.text = s;
+	td->textData.tdt = TextData::TextDisplayType::Static;
+	TextComponent* tc = new TextComponent(this, td);
+	b = tc->constData()->boundingBox;
+	return tc;
 }
 
 void ThreeDAxis::createAxisData(const AABB& w)
 {
+	AABB bb = data()->Bounds;
 	const float scale = 1.0;
 	std::vector<glm::vec3> axisCoords = {
 		{ w.center().x, w.center().y, w.center().z },
@@ -47,25 +50,24 @@ void ThreeDAxis::createAxisData(const AABB& w)
 	AABB boxUnion;
 	AABB box;
 	
-	createText(glm::vec3(0), "0", TextData::Top | TextData::Right, box);
+	createText(glm::vec3(0), "0", TextData::PositionType::Top | TextData::PositionType::Right, box);
 	boxUnion |= box;
-	createText(axisCoords[1], "X", TextData::Center, box);
+	createText(axisCoords[1], "X", TextData::PositionType::Center, box);
 	boxUnion |= box;
-	createText(axisCoords[2], "Y", TextData::Center, box);
+	createText(axisCoords[2], "Y", TextData::PositionType::Center, box);
 	boxUnion |= box;
-	createText(axisCoords[3], "Z", TextData::Center, box);
+	createText(axisCoords[3], "Z", TextData::PositionType::Center, box);
 	boxUnion |= box;
-	Shader* lineShader = new Shader();
-	lineShader->loadBoilerPlates();
-	lineShader->setStandardUniformNames("pvm");
-	MeshComponent* axis = new MeshComponent(this, glm::vec3(0));
-	axis->renderBoundingBox(false);
-	axis->name("Axis");
-	MeshDataLight lineData;
-	lineData.colour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN), "colour");
-	lineData.vertices(axisCoords, GL_LINES);
-	lineData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
-	axis->setup(&lineData, lineShader);
-	boxUnion |= axis->bounds();
+	MeshComponentLightData* d = new MeshComponentLightData;
+	d->shaderData = new ShaderData();
+	d->meshData = new MeshDataLight;
+	d->meshData->colour(data()->Colour, "colour");
+	d->meshData->vertices(axisCoords, GL_LINES);
+	d->meshData->indices({ 0,1, 0,2, 0,3 }, GL_LINES);
+	MeshComponentLight* axis = new MeshComponentLight(this, d);
+	//axis->renderBoundingBox(false);
+	std::string axisName = data()->AxisName;
+	axis->name(axisName);
+	boxUnion |= axis->constData()->boundingBox;
 }
 

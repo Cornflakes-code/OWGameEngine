@@ -73,6 +73,15 @@ AABB::AABB(const std::vector<AABB>& v)
 	}
 }
 
+AABB AABB::scale(const glm::vec3& factor) const
+{
+	const glm::vec3 mi = (minPoint() - center()) * factor;
+	const glm::vec3 ma = (maxPoint() - center()) * factor;
+
+	return AABB (mi + center(), ma + center());
+
+}
+
 bool AABB::intersects(const OWBounding* other) const
 {
 	return false;

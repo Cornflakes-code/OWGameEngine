@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------
 
 class OcTree;
-class OWMovableComponent;
+struct OWCollisionData;
 
 typedef std::function<bool(OcTree* o)> OctreeCallbackType;
 
@@ -34,12 +34,12 @@ public:
     OcTree();
     virtual ~OcTree();
 
-    const std::vector<OWMovableComponent*> points() const { return mPoints; }
-    void add(const std::vector<OWMovableComponent*>&, unsigned int threshold,
+    const std::vector<OWCollisionData*> points() const { return mPoints; }
+    void add(const std::vector<OWCollisionData*>&, unsigned int threshold,
         unsigned int maximumDepth);
-    void add(OWMovableComponent* mc, unsigned int threshold,
+    void add(OWCollisionData* mc, unsigned int threshold,
         unsigned int maximumDepth);
-    void build(const std::vector<OWMovableComponent*>& points,
+    void build(const std::vector<OWCollisionData*>& points,
         unsigned int threshold,
         unsigned int maximumDepth,
         const AABB& bounds,
@@ -48,12 +48,12 @@ public:
 //protected:
 public:
     std::vector<OcTree*> mChildren = std::vector<OcTree*>(8, nullptr);
-    std::vector<OWMovableComponent*> mPoints;
+    std::vector<OWCollisionData*> mPoints;
     AABB mBounds;
     unsigned int mDepth = 0;
 private:
-    void addToBin(OWMovableComponent* a, std::vector<std::vector<OWMovableComponent*>>& childBin);
-    void addBinToChildren(const std::vector<std::vector<OWMovableComponent*>>& bin,
+    void addToBin(OWCollisionData* a, std::vector<std::vector<OWCollisionData*>>& childBin);
+    void addBinToChildren(const std::vector<std::vector<OWCollisionData*>>& bin,
         unsigned int threshold, unsigned int maximumDepth,
         const AABB& bounds, unsigned int currentDepth);
 };

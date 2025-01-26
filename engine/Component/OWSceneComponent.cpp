@@ -1,42 +1,84 @@
 #include "OWSceneComponent.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <glm/gtc/matrix_transform.hpp>
+#include "../Geometry/Ray.h"
 
-#include "../Renderers/VAOBuffer.h"
-
-#include "../Actor/OWActor.h"
-
-OWSceneComponent::OWSceneComponent(OWActor* _owner, const glm::vec3& _position)
-	: OWMovableComponent(_owner, _position) 
+OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
+	: OWComponent(_owner)
 {
-	_owner->addSceneComponent(this);
+	setData(_data);
 }
 
-void OWSceneComponent::scale(const glm::vec3& factor)
+bool OWSceneComponent::canCollide()
 {
-	glm::vec3 mi = bounds().minPoint() - bounds().center();
-	mi *= factor;
-	glm::vec3 ma = bounds().maxPoint() - bounds().center();
-	ma *= factor;
-
-	AABB newBounds(mi + bounds().center(), ma + bounds().center());
-	bounds(newBounds);
-	mScale *= factor;
+	return true;
 }
 
-constexpr float M_TWO_PI = 2.0f * M_PI;
-void OWSceneComponent::rotate(float degrees, const glm::vec3& axis)
+bool OWSceneComponent::canCollide(OWCollisionData* other) 
 {
-	AABB newBounds = bounds().findBoundsIfRotated(glm::radians(degrees), axis);
-	bounds(newBounds);
-	mRotateAxis *= axis;
-	mRotateRadians += glm::radians(degrees);
-	if (mRotateRadians > M_TWO_PI)
-		mRotateRadians -= M_TWO_PI;
-	else if (mRotateRadians < -M_TWO_PI)
-		mRotateRadians += M_TWO_PI;
+	if (other->component == this)
+		return false;
+	// called before testing for couldCollide
+	return true;
+
+}
+bool OWSceneComponent::collides(OWCollisionData* other)
+{
+	return false;
+}
+
+void OWSceneComponent::collided(OWCollisionData* other) 
+{
+	// https://gamedev.stackexchange.com/questions/47888/find-the-contact-normal-of-rectangle-collision?noredirect=1&lq=1
+	const glm::vec3 otherRelVel = other->component->data()->velocity;
+	glm::vec3 relVel = data()->velocity - otherRelVel;
+	glm::vec3 compoundSize(data()->boundingBox.size() + other->boundingBox.size());
+	AABB compoundAABB(compoundSize);
+	glm::vec3 jfw = data()->boundingBox.center();
+	compoundAABB.moveTo(data()->boundingBox.center());
+	glm::vec3 normal1, normal2;
+	float distance1, distance2;
+
+	OWRay r1(data()->boundingBox.center(), relVel);
+	if (!r1.intersects(data()->boundingBox, normal1, distance1))
+	{
+		return;
+	}
+	OWRay r31(data()->boundingBox.center(), relVel);
+	if (!r1.intersects(compoundAABB, normal2, distance2))
+	{
+		return;
+	}
+	// Various collision detection algorythmns
+	// https://developer.nvidia.com/gpugems/gpugems3/part-v-physics-simulation/chapter-32-broad-phase-collision-detection-cuda
+	// https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
+	glm::vec3 v = data()->velocity + other->component->data()->velocity;
+	glm::vec3 normal;
+	float distance;
+	if (glm::all(glm::epsilonEqual(v, glm::vec3(0), OWUtils::epsilon())))
+		return;
+	glm::vec3 c1 = other->component->data()->boundingBox.minPoint() - glm::vec3(2, 2, 2);
+	OWRay r2(data()->boundingBox.center(), v);
+	if (!r2.intersects(other->component->data()->boundingBox, normal, distance))
+	{
+		return;
+		// throw NMSLogicException("Object [" + name() + "] collided by ray intersection failed");
+	}
+	v = glm::normalize(v);
+	// https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
+	// https://3dkingdoms.com/weekly/weekly.php?a=2
+	constexpr float notPerfectBounce = 1.0f; // A perfect bounce
+	glm::vec3 reboundDir = notPerfectBounce * (v - 2 * glm::dot(v, normal) * normal);
+	glm::vec3 ourCenter = data()->boundingBox.center();
+	glm::vec3 otherCenter = other->component->data()->boundingBox.center();
+	//float dist = glm::length(ourCenter - otherCenter);
+	//float fullTimeStep = glm::length(previousPosition() - position()) / glm::length(mCurrent.mVelocity);
+	//float curtailedTimeStep = glm::length(distance) / glm::length(mCurrent.mVelocity);
+	// jfw prorataDistance is wrong.
+	float len = glm::length(ourCenter - otherCenter);
+	//float len2 = glm::length(ourCenter - position());
+	float prorataTimeStep = distance / len;// curtailedTimeStep / fullTimeStep;
+	data()->position += prorataTimeStep * glm::length(data()->velocity) * glm::normalize(reboundDir);
+	data()->velocity += reboundDir * glm::length(data()->velocity);
 }
 
 void OWSceneComponent::render(const glm::mat4& proj,
@@ -46,58 +88,12 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	RenderTypes::ShaderMutator renderCb,
 	RenderTypes::ShaderResizer resizeCb) 
 {
-	std::string ss = name();
-	if (ss == "Plane3" || ss == "box")
-	{
-		glm::vec3 p = position();
-	}
-	if (ss == "Text:Enjoy it while you can")
-		ss = "Text:X";
-	if (!readyForRender())
-	{
-		throw NMSLogicException("Component: [" + name() + "] not ready for render.");
-	}
-	if (mRenderThis)
-	{
-		const glm::mat4 I(1.0f);
-		glm::mat4 r = glm::rotate(model, mRotateRadians, mRotateAxis);
-		glm::mat4 s = glm::scale(model, mScale);
-		glm::mat4 t = glm::translate(I, position());
-		glm::mat4 _model = t * r * s;
-		mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
+	const glm::mat4 I(1.0f);
+	//glm::mat4 r = glm::rotate(model, mRotateRadians, mRotateAxis);
+	//glm::mat4 s = glm::scale(model, mScale);
+	//glm::mat4 t = glm::translate(I, position());
+	glm::mat4 _model;// = t * r * s;
+	mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
 
-		if (mRenderBoundingBox)
-		{
-			// We need to find how much the current AABB has been scaled from the original.
-			// This will include mScale as well as any extra scaling due to rotations (since we do not rotate an AABB).
-			glm::vec3 newScaling(0);
-			const AABB& orig = boundBoxOriginal();
-			const AABB& current = bounds();
-			newScaling.x = glm::abs(((current.maxPoint().x - current.minPoint().x)) / (orig.maxPoint().x - orig.minPoint().x));
-			newScaling.y = glm::abs(((current.maxPoint().y - current.minPoint().y)) / (orig.maxPoint().y - orig.minPoint().y));
-			newScaling.z = glm::abs(((current.maxPoint().z - current.minPoint().z)) / (orig.maxPoint().z - orig.minPoint().z));
-
-			const glm::mat4 I2(1.0f);
-			glm::mat4 s2 = glm::scale(model, newScaling);
-			glm::mat4 t2 = glm::translate(I2, position());
-			glm::mat4 model2 = t2 * s2;
-/*
-			// http://www.geeks3d.com/20140815/particle-billboarding-with-the-geometry-shader-glsl/
-			glm::vec3 right, up;
-			right.x = model2[0][0];  // 0
-			right.y = model2[1][0];  // 4
-			right.z = model2[2][0];  // 8
-
-			up.x = model2[0][1];  // 1
-			up.y = model2[1][1];  // 5
-			up.z = model2[2][1];  // 9
-			float size = 1.0f;
-			glm::vec3 a = P - (right + up) * size;
-			glm::vec3 b = P - (right - up) * size;
-			glm::vec3 d = P + (right - up) * size;
-			glm::vec3 c = P + (right + up) * size;
-*/
-			boundingBoxRenderer()->render(proj, view, model2, cameraPos, renderCb, resizeCb);
-		}
-	}
 }
+

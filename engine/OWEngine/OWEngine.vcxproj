@@ -190,16 +190,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Actor\BB2DRenderer.h" />
+    <ClInclude Include="..\Actor\BB3DRenderer.h" />
     <ClInclude Include="..\Actor\Button.h" />
+    <ClInclude Include="..\Actor\CollisionActor.h" />
     <ClInclude Include="..\Actor\CollisionSystem.h" />
     <ClInclude Include="..\Actor\OcTree.h" />
     <ClInclude Include="..\Actor\OWActor.h" />
     <ClInclude Include="..\Actor\ThreeDAxis.h" />
-    <ClInclude Include="..\Component\MeshComponent.h" />
+    <ClInclude Include="..\Component\MeshComponentHeavy.h" />
+    <ClInclude Include="..\Component\MeshComponentInstance.h" />
+    <ClInclude Include="..\Component\MeshComponentLight.h" />
+    <ClInclude Include="..\Component\MeshComponentVAO.h" />
+    <ClInclude Include="..\Component\MeshComponentVec4.h" />
     <ClInclude Include="..\Component\MovableObject.h" />
     <ClInclude Include="..\Component\OWComponent.h" />
     <ClInclude Include="..\Component\OWMovableComponent.h" />
+    <ClInclude Include="..\Component\OWRenderableComponent.h" />
     <ClInclude Include="..\Component\OWSceneComponent.h" />
+    <ClInclude Include="..\Component\TextData.h" />
     <ClInclude Include="..\Core\CommonUtils.h" />
     <ClInclude Include="..\Core\ErrorHandling.h" />
     <ClInclude Include="..\Core\GLApplication.h" />
@@ -244,7 +253,6 @@
     <ClInclude Include="..\Helpers\ShaderFactory.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
     <ClInclude Include="..\Helpers\TextureFactory.h" />
-    <ClInclude Include="..\Helpers\ThreeDAxis.h" />
     <ClInclude Include="..\Renderers\HardwareBuffer.h" />
     <ClInclude Include="..\Renderers\HeavyRenderer.h" />
     <ClInclude Include="..\Renderers\InstanceRenderer.h" />
@@ -252,26 +260,37 @@
     <ClInclude Include="..\Renderers\OWRenderable.h" />
     <ClInclude Include="..\Renderers\RendererBase.h" />
     <ClInclude Include="..\Renderers\RenderTypes.h" />
-    <ClInclude Include="..\Renderers\TextData.h" />
     <ClInclude Include="..\Renderers\TextRenderer.h" />
     <ClInclude Include="..\Renderers\TextRendererDynamic.h" />
     <ClInclude Include="..\Renderers\TextRendererStatic.h" />
     <ClInclude Include="..\Renderers\VAOBuffer.h" />
+    <ClInclude Include="..\Scripting\OWActorScript.h" />
+    <ClInclude Include="..\Scripting\OWScript.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OWEngine.h" />
+    <ClInclude Include="OWGameIFace.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
+    <ClCompile Include="..\Actor\BB2DRenderer.cpp" />
+    <ClCompile Include="..\Actor\BB3DRenderer.cpp" />
     <ClCompile Include="..\Actor\Button.cpp" />
+    <ClCompile Include="..\Actor\CollisionActor.cpp" />
     <ClCompile Include="..\Actor\CollisionSystem.cpp" />
     <ClCompile Include="..\Actor\OcTree.cpp" />
     <ClCompile Include="..\Actor\OWActor.cpp" />
     <ClCompile Include="..\Actor\ThreeDAxis.cpp" />
-    <ClCompile Include="..\Component\MeshComponent.cpp" />
+    <ClCompile Include="..\Component\MeshComponentHeavy.cpp" />
+    <ClCompile Include="..\Component\MeshComponentInstance.cpp" />
+    <ClCompile Include="..\Component\MeshComponentLight.cpp" />
+    <ClCompile Include="..\Component\MeshComponentVAO.cpp" />
+    <ClCompile Include="..\Component\MeshComponentVec4.cpp" />
     <ClCompile Include="..\Component\MovableObject.cpp" />
     <ClCompile Include="..\Component\OWComponent.cpp" />
     <ClCompile Include="..\Component\OWMovableComponent.cpp" />
+    <ClCompile Include="..\Component\OWRenderableComponent.cpp" />
     <ClCompile Include="..\Component\OWSceneComponent.cpp" />
+    <ClCompile Include="..\Component\TextData.cpp" />
     <ClCompile Include="..\Core\CommonUtils.cpp" />
     <ClCompile Include="..\Core\ErrorHandling.cpp" />
     <ClCompile Include="..\Core\GLApplication.cpp" />
@@ -324,11 +343,12 @@
     <ClCompile Include="..\Renderers\LightRenderer.cpp" />
     <ClCompile Include="..\Renderers\OWRenderable.cpp" />
     <ClCompile Include="..\Renderers\RendererBase.cpp" />
-    <ClCompile Include="..\Renderers\TextData.cpp" />
     <ClCompile Include="..\Renderers\TextRenderer.cpp" />
     <ClCompile Include="..\Renderers\TextRendererDynamic.cpp" />
     <ClCompile Include="..\Renderers\TextRendererStatic.cpp" />
     <ClCompile Include="..\Renderers\VAOBuffer.cpp" />
+    <ClCompile Include="..\Scripting\OWActorScript.cpp" />
+    <ClCompile Include="..\Scripting\OWScript.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>

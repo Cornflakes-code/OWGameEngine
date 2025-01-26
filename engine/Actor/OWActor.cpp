@@ -1,5 +1,25 @@
 #include "OWActor.h"
 
+void OWActor::doInit()
+{
+}
+
+void OWActor::begin()
+{
+}
+
+void OWActor::tick(float deltaSecods)
+{
+}
+
+void OWActor::end()
+{
+}
+
+void OWActor::destroy()
+{
+}
+
 
 void OWActor::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& _model,

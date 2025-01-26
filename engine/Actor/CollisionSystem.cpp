@@ -7,6 +7,17 @@
 #include "../Geometry/Box.h"
 #include "../Core/LogStream.h"
 
+// spring mass system hookes law
+// Soft body bouncing pv = nRT (ideal gas law
+// p = F / A
+// => F = A * c/v
+
+// collisions - explicit Euler method 
+// vel += accell * deltaT
+// pos += vel * deltaT
+// Runge - Kutta 4
+
+
 //#define SWEEP_AND_PRUNE
 //#define SWEEP_AND_PRUNE_EX
 #define BASIC_COLLISIONS
@@ -175,15 +186,6 @@ namespace CollisionSystem
 //		doInsertionSort(gEdgesZ);
 	}
 
-	void sweepAndPruneTick(float timeStep)
-	{
-		for (Edge& e : gEdgesX)
-		{
-			if (e.isLeft)
-				e.o->tick(timeStep);
-		}
-	}
-
 #endif
 	// https://leanrada.com/notes/sweep-and-prune-2/
 	// 
@@ -208,77 +210,44 @@ namespace CollisionSystem
 	//	}
 	//}
 #ifdef BASIC_COLLISIONS
-	std::vector <OWMovableComponent*> gStaticObjects;
-	std::vector <OWMovableComponent*> gMoveableObjects;
+	std::vector <OWCollisionData*> gStaticObjects;
+	std::vector <OWCollisionData*> gMoveableObjects;
 
 	Box* bbp = nullptr;
 	static int ii = 10000;
 
-	void basicTick(float timeStep)
+	void buildBasic(const std::vector<OWCollisionData*>& objects)
 	{
-		auto ticker = [timeStep](OWMovableComponent* a)
+		for (OWCollisionData* o : objects)
+		{
+			if (o->canMove)
 			{
-				a->tick(timeStep);
-			};
-		if (ii == 5000)
-		{
-			if (bbp)
-				bbp->scale(glm::vec3(2));
-		}
-		if (ii == 1000)
-		{
-			if (bbp)
-				bbp->rotate(45, { 1,1,1 });
-		}
-		if (ii > 0)
-		{
-		}
-		//ii--;
-		for (OWMovableComponent* o : gMoveableObjects)
-		{
-			ticker(o);
-		}
-		for (OWMovableComponent* o : gStaticObjects)
-		{
-			ticker(o);
-		}
-	}
-
-	void buildBasic(const std::vector<OWMovableComponent*>& objects)
-	{
-		for (OWMovableComponent* o : objects)
-		{
-			if (o->name().find("Plane ") != std::string::npos)
-			{
-				gStaticObjects.push_back(o);
-			}
+                gMoveableObjects.push_back(o);
+            }
 			else
 			{
-				gMoveableObjects.push_back(o);
+                gStaticObjects.push_back(o);
 			}
 		}
 	}
 
 	void collidBasic()
 	{
-		for (OWMovableComponent* a1 : gStaticObjects)
+		for (OWCollisionData* a1 : gStaticObjects)
 		{
-			if (a1->canCollide())
+			if (a1->canCollide)
 			{
 				for (int j = 0; j < gMoveableObjects.size(); j++)
 				{
-					OWMovableComponent* a2 = gMoveableObjects[j];
-					if (a2->canCollide())
+                    OWCollisionData* a2 = gMoveableObjects[j];
+					if (a2->canCollide)
 					{
-						if (a1->canCollide(a2))
+						if (a1->boundingBox.intersects(a2->boundingBox))
 						{
-							if (a1->bounds().intersects(a2->bounds()))
+							if (a1->component->collides(a2))
 							{
-								if (a1->collides(a2))
-								{
-									a1->collided(a2);
-									a2->collided(a1);
-								}
+								a1->component->collided(a2);
+								a2->component->collided(a1);
 							}
 						}
 					}
@@ -286,29 +255,26 @@ namespace CollisionSystem
 			}
 		}
 		int inc = 0;
-		for (OWMovableComponent* a1 : gMoveableObjects)
+		for (OWCollisionData* a1 : gMoveableObjects)
 		{
 			inc++;
-			if (a1->canCollide())
+			if (a1->canCollide)
 			{
 				for (int j = inc; j < gMoveableObjects.size(); j++)
 				{
-					OWMovableComponent* a2 = gMoveableObjects[j];
-					if (a2->canCollide())
-					{
-						if (a1->canCollide(a2))
-						{
-							if (a1->bounds().intersects(a2->bounds()))
-							{
-								if (a1->collides(a2))
-								{
-									a1->collided(a2);
-									a2->collided(a1);
-								}
-							}
-						}
-					}
-				}
+                    OWCollisionData* a2 = gMoveableObjects[j];
+                    if (a2->canCollide)
+                    {
+                        if (a1->boundingBox.intersects(a2->boundingBox))
+                        {
+                            if (a1->component->collides(a2))
+                            {
+                                a1->component->collided(a2);
+                                a2->component->collided(a1);
+                            }
+                        }
+                    }
+                }
 			}
 		}
 	}
@@ -324,12 +290,9 @@ namespace CollisionSystem
 	void collideSweepAndPruneEx()
 	{
 	}
-	void sweepAndPruneTickEx(float timeStep)
-	{
-	}
 
 #endif
-	void build(std::vector<OWMovableComponent*>& objects)
+	void build(std::vector<OWCollisionData*>& objects)
 	{
 #ifdef BASIC_COLLISIONS
 		buildBasic(objects);
@@ -371,19 +334,6 @@ namespace CollisionSystem
 #endif
 #ifdef SWEEP_AND_PRUNE_EX
 		collideSweepAndPruneEx();
-#endif
-	}
-
-	void tick(float timeStep)
-	{
-#ifdef BASIC_COLLISIONS
-		basicTick(timeStep);
-#endif
-#ifdef SWEEP_AND_PRUNE
-		sweepAndPruneTick(timeStep);
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-		sweepAndPruneTickEx(timeStep);
 #endif
 	}
 

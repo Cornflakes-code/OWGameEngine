@@ -14,12 +14,13 @@
 
 void NMSRopeScenePhysics::setup()
 {
-	Rope* rope = new Rope(this->owner(), glm::vec3(0));
-	if (!rope->prepare())
-		; // failed.
 	const AABB& _world = NMSScene::world();
-	glm::vec2 ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
+	OWRopeData* rd = new OWRopeData();
+	rd->RopeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
+	OWRopeScript* rs = new OWRopeScript(rd);
+	Rope* rope = new Rope(this->owner(), glm::vec3(0));
+	glm::vec2 ropeZoom = 
 	int fontHeight = 24;
 	glm::vec2 niceTextSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());

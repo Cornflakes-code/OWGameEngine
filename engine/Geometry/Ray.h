@@ -7,6 +7,7 @@
 #include "../Core/Renderable.h"
 #include "../Component/OWSceneComponent.h"
 #include "OWRay.h"
+#include "../Actor/OWActor.h"
 
 class OWENGINE_API Ray: public OWSceneComponent
 {

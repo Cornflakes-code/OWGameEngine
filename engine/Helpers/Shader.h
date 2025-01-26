@@ -12,6 +12,20 @@ using json = nlohmann::json;
 /*
 	A wrapper for Shaders. Based on the Shader class at https://learnopengl.com/
 */
+
+struct OWENGINE_API ShaderData
+{
+	std::string colourShaderName = "";
+	std::string shaderV = "";
+	std::string shaderF = "";
+	std::string shaderG = "";
+	std::string shaderPVM = "pvm";
+	ShaderData() {}
+	ShaderData(const std::string& _v, const std::string& _f, const std::string& _g, const std::string& _pvm)
+	: shaderV(_v), shaderF(_f), shaderG(_g), shaderPVM(_pvm)
+	{}
+};
+
 class OWENGINE_API Shader //: public ResourceSource
 {
 #pragma warning( push )
@@ -35,10 +49,10 @@ class OWENGINE_API Shader //: public ResourceSource
 	// loop will be broken.
 	mutable bool mFirstTimeRender = true;
 	float aspectRatio() const;
+	ShaderData* mData = nullptr;
 public:
 	Shader();
-	Shader(const std::string& vertexPath, const std::string& fragPath = "",
-		const std::string& geometryPath = "");
+	Shader(ShaderData* _data);
 	~Shader();
 	void appendMutator(RenderTypes::ShaderMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
 	void appendResizer(RenderTypes::ShaderResizer pfunc) { mResizeCallbacks.push_back(pfunc); }
@@ -68,6 +82,11 @@ public:
 	int program() const { return mShaderProgram; }
 	int getUniformLocation(const std::string& name) const;
 	int getAttributeLocation(const std::string& name) const;
+	enum UniformType
+	{
+		UFloat, UInt, UV2F, UV3F, UV4F
+	};
+	void setUniform(UniformType ut, const std::string& value, bool useShader = false);
 	void setFloat(const std::string& name, float value, 
 					bool useShader = false) const;
 	void setInteger(const std::string& name, int value, 

@@ -59,8 +59,42 @@ void LogStream::linkStream()
 	myBuffer.addBuffer(std::cout.rdbuf());
 }
 
+std::ostream& operator<<(std::ostream& os, const glm::vec4& v)
+{
+	os << "[" << v.x << ", " << v.y << ", " << v.z << v.w << "]";
+	return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const glm::vec3& v)
 {
 	os << "[" << v.x << ", " << v.y << ", " << v.z << "]";
 	return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const glm::vec2& v)
+{
+	os << "[" << v.x << ", " << v.y << ", " << "]";
+	return os;
+}
+
+
+std::istream& operator>>(std::istream& is, glm::vec4& v)
+{
+	char dummy;
+	is >> v.x >> dummy >> v.y >> dummy >> v.z >> dummy >> v.w;
+	return is;
+}
+
+std::istream& operator>>(std::istream& is, glm::vec3& v)
+{
+	char dummy;
+	is >> v.x >> dummy >> v.y >> dummy >> v.z;
+	return is;
+}
+
+std::istream& operator>>(std::istream& is, glm::vec2& v)
+{
+	char dummy;
+	is >> v.x >> dummy >> v.y;
+	return is;
 }

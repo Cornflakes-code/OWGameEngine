@@ -72,7 +72,7 @@ void NMSEndScene::doSetup(ScenePhysicsState* OW_UNUSED(state))
 	const float sx = 2.0f / globals->physicalWindowSize().x;
 	const float sy = 2.0f / globals->physicalWindowSize().y;
 	// Needs an OWActor as owner and a position
-	//TextData* td = new TextData("G", TextData::Dynamic, sx, sy);
+	//TextComponent* td = new TextComponent("G", TextComponent::Dynamic, sx, sy);
 	//td->colour( { 0.5, 0.8f, 0.2f, 0 } );
 	//td->prepare();
 	//mRootNode->addChild(td);

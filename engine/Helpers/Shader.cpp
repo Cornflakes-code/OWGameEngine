@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #ifndef __gl_h_
 #include <glad/glad.h>
@@ -15,16 +16,28 @@
 #include "../Core/CommonUtils.h"
 #include "../Core/ErrorHandling.h"
 #include "../Core/Logger.h"
+#include "../Core/LogStream.h"
 
 #include "ShaderFactory.h"
 
 Shader::Shader()
 {}
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
-	const std::string& geometryPath)
+Shader::Shader(ShaderData* _data)
+	:mData(_data)
 {
-	create(vertexPath, fragPath, geometryPath);
+	if ((mData->shaderV.length() > 0) ||
+		(mData->shaderF.length() > 0) ||
+		(mData->shaderG.length() > 0))
+	{
+		create(mData->shaderV, mData->shaderF, mData->shaderG);
+	}
+	else
+	{ 
+		loadBoilerPlates();
+	}
+		
+	setStandardUniformNames(mData->shaderPVM);
 }
 
 Shader::~Shader()
@@ -402,6 +415,50 @@ int Shader::getUniformLocation(const std::string& name) const
 int Shader::getAttributeLocation(const std::string& name) const
 {
 	return glGetAttribLocation(mShaderProgram, name.c_str());
+}
+
+//enum UniformType { UFloat, UInt, UV2F, UV3F, UV4F };
+void Shader::setUniform(Shader::UniformType ut, const std::string& value, bool useShader)
+{ 
+	std::stringstream ss(std::stringstream::in | std::stringstream::out);
+	ss << value;
+	std::string s;
+	switch (ut)
+	{
+	case UFloat:
+	{
+		float v;
+		ss >> s >> v;
+		setFloat(s, v);
+		break;
+	}
+	case UInt:
+	{
+		int v;
+		ss >> s >> v;
+		setInteger(s, v);
+		break;
+	}
+	case UV2F:
+	{
+		glm::vec2 v;
+		ss >> s >> v;
+		setVector2f(s, v);
+		break;
+	}
+	case UV3F:
+	{
+		glm::vec3 v;
+		ss >> s >> v;
+		setVector3f(s, v);
+		break;
+	}
+	case UV4F:
+		glm::vec4 v;
+		ss >> s >> v;
+		setVector4f(s, v);
+		break;
+	}
 }
 
 void Shader::setFloat(const std::string& name, float value, bool useShader) const

@@ -1,94 +1,59 @@
 #pragma once
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "../OWEngine/OWEngine.h"
 #include "OWComponent.h"
 #include "../Geometry/BoundingBox.h"
 
-class OWENGINE_API PhysicalTypeMetaData
+namespace OWMoveMetaData
 {
-public:
-	enum ThreeWay { Yes, No, Maybe };
-	glm::vec3 mGravity = glm::vec3(0);
-	glm::vec3 mMaxVelosity = glm::vec3(0);
-	glm::vec3 mAcceleration = glm::vec3(0);
-	float mHardness = 0.0f;
-	ThreeWay mVisible = ThreeWay::Maybe;
+	glm::vec3 gravity = glm::vec3(0.0f, 9.8f, 0.0f);
+	glm::vec3 maxVelocity = glm::vec3(std::numeric_limits<float>::max());
+	glm::vec3 maxAcceleration = glm::vec3(std::numeric_limits<float>::max());
+	float maxMass = std::numeric_limits<float>::max();
+	float hardness = 0.5f;
+	enum ChangeType { increment, absolute };
 };
 
-class OWENGINE_API ParticleData
+class OWIMovable;
+struct OWENGINE_API OWCollisionData
 {
-public:
-	glm::vec3 mPosition = glm::vec3(0);
-	glm::vec3 mVelocity = glm::vec3(0);
-	glm::vec3 mAcceleration = glm::vec3(0);
-	glm::vec3 mOrientation = glm::vec3(0);
-	glm::vec3 mRotationVelocity = glm::vec3(0);
-	//glm::quat mOrientation = glm::quat();     //orientation in 3D space
-	float mMass = 1.0f;                 // measured in Kg
-	bool mIsStatic = true;
-	PhysicalTypeMetaData::ThreeWay mVisible = PhysicalTypeMetaData::ThreeWay::Maybe;
+	AABB boundingBox = AABB(glm::vec3(-1), glm::vec3(-1));
+	OWIMovable* component = nullptr;
+	bool canMove = true;
+	bool canCollide = true;
 };
 
-class OWBounding;
-class VAOBuffer;
-class OWENGINE_API OWMovableComponent : public OWComponent
+struct OWENGINE_API OWMoveData: public OWCollisionData
 {
-	// We need an up to date mBoundingBox for collision calculation purposes.
-	// For correct scaling while rendering we need to compare against the original.
-	AABB mBoundingBox = AABB(glm::vec3(-1), glm::vec3(-1));
-	AABB mBoundBoxOriginal = AABB(glm::vec3(-1), glm::vec3(-1));
-	ParticleData mCurrent;
-	ParticleData mPrevious;
-	PhysicalTypeMetaData* mClassSpecs = nullptr;
-	OWBounding* mFineGrain = nullptr;
-	OWBounding* mHitSphere = nullptr;
-	glm::vec3 mHitSphereOffset = glm::vec3(0);
-	AABB mHitBox;
-	glm::vec3 mSteerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
-	VAOBuffer* mBoundingBoxRenderer = nullptr;
-	bool validBoundingBox() const;
-	void move(const glm::vec3& moveStep);
-	void moveTo(const glm::vec3& moveStep);
+	glm::vec3 position = glm::vec3(0);
+	glm::vec3 velocity = glm::vec3(0);
+	glm::vec3 acceleration = glm::vec3(0);
+	glm::vec3 orientation = glm::vec3(0);
+	glm::vec3 rotationVelocity = glm::vec3(0);
+	//glm::quat mOrientation = glm::quat();
+	float mass = 1.0f;
+	// 0(invisible -> 1 (fully opaque)
+	float visible = 1.0f;
+	glm::mat4 localMatrix = glm::mat4(1.0f);
+	glm::vec3 steerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
+};
+
+class OWENGINE_API OWIMovable
+{
+	OWMoveData* mData = nullptr;
 protected:
-	VAOBuffer* boundingBoxRenderer();
-	const AABB& boundBoxOriginal() const 
-	{
-		return mBoundBoxOriginal;
-	}
-	bool mRenderBoundingBox = true;
-	const glm::vec3& previousPosition() const { return mPrevious.mPosition; }
 public:
-	bool mMoveable = true;
-	OWMovableComponent(OWActor* _owner, const glm::vec3& _position)
-		: OWComponent(_owner)
-	{
-		position(_position);
-	}
-	void renderBoundingBox(bool _value) { mRenderBoundingBox = _value; }
-	const AABB& bounds() const 
-	{ 
-		return mBoundingBox; 
-	}
-	void bounds(const AABB& bb);
-	const glm::vec3& position() const { return mCurrent.mPosition; }
-	void position(const glm::vec3& value) { mCurrent.mPosition = value; }
-	int tick(float dt) override; 
-	void velocity(const glm::vec3& direction, float speed)
-	{
-		velocity(glm::normalize(direction) * speed);
-	}
-	void velocity(const glm::vec3& value)
-	{
-		// check does not exceed max velocity
-		mCurrent.mVelocity = value;
-	}
-	virtual bool canCollide() { return true; }
-	virtual bool canCollide(OWMovableComponent* other);
-	virtual bool collides(OWMovableComponent* other);
-	virtual void collided(OWMovableComponent* other);
-protected:
-	virtual bool fineGrainCollide(OWMovableComponent* OW_UNUSED(other))
-	{
-		return false;
-	}
+	virtual OWMoveData* data() { return mData; }
+	virtual const OWMoveData* constData() const { return mData; }
+
+	// OWCollisionData has a smaller footprint than OWMoveData.
+	// Use it for the collision engine
+	OWCollisionData* collisionData() { return mData; }
+	void setData(OWMoveData* newValue) { mData = newValue; }
+	virtual bool canCollide() = 0;
+	virtual bool canCollide(OWCollisionData* other) = 0;
+	virtual bool collides(OWCollisionData* other) = 0;
+	virtual void collided(OWCollisionData* other) = 0;
 };
