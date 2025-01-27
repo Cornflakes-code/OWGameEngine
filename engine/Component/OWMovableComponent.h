@@ -25,7 +25,7 @@ struct OWENGINE_API OWCollisionData
 	bool canCollide = true;
 };
 
-struct OWENGINE_API OWMoveData: public OWCollisionData
+struct OWENGINE_API OWMoveDataImp
 {
 	glm::vec3 position = glm::vec3(0);
 	glm::vec3 velocity = glm::vec3(0);
@@ -38,6 +38,11 @@ struct OWENGINE_API OWMoveData: public OWCollisionData
 	float visible = 1.0f;
 	glm::mat4 localMatrix = glm::mat4(1.0f);
 	glm::vec3 steerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
+};
+
+struct OWENGINE_API OWMoveData : public OWCollisionData
+{
+	OWMoveDataImp moveData;
 };
 
 class OWENGINE_API OWIMovable

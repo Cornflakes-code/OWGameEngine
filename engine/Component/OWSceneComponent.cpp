@@ -6,6 +6,7 @@ OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
 	: OWComponent(_owner)
 {
 	setData(_data);
+	name(_data->name);
 }
 
 bool OWSceneComponent::canCollide()

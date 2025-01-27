@@ -3,6 +3,7 @@
 #include <chrono>
 #include <vector>
 
+#include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -11,24 +12,25 @@
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
 #include <Core/Movie.h>
+#include <Core/LogStream.h>
+
 #include <Actor/OWActor.h>
 #include <Actor/CollisionSystem.h>
 #include <Actor/OcTree.h>
-#include <Geometry/Particle.h>
-#include <Geometry/Plane.h>
-#include <Geometry/Box.h>
-#include <Component/MeshComponent.h>
-#include <Core/LogStream.h>
-
-#include <Helpers/FreeTypeFontAtlas.h>
-#include <Geometry/GeometricShapes.h>
-#include <Geometry/Ray.h>
-#include <Helpers/ModelData.h>
-#include <Helpers/ModelFactory.h>
 #include <Actor/ThreeDAxis.h>
 #include <Actor/Button.h>
+#include <Component/BoxComponent.h>
+#include <Component/MeshComponentHeavy.h>
+#include <Component/TextData.h>
+#include <Geometry/Particle.h>
+#include <Geometry/Plane.h>
+#include <Geometry/GeometricShapes.h>
+#include <Geometry/Ray.h>
+
+#include <Helpers/FreeTypeFontAtlas.h>
+#include <Helpers/ModelData.h>
+#include <Helpers/ModelFactory.h>
 #include <Helpers/Shader.h>
-#include <Renderers/TextData.h>
 
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
@@ -42,7 +44,7 @@ int GDEBUG_PICKING = 1;
 //#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
-Box* gBox = nullptr;
+BoxComponent* gBox = nullptr;
 TextComponent* gWelcome = nullptr;
 TextComponent* gEnjoy = nullptr;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
@@ -188,14 +190,24 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	return false;
 }
 
-Box* createBox(const std::string& _name, const glm::vec4& colour, const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
+BoxComponent* createBox(const std::string& _name, const glm::vec4& colour, const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
 {
-	Box* box = new Box(mScenery, origin);
-	box->name(_name);
-	box->prepare(colour);
-	box->scale(scale);
-	box->velocity(direction, speed);
-	//box->rotate
+	BoxComponentData* bcd = new BoxComponentData();
+	bcd->polygonMode = GL_FILL;
+	bcd->shaderData->shaderV = "Wires.v.glsl";
+	bcd->shaderData->shaderF = "Wires.f.glsl";
+	bcd->shaderData->shaderV = "";
+	bcd->shaderData->PVMName = "";
+	bcd->shaderData->projectionName = "projection";
+	bcd->shaderData->viewName = "view";
+	bcd->shaderData->modelName = "model";
+	bcd->shaderData->uniforms.push_back({ ShaderDataUniforms::UV4F, "lightColor", glm::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE)) });
+	bcd->shaderData->uniforms.push_back({ ShaderDataUniforms::UV4F, "objectColor", glm::to_string(colour) });
+	bcd->shaderData->uniforms.push_back({ ShaderDataUniforms::UV3F, "viewLightPos", glm::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
+	bcd->scale = scale;
+	bcd->name = _name;
+	bcd->moveData.velocity = direction * speed;
+	BoxComponent* box = new BoxComponent(mScenery, bcd);
 	gBox = box;
 	return box;
 }

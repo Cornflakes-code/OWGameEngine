@@ -11,6 +11,7 @@ struct OWENGINE_API OWSceneComponentData: public OWMoveData
 
 {
 	glm::vec3 scale = glm::vec3(1);
+	std::string name;
 };
 
 class OWENGINE_API OWSceneComponent: public OWComponent, public OWIMovable, public OWIRenderable

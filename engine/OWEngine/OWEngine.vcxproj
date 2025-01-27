@@ -198,6 +198,7 @@
     <ClInclude Include="..\Actor\OcTree.h" />
     <ClInclude Include="..\Actor\OWActor.h" />
     <ClInclude Include="..\Actor\ThreeDAxis.h" />
+    <ClInclude Include="..\Component\BoxComponent.h" />
     <ClInclude Include="..\Component\MeshComponentHeavy.h" />
     <ClInclude Include="..\Component\MeshComponentInstance.h" />
     <ClInclude Include="..\Component\MeshComponentLight.h" />
@@ -208,6 +209,8 @@
     <ClInclude Include="..\Component\OWMovableComponent.h" />
     <ClInclude Include="..\Component\OWRenderableComponent.h" />
     <ClInclude Include="..\Component\OWSceneComponent.h" />
+    <ClInclude Include="..\Component\PlaneComponent.h" />
+    <ClInclude Include="..\Component\ShapeComponent.h" />
     <ClInclude Include="..\Component\TextData.h" />
     <ClInclude Include="..\Core\CommonUtils.h" />
     <ClInclude Include="..\Core\ErrorHandling.h" />
@@ -230,14 +233,12 @@
     <ClInclude Include="..\Geometry\BoundingFrustum.h" />
     <ClInclude Include="..\Geometry\BoundingPlane.h" />
     <ClInclude Include="..\Geometry\BoundingSphere.h" />
-    <ClInclude Include="..\Geometry\Box.h" />
     <ClInclude Include="..\Geometry\GeometricShapes.h" />
     <ClInclude Include="..\Geometry\OWBounding.h" />
     <ClInclude Include="..\Geometry\OWRay.h" />
     <ClInclude Include="..\Geometry\OWShape.h" />
     <ClInclude Include="..\Geometry\OWSphere.h" />
     <ClInclude Include="..\Geometry\Particle.h" />
-    <ClInclude Include="..\Geometry\Plane.h" />
     <ClInclude Include="..\Geometry\Ray.h" />
     <ClInclude Include="..\Helpers\ComputeNormals.h" />
     <ClInclude Include="..\Helpers\FontFactory.h" />
@@ -280,6 +281,7 @@
     <ClCompile Include="..\Actor\OcTree.cpp" />
     <ClCompile Include="..\Actor\OWActor.cpp" />
     <ClCompile Include="..\Actor\ThreeDAxis.cpp" />
+    <ClCompile Include="..\Component\BoxComponent.cpp" />
     <ClCompile Include="..\Component\MeshComponentHeavy.cpp" />
     <ClCompile Include="..\Component\MeshComponentInstance.cpp" />
     <ClCompile Include="..\Component\MeshComponentLight.cpp" />
@@ -290,6 +292,8 @@
     <ClCompile Include="..\Component\OWMovableComponent.cpp" />
     <ClCompile Include="..\Component\OWRenderableComponent.cpp" />
     <ClCompile Include="..\Component\OWSceneComponent.cpp" />
+    <ClCompile Include="..\Component\PlaneComponent.cpp" />
+    <ClCompile Include="..\Component\ShapeComponent.cpp" />
     <ClCompile Include="..\Component\TextData.cpp" />
     <ClCompile Include="..\Core\CommonUtils.cpp" />
     <ClCompile Include="..\Core\ErrorHandling.cpp" />
@@ -312,14 +316,12 @@
     <ClCompile Include="..\Geometry\BoundingFrustum.cpp" />
     <ClCompile Include="..\Geometry\BoundingPlane.cpp" />
     <ClCompile Include="..\Geometry\BoundingSphere.cpp" />
-    <ClCompile Include="..\Geometry\Box.cpp" />
     <ClCompile Include="..\Geometry\GeometricShapes.cpp" />
     <ClCompile Include="..\Geometry\OWBounding.cpp" />
     <ClCompile Include="..\Geometry\OWRay.cpp" />
     <ClCompile Include="..\Geometry\OWShape.cpp" />
     <ClCompile Include="..\Geometry\OWSphere.cpp" />
     <ClCompile Include="..\Geometry\Particle.cpp" />
-    <ClCompile Include="..\Geometry\Plane.cpp" />
     <ClCompile Include="..\Geometry\Ray.cpp" />
     <ClCompile Include="..\Helpers\ComputeNormals.cpp" />
     <ClCompile Include="..\Helpers\FontFactory.cpp" />

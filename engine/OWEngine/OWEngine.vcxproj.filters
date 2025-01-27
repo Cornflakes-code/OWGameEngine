@@ -204,13 +204,7 @@
     <ClInclude Include="..\Geometry\Particle.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\Geometry\Plane.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="..\Geometry\Ray.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Geometry\Box.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="..\Geometry\GeometricShapes.h">
@@ -292,6 +286,15 @@
       <Filter>Header Files\Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Component\MeshComponentVec4.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\ShapeComponent.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\BoxComponent.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\PlaneComponent.h">
       <Filter>Header Files\Component</Filter>
     </ClInclude>
   </ItemGroup>
@@ -446,13 +449,7 @@
     <ClCompile Include="..\Geometry\Particle.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="..\Geometry\Plane.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
     <ClCompile Include="..\Geometry\Ray.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Geometry\Box.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\Geometry\GeometricShapes.cpp">
@@ -531,6 +528,15 @@
       <Filter>Source Files\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Component\MeshComponentVec4.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\ShapeComponent.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\BoxComponent.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\PlaneComponent.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
   </ItemGroup>

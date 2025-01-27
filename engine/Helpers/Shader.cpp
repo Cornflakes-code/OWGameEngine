@@ -26,18 +26,16 @@ Shader::Shader()
 Shader::Shader(ShaderData* _data)
 	:mData(_data)
 {
-	if ((mData->shaderV.length() > 0) ||
-		(mData->shaderF.length() > 0) ||
-		(mData->shaderG.length() > 0))
-	{
-		create(mData->shaderV, mData->shaderF, mData->shaderG);
-	}
-	else
-	{ 
-		loadBoilerPlates();
-	}
+	if (mData->shaderV.length() == 0)
+		mData->shaderV = ShaderFactory::boilerPlateVertexShader();
+	if (mData->shaderF.length() == 0)
+		mData->shaderF = ShaderFactory::boilerPlateFragmentShader();
+	if (mData->shaderG.length() == 0)
+		mData->shaderG = ShaderFactory::boilerPlateGeometryShader();
+
+	create(mData->shaderV, mData->shaderF, mData->shaderG);
 		
-	setStandardUniformNames(mData->shaderPVM);
+	setStandardUniformNames(mData->shaderPVM, mData->shaderProjection, mData->shaderView, mData->shaderModel);
 }
 
 Shader::~Shader()
@@ -418,45 +416,46 @@ int Shader::getAttributeLocation(const std::string& name) const
 }
 
 //enum UniformType { UFloat, UInt, UV2F, UV3F, UV4F };
-void Shader::setUniform(Shader::UniformType ut, const std::string& value, bool useShader)
+void Shader::setUniform(ShaderDataUniforms::UniformType ut, 
+	const std::string& name, const std::string& value, bool useShader)
 { 
 	std::stringstream ss(std::stringstream::in | std::stringstream::out);
 	ss << value;
 	std::string s;
 	switch (ut)
 	{
-	case UFloat:
+	case ShaderDataUniforms::UniformType::UFloat:
 	{
 		float v;
 		ss >> s >> v;
-		setFloat(s, v);
+		setFloat(name, v);
 		break;
 	}
-	case UInt:
+	case ShaderDataUniforms::UniformType::UInt:
 	{
 		int v;
 		ss >> s >> v;
-		setInteger(s, v);
+		setInteger(name, v);
 		break;
 	}
-	case UV2F:
+	case ShaderDataUniforms::UniformType::UV2F:
 	{
 		glm::vec2 v;
 		ss >> s >> v;
-		setVector2f(s, v);
+		setVector2f(name, v);
 		break;
 	}
-	case UV3F:
+	case ShaderDataUniforms::UniformType::UV3F:
 	{
 		glm::vec3 v;
 		ss >> s >> v;
-		setVector3f(s, v);
+		setVector3f(name, v);
 		break;
 	}
-	case UV4F:
+	case ShaderDataUniforms::UniformType::UV4F:
 		glm::vec4 v;
 		ss >> s >> v;
-		setVector4f(s, v);
+		setVector4f(name, v);
 		break;
 	}
 }
