@@ -22,7 +22,7 @@ struct OWENGINE_API TextData
 		Static
 	};
 	std::string text;
-	std::string font = "arial.ttf";
+	std::string fontName = "arial.ttf";
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK);
 	glm::vec2 fontSpacing;
 	glm::vec2 fontScale = { 1.0,1.0 };
@@ -41,12 +41,12 @@ class OWENGINE_API TextComponent: public OWSceneComponent
 protected:
 	TextData* textData()
 	{
-		return &(static_cast<TextComponentData*>(data())->textData);
+		return &(static_cast<TextComponentData*>(OWSceneComponent::data())->textData);
 	}
 public:
 	const TextData* textData() const
 	{
-		return &(static_cast<const TextComponentData*>(constData())->textData);
+		return &(static_cast<const TextComponentData*>(OWSceneComponent::constData())->textData);
 	}
 
 	TextComponent(OWActor* _owner)
@@ -54,7 +54,7 @@ public:
 	{}
 	const TextComponentData* constData() const override
 	{
-		return static_cast<const TextComponentData*>(constData());
+		return static_cast<const TextComponentData*>(OWSceneComponent::constData());
 	}
 
 	TextComponent(OWActor* _owner, TextComponentData* _data);

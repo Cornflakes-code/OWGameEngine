@@ -167,11 +167,14 @@ public:
 	{
 		return (mMaxPoint - mMinPoint) / 2.0f;
 	}
+	bool render() const { return mRender; }
+	void render(bool newValue) { mRender = newValue; }
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	glm::vec3 mMinPoint;
 	glm::vec3 mMaxPoint;
+	bool mRender = false;
 #pragma warning( pop )
 };
 

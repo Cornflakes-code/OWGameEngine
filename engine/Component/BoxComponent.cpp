@@ -29,7 +29,7 @@ void BoxComponent::init()
 	lineData.polygonMode(data()->polygonMode);
 	//lineData.polygonMode(GL_LINE);
 
-	Shader* wireShader = new Shader(data()->shaderData);
+	Shader* wireShader = new Shader(&data()->shaderData);
 
 	VAOBuffer* vao = new VAOBuffer(wireShader, VAOBuffer::DRAW_ARRAYS);
 	vao->add(&lineData);

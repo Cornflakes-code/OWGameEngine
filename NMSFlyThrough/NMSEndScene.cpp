@@ -5,7 +5,7 @@
 #include <Actor/OWActor.h>
 
 #include <Helpers/Shader.h>
-#include <Renderers/TextData.h>
+#include <Component/TextComponent.h>
 
 #include "NMSUserInput.h"
 

@@ -7,9 +7,23 @@
 #include "../Helpers/MeshDataLight.h"
 #include "../Helpers/Shader.h"
 
+static ShaderData* getStaticTextData()
+{
+	static ShaderData shaderData;
+	static bool firstTime = true;
+	if (firstTime)
+	{
+		firstTime = false;
+		shaderData.shaderV = "textStaticBillboard.v.glsl";
+		shaderData.shaderF = "text.f.glsl";
+		shaderData.shaderG = "";
+		shaderData.PVMName = "VP";
+	}
+	return &shaderData;
+}
+
 TextRendererStatic::TextRendererStatic()
-	: TextRenderer(new Shader("textStaticBillboard.v.glsl", "text.f.glsl", ""), 
-				"VP")
+	: TextRenderer(new Shader(getStaticTextData()))
 {}
 
 void TextRendererStatic::doSetup(const TextComponent* td, const glm::vec3& initialPosition)

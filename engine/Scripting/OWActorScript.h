@@ -16,36 +16,41 @@ const struct OWENGINE_API OWActorMetaData
 	float Hardness = 0.5f;
 };
 
+struct OWENGINE_API OWActorDataImp
+{
+	glm::vec3 velocity = glm::vec3(0);
+	glm::vec3 acceleration = glm::vec3(0);
+	glm::vec3 orientation = glm::vec3(0);
+	glm::vec3 rotationVelocity = glm::vec3(0);
+	//glm::quat mOrientation = glm::quat();
+	float mass = 1.0f;
+	// 0(invisibility -> 1 (fully opaque)
+	float visibility = 1.0f;
+	glm::mat4 localMatrix = glm::mat4(1.0f);
+};
+
 struct OWENGINE_API OWActorData
 {
-	glm::vec3 Velocity = glm::vec3(0);
-	glm::vec3 Acceleration = glm::vec3(0);
-	glm::vec3 Orientation = glm::vec3(0);
-	glm::vec3 RotationVelocity = glm::vec3(0);
-	//glm::quat mOrientation = glm::quat();
-	float mMass = 1.0f;
-	// 0(invisible -> 1 (fully opaque)
-	float Visible = 1.0f;
-	glm::mat4 LocalMatrix = glm::mat4(1.0f);
+	OWActorDataImp actorData;
 };
 
 class OWENGINE_API OWActorScript: public OWScript
 {
-	OWActorData* mPhysicalData;
+	OWActorData* mData;
 public: 		
 
 	OWActorData* data()
 	{
-		return mPhysicalData;
+		return mData;
 	}
 
 	OWActorScript(OWActorData* _data)
+		: mData(_data)
 	{
-		mPhysicalData = _data = nullptr ? new OWActorData() : _data;
 	}
 	const OWActorData* data() const
 	{
-		return mPhysicalData;
+		return mData;
 	}
 	friend class OWActor;
 };

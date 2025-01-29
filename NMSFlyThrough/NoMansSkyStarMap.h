@@ -10,8 +10,9 @@
 #include <Helpers/Shader.h>
 
 #include <Actor/OWActor.h>
-#include <Component/TextData.h>
-#include <Component/MeshComponent.h>
+#include <Component/TextComponent.h>
+#include <Component/MeshComponentInstance.h>
+#include <Component/MeshComponentLight.h>
 
 class Shader;
 class TextRenderer;
@@ -19,8 +20,7 @@ class TextRenderer;
 	The NMS game is a simple fly through of Solar Systems visited while
 	playing the No Man's Sky game.
 */
-
-struct OWENGINE_API NoMansSkyData: public OWActorData
+struct NoMansSkyDataImp
 {
 	std::vector<glm::vec4> instanceColours =
 	{
@@ -31,10 +31,13 @@ struct OWENGINE_API NoMansSkyData: public OWActorData
 		OWUtils::colour(OWUtils::SolidColours::MAGENTA),
 		OWUtils::colour(OWUtils::SolidColours::CYAN)
 	};
-	TextData* textData;
-	MeshComponentData* meshData;
-	ShaderData* starShader;
+	TextData textData;
+	MeshComponentInstanceData meshComponentInstanceData;
+	MeshComponentLightData meshComponentLightData;
+	ShaderData starShader;
+	std::string starFile;
 	std::string name = "NMS Map";
+	AABB starWorld;
 	AABB NMSSize = AABB(glm::vec3(-0x7FF, -0x7F, -0x7FF),
 		glm::vec3(0x7FF, 0x7F, 0x7FF));
 	glm::vec4 gridColour = { 0, 1.0, 0.5, 1 };
@@ -44,11 +47,25 @@ struct OWENGINE_API NoMansSkyData: public OWActorData
 	int numStars = 500000;
 };
 
-class OWENGINE_API NMSScript: public OWActorScript
+struct NoMansSkyData: public OWActorData
 {
-protected:
+	NoMansSkyDataImp nmsData;
+};
+
+class NMSScript: public OWActorScript
+{
 public:
-	friend class OWActor;
+	NMSScript(NoMansSkyData* _data)
+		: OWActorScript(_data) {
+	}
+	void tick(float deltaSecods) override;
+
+	void begin() override;
+	void end() override;
+
+	void destroy() override;
+protected:
+	void doInit() override;
 };
 
 class NoMansSky: public OWActor
@@ -68,6 +85,7 @@ class NoMansSky: public OWActor
 	std::vector<glm::vec3> createRandomVectors(const AABB& world,
 					unsigned int count, float scaleToWorld);
 protected:
+	void doInit() override;
 	virtual NoMansSkyData* data()
 	{
 		return static_cast<NoMansSkyData*>(script()->data());

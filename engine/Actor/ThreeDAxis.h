@@ -6,14 +6,20 @@
 
 class TextComponent;
 
-struct OWENGINE_API OWThreeDAxisData: public OWActorData
+struct OWENGINE_API OWThreeDAxisDataImp
 {
-	glm::vec4 Colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
-	std::string AxisName;
-	std::string Font = std::string("arial.ttf");
-	AABB Bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
+	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
+	std::string axisName;
+	std::string font = std::string("arial.ttf");
+	AABB bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
 	AABB axisSize;
+	AABB world;
 	bool useGlobalBounds = false;
+};
+
+struct OWENGINE_API OWThreeDAxisData : public OWActorData
+{
+	OWThreeDAxisDataImp axisData;
 };
 
 class OWENGINE_API OWThreeDAxisScript: public OWActorScript
@@ -33,6 +39,7 @@ protected:
 	}
 public:
 	ThreeDAxis(Scene* _scene, OWThreeDAxisScript* _script);
+	void doInit() override;
 	const OWThreeDAxisData* constData() const
 	{
 		return static_cast<const OWThreeDAxisData*>(script()->data());

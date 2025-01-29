@@ -10,7 +10,7 @@ class OWActor;
 
 struct OWENGINE_API MeshComponentHeavyData: public OWSceneComponentData
 {
-	ShaderData* shaderData;
+	ShaderData shaderData;
 	MeshDataHeavy meshData;
 	unsigned int vertexMode;
 	unsigned int vertexLocation;
@@ -21,7 +21,7 @@ class OWENGINE_API MeshComponentHeavy: public OWSceneComponent
 protected:
 	MeshComponentHeavyData* data() override
 	{
-		return static_cast<MeshComponentHeavyData*>(data());
+		return static_cast<MeshComponentHeavyData*>(OWSceneComponent::data());
 	}
 public:
 	MeshComponentHeavy(OWActor* _owner, MeshComponentHeavyData* _data)
@@ -29,7 +29,7 @@ public:
 	}
 	const MeshComponentHeavyData* constData() const override
 	{
-		return static_cast<const MeshComponentHeavyData*>(constData());
+		return static_cast<const MeshComponentHeavyData*>(OWSceneComponent::constData());
 	}
 	void init() override;
 private:

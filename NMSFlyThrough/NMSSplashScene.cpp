@@ -14,18 +14,18 @@
 #include <Core/Movie.h>
 #include <Core/LogStream.h>
 
-#include <Actor/OWActor.h>
+#include <Actor/StaticSceneryActor.h>
 #include <Actor/CollisionSystem.h>
 #include <Actor/OcTree.h>
 #include <Actor/ThreeDAxis.h>
 #include <Actor/Button.h>
 #include <Component/BoxComponent.h>
+#include <Component/PlaneComponent.h>
+#include <Component/RayComponent.h>
 #include <Component/MeshComponentHeavy.h>
-#include <Component/TextData.h>
-#include <Geometry/Particle.h>
-#include <Geometry/Plane.h>
+#include <Component/MeshComponentLight.h>
+#include <Component/TextComponent.h>
 #include <Geometry/GeometricShapes.h>
-#include <Geometry/Ray.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/ModelData.h>
@@ -35,9 +35,9 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-//#define INCLUDE_FULLSCREEN
+#define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
-//#define INCLUDE_ENJOY
+#define INCLUDE_ENJOY
 int GDEBUG_PICKING = 1;
 //#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
@@ -51,14 +51,15 @@ TextComponent* gEnjoy = nullptr;
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
 
-OWActor* mScenery = nullptr;
+StaticSceneryActor* mScenery = nullptr;
 
 void makeGlobals(Scene* owner)
 {
 	if (mScenery == nullptr)
 	{
-		mScenery = new OWActor(owner, glm::vec3(0));
-		mScenery->name("Scenery");
+		StaticSceneryData* data = new StaticSceneryData();
+		StaticSceneryScript* script = new StaticSceneryScript(data);
+		mScenery = new StaticSceneryActor(owner, script);
 //		mOctTree = new OcTree();
 	}
 }
@@ -78,7 +79,7 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	std::string dummy;
 	fixedTimeStep(dummy, dt);
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
-	CollisionSystem::tick(timeStep);
+	//CollisionSystem::tick(timeStep);
 	CollisionSystem::collide();
 }
 
@@ -91,7 +92,7 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off * bf));
 	CollisionSystem::refresh();
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
-	CollisionSystem::tick(timeStep);
+	//CollisionSystem::tick(timeStep);
 	CollisionSystem::collide();
 #ifdef INCLUDE_WELCOME
 #endif
@@ -133,8 +134,11 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			glm::vec3 normMouse = glm::normalize(mousePos);
 			glm::vec3 cam_pos = camera->position();
 			glm::vec3 dir = mousePos - cam_pos;
-			Ray* r = new Ray(mScenery, cam_pos, normMouse);
-			r->prepare({ 0.7, 0.7, 0.0, 1.0f });
+			RayComponentData* rcd = new RayComponentData();
+			rcd->colour = { 0.7, 0.7, 0.0, 1.0f };
+			rcd->direction = normMouse;
+			rcd->origin = cam_pos;
+			RayComponent* r = new RayComponent(mScenery, rcd);
 
 			glm::vec3 normal;
 			float distance;
@@ -142,19 +146,19 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			glm::vec3 intersectPoint(0);
 			if (gBox != nullptr)
 			{
-				intersects = r->intersects(gBox->bounds(), normal, distance);
+				intersects = r->intersects(gBox->constData()->boundingBox, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
 				LogStream(LogStreamLevel::Info) << "box intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
 			}
 			if (gWelcome != nullptr)
 			{
-				intersects = r->intersects(gWelcome->bounds(), normal, distance);
+				intersects = r->intersects(gWelcome->constData()->boundingBox, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
 				LogStream(LogStreamLevel::Info) << "Welcome intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
 			}
 			if (gEnjoy != nullptr)
 			{
-				intersects = r->intersects(gEnjoy->bounds(), normal, distance);
+				intersects = r->intersects(gEnjoy->constData()->boundingBox, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
 				LogStream(LogStreamLevel::Info) << "Enjoy intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
 			}
@@ -194,39 +198,40 @@ BoxComponent* createBox(const std::string& _name, const glm::vec4& colour, const
 {
 	BoxComponentData* bcd = new BoxComponentData();
 	bcd->polygonMode = GL_FILL;
-	bcd->shaderData->shaderV = "Wires.v.glsl";
-	bcd->shaderData->shaderF = "Wires.f.glsl";
-	bcd->shaderData->shaderV = "";
-	bcd->shaderData->PVMName = "";
-	bcd->shaderData->projectionName = "projection";
-	bcd->shaderData->viewName = "view";
-	bcd->shaderData->modelName = "model";
-	bcd->shaderData->uniforms.push_back({ ShaderDataUniforms::UV4F, "lightColor", glm::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE)) });
-	bcd->shaderData->uniforms.push_back({ ShaderDataUniforms::UV4F, "objectColor", glm::to_string(colour) });
-	bcd->shaderData->uniforms.push_back({ ShaderDataUniforms::UV3F, "viewLightPos", glm::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
+	bcd->shaderData.shaderV = "Wires.v.glsl";
+	bcd->shaderData.shaderF = "Wires.f.glsl";
+	bcd->shaderData.shaderV = "";
+	bcd->shaderData.PVMName = "";
+	bcd->shaderData.projectionName = "projection";
+	bcd->shaderData.viewName = "view";
+	bcd->shaderData.modelName = "model";
+	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "lightColor", glm::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE)) });
+	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "objectColor", glm::to_string(colour) });
+	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV3F, "viewLightPos", glm::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
 	bcd->scale = scale;
 	bcd->name = _name;
-	bcd->moveData.velocity = direction * speed;
+	bcd->physics.velocity = direction * speed;
 	BoxComponent* box = new BoxComponent(mScenery, bcd);
 	gBox = box;
 	return box;
 }
 
-Plane* createBumperPlane(const std::string& _name, const glm::vec3& pos, float scale, float rotDegrees, const glm::vec3& rotAxis)
+PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos, float scale, float rotDegrees, const glm::vec3& rotAxis)
 {
-	Plane* p = new Plane(mScenery, pos);
-	p->mMoveable = false;
-	p->name(_name);
-	glm::vec4 colour({ 1.0f, 0.33f, 0.33f, 0.2f });
-	p->prepare(colour);
-	p->scale(glm::vec3(scale));
-	p->rotate(rotDegrees, rotAxis);
+	PlaneComponentData* pcd = new PlaneComponentData();
+	pcd->colour = { 1.0f, 0.33f, 0.33f, 0.2f };
+	pcd->physics.position = pos;
+	pcd->name = _name;
+	pcd->scale = glm::vec3(scale);
+	glm::rotate(pcd->physics.localMatrix, glm::radians(rotDegrees), rotAxis);
+	pcd->canMove = false;
+	PlaneComponent* p = new PlaneComponent(mScenery, pcd);
 	return p;
 }
 
 void NMSSplashScenePhysics::setup()
 {
-	std::vector<OWMovableComponent*> addToOcTree;
+	std::vector<OWIPhysical*> addToOcTree;
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 100.0f;
@@ -267,31 +272,37 @@ void NMSSplashScenePhysics::setup()
 
 #ifdef INCLUDE_WELCOME
 	
-	glm::vec3 direction1 = Compass::Rose[Compass::North] +
+	TextComponentData* welcomeData = new TextComponentData();
+	welcomeData->textData.tdt = TextData::TextDisplayType::Dynamic;
+	glm::vec3 velocity = Compass::Rose[Compass::North] +
 		Compass::Rose[Compass::East] +
-		Compass::Rose[Compass::In];
-	TextComponent* welcome = new TextComponent(mScenery, glm::vec3(0), TextComponent::Dynamic);
-	//welcome->velocity(direction1, mSpeed);
-	welcome->font("arial.ttf", fontHeight);
-	welcome->colour({ 0.0, 0.0, 0.0, 1.0f });
-	welcome->spacing(10 * nice.x, 10 * nice.y, scale);
-	welcome->text("Welcome to reality.");
-	welcome->prepare();
+		Compass::Rose[Compass::In] * mSpeed;
+	//welcomeData->physics.velocity = velocity;
+	welcomeData->textData.fontName = "arial.ttf";
+	welcomeData->textData.fontHeight = fontHeight;
+	welcomeData->textData.colour = { 0.0, 0.0, 0.0, 1.0f };
+	welcomeData->textData.fontSpacing = { 10 * nice.x, 10 * nice.y };
+	welcomeData->textData.fontScale = scale;
+	welcomeData->textData.text = "Welcome to reality.";
+	TextComponent* welcome = new TextComponent(mScenery, welcomeData);
 	addToOcTree.push_back(welcome);
 	gWelcome = welcome;
 #endif
 	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
 	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
 #ifdef INCLUDE_ENJOY
-	glm::vec3 direction2 = Compass::Rose[Compass::South] +
-		Compass::Rose[Compass::West];
-	TextComponent* enjoy = new TextComponent(mScenery, glm::vec3(0, 0, 0), TextComponent::Static);
-	//enjoy->velocity(direction2, mSpeed / 20.0F);
-	enjoy->font("arial.ttf", fontHeight);
-	enjoy->colour({ 0.1, 0.9, 0.1, 1.0 });
-	enjoy->spacing(nice.x, nice.y, scale);
-	enjoy->text("Enjoy it while you can.");
-	enjoy->prepare();
+	TextComponentData* enjoyData = new TextComponentData();
+	welcomeData->textData.tdt = TextData::TextDisplayType::Static;
+	glm::vec3 velocity2 = Compass::Rose[Compass::South] +
+		Compass::Rose[Compass::West] * mSpeed / 20.0f;
+	//enjoyData->physics.velocity = velocity2;
+	enjoyData->textData.fontName = "arial.ttf";
+	enjoyData->textData.fontHeight = fontHeight;
+	enjoyData->textData.colour = { 0.1, 0.9, 0.1, 1.0 };
+	enjoyData->textData.fontSpacing = { nice.x, nice.y };
+	enjoyData->textData.fontScale = scale;
+	enjoyData->textData.text = "Enjoy it while you can.";
+	TextComponent* enjoy = new TextComponent(mScenery, enjoyData);
 	addToOcTree.push_back(enjoy);
 	gEnjoy = enjoy;
 #endif
@@ -395,16 +406,17 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 
 #endif
 #ifdef INCLUDE_FULLSCREEN
-	MeshComponent* fullScreen = new MeshComponent(mScenery, glm::vec3(0));
-	fullScreen->name("Fullscreen");
-	fullScreen->renderBoundingBox(false);
-	Shader* sh = new Shader("thebookofshaders.v.glsl",
-		"thebookofshaders.f.glsl",
-		"thebookofshaders_square.g.glsl");
-	sh->setStandardUniformNames("pvm");
+	MeshComponentLightData* mcd = new MeshComponentLightData();
+	mcd->name = "Fullscreen";
+	ShaderData* sd = new ShaderData();
+	sd->shaderV = "thebookofshaders.v.glsl";
+	sd->shaderF = "thebookofshaders.f.glsl";
+	sd->shaderG = "thebookofshaders_square.g.glsl";
+	sd->PVMName = "pvm";
 	std::vector<glm::vec4> pts;
 	pts.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
-	fullScreen->setup(pts, sh, GL_POINTS, 0);
+	mcd->meshData.vertices(pts, GL_POINTS, 0);
+	//fullScreen->renderBoundingBox(false);
 	auto fullScreenRender = [](
 		const glm::mat4& OW_UNUSED(proj),
 		const glm::mat4& OW_UNUSED(view),
@@ -422,8 +434,9 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 			glm::vec2 vv = globals->physicalWindowSize();
 			shader->setVector2f("u_resolution", vv);
 		};
-	sh->appendMutator(fullScreenRender);
-	sh->appendResizer(fullScreenResize);
+	sd->mutatorCallbacks.push_back(fullScreenRender);
+	sd->resizeCallbacks.push_back(fullScreenResize);
+	MeshComponentLight* fullScreen = new MeshComponentLight(mScenery, mcd);
 #endif
 
 #ifdef INCLUDE_STAR_RENDER

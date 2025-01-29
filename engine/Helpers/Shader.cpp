@@ -20,9 +20,6 @@
 
 #include "ShaderFactory.h"
 
-Shader::Shader()
-{}
-
 Shader::Shader(ShaderData* _data)
 	:mData(_data)
 {
@@ -35,7 +32,7 @@ Shader::Shader(ShaderData* _data)
 
 	create(mData->shaderV, mData->shaderF, mData->shaderG);
 		
-	setStandardUniformNames(mData->shaderPVM, mData->shaderProjection, mData->shaderView, mData->shaderModel);
+	setStandardUniformNames(mData->PVMName, mData->projectionName, mData->viewName, mData->modelName);
 }
 
 Shader::~Shader()
@@ -47,6 +44,16 @@ void Shader::debugPrint()
 	Logger::print_all(mShaderProgram);
 }
 
+void Shader::appendMutator(RenderTypes::ShaderMutator pfunc)
+{
+	mData->mutatorCallbacks.push_back(pfunc);
+}
+
+void Shader::appendResizer(RenderTypes::ShaderResizer pfunc)
+{
+	mData->resizeCallbacks.push_back(pfunc);
+}
+
 void Shader::callMutators(const glm::mat4& proj, const glm::mat4& view,
 	const glm::mat4& model, const glm::vec3& cameraPos, RenderTypes::ShaderMutator renderCb) const
 {
@@ -55,7 +62,7 @@ void Shader::callMutators(const glm::mat4& proj, const glm::mat4& view,
 	{
 		renderCb(proj, view, model, cameraPos, this);
 	}
-	for (auto& cb : mMutatorCallbacks)
+	for (auto& cb : mData->mutatorCallbacks)
 	{
 		cb(proj, view, model, cameraPos, this);
 	}
@@ -99,7 +106,7 @@ void Shader::callResizers(RenderTypes::ShaderResizer resizeCb) const
 				std::bind(&Shader::scaleByAspectRatio, this, std::placeholders::_1),
 				aspectRatio());
 		}
-		for (auto& cb : mResizeCallbacks)
+		for (auto& cb : mData->resizeCallbacks)
 		{
 			cb(this, std::bind(&Shader::scaleByAspectRatio,
 				this, std::placeholders::_1),

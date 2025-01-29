@@ -3,11 +3,11 @@
 #include <Cameras/Camera.h>
 #include <Core/GlobalSettings.h>
 
-#include <Renderers/TextData.h>
+#include <Component/TextComponent.h>
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/MeshDataLight.h>
 #include <Helpers/ShaderFactory.h>
-#include <Helpers/LightSource.h>
+#include <Component/LightSource.h>
 
 #include "NMSUserInput.h"
 #include "ropes.h"
@@ -16,23 +16,28 @@ void NMSRopeScenePhysics::setup()
 {
 	const AABB& _world = NMSScene::world();
 	OWRopeData* rd = new OWRopeData();
-	rd->RopeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
+	OWRopeDataImp* rdi = &rd->ropeData;
+	rdi->bannerText = "Rope Text";
+	rdi->ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
-	OWRopeScript* rs = new OWRopeScript(rd);
-	Rope* rope = new Rope(this->owner(), glm::vec3(0));
-	glm::vec2 ropeZoom = 
-	int fontHeight = 24;
-	glm::vec2 niceTextSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
-		fontHeight, globals->camera()->aspectRatio());
-	glm::vec2 niceTextScale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
+	rdi->textData.fontHeight = 24;
+	rdi->textData.fontSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
+		rdi->textData.fontHeight, globals->camera()->aspectRatio());
+	rdi->textData.fontScale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
 						5.2f * _world.size().y / globals->physicalWindowSize().y };
 	/*
 	* 30822 - simple
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	rope->prepareRope(9239, ropeZoom.x, ropeZoom.y, 45, fontHeight, niceTextSpacing, niceTextScale);
-	rope->visualComponents(true, false, true, false);
+	rdi->ropeDBId = 9239;
+	rdi->numDepthLayers = 45;
+	rd->ropeVisibility.ends = true;
+	rd->ropeVisibility.lines = false;
+	rd->ropeVisibility.surfaces = true;
+	rd->ropeVisibility.labels = false;
+	OWRopeScript* rs = new OWRopeScript(rd);
+	Rope* rope = new Rope(this->owner(), rs);
 	owner()->mRootNode.push_back(rope);
 	mCameraFocus = rope->bounds().center();
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);

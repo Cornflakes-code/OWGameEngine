@@ -85,15 +85,19 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	sp->mCameraPosition = movie()->camera()->position();
 	sp->mLookAt = { 0,0,0 };
+	NoMansSkyData* nmsData = new NoMansSkyData();
+	NMSScript* nmsScript = new NMSScript(nmsData);
+		
+	nmsData->nmsData.starFile = ResourcePathFactory().appendPath("NMSMap.txt",
+		ResourcePathFactory::ResourceType::UnknownType).string();
+	nmsData->nmsData.starWorld = world();
+	NoMansSky* starMap = new NoMansSky(this, nmsScript);
 
-	NoMansSky* starMap = new NoMansSky(this, glm::vec3(0));
-	std::filesystem::path p
-		= ResourcePathFactory().appendPath("NMSMap.txt", 
-				ResourcePathFactory::ResourceType::UnknownType);
-	starMap->setUp(p.string(), world());
 	mRootNode.push_back(starMap);
-	ThreeDAxis* axis = new ThreeDAxis(this, glm::vec3(0));
-	axis->createAxisData(world());
+	OWThreeDAxisData* threeDAxisData = new OWThreeDAxisData();
+	threeDAxisData->axisData.world = world();
+	OWThreeDAxisScript* threeDAxisDataScript = new OWThreeDAxisScript(threeDAxisData);
+	ThreeDAxis* axis = new ThreeDAxis(this, threeDAxisDataScript);
 	mRootNode.push_back(axis);
 }
 

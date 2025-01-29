@@ -125,7 +125,7 @@ void FreeTypeFontAtlas::FontDetails::calcTextureSize(
 	unsigned int rowWidth = 0;
 	unsigned int rowHeight = 0;
 
-	// Find minimum size for a texture holding all visible ASCII characters
+	// Find minimum size for a texture holding all visibility ASCII characters
 	for (uint8_t i = 32; i < 128; i++)
 	{
 		if (FT_Load_Char(face, i, FT_LOAD_RENDER))

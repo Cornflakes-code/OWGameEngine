@@ -10,8 +10,8 @@ class OWActor;
 
 struct OWENGINE_API MeshComponentLightData: public OWSceneComponentData
 {
-	ShaderData* shaderData;
-	MeshDataLight* meshData;
+	ShaderData shaderData;
+	MeshDataLight meshData;
 };
 
 class OWENGINE_API MeshComponentLight: public OWSceneComponent
@@ -19,7 +19,7 @@ class OWENGINE_API MeshComponentLight: public OWSceneComponent
 protected:
 	MeshComponentLightData* data() override
 	{
-		return static_cast<MeshComponentLightData*>(data());
+		return static_cast<MeshComponentLightData*>(OWSceneComponent::data());
 	}
 public:
 	MeshComponentLight(OWActor* _owner, MeshComponentLightData* _data)
@@ -27,7 +27,7 @@ public:
 	}
 	const MeshComponentLightData* constData() const override
 	{
-		return static_cast<const MeshComponentLightData*>(constData());
+		return static_cast<const MeshComponentLightData*>(OWSceneComponent::constData());
 	}
 	void init() override;
 private:

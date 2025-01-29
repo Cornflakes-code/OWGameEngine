@@ -26,9 +26,10 @@ struct OWENGINE_API ButtonData: public OWActorData
 class OWENGINE_API ButtonScript: public OWActorScript
 {
 protected:
-	ButtonData* mData = nullptr;
 public:
-	friend class OWActor;
+	ButtonScript(ButtonData* _data)
+		: OWActorScript(_data) 
+	{}
 };
 
 class OWButton : public OWActor

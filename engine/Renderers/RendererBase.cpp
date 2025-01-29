@@ -2,9 +2,7 @@
 
 #include "../Core/ErrorHandling.h"
 #include "../Core/GlobalSettings.h"
-
 #include "../Helpers/Shader.h"
-
 
 void RendererBase::validateBase() const
 {

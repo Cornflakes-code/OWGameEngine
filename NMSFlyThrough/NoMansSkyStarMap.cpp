@@ -18,7 +18,7 @@
 #include <Core/GlobalSettings.h>
 
 #include <Geometry/GeometricShapes.h>
-#include <Component/TextData.h>
+#include <Component/TextComponent.h>
 
 #include <Renderers/InstanceRenderer.h>
 #include <Renderers/TextRendererStatic.h>
@@ -27,11 +27,32 @@
 #define DEBUG_GRID
 #define DEBUG_STARS
 
+void NMSScript::tick(float deltaSecods) {}
+
+void NMSScript::begin()
+{
+}
+
+void NMSScript::end()
+{
+}
+void NMSScript::destroy()
+{
+}
+void NMSScript::doInit()
+{
+}
+
 NoMansSky::NoMansSky(Scene* _owner, NMSScript* _data)
 : OWActor(_owner, _data)
 {
 	mStarRadius = glm::vec2(0, 0);
-	name(data()->name);
+	name(data()->nmsData.name);
+}
+
+void NoMansSky::doInit()
+{
+	setUp(data()->nmsData.starFile, data()->nmsData.starWorld);
 }
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)
@@ -42,7 +63,7 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
-	MeshComponent* grid = new MeshComponent(this, data()->meshData);
+	MeshComponentLight* grid = new MeshComponentLight(this, &data()->nmsData.meshComponentLightData);
 #endif
 
 #ifdef DEBUG_STARS
@@ -72,8 +93,8 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	}
 	mdi.colours(instanceColours, instanceColours.size(), 2);
 
-	Shader* starShader = new Shader(data()->starShader);
-	MeshComponent* stars = new MeshComponent(this, data()->meshData);
+	Shader* starShader = new Shader(&data()->nmsData.starShader);
+	MeshComponentInstance* stars = new MeshComponentInstance(this, &data()->nmsData.meshComponentInstanceData);
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),

@@ -18,6 +18,7 @@ class OWENGINE_API VAOBuffer : public RendererBase
 {
 public:
 	enum RenderType { DRAW_NONE, DRAW_ARRAYS, DRAW_MULTI, DRAW_PRIMITIVE };
+	VAOBuffer();
 	VAOBuffer(Shader* shader, RenderType rt);
 	void clear();
 	void add(const MeshDataLight* meshData);

@@ -10,7 +10,7 @@ class OWActor;
 
 struct OWENGINE_API MeshComponentVec4Data: public OWSceneComponentData
 {
-	ShaderData* shaderData;
+	ShaderData shaderData;
 	std::vector<glm::vec4> meshData;
 	unsigned int vertexMode;
 	unsigned int vertexLocation;
@@ -21,7 +21,7 @@ class OWENGINE_API MeshComponentVec4: public OWSceneComponent
 protected:
 	MeshComponentVec4Data* data() override
 	{
-		return static_cast<MeshComponentVec4Data*>(data());
+		return static_cast<MeshComponentVec4Data*>(OWSceneComponent::data());
 	}
 public:
 	MeshComponentVec4(OWActor* _owner, MeshComponentVec4Data* _data)
@@ -29,7 +29,7 @@ public:
 	}
 	const MeshComponentVec4Data* constData() const override
 	{
-		return static_cast<const MeshComponentVec4Data*>(constData());
+		return static_cast<const MeshComponentVec4Data*>(OWSceneComponent::constData());
 	}
 	void init() override;
 private:

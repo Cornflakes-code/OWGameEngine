@@ -7,13 +7,26 @@
 
 #include "../Helpers/MeshDataLight.h"
 #include "../Helpers/Shader.h"
-#include "../Renderers/TextData.h"
+#include "../Component/TextComponent.h"
+
+static ShaderData* getDynamicTextData()
+{
+	static ShaderData shaderData;
+	static bool firstTime = true;
+	if (firstTime)
+	{
+		firstTime = false;
+		shaderData.shaderV = "textDynamicBillboard.v.glsl";
+		shaderData.shaderF = "text.f.glsl";
+		shaderData.shaderG = "";
+		shaderData.PVMName = "VP";
+	}
+	return &shaderData;
+}
 
 TextRendererDynamic::TextRendererDynamic()
-	: TextRenderer(new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", ""), 
-					"VP")
+	: TextRenderer(new Shader(getDynamicTextData()))
 {
-	shader()->setStandardUniformNames("VP");
 }
 
 void TextRendererDynamic::doSetup(const TextComponent* td, const glm::vec3& initialPosition)

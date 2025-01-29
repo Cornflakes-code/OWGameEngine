@@ -9,24 +9,24 @@
 
 #include "../Helpers/Shader.h"
 
-void LightRenderer::setup(const MeshDataLight* meshData)
+void LightRenderer::setup(const MeshDataLight& meshData)
 {
 	const float* ff = nullptr;
 	unsigned int vertexSize = 0;
-	validate(meshData);
-	mData = meshData->mRenderData;
-	if (!meshData->mVec3.empty())
+	validate(&meshData);
+	mData = meshData.mRenderData;
+	if (!meshData.mVec3.empty())
 	{
-		const glm::vec3* p = meshData->mVec3.data();
+		const glm::vec3* p = meshData.mVec3.data();
 		ff = glm::value_ptr(*p);
-		mData.verticesCount = meshData->mVec3.size();
+		mData.verticesCount = meshData.mVec3.size();
 		vertexSize = 3;
 	}
-	else if (!meshData->mVec4.empty())
+	else if (!meshData.mVec4.empty())
 	{
-		const glm::vec4* p = meshData->mVec4.data();
+		const glm::vec4* p = meshData.mVec4.data();
 		ff = glm::value_ptr(*p);
-		mData.verticesCount = meshData->mVec4.size();
+		mData.verticesCount = meshData.mVec4.size();
 		vertexSize = 4;
 	}
 	validateBase();
@@ -43,13 +43,13 @@ void LightRenderer::setup(const MeshDataLight* meshData)
 		shader()->setVector4f(mData.shaderColourName, mData.colour);
 	}
 
-	if (!meshData->mIndices.empty())
+	if (!meshData.mIndices.empty())
 	{
 		glGenBuffers(1, &mEbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(unsigned int) * static_cast<GLsizei>(meshData->mIndices.size()),
-			meshData->mIndices.data(), GL_STATIC_DRAW);
+			sizeof(unsigned int) * static_cast<GLsizei>(meshData.mIndices.size()),
+			meshData.mIndices.data(), GL_STATIC_DRAW);
 	}
 	glVertexAttribPointer(mData.vertexLocation,
 		vertexSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -76,7 +76,7 @@ void LightRenderer::setup(const std::vector<glm::vec3>& v,
 	mdl.mRenderData.indicesMode = 0;
 	mdl.mRenderData.vertexMode = vertexMode;
 	mdl.mRenderData.vertexLocation = vertexLocation;
-	setup(&mdl);
+	setup(mdl);
 }
 
 void LightRenderer::setup(const std::vector<glm::vec4>& v,
@@ -89,7 +89,7 @@ void LightRenderer::setup(const std::vector<glm::vec4>& v,
 	mdl.mRenderData.indicesMode = 0;
 	mdl.mRenderData.vertexMode = vertexMode;
 	mdl.mRenderData.vertexLocation = vertexLocation;
-	setup(&mdl);
+	setup(mdl);
 }
 
 void LightRenderer::doRender() const

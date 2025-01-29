@@ -3,7 +3,6 @@
 #include <Renderers/LightRenderer.h>
 #include <Renderers/VAOBuffer.h>
 
-#include <Helpers/Shader.h>
 #include <Helpers/ShaderFactory.h>
 #include <Geometry/GeometricShapes.h>
 
@@ -22,12 +21,12 @@ const std::string& lightSourceVertexShader()
     });
     return s;
 }
-;
 
-LightSource::LightSource(OWActor* _owner, const glm::vec3& _position)
-    : OWSceneComponent(_owner, _position)
+
+LightSource::LightSource(OWActor* _owner, LightSourceData* _data)
+    : OWComponent(_owner), mData(_data)
 {
-    name("Light");
+        name(_data->name);
 /*
     shader->loadBoilerPlates(),
     shader->setStandardUniformNames("pvm");
@@ -39,27 +38,19 @@ LightSource::~LightSource()
 
 }
 
-void LightSource::prepare()
+void LightSource::init()
 {
     /*
     * An alternate way to draw spheres with triangles is at:
     * http://www.songho.ca/opengl/gl_sphere.html
     */
-    Shader* sh = new Shader();
-    sh->loadShaders(
-        "sphere.v.glsl",
-        "sphere.f.glsl",
-        ShaderFactory::boilerPlateGeometryShader());
-    sh->setStandardUniformNames("pvm", "perspective", "view", "model", "camPos");
-    sh->setVector3f("sphereCenter", position(), true);
+    Shader* sh = new Shader(&mData->shaderData);
     MeshDataLight lineData;
-    std::vector<glm::vec3> vertices = GeometricShapes::cube(position());
+    std::vector<glm::vec3> vertices = GeometricShapes::cube(mData->position);
     AABB b = AABB(vertices);
-    bounds(b);
     lineData.vertices(vertices, GL_TRIANGLES);
 
     VAOBuffer* vao = new VAOBuffer(sh, VAOBuffer::DRAW_ARRAYS);
     vao->add(&lineData);
     vao->prepare();
-    addRenderer(vao);
 }

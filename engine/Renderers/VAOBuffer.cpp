@@ -18,6 +18,11 @@ https://fgiesen.wordpress.com/2011/07/01/a-trip-through-the-graphics-pipeline-20
 
 unsigned int VAOBuffer::mPrimitiveRestart = 0xFFFF;
 
+VAOBuffer::VAOBuffer()
+	: VAOBuffer(nullptr, DRAW_NONE) 
+{
+}
+
 VAOBuffer::VAOBuffer(Shader* shader, RenderType rt)
 	: RendererBase(shader)
 {

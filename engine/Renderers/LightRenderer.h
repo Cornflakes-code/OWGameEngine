@@ -16,7 +16,7 @@ class OWENGINE_API LightRenderer : public RendererBase
 public:
 	LightRenderer(Shader* shader)
 		: RendererBase(shader) {}
-	void setup(const MeshDataLight* meshData);
+	void setup(const MeshDataLight& meshData);
 	void setup(const std::vector<glm::vec3>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0);
 	void setup(const std::vector<glm::vec4>& v,

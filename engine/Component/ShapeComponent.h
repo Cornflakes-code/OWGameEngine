@@ -9,7 +9,7 @@
 
 struct OWENGINE_API ShapeComponentData: public OWSceneComponentData
 {
-	ShaderData* shaderData;
+	ShaderData shaderData;
 	glm::vec4 colour;
 	unsigned int polygonMode = GL_LINE;
 };
@@ -19,12 +19,12 @@ class OWENGINE_API ShapeComponent: public OWSceneComponent
 protected:
 	ShapeComponentData* data()
 	{
-		return static_cast<ShapeComponentData*>(data());
+		return static_cast<ShapeComponentData*>(OWSceneComponent::data());
 	}
 public:
 	const ShapeComponentData* constData() const
 	{
-		return static_cast<const ShapeComponentData*>(constData());
+		return static_cast<const ShapeComponentData*>(OWSceneComponent::constData());
 	}
 
 	ShapeComponent(OWActor* _owner, ShapeComponentData* _data)

@@ -5,7 +5,7 @@
 #include "../Helpers/Shader.h"
 #include "../Renderers/VAOBuffer.h"
 #include "../Renderers/TextRendererStatic.h"
-#include "../Component/TextData.h"
+#include "../Component/TextComponent.h"
 
 OWButton::OWButton(Scene* _owner, ButtonScript* _data)
 	:OWActor(_owner, _data)
@@ -20,19 +20,9 @@ void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 {
 	throw NMSException("Incomplete function");
 	ShaderData* shd = new ShaderData("button.v.glsl", "button.f.glsl", "", "pvm");
-	Shader* sh = new Shader(shd);
-	VAOBuffer* vao = new VAOBuffer(sh, VAOBuffer::DRAW_ARRAYS);
-	MeshDataLight lineData;
-	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
-	lineData.polygonMode(GL_FILL);
-	vao->add(&lineData);
-	TextComponentData* tdc = new TextComponentData();
-	tdc->textData.tdt = TextData::TextDisplayType::Static;
-	tdc->position = glm::vec3(10);
-	TextComponent* td = new TextComponent(this, tdc);
 	if (false)
 	{
-		sh->appendMutator([position](const glm::mat4& proj, const glm::mat4& view,
+		auto mut = [position](const glm::mat4& proj, const glm::mat4& view,
 			const glm::mat4& model, const glm::vec3& cameraPos,
 			const Shader* shader)
 			{
@@ -42,8 +32,19 @@ void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 				shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
 				glm::mat4 newModel = glm::translate(model, position);
 				shader->setVector3f("BillboardPos", newModel[3]);
-			});
+			};
+		shd->mutatorCallbacks.push_back(mut);
 	}
+	Shader* sh = new Shader(shd);
+	VAOBuffer* vao = new VAOBuffer(sh, VAOBuffer::DRAW_ARRAYS);
+	MeshDataLight lineData;
+	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
+	lineData.polygonMode(GL_FILL);
+	vao->add(&lineData);
+	TextComponentData* tdc = new TextComponentData();
+	tdc->textData.tdt = TextData::TextDisplayType::Static;
+	tdc->physics.position = glm::vec3(10);
+	TextComponent* td = new TextComponent(this, tdc);
 }
 
 void OWButton::textures()

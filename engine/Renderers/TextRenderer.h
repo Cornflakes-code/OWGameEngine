@@ -18,7 +18,7 @@ class TextComponent;
 class OWENGINE_API TextRenderer: public RendererBase
 {
 public:
-	TextRenderer(Shader* shader, const std::string& pvm);
+	TextRenderer(Shader* shader);
 	void setup(const TextComponent* td, 
 				const glm::vec3& initialPosition = glm::vec3(0.0f, 0.0f, 0.0f));
 	AABB bounds() const { return mBounds; }

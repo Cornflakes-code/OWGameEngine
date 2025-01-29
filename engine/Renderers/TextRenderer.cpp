@@ -5,18 +5,18 @@
 #include "../Helpers/FontFactory.h"
 #include "../Helpers/MeshDataLight.h"
 #include "../Helpers/Shader.h"
-#include "../Renderers/TextData.h"
+#include "../Component/TextComponent.h"
 
 AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 {
 	AABB bounds(v4);
 
 	glm::vec4 displacement = glm::vec4(0);
-	if (mReferencePos  & TextComponent::PositionType::Left)
+	if (mReferencePos  & TextData::PositionType::Left)
 	{
 		displacement.x = -bounds.minPoint().x;
 	}
-	else if (mReferencePos & TextComponent::PositionType::Right)
+	else if (mReferencePos & TextData::PositionType::Right)
 	{
 		displacement.x = -bounds.maxPoint().x;
 	}
@@ -24,11 +24,11 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	{
 		displacement.x = -bounds.center().x;
 	}
-	if (mReferencePos & TextComponent::PositionType::Bottom)
+	if (mReferencePos & TextData::PositionType::Bottom)
 	{
 		displacement.y = -bounds.minPoint().y;
 	}
-	else if (mReferencePos & TextComponent::PositionType::Right)
+	else if (mReferencePos & TextData::PositionType::Right)
 	{
 		displacement.y = -bounds.maxPoint().y;
 	}
@@ -44,27 +44,26 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	return bounds;
 }
 
-TextRenderer::TextRenderer(Shader* sh, const std::string& pvm)
+TextRenderer::TextRenderer(Shader* sh)
 	: RendererBase(sh)
 {
-	if (sh != nullptr)
-		sh->setStandardUniformNames(pvm);
 }
 
-void TextRenderer::setup(const TextComponent* td, const glm::vec3& initialPosition)
+void TextRenderer::setup(const TextComponent* tc, const glm::vec3& initialPosition)
 {
-	validate(td);
+	const TextData* td = &(tc->constData()->textData);
+	validate(tc);
 	const FreeTypeFontAtlas::FontDetails* fontData
-		= FontFactory().loadFreeTypeFont(td->mFontFileName, td->mFontHeight);
-	std::vector<glm::vec4> v4 = fontData->createText(td->mText, td->mX, td->mY);
+		= FontFactory().loadFreeTypeFont(td->fontName, td->fontHeight);
+	std::vector<glm::vec4> v4 = fontData->createText(td->text, td->fontSpacing.x, td->fontSpacing.y);
 	if (v4.empty())
 	{
 		throw NMSLogicException(std::stringstream()
 			<< "No Triangles generated for Text ["
-			<< td->mText << "] is empty\n");
+			<< td->text << "] is empty\n");
 	}
-	mColour = td->mColour;
-	mBounds = adjustPosition(v4, td->mReferencePos);
+	mColour = td->colour;
+	mBounds = adjustPosition(v4, td->referencePos);
 
 	// render::glDrawArrays needs the size of the buffer. This allows v4 to be cleared
 	// if it is not going to be modified.
@@ -82,7 +81,7 @@ void TextRenderer::setup(const TextComponent* td, const glm::vec3& initialPositi
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 
 	shader()->use();
-	shader()->setVector4f("textcolor", td->mColour);
+	shader()->setVector4f("textcolor", td->colour);
 	unsigned int vertexLoc = shader()->getAttributeLocation("coord");
 	glVertexAttribPointer(vertexLoc,
 		4, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -99,7 +98,7 @@ void TextRenderer::setup(const TextComponent* td, const glm::vec3& initialPositi
 	// unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
 	blendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	doSetup(td, initialPosition);
+	doSetup(tc, initialPosition);
 }
 
 void TextRenderer::doRender() const
@@ -118,15 +117,17 @@ void TextRenderer::doRender() const
 	glBindTexture(mTexture.target(), 0);
 }
 
-void TextRenderer::validate(const TextComponent* td) const
+void TextRenderer::validate(const TextComponent* tc) const
 {
+	const TextData* td = &(tc->constData()->textData);
+
 	validateBase();
-	if (td->mText.empty())
+	if (td->text.empty())
 		throw NMSLogicException("Text to display is empty\n");
-	if (td->mFontFileName.empty())
+	if (td->fontName.empty())
 	{
 		throw NMSLogicException(std::stringstream()
 			<< "Font File name for Text ["
-			<< td->mText << "] is empty\n");
+			<< td->text << "] is empty\n");
 	}
 }

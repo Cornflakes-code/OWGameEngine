@@ -7,35 +7,28 @@
     </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{bc3dcc33-bad9-4cbf-bf97-97d2a6aa64d2}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Helpers">
       <UniqueIdentifier>{a964d0e7-cc05-42f8-82a3-f072a25ca177}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Renderers">
       <UniqueIdentifier>{5f7662ec-79d1-425f-a651-3ebd87cc7fcd}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Geometry">
       <UniqueIdentifier>{32b642c3-6164-474f-92f5-f4883521dab3}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Actor">
       <UniqueIdentifier>{5a1dff6d-234e-4370-ae69-3077eddcddc7}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Components">
       <UniqueIdentifier>{b4cbe810-ca26-4db9-8b9b-2182881a4f30}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Scripting">
       <UniqueIdentifier>{ce9cb59c-cdf1-442b-ab44-183803cc0ce1}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Global">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +143,9 @@
     <ClInclude Include="..\Core\SceneGraphNode.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\Helpers\LightSource.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
     <ClInclude Include="..\Core\Renderable.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -177,6 +173,12 @@
     <ClInclude Include="..\Geometry\OWBounding.h">
       <Filter>Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="..\Geometry\Particle.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Ray.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
     <ClInclude Include="..\Geometry\GeometricShapes.h">
       <Filter>Geometry</Filter>
     </ClInclude>
@@ -198,7 +200,13 @@
     <ClInclude Include="..\Renderers\HardwareBuffer.h">
       <Filter>Renderers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Component\MovableObject.h">
+      <Filter>Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\Component\OWComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\OWMovableComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Component\OWSceneComponent.h">
@@ -234,6 +242,9 @@
     <ClInclude Include="..\Scripting\OWScript.h">
       <Filter>Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="..\Component\TextData.h">
+      <Filter>Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\Component\MeshComponentHeavy.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -260,24 +271,6 @@
     </ClInclude>
     <ClInclude Include="..\Helpers\MeshDataInstance.h">
       <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\RayComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\ParticleComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\LightSource.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\TextComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\PhysicalComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Actor\StaticSceneryActor.h">
-      <Filter>Actor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -323,7 +316,13 @@
     <ClCompile Include="..\Component\MeshComponentVec4.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\Component\MovableObject.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
     <ClCompile Include="..\Component\OWComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\OWMovableComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Component\OWRenderableComponent.cpp">
@@ -336,6 +335,9 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Component\ShapeComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\TextData.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\CommonUtils.cpp">
@@ -416,6 +418,12 @@
     <ClCompile Include="..\Geometry\OWSphere.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="..\Geometry\Particle.cpp">
+      <Filter>Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Ray.cpp">
+      <Filter>Geometry</Filter>
+    </ClCompile>
     <ClCompile Include="..\Helpers\ComputeNormals.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
@@ -423,6 +431,9 @@
       <Filter>Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\FreeTypeFontAtlas.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\LightSource.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\Helpers\MacroRecorder.cpp">
@@ -502,27 +513,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c">
       <Filter>Global</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\RayComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\SphereComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\ParticleComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\LightSource.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\TextComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\PhysicalComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Actor\StaticSceneryActor.cpp">
-      <Filter>Actor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

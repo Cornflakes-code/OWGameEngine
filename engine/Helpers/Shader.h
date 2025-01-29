@@ -35,6 +35,8 @@ struct OWENGINE_API ShaderData
 	std::string viewName = "view";
 	std::string modelName = "model";
 	std::vector<ShaderDataUniforms> uniforms;
+	std::vector<RenderTypes::ShaderMutator> mutatorCallbacks;
+	std::vector<RenderTypes::ShaderResizer> resizeCallbacks;
 	ShaderData() {}
 	ShaderData(const std::string& _v, const std::string& _f, const std::string& _g, const std::string& _pvm)
 	: shaderV(_v), shaderF(_f), shaderG(_g), PVMName(_pvm)
@@ -54,8 +56,6 @@ class OWENGINE_API Shader //: public ResourceSource
 		CameraPosition
 	};
 	std::map<StandardUniforms, std::string> mUniforms;
-	std::vector<RenderTypes::ShaderMutator> mMutatorCallbacks;
-	std::vector<RenderTypes::ShaderResizer> mResizeCallbacks;
 	glm::vec2 scaleByAspectRatio(const glm::vec2& toScale) const;
 #pragma warning( pop )
 	// After scene::setup it is Ok to modify Renderers
@@ -66,11 +66,10 @@ class OWENGINE_API Shader //: public ResourceSource
 	float aspectRatio() const;
 	ShaderData* mData = nullptr;
 public:
-	Shader();
 	Shader(ShaderData* _data);
 	~Shader();
-	void appendMutator(RenderTypes::ShaderMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
-	void appendResizer(RenderTypes::ShaderResizer pfunc) { mResizeCallbacks.push_back(pfunc); }
+	void appendMutator(RenderTypes::ShaderMutator pfunc);
+	void appendResizer(RenderTypes::ShaderResizer pfunc);
 	void callMutators(const glm::mat4& proj, const glm::mat4& view,
 		const glm::mat4& model, const glm::vec3& cameraPos, RenderTypes::ShaderMutator renderCb) const;
 	void callResizers(RenderTypes::ShaderResizer resizeCb) const;

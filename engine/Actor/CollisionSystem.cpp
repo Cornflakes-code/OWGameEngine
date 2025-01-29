@@ -3,8 +3,8 @@
 #include <set>
 #include <algorithm>
 #include "OWActor.h"
-#include "../Component/OWMovableComponent.h"
-#include "../Geometry/Box.h"
+#include "../Component/PhysicalComponent.h"
+#include "../Component/BoxComponent.h"
 #include "../Core/LogStream.h"
 
 // spring mass system hookes law
@@ -213,20 +213,20 @@ namespace CollisionSystem
 	std::vector <OWCollisionData*> gStaticObjects;
 	std::vector <OWCollisionData*> gMoveableObjects;
 
-	Box* bbp = nullptr;
+	BoxComponent* bbp = nullptr;
 	static int ii = 10000;
 
-	void buildBasic(const std::vector<OWCollisionData*>& objects)
+	void buildBasic(const std::vector<OWIPhysical*>& objects)
 	{
-		for (OWCollisionData* o : objects)
+		for (OWIPhysical* o : objects)
 		{
-			if (o->canMove)
+			if (o->constData()->canMove)
 			{
-                gMoveableObjects.push_back(o);
+                gMoveableObjects.push_back(o->data());
             }
 			else
 			{
-                gStaticObjects.push_back(o);
+                gStaticObjects.push_back(o->data());
 			}
 		}
 	}
@@ -292,7 +292,7 @@ namespace CollisionSystem
 	}
 
 #endif
-	void build(std::vector<OWCollisionData*>& objects)
+	void build(std::vector<OWIPhysical*>& objects)
 	{
 #ifdef BASIC_COLLISIONS
 		buildBasic(objects);

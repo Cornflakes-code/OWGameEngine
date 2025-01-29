@@ -1,6 +1,6 @@
 #include "OWSceneComponent.h"
 
-#include "../Geometry/Ray.h"
+#include "../Geometry/OWRay.h"
 
 OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
 	: OWComponent(_owner)
@@ -30,8 +30,8 @@ bool OWSceneComponent::collides(OWCollisionData* other)
 void OWSceneComponent::collided(OWCollisionData* other) 
 {
 	// https://gamedev.stackexchange.com/questions/47888/find-the-contact-normal-of-rectangle-collision?noredirect=1&lq=1
-	const glm::vec3 otherRelVel = other->component->data()->velocity;
-	glm::vec3 relVel = data()->velocity - otherRelVel;
+	const glm::vec3 otherRelVel = other->component->data()->physics.velocity;
+	glm::vec3 relVel = data()->physics.velocity - otherRelVel;
 	glm::vec3 compoundSize(data()->boundingBox.size() + other->boundingBox.size());
 	AABB compoundAABB(compoundSize);
 	glm::vec3 jfw = data()->boundingBox.center();
@@ -52,7 +52,7 @@ void OWSceneComponent::collided(OWCollisionData* other)
 	// Various collision detection algorythmns
 	// https://developer.nvidia.com/gpugems/gpugems3/part-v-physics-simulation/chapter-32-broad-phase-collision-detection-cuda
 	// https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
-	glm::vec3 v = data()->velocity + other->component->data()->velocity;
+	glm::vec3 v = data()->physics.velocity + other->component->data()->physics.velocity;
 	glm::vec3 normal;
 	float distance;
 	if (glm::all(glm::epsilonEqual(v, glm::vec3(0), OWUtils::epsilon())))
@@ -78,8 +78,8 @@ void OWSceneComponent::collided(OWCollisionData* other)
 	float len = glm::length(ourCenter - otherCenter);
 	//float len2 = glm::length(ourCenter - position());
 	float prorataTimeStep = distance / len;// curtailedTimeStep / fullTimeStep;
-	data()->position += prorataTimeStep * glm::length(data()->velocity) * glm::normalize(reboundDir);
-	data()->velocity += reboundDir * glm::length(data()->velocity);
+	data()->physics.position += prorataTimeStep * glm::length(data()->physics.velocity) * glm::normalize(reboundDir);
+	data()->physics.velocity += reboundDir * glm::length(data()->physics.velocity);
 }
 
 void OWSceneComponent::render(const glm::mat4& proj,

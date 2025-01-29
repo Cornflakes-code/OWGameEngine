@@ -4,10 +4,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "../OWEngine/OWEngine.h"
-#include "../Geometry/BoundingBox.h"
-#include "../Core/Renderable.h"
 #include "../Component/ShapeComponent.h"
 
+class AABB;
 struct OWENGINE_API BoxComponentData: public ShapeComponentData
 {
 };

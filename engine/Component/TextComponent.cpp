@@ -1,4 +1,4 @@
-#include "TextData.h"
+#include "TextComponent.h"
 
 #include <math.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -37,6 +37,6 @@ void TextComponent::init()
 		ren = new TextRendererDynamic();
 	else
 		ren = new TextRendererStatic();
-	ren->setup(this, data()->position);
+	ren->setup(this, data()->physics.position);
 	data()->boundingBox = ren->bounds();
 }

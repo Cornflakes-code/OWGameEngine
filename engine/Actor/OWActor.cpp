@@ -1,9 +1,5 @@
 #include "OWActor.h"
 
-void OWActor::doInit()
-{
-}
-
 void OWActor::begin()
 {
 }

@@ -7,7 +7,7 @@
 #include "../OWEngine/OWEngine.h"
 
 #include "../Component/OWComponent.h"
-#include "../Component/OWMovableComponent.h"
+#include "../Component/PhysicalComponent.h"
 #include "../Component/OWSceneComponent.h"
 #include "../Renderers/OWRenderable.h"
 
