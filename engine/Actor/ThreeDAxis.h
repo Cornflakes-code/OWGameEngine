@@ -8,7 +8,9 @@ class TextComponent;
 
 struct OWENGINE_API OWThreeDAxisDataImp
 {
-	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
+	glm::vec4 axisColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN);
+	std::string axisColourName = "colour";
+	glm::vec4 labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE);
 	std::string axisName;
 	std::string font = std::string("arial.ttf");
 	AABB bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
@@ -17,7 +19,7 @@ struct OWENGINE_API OWThreeDAxisDataImp
 	bool useGlobalBounds = false;
 };
 
-struct OWENGINE_API OWThreeDAxisData : public OWActorData
+struct OWENGINE_API OWThreeDAxisData: public OWActorData
 {
 	OWThreeDAxisDataImp axisData;
 };

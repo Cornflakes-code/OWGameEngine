@@ -65,6 +65,7 @@ class OWENGINE_API Shader //: public ResourceSource
 	mutable bool mFirstTimeRender = true;
 	float aspectRatio() const;
 	ShaderData* mData = nullptr;
+	mutable bool mUseCalled = false;
 public:
 	Shader(ShaderData* _data);
 	~Shader();
@@ -96,7 +97,8 @@ public:
 	int program() const { return mShaderProgram; }
 	int getUniformLocation(const std::string& name) const;
 	int getAttributeLocation(const std::string& name) const;
-	void setUniform(ShaderDataUniforms::UniformType ut, const std::string& name, const std::string& value, bool useShader = false);
+	void setUniform(ShaderDataUniforms::UniformType ut, const std::string& name, 
+		const std::string& value, bool useShader = false) const;
 	void setFloat(const std::string& name, float value,
 					bool useShader = false) const;
 	void setInteger(const std::string& name, int value, 

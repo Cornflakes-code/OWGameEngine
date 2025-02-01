@@ -1,12 +1,15 @@
 #include "OWSceneComponent.h"
 
 #include "../Geometry/OWRay.h"
+#include "../Actor/OWActor.h"
 
 OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
 	: OWComponent(_owner)
 {
+	_data->component = this;
 	setData(_data);
 	name(_data->name);
+	_owner->addSceneComponent(this);
 }
 
 bool OWSceneComponent::canCollide()
@@ -89,12 +92,17 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	RenderTypes::ShaderMutator renderCb,
 	RenderTypes::ShaderResizer resizeCb) 
 {
+	std::string ss = name();
+	if (ss == "Text:Z")
+	{
+		ss = "Text:Z";
+	}
+	OWPhysicsDataImp* imp = &data()->physics;
 	const glm::mat4 I(1.0f);
 	//glm::mat4 r = glm::rotate(model, mRotateRadians, mRotateAxis);
-	//glm::mat4 s = glm::scale(model, mScale);
-	//glm::mat4 t = glm::translate(I, position());
-	glm::mat4 _model;// = t * r * s;
+	glm::mat4 s = glm::scale(model, data()->scale);
+	glm::mat4 t = glm::translate(I, data()->physics.position);
+	glm::mat4 _model = t * data()->physics.localMatrix * s;
 	mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
-
 }
 

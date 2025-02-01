@@ -43,7 +43,7 @@ void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 	vao->add(&lineData);
 	TextComponentData* tdc = new TextComponentData();
 	tdc->textData.tdt = TextData::TextDisplayType::Static;
-	tdc->physics.position = glm::vec3(10);
+	//tdc->physics.localMatrix += glm::vec4(10, 0);
 	TextComponent* td = new TextComponent(this, tdc);
 }
 

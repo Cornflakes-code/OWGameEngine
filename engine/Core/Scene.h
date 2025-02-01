@@ -39,7 +39,7 @@ public:
 	virtual std::string name() const = 0;
 	virtual void activate(const std::string& previousScene, 
 	ScenePhysicsState* state, Camera* camera, unsigned int callCount) = 0;
-
+	void addActor(OWActor* a);
 	// Scene has been paged out. Scene may never come back so an 
 	// opportunity to free resources maybe?
 	virtual void deActivate(const Camera* camera, ScenePhysicsState* state) = 0;
@@ -53,15 +53,7 @@ public:
 						const glm::vec3& cameraPos) = 0;
 	const Movie* movie() const { return mMovie; }
 	typedef std::function<void(OWActor* sc)> OWActorCallbackType;
-	void traverseSceneGraph(OWActorCallbackType cb) const
-	{
-		for (OWActor* a : mRootNode)
-		{
-			cb(a);
-		}
-	}
-	std::vector<OWActor*> mRootNode;
-	//SceneGraphNode* mRootNode = nullptr;
+	void traverseSceneGraph(OWActorCallbackType cb) const;
 protected:
 	Scene(const Movie* movie);
 

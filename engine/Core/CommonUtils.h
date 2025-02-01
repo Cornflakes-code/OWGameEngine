@@ -6,6 +6,9 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <streambuf>
+#include <ostream>
+#include <string>
 
 #include <glm/glm.hpp>
 
@@ -92,4 +95,15 @@ struct OWENGINE_API OWUtils
 		return nearlyEqual(f1, f2, 1.e-6f);
 	}
 
+	static std::string to_string(const glm::vec4& v);
+	static std::string to_string(const glm::vec3& v);
+	static std::string to_string(const glm::vec2& v);
 };
+
+OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec4& v);
+OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec3& v);
+OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec2& v);
+
+OWENGINE_API std::istream& operator>>(std::istream& is, glm::vec4& v);
+OWENGINE_API std::istream& operator>>(std::istream& is, glm::vec3& v);
+OWENGINE_API std::istream& operator>>(std::istream& is, glm::vec2& v);

@@ -146,8 +146,7 @@ public:
 
 	glm::vec3 center() const
 	{
-		glm::vec3 halfSize = size();
-		halfSize /= 2.0f;
+		glm::vec3 halfSize = size() / 2.0f;
 		return mMinPoint + halfSize;
 	}
 

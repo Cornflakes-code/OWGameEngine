@@ -31,6 +31,6 @@ public:
 	{
 		return static_cast<const MeshComponentVAOData*>(OWSceneComponent::constData());
 	}
-	void init() override;
+	void doInit() override;
 private:
 };

@@ -29,6 +29,6 @@ public:
 	{
 		return static_cast<const MeshComponentLightData*>(OWSceneComponent::constData());
 	}
-	void init() override;
+	void doInit() override;
 private:
 };

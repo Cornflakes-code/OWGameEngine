@@ -19,8 +19,8 @@ bool ParticleComponent::intersects(const AABB& other) const
     return false;
 }
 
-void ParticleComponent::init()
+void ParticleComponent::doInit()
 {
 	throw NMSException(std::stringstream()
-		<< "Unimplemented function [ParticleComponent::init()].");
+		<< "Unimplemented function [ParticleComponent::doInit()].");
 }

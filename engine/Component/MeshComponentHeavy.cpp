@@ -2,7 +2,7 @@
 
 #include <Renderers/HeavyRenderer.h>
 
-void MeshComponentHeavy::init()
+void MeshComponentHeavy::doInit()
 {
 	MeshComponentHeavyData* d = data();
 	Shader* shader = new Shader(&d->shaderData);

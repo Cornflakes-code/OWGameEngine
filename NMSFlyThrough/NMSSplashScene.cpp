@@ -3,11 +3,11 @@
 #include <chrono>
 #include <vector>
 
-#include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
 #include <Cameras/Camera.h>
+#include <Core/CommonUtils.h>
 #include <Core/ErrorHandling.h>
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
@@ -25,7 +25,7 @@
 #include <Component/MeshComponentHeavy.h>
 #include <Component/MeshComponentLight.h>
 #include <Component/TextComponent.h>
-#include <Geometry/GeometricShapes.h>
+#include <Geometry/BoundingBox.h>
 
 #include <Helpers/FreeTypeFontAtlas.h>
 #include <Helpers/ModelData.h>
@@ -35,11 +35,12 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
+//#define INCLUDE_PLANES
 #define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
 #define INCLUDE_ENJOY
 int GDEBUG_PICKING = 1;
-//#define INCLUDE_XYZ_AXIS
+#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
@@ -109,7 +110,7 @@ void NMSSplashScenePhysics::interpolateRatio(
 
 void NMSSplashScenePhysics::copy(ScenePhysicsState* source)
 {
-	*this = *(dynamic_cast<const NMSSplashScenePhysics*>(source));
+	//*this = *(dynamic_cast<const NMSSplashScenePhysics*>(source));
 }
 
 ScenePhysicsState* NMSSplashScenePhysics::clone()
@@ -139,7 +140,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			rcd->direction = normMouse;
 			rcd->origin = cam_pos;
 			RayComponent* r = new RayComponent(mScenery, rcd);
-
+			r->init();
 			glm::vec3 normal;
 			float distance;
 			bool intersects = false;
@@ -194,38 +195,45 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	return false;
 }
 
-BoxComponent* createBox(const std::string& _name, const glm::vec4& colour, const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
+BoxComponent* createBox(const std::string& _name, const glm::vec4& colour, 
+	const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
 {
 	BoxComponentData* bcd = new BoxComponentData();
 	bcd->polygonMode = GL_FILL;
 	bcd->shaderData.shaderV = "Wires.v.glsl";
 	bcd->shaderData.shaderF = "Wires.f.glsl";
-	bcd->shaderData.shaderV = "";
+	bcd->shaderData.shaderG = "";
 	bcd->shaderData.PVMName = "";
 	bcd->shaderData.projectionName = "projection";
 	bcd->shaderData.viewName = "view";
 	bcd->shaderData.modelName = "model";
-	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "lightColor", glm::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE)) });
-	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "objectColor", glm::to_string(colour) });
-	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV3F, "viewLightPos", glm::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
+	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "lightColor", 
+				OWUtils::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE)) });
+	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "objectColor", 
+				OWUtils::to_string(colour) });
+	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV3F, "viewLightPos", 
+				OWUtils::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
 	bcd->scale = scale;
 	bcd->name = _name;
 	bcd->physics.velocity = direction * speed;
+	bcd->physics.position = origin;
 	BoxComponent* box = new BoxComponent(mScenery, bcd);
 	gBox = box;
 	return box;
 }
 
-PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos, float scale, float rotDegrees, const glm::vec3& rotAxis)
+PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos, 
+							float scale, float rotDegrees, const glm::vec3& rotAxis)
 {
 	PlaneComponentData* pcd = new PlaneComponentData();
 	pcd->colour = { 1.0f, 0.33f, 0.33f, 0.2f };
-	pcd->physics.position = pos;
+	pcd->physics.position += pos;
 	pcd->name = _name;
 	pcd->scale = glm::vec3(scale);
 	glm::rotate(pcd->physics.localMatrix, glm::radians(rotDegrees), rotAxis);
 	pcd->canMove = false;
 	PlaneComponent* p = new PlaneComponent(mScenery, pcd);
+	p->init();
 	return p;
 }
 
@@ -265,7 +273,6 @@ void NMSSplashScenePhysics::setup()
 	int fontHeight = 24;
 	glm::vec2 nice = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
 		fontHeight, globals->camera()->aspectRatio());
-	owner()->mRootNode.push_back(mScenery);
 	glm::vec2 scale = { 1.2f * _world.size().x / globals->physicalWindowSize().x,
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
@@ -292,7 +299,7 @@ void NMSSplashScenePhysics::setup()
 	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
 #ifdef INCLUDE_ENJOY
 	TextComponentData* enjoyData = new TextComponentData();
-	welcomeData->textData.tdt = TextData::TextDisplayType::Static;
+	enjoyData->textData.tdt = TextData::TextDisplayType::Static;
 	glm::vec3 velocity2 = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West] * mSpeed / 20.0f;
 	//enjoyData->physics.velocity = velocity2;
@@ -303,7 +310,7 @@ void NMSSplashScenePhysics::setup()
 	enjoyData->textData.fontScale = scale;
 	enjoyData->textData.text = "Enjoy it while you can.";
 	TextComponent* enjoy = new TextComponent(mScenery, enjoyData);
-	addToOcTree.push_back(enjoy);
+	//addToOcTree.push_back(enjoy);
 	gEnjoy = enjoy;
 #endif
 
@@ -316,11 +323,11 @@ void NMSSplashScenePhysics::setup()
 	{
 		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
 		glm::vec3 rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f }; // random speed
-		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro, rs, mSpeed * 0.0f, scale3));
-		break;
+		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro + glm::vec3(100, 100, 100), rs, mSpeed * 0.0f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, rs, mSpeed * 0.8f, scale1));
+		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro - glm::vec3(100, 100, 100), rs, mSpeed * 0.8f, scale1));
+		break;
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 		addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), ro, rs, mSpeed * 0.8f, scale1));
@@ -376,14 +383,14 @@ void NMSSplashScenePhysics::setup()
 #endif
 	const float pos = off / 2.1f;
 	// Create a box of planes for the objects to bounce off
-	//addToOcTree.push_back(createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
-	//addToOcTree.push_back(createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::Out
-	//addToOcTree.push_back(createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::East
-	//addToOcTree.push_back(createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
-	//addToOcTree.push_back(createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
-	//addToOcTree.push_back(createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
-
-	CollisionSystem::build(addToOcTree);
+#ifdef INCLUDE_PLANES
+	createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::In
+	createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::Out
+	createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::East
+	createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::West
+	createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::North
+	createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::Bottom
+#endif
 }
 
 ////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////
@@ -397,22 +404,23 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	NMSSplashScenePhysics* sps 
 		= dynamic_cast<NMSSplashScenePhysics*>(state);
 
-#ifdef INCLUDE_IMPORTED_MODEL
-#endif
 #ifdef INCLUDE_XYZ_AXIS
-	ThreeDAxis* axis = new ThreeDAxis(this, world().center());
-	axis->createAxisData(world());
-	mRootNode.push_back(axis);
+	OWThreeDAxisData* axisData = new OWThreeDAxisData();
+	AABB w = world();
+	axisData->axisData.world = w;
+	axisData->actorData.position = glm::vec3(0);// w.center();
+	OWThreeDAxisScript* script = new OWThreeDAxisScript(axisData);
+	ThreeDAxis* axis = new ThreeDAxis(this, script);
 
 #endif
 #ifdef INCLUDE_FULLSCREEN
 	MeshComponentLightData* mcd = new MeshComponentLightData();
 	mcd->name = "Fullscreen";
-	ShaderData* sd = new ShaderData();
-	sd->shaderV = "thebookofshaders.v.glsl";
-	sd->shaderF = "thebookofshaders.f.glsl";
-	sd->shaderG = "thebookofshaders_square.g.glsl";
-	sd->PVMName = "pvm";
+	
+	mcd->shaderData.shaderV = "thebookofshaders.v.glsl";
+	mcd->shaderData.shaderF = "thebookofshaders.f.glsl";
+	mcd->shaderData.shaderG = "thebookofshaders_square.g.glsl";
+	mcd->shaderData.PVMName = "pvm";
 	std::vector<glm::vec4> pts;
 	pts.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
 	mcd->meshData.vertices(pts, GL_POINTS, 0);
@@ -434,8 +442,8 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 			glm::vec2 vv = globals->physicalWindowSize();
 			shader->setVector2f("u_resolution", vv);
 		};
-	sd->mutatorCallbacks.push_back(fullScreenRender);
-	sd->resizeCallbacks.push_back(fullScreenResize);
+	mcd->shaderData.mutatorCallbacks.push_back(fullScreenRender);
+	mcd->shaderData.resizeCallbacks.push_back(fullScreenResize);
 	MeshComponentLight* fullScreen = new MeshComponentLight(mScenery, mcd);
 #endif
 
@@ -473,6 +481,11 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mButton = new OWButton();
 	mButton->setup(sps->mButtonData, glm::vec3(100));
 #endif
+	auto init = [](OWActor* a)
+		{
+			a->init();
+		};
+	traverseSceneGraph(init);
 }
 
 void NMSSplashScene::render(const ScenePhysicsState* state,
@@ -518,7 +531,9 @@ void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene),
 							  unsigned int OW_UNUSED(callCount))
 {
 	//globals->application()->backgroundColour(glm::vec4(0, 0, 0, 1));
-	camera->position({ 0, 0,200 });
+	//camera->position({ -39.9999f, 40, 240 });
+	camera->position({ 200, 200, 200 });
+	//camera->lookAt({ -39.758, 40, 239.029 });
 	camera->lookAt({ 0,0,0 });
 	float speed = camera->moveScale();
 	if (speed < 201.00f)

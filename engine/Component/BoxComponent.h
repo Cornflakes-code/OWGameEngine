@@ -21,5 +21,5 @@ class OWENGINE_API BoxComponent: public ShapeComponent
 public:
 	BoxComponent(OWActor* _owner, BoxComponentData* _data);
 	bool intersects(const AABB& box) const override;
-	void init() override;
+	void doInit() override;
 };

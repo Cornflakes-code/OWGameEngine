@@ -18,6 +18,7 @@ const struct OWENGINE_API OWActorMetaData
 
 struct OWENGINE_API OWActorDataImp
 {
+	glm::vec3 position = glm::vec3(0);
 	glm::vec3 velocity = glm::vec3(0);
 	glm::vec3 acceleration = glm::vec3(0);
 	glm::vec3 orientation = glm::vec3(0);

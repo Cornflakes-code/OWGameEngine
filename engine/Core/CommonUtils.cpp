@@ -116,9 +116,68 @@ void extractWords(std::string const& s, char delim, OutputIterator out)
 	}
 }
 
+
+std::ostream& operator<<(std::ostream& os, const glm::vec4& v)
+{
+	os << v.x << " " << v.y << " " << v.z << " " << v.w;
+	return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const glm::vec3& v)
+{
+	os << v.x << " " << v.y << " " << v.z;
+	return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const glm::vec2& v)
+{
+	os << v.x << " " << v.y;
+	return os;
+}
+
+
+std::istream& operator>>(std::istream& is, glm::vec4& v)
+{
+	is >> v.x >> v.y >> v.z >> v.w;
+	return is;
+}
+
+std::istream& operator>>(std::istream& is, glm::vec3& v)
+{
+	is >> v.x >> v.y >> v.z;
+	return is;
+}
+
+std::istream& operator>>(std::istream& is, glm::vec2& v)
+{
+	is >> v.x >> v.y;
+	return is;
+}
+
 std::vector<std::string> OWUtils::split(const std::string& s, char delim)
 {
 	std::vector<std::string> results;
 	extractWords(s, delim, back_inserter(results));
 	return results;
+}
+
+std::string OWUtils::to_string(const glm::vec4& v)
+{
+	std::stringstream ss;
+	ss << v;
+	return ss.str();
+}
+
+std::string OWUtils::to_string(const glm::vec3& v)
+{
+	std::stringstream ss;
+	ss << v;
+	return ss.str();
+}
+
+std::string OWUtils::to_string(const glm::vec2& v)
+{
+	std::stringstream ss;
+	ss << v;
+	return ss.str();
 }

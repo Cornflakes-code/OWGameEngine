@@ -19,7 +19,7 @@ public:
 	PlaneComponent(OWActor* _owner, PlaneComponentData* _data)
 		: ShapeComponent(_owner, _data) {}
 	bool intersects(const AABB& box) const override;
-	void init() override;
+	void doInit() override;
 
 #pragma warning( pop )
 };

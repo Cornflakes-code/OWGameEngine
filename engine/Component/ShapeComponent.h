@@ -31,7 +31,6 @@ public:
 		: OWSceneComponent(_owner, _data)
 	{}
 	virtual bool intersects(const AABB& box) const = 0;
-	//void init() override;
 protected:
 private:
 	friend class TextRenderer;

@@ -23,16 +23,20 @@
 Shader::Shader(ShaderData* _data)
 	:mData(_data)
 {
-	if (mData->shaderV.length() == 0)
-		mData->shaderV = ShaderFactory::boilerPlateVertexShader();
-	if (mData->shaderF.length() == 0)
-		mData->shaderF = ShaderFactory::boilerPlateFragmentShader();
-	if (mData->shaderG.length() == 0)
-		mData->shaderG = ShaderFactory::boilerPlateGeometryShader();
-
-	create(mData->shaderV, mData->shaderF, mData->shaderG);
+	create(
+		mData->shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
+		: mData->shaderV,
+		mData->shaderF.length() == 0 ? ShaderFactory::boilerPlateFragmentShader()
+		: mData->shaderF,
+		mData->shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
+		: mData->shaderG);
 		
 	setStandardUniformNames(mData->PVMName, mData->projectionName, mData->viewName, mData->modelName);
+	use();
+	for (ShaderDataUniforms& a : mData->uniforms)
+	{
+		setUniform(a.ut, a.name, a.value);
+	}
 }
 
 Shader::~Shader()
@@ -120,7 +124,11 @@ void Shader::use() const
 {
 	if (mShaderProgram)
 	{
-		glUseProgram(mShaderProgram);
+		if (true)//!mUseCalled)
+		{
+			glUseProgram(mShaderProgram);
+			mUseCalled = true;
+		}
 	}
 }
 
@@ -424,44 +432,43 @@ int Shader::getAttributeLocation(const std::string& name) const
 
 //enum UniformType { UFloat, UInt, UV2F, UV3F, UV4F };
 void Shader::setUniform(ShaderDataUniforms::UniformType ut, 
-	const std::string& name, const std::string& value, bool useShader)
+	const std::string& name, const std::string& value, bool useShader) const
 { 
 	std::stringstream ss(std::stringstream::in | std::stringstream::out);
 	ss << value;
-	std::string s;
 	switch (ut)
 	{
 	case ShaderDataUniforms::UniformType::UFloat:
 	{
 		float v;
-		ss >> s >> v;
+		ss >> v;
 		setFloat(name, v);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UInt:
 	{
 		int v;
-		ss >> s >> v;
+		ss >> v;
 		setInteger(name, v);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UV2F:
 	{
 		glm::vec2 v;
-		ss >> s >> v;
+		ss >> v;
 		setVector2f(name, v);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UV3F:
 	{
 		glm::vec3 v;
-		ss >> s >> v;
+		ss >> v;
 		setVector3f(name, v);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UV4F:
 		glm::vec4 v;
-		ss >> s >> v;
+		ss >> v;
 		setVector4f(name, v);
 		break;
 	}

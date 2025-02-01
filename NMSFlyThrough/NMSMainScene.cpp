@@ -93,12 +93,10 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	nmsData->nmsData.starWorld = world();
 	NoMansSky* starMap = new NoMansSky(this, nmsScript);
 
-	mRootNode.push_back(starMap);
 	OWThreeDAxisData* threeDAxisData = new OWThreeDAxisData();
-	threeDAxisData->axisData.world = world();
+	threeDAxisData->actorData.position = world().center();
 	OWThreeDAxisScript* threeDAxisDataScript = new OWThreeDAxisScript(threeDAxisData);
 	ThreeDAxis* axis = new ThreeDAxis(this, threeDAxisDataScript);
-	mRootNode.push_back(axis);
 }
 
 void NMSMainScene::render(const ScenePhysicsState* state,

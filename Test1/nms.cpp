@@ -86,7 +86,8 @@ int main()
 	// build and compile our shader program
 	// ------------------------------------
 	// vertex shader
-	Shader shader;
+	ShaderData* sd = new ShaderData();
+	Shader shader(sd);
 //#define CIRCLES
 #ifdef CIRCLES
 	// set up vertex data (and buffer(s)) and configure vertex attributes

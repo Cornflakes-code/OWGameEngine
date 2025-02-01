@@ -26,5 +26,5 @@ public:
 	// distance is -ve if the AABB is behind this
 	//bool intersects(const AABB& box, glm::vec3& normal, float& distance) const;
 	bool intersects(const AABB& box) const override;
-	void init() override;
+	void doInit() override;
 };

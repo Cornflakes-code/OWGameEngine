@@ -36,9 +36,11 @@ void NMSScript::begin()
 void NMSScript::end()
 {
 }
+
 void NMSScript::destroy()
 {
 }
+
 void NMSScript::doInit()
 {
 }
@@ -53,6 +55,7 @@ NoMansSky::NoMansSky(Scene* _owner, NMSScript* _data)
 void NoMansSky::doInit()
 {
 	setUp(data()->nmsData.starFile, data()->nmsData.starWorld);
+	OWActor::doInit();
 }
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)

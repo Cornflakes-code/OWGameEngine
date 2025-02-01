@@ -9,17 +9,12 @@
 
 static ShaderData* getStaticTextData()
 {
-	static ShaderData shaderData;
-	static bool firstTime = true;
-	if (firstTime)
-	{
-		firstTime = false;
-		shaderData.shaderV = "textStaticBillboard.v.glsl";
-		shaderData.shaderF = "text.f.glsl";
-		shaderData.shaderG = "";
-		shaderData.PVMName = "VP";
-	}
-	return &shaderData;
+	ShaderData* shaderData = new ShaderData();
+	shaderData->shaderV = "textStaticBillboard.v.glsl";
+	shaderData->shaderF = "text.f.glsl";
+	shaderData->shaderG = "";
+	shaderData->PVMName = "VP";
+	return shaderData;
 }
 
 TextRendererStatic::TextRendererStatic()

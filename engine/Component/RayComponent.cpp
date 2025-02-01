@@ -24,7 +24,7 @@ bool RayComponent::intersects(const AABB& box, glm::vec3& normal, float& distanc
     return mRay->intersects(box, normal, distance);
 }
 
-void RayComponent::init()
+void RayComponent::doInit()
 {
     std::vector<glm::vec3> vertices = mRay->vertices();
     Shader* lineShader = new Shader(&data()->shaderData);

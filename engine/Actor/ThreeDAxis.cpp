@@ -16,14 +16,12 @@ ThreeDAxis::ThreeDAxis(Scene* _scene, OWThreeDAxisScript* _script)
 	: OWActor(_scene, _script)
 {
 	name("Labelled 3DAxis");
-	
-	const AABB& bb = data()->axisData.axisSize;
-	createAxisData(bb);
 }
 
 void ThreeDAxis::doInit()
 {
 	createAxisData(data()->axisData.world);
+	OWActor::doInit();
 }
 
 TextComponent* ThreeDAxis::createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b)
@@ -33,11 +31,16 @@ TextComponent* ThreeDAxis::createText(const glm::vec3& pos, const std::string& s
 		fontHeight, globals->camera()->aspectRatio());
 
 	TextComponentData* td = new TextComponentData();
+	td->physics.position = pos;
 	td->textData.fontSpacing = nice;
+	td->textData.fontHeight = 12;
+	td->textData.colour = data()->axisData.labelColour;
+	td->textData.fontScale = glm::vec2(1.0f);
 	td->textData.referencePos = refPos;
 	td->textData.text = s;
 	td->textData.tdt = TextData::TextDisplayType::Static;
 	TextComponent* tc = new TextComponent(this, td);
+	tc->init();
 	b = tc->constData()->boundingBox;
 	return tc;
 }
@@ -64,13 +67,14 @@ void ThreeDAxis::createAxisData(const AABB& w)
 	createText(axisCoords[3], "Z", TextData::PositionType::Center, box);
 	boxUnion |= box;
 	MeshComponentLightData* d = new MeshComponentLightData;
-	d->meshData.colour(data()->axisData.colour, "colour");
+	d->meshData.colour(data()->axisData.axisColour, data()->axisData.axisColourName);
 	d->meshData.vertices(axisCoords, GL_LINES);
 	d->meshData.indices({ 0,1, 0,2, 0,3 }, GL_LINES);
+	d->shaderData.PVMName = "pvm";
+	d->name = "Axis";
 	MeshComponentLight* axis = new MeshComponentLight(this, d);
+	axis->init();
 	//axis->renderBoundingBox(false);
-	std::string axisName = data()->axisData.axisName;
-	axis->name(axisName);
 	boxUnion |= axis->constData()->boundingBox;
 }
 

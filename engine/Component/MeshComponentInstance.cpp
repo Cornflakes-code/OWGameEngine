@@ -1,6 +1,6 @@
 #include "MeshComponentInstance.h"
 
-void MeshComponentInstance::init()
+void MeshComponentInstance::doInit()
 {
 	MeshComponentInstanceData* d = data();
 	InstanceRenderer* r = new InstanceRenderer(new Shader(&d->shaderData));

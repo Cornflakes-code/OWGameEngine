@@ -11,21 +11,23 @@
 #include "../Renderers/OWRenderable.h"
 
 class Scene;
+class OWSceneComponent;
 class OWENGINE_API OWActor: public OWObject, public OWGameIFace, public OWIRenderable
 {
 	Scene* mScene;
 	OWActorScript* mScript;
 	std::vector<OWSceneComponent*> mSceneComponents;
-	std::vector<OWIRenderable*> mComponents;
 protected:
 	virtual OWActorScript* script()
 	{
 		return mScript;
 	}
+	void doInit() override;
 public:
-	OWActor(Scene* _scene, OWActorScript* _script)
-		: mScene(_scene), mScript(_script)
+	OWActor(Scene* _scene, OWActorScript* _script);
+	const OWActorData* data() const
 	{
+		return mScript->data();
 	}
 	virtual const OWActorScript* script() const
 	{

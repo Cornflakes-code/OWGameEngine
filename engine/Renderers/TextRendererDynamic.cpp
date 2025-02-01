@@ -11,17 +11,12 @@
 
 static ShaderData* getDynamicTextData()
 {
-	static ShaderData shaderData;
-	static bool firstTime = true;
-	if (firstTime)
-	{
-		firstTime = false;
-		shaderData.shaderV = "textDynamicBillboard.v.glsl";
-		shaderData.shaderF = "text.f.glsl";
-		shaderData.shaderG = "";
-		shaderData.PVMName = "VP";
-	}
-	return &shaderData;
+	ShaderData* shaderData = new ShaderData();
+	shaderData->shaderV = "textDynamicBillboard.v.glsl";
+	shaderData->shaderF = "text.f.glsl";
+	shaderData->shaderG = "";
+	shaderData->PVMName = "VP";
+	return shaderData;
 }
 
 TextRendererDynamic::TextRendererDynamic()

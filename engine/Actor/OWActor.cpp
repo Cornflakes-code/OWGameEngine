@@ -1,4 +1,19 @@
 #include "OWActor.h"
+#include "../Core/Scene.h"
+
+OWActor::OWActor(Scene* _scene, OWActorScript* _script)
+	: mScene(_scene), mScript(_script)
+{
+	_scene->addActor(this);
+}
+
+void OWActor::doInit()
+{
+	for (auto& a : mSceneComponents)
+	{
+		a->init();
+	}	
+}
 
 void OWActor::begin()
 {
@@ -32,7 +47,10 @@ void OWActor::render(const glm::mat4& proj,
 	}
 	for (OWSceneComponent* c : mSceneComponents)
 	{
-		c->render(proj, view, _model, cameraPos,
-			renderCb, resizeCb);
+		if (c->initCalled())
+		{
+			c->render(proj, view, _model, cameraPos,
+				renderCb, resizeCb);
+		}
 	}
 }

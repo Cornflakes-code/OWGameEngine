@@ -6,6 +6,7 @@
 #include "PhysicalComponent.h"
 #include "../Renderers/OWRenderable.h"
 #include "../Renderers/RendererBase.h"
+#include "OWComponent.h"
 
 struct OWENGINE_API OWSceneComponentData: public OWPhysicsData
 

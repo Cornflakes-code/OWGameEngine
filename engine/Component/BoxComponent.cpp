@@ -18,7 +18,7 @@ bool BoxComponent::intersects(const AABB& other) const
 	return false;
 }
 
-void BoxComponent::init()
+void BoxComponent::doInit()
 {
 	std::vector<glm::vec3> vertices = GeometricShapes::cube();
 	AABB b = AABB(vertices);

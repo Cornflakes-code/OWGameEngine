@@ -38,7 +38,6 @@ void NMSRopeScenePhysics::setup()
 	rd->ropeVisibility.labels = false;
 	OWRopeScript* rs = new OWRopeScript(rd);
 	Rope* rope = new Rope(this->owner(), rs);
-	owner()->mRootNode.push_back(rope);
 	mCameraFocus = rope->bounds().center();
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));

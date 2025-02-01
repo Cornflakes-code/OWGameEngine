@@ -1,7 +1,7 @@
 #include "MeshComponentVAO.h"
 
 
-void MeshComponentVAO::init()
+void MeshComponentVAO::doInit()
 {
 	MeshComponentVAOData* vao = data();
 	if (vao->meshData.shader() == nullptr)

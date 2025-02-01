@@ -17,7 +17,7 @@ bool SphereComponent::intersects(const AABB& other) const
     return false;
 }
 
-void SphereComponent::init()
+void SphereComponent::doInit()
 {
     std::vector<glm::vec3> vertices = mSphere->vertices();
     Shader* lineShader = new Shader(&data()->shaderData);

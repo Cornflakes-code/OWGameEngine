@@ -2,9 +2,12 @@
 
 #include <Renderers/LightRenderer.h>
 
-void MeshComponentLight::init()
+void MeshComponentLight::doInit()
 {
 	MeshComponentLightData* d = data();
+	d->shaderData.projectionName = "";
+	d->shaderData.viewName = "";
+	d->shaderData.modelName = "";
 	Shader* shader = new Shader(&d->shaderData);
 	LightRenderer* r = new LightRenderer(shader);
 	r->setup(d->meshData);

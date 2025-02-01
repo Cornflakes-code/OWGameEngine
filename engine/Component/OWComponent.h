@@ -9,6 +9,7 @@ class OWActor;
 class OWENGINE_API OWComponent: public OWObject
 {
 	OWActor* mActor = nullptr;
+	bool mInitCalled = false;
 protected:
 	OWActor* actor() const { return mActor; }
 public:
@@ -16,7 +17,16 @@ public:
 		:mActor(_actor)
 	{
 	}
+	bool initCalled() const { return mInitCalled; }
 	void actor(OWActor* _actor) { mActor = _actor; }
-	virtual void init() = 0;
+	void init()
+	{
+		if (!mInitCalled)
+		{
+			doInit();
+			mInitCalled = true;
+		}
+	}
+	virtual void doInit() = 0;
 };
 

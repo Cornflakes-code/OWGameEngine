@@ -11,7 +11,7 @@ bool PlaneComponent::intersects(const AABB& box) const
     return false;
 }
 
-void PlaneComponent::init() 
+void PlaneComponent::doInit()
 {
 	std::vector<glm::vec3> vertices = GeometricShapes::rectangle(glm::vec2(1));
     Shader* lineShader = new Shader(&data()->shaderData);

@@ -38,7 +38,7 @@ LightSource::~LightSource()
 
 }
 
-void LightSource::init()
+void LightSource::doInit()
 {
     /*
     * An alternate way to draw spheres with triangles is at:
@@ -53,4 +53,6 @@ void LightSource::init()
     VAOBuffer* vao = new VAOBuffer(sh, VAOBuffer::DRAW_ARRAYS);
     vao->add(&lineData);
     vao->prepare();
+    throw NMSException(std::stringstream()
+        << "Unimplemented function [LightSource::doInit()].");
 }

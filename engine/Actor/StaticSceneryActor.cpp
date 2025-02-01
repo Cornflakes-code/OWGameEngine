@@ -8,4 +8,5 @@ StaticSceneryActor::StaticSceneryActor(Scene* _scene, StaticSceneryScript* _scri
 
 void StaticSceneryActor::doInit()
 {
+	OWActor::doInit();
 }

@@ -2,7 +2,7 @@
 
 #include <Renderers/LightRenderer.h>
 
-void MeshComponentVec4::init()
+void MeshComponentVec4::doInit()
 {
 	MeshComponentVec4Data* d = data();
 	Shader* shader = new Shader(&d->shaderData);

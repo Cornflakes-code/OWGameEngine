@@ -59,7 +59,7 @@ public:
 
 	TextComponent(OWActor* _owner, TextComponentData* _data);
 
-	void init() override;
+	void doInit() override;
 protected:
 private:
 	friend class TextRenderer;

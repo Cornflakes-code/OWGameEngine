@@ -28,6 +28,6 @@ public:
 	{
 		return static_cast<const MeshComponentInstanceData*>(OWSceneComponent::constData());
 	}
-	void init() override;
+	void doInit() override;
 private:
 };

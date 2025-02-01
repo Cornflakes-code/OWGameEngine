@@ -14,8 +14,9 @@ TextComponent::TextComponent(OWActor* _owner, TextComponentData* _data)
 {
 }
 
-void TextComponent::init()
+void TextComponent::doInit()
 {
+	TextData* jfw = textData();
 	name("Text:" + textData()->text);
 
 	// If both left and right then remove them
@@ -31,12 +32,12 @@ void TextComponent::init()
 	{
 		textData()->referencePos = TextData::PositionType(textData()->referencePos & 0x3);
 	}
-
 	TextRenderer* ren;
 	if (textData()->tdt == TextData::TextDisplayType::Dynamic)
 		ren = new TextRendererDynamic();
 	else
 		ren = new TextRendererStatic();
-	ren->setup(this, data()->physics.position);
+	ren->setup(this, glm::vec3(0));
 	data()->boundingBox = ren->bounds();
+	addRenderer(ren);
 }

@@ -36,6 +36,7 @@ void Rope::doInit()
 	prepareText(constData()->textData.fontHeight, constData()->textData.fontSpacing, constData()->textData.fontScale);
 	const OWRopeVisibilityData* vd = &constData()->ropeVisibility;
 	prepareVisibility(vd->ends, vd->lines, vd->surfaces, vd->labels);
+	OWActor::doInit();
 }
 
 void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _labels)

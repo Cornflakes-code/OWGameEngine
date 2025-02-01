@@ -21,7 +21,7 @@ class OWENGINE_API LightSource : public OWComponent, public OWIRenderable
 public:
 	LightSource(OWActor* _owner, LightSourceData* _data);
 	~LightSource();
-	void init() override;
+	void doInit() override;
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
