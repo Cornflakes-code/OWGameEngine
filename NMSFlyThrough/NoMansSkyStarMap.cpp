@@ -66,21 +66,28 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
-	MeshComponentLight* grid = new MeshComponentLight(this, &data()->nmsData.meshComponentLightData);
+	MeshComponentLightData* mcld = &data()->nmsData.meshComponentLightData;
+	mcld->meshData.vertices(mGrid, GL_LINES, 0);
+	mcld->meshData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
+	mcld->shaderData.shaderV = "Lines.v.glsl";
+	mcld->shaderData.shaderF = "Lines.f.glsl";
+	mcld->shaderData.PVMName = "pvm";
+	Shader* shader = new Shader(&mcld->shaderData);
+	MeshComponentLight* grid = new MeshComponentLight(this, mcld);
 #endif
 
 #ifdef DEBUG_STARS
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
-	MeshDataInstance mdi;
-	mStarRadius = { 4.0, 4.0 };
+	MeshComponentInstanceData* mcid = &data()->nmsData.meshComponentInstanceData;
+	mStarRadius = data()->nmsData.starRadius;
 	std::vector<glm::vec3> squareVertices =
 		GeometricShapes::star(mStarRadius.x / 5.0f, mStarRadius.x / 3.3f, 15);
 //		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
-	mdi.vertices(squareVertices, GL_TRIANGLES, 0);
+	mcid->meshData.vertices(squareVertices, GL_TRIANGLES, 0);
 
-	const int numStars = 500000;
+	const int numStars = data()->nmsData.numberOfStars;
 	mRandomMinorStars = createRandomVectors(NMSSize, numStars, scaleNMStoWorld);
-	mdi.positions(mRandomMinorStars, 1, 1);
+	mcid->meshData.positions(mRandomMinorStars, 1, 1);
 
 	const int numColours = 4;
 	const int numColourIterations = ceil( numStars * 1.0 / numColours);
@@ -94,10 +101,13 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::MAGENTA));
 		//instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	}
-	mdi.colours(instanceColours, instanceColours.size(), 2);
-
-	Shader* starShader = new Shader(&data()->nmsData.starShader);
-	MeshComponentInstance* stars = new MeshComponentInstance(this, &data()->nmsData.meshComponentInstanceData);
+	mcid->meshData.colours(instanceColours, instanceColours.size(), 2);
+	mcid->shaderData.shaderV = "instanced.v.glsl";
+	mcid->shaderData.shaderF = "glow.f.glsl";
+	mcid->shaderData.PVMName = "VP";
+	mcid->name = "stars";
+	mcid->shaderData.uniforms.push_back({ ShaderDataUniforms::UniformType::UFloat,
+		"cutoffRadius", OWUtils::to_string(mStarRadius.x) });
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),
@@ -114,7 +124,9 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 			shader->setFloat("u_time", globals->secondsSinceLoad());
 			shader->setVector2f("u_resolution", w);
 		};
-	starShader->appendMutator(pointRender);
+	mcid->shaderData.mutatorCallbacks.push_back(pointRender);
+	Shader* starShader = new Shader(&mcid->shaderData);
+	MeshComponentInstance* stars = new MeshComponentInstance(this, mcid);
 #endif
 }
 

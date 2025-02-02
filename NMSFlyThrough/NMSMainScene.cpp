@@ -85,18 +85,28 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	sp->mCameraPosition = movie()->camera()->position();
 	sp->mLookAt = { 0,0,0 };
-	NoMansSkyData* nmsData = new NoMansSkyData();
-	NMSScript* nmsScript = new NMSScript(nmsData);
+	NoMansSkyData* nmsd = new NoMansSkyData();
+	NMSScript* nmsScript = new NMSScript(nmsd);
 		
-	nmsData->nmsData.starFile = ResourcePathFactory().appendPath("NMSMap.txt",
+	nmsd->nmsData.starFile = ResourcePathFactory().appendPath("NMSMap.txt",
 		ResourcePathFactory::ResourceType::UnknownType).string();
-	nmsData->nmsData.starWorld = world();
+	nmsd->nmsData.starWorld = world();
+	nmsd->nmsData.meshComponentLightData.name = "grid";
+	nmsd->nmsData.numberOfStars = 50000;
 	NoMansSky* starMap = new NoMansSky(this, nmsScript);
 
 	OWThreeDAxisData* threeDAxisData = new OWThreeDAxisData();
+	AABB w = world();
+	threeDAxisData->axisData.world = w;
 	threeDAxisData->actorData.position = world().center();
 	OWThreeDAxisScript* threeDAxisDataScript = new OWThreeDAxisScript(threeDAxisData);
 	ThreeDAxis* axis = new ThreeDAxis(this, threeDAxisDataScript);
+
+	auto init = [](OWActor* a)
+		{
+			a->init();
+		};
+	traverseSceneGraph(init);
 }
 
 void NMSMainScene::render(const ScenePhysicsState* state,

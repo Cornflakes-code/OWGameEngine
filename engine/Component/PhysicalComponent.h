@@ -27,7 +27,6 @@ struct OWENGINE_API OWCollisionData
 
 struct OWENGINE_API OWPhysicsDataImp
 {
-	glm::vec3 position = glm::vec3(0);
 	glm::vec3 velocity = glm::vec3(0);
 	glm::vec3 acceleration = glm::vec3(0);
 	glm::vec3 orientation = glm::vec3(0);
@@ -36,8 +35,26 @@ struct OWENGINE_API OWPhysicsDataImp
 	float mass = 1.0f;
 	// 0(invisibility -> 1 (fully opaque)
 	float visibility = 1.0f;
+	void rotate(float radians, const glm::vec3& axis)
+	{
+		localMatrix = glm::rotate(localMatrix, radians, axis);
+	}
+	void scale(const glm::vec3& v)
+	{
+		localMatrix = glm::scale(localMatrix, v);
+	}
+	void translate(const glm::vec3& v)
+	{
+		localMatrix = glm::translate(localMatrix, v);
+	}
+	const glm::mat4& localModel() const 
+	{
+		return localMatrix;
+	}
+	glm::vec3 scale() const;
+	glm::vec3 steerForce = glm::vec3(0); // These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
+private:
 	glm::mat4 localMatrix = glm::mat4(1.0f);
-	glm::vec3 steerForce = glm::vec3(0);       //These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
 };
 
 struct OWENGINE_API OWPhysicsData: public OWCollisionData

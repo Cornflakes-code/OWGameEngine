@@ -55,6 +55,7 @@ public:
 	typedef std::function<void(OWActor* sc)> OWActorCallbackType;
 	void traverseSceneGraph(OWActorCallbackType cb) const;
 protected:
+	std::vector<OWActor*> mRootNode;
 	Scene(const Movie* movie);
 
 	virtual void doSetup(ScenePhysicsState* state) = 0;

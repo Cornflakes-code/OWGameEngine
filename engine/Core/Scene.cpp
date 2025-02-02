@@ -7,7 +7,6 @@ Scene::Scene(const Movie* movie)
 {
 }
 
-static std::vector<OWActor*> mRootNode;
 void Scene::addActor(OWActor* a)
 {
 	mRootNode.push_back(a);

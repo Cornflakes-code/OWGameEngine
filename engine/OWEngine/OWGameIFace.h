@@ -12,8 +12,11 @@ public:
 	// Every objects init is called before anything else
 	void init()
 	{
-		mActivated = true;
-		doInit();
+		if (!mActivated)
+		{
+			doInit();
+			mActivated = true;
+		}
 	}
 	virtual void active(bool newValue) { mActivated = newValue; }
 	virtual bool active() const { return mActivated; }

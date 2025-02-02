@@ -44,7 +44,7 @@ protected:
 		return &(static_cast<TextComponentData*>(OWSceneComponent::data())->textData);
 	}
 public:
-	const TextData* textData() const
+	const TextData* constTextData() const
 	{
 		return &(static_cast<const TextComponentData*>(OWSceneComponent::constData())->textData);
 	}

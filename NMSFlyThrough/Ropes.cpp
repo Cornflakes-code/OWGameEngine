@@ -26,14 +26,18 @@ static std::string gRopeSurfaces = "RopeSurfaces";
 Rope::Rope(Scene* _scene, OWRopeScript* _script)
 	: OWActor(_scene, _script) 
 {
-
 }
 
 void Rope::doInit()
 {
+	if (!prepare())
+		return; //fail to init DLL
 	const OWRopeDataImp* rd = &constData()->ropeData;
 	prepareRope(rd->ropeDBId, rd->ropeZoom.x, rd->ropeZoom.y, rd->numDepthLayers);
-	prepareText(constData()->textData.fontHeight, constData()->textData.fontSpacing, constData()->textData.fontScale);
+	prepareText(rd->textData.fontHeight, rd->textData.fontSpacing, rd->textData.fontScale);
+	createRopeLines(mPolyBuilder->slices());
+	createRopeSurfaces(mPolyBuilder->slices());
+	createRopeEnds(mPolyBuilder->slices());
 	const OWRopeVisibilityData* vd = &constData()->ropeVisibility;
 	prepareVisibility(vd->ends, vd->lines, vd->surfaces, vd->labels);
 	OWActor::doInit();
@@ -119,11 +123,8 @@ void Rope::prepareRope(int ropeNum, float width, float height, int numDepthLayer
 
 void Rope::prepareText(int fontHeight, const glm::vec2& textSpacing, const glm::vec2& textScale)
 {
-	labels(textSpacing, textScale);
+	makeLabels(textSpacing, textScale);
 	makeBanner(constData()->ropeData.bannerText, fontHeight, textSpacing * 10.0f, textScale);
-	createRopeLines(mPolyBuilder->slices());
-	createRopeSurfaces(mPolyBuilder->slices());
-	createRopeEnds(mPolyBuilder->slices());
 }
 
 void Rope::makeBanner(const std::string& s, int height,
@@ -138,9 +139,10 @@ void Rope::makeBanner(const std::string& s, int height,
 	td->textData.fontSpacing = _spacing;
 	td->textData.fontScale = scale;
 	TextComponent* textData = new TextComponent(this, td);
+	textData->init();
 }
 
-void Rope::labels(const glm::vec2& textSpacing, const glm::vec2& textScale)
+void Rope::makeLabels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 {
 	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
 	{
@@ -150,8 +152,9 @@ void Rope::labels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 		td->textData.fontHeight = constData()->ropeData.labelFontHeight;
 		td->textData.fontSpacing = textSpacing * 10.0f;
 		td->textData.fontScale = textScale;
-		td->physics.position = si.pos;
+		td->physics.translate(si.pos);
 		TextComponent* tc = new TextComponent(this, td);
+		tc->init();
 	}
 }
 
@@ -159,9 +162,8 @@ void Rope::labels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	MeshComponentVAOData* mvd = new MeshComponentVAOData();
-	ShaderData* sd = new ShaderData();
-	sd->PVMName = "pvm";
-	mvd->meshData = VAOBuffer(new Shader(sd), VAOBuffer::DRAW_MULTI);
+	mvd->shaderData.PVMName = "pvm";
+	mvd->meshData = VAOBuffer(new Shader(&mvd->shaderData), VAOBuffer::DRAW_MULTI);
 
 	// Prepare the wire cross sections
 	std::vector<glm::vec3> coords;
@@ -177,18 +179,18 @@ OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::
 		}
 		break;
 	}
-	mvd->name = "Rope Ends";
+	mvd->name = gRopeEnds;
 	mvd->boundingBox.render(false);
 	MeshComponentVAO* m = new MeshComponentVAO(this, mvd);
+	m->init();
 	return m;
 }
 
 OWSceneComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	MeshComponentVAOData* mvd = new MeshComponentVAOData();
-	ShaderData* sd = new ShaderData();
-	sd->PVMName = "pvm";
-	Shader* lineShader = new Shader(sd);
+	mvd->shaderData.PVMName = "pvm";
+	Shader* lineShader = new Shader(&mvd->shaderData);
 	lineShader->loadBoilerPlates();
 	mvd->meshData = VAOBuffer(lineShader, VAOBuffer::DRAW_MULTI);
 
@@ -240,9 +242,10 @@ OWSceneComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm:
 			mvd->meshData.add(&lineData);
 		}
 	}
-	mvd->name = "Rope Lines";
+	mvd->name = gRopeLines;
 	mvd->boundingBox.render(false);
 	MeshComponentVAO* m = new MeshComponentVAO(this, mvd);
+	m->init();
 	return m;
 }
 
@@ -263,13 +266,12 @@ static unsigned int safeWrap(const std::vector<unsigned int>& vv, size_t ndx)
 OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	MeshComponentVAOData* mvd = new MeshComponentVAOData();
-	ShaderData* sd = new ShaderData();
-	sd->shaderV = "Wires.v.glsl";
-	sd->shaderF = "Wires.f.glsl";
-	sd->PVMName = "pvm";
-	sd->projectionName = "projection";
-	sd->viewName = "view";
-	sd->modelName = "model";
+	mvd->shaderData.shaderV = "Wires.v.glsl";
+	mvd->shaderData.shaderF = "Wires.f.glsl";
+	mvd->shaderData.PVMName = "pvm";
+	mvd->shaderData.projectionName = "projection";
+	mvd->shaderData.viewName = "view";
+	mvd->shaderData.modelName = "model";
 	auto pointRender = [](
 		const glm::mat4& OW_UNUSED(proj),
 		const glm::mat4& OW_UNUSED(view),
@@ -283,9 +285,9 @@ OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<g
 			shader->setVector3f("viewLightPos", glm::vec3(160.0f, 60.0f, 50.0f));
 			//shader->setVector3f("viewLightPos", cameraPos);
 		};
-	sd->mutatorCallbacks.push_back(pointRender);
-	Shader* wireShader = new Shader(sd);
-	mvd->meshData = VAOBuffer(wireShader, VAOBuffer::DRAW_MULTI);
+	mvd->shaderData.mutatorCallbacks.push_back(pointRender);
+	Shader* wireShader = new Shader(&mvd->shaderData);
+	mvd->meshData = VAOBuffer(wireShader, VAOBuffer::DRAW_ARRAYS);
 
 	// Prepare the wire cross sections
 	size_t numLayers = threeDWires.size();
@@ -401,8 +403,9 @@ OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<g
 	lineData.polygonMode(GL_FILL);
 	//lineData.polygonMode(GL_LINE);
 	mvd->meshData.add(&lineData);
-	mvd->name = "Rope Surfaces";
+	mvd->name = gRopeSurfaces;
 	mvd->boundingBox.render(false);
 	MeshComponentVAO* m = new MeshComponentVAO(this, mvd);
+	m->init();
 	return m;
 }

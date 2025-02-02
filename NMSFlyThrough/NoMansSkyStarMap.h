@@ -44,7 +44,7 @@ struct NoMansSkyDataImp
 	glm::u32vec3 gridSizes = { 0xAA, 0xAA, 0xAA };
 	glm::vec2 starRadius = { 4.0, 4.0 };
 	float scaleNMStoWorld = 0.0488519780f;// world.size().x / NMSSize.size().x;
-	int numStars = 500000;
+	int numberOfStars = 500000;
 };
 
 struct NoMansSkyData: public OWActorData

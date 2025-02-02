@@ -98,6 +98,7 @@ struct OWENGINE_API OWUtils
 	static std::string to_string(const glm::vec4& v);
 	static std::string to_string(const glm::vec3& v);
 	static std::string to_string(const glm::vec2& v);
+	static std::string to_string(float v);
 };
 
 OWENGINE_API std::ostream& operator<<(std::ostream& os, const glm::vec4& v);

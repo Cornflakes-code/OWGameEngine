@@ -9,9 +9,7 @@
 #include "OWComponent.h"
 
 struct OWENGINE_API OWSceneComponentData: public OWPhysicsData
-
 {
-	glm::vec3 scale = glm::vec3(1);
 	std::string name;
 };
 
@@ -43,8 +41,6 @@ public:
 			newValue = 1.0f;
 		data()->physics.visibility = newValue;
 	}
-	void scale(const glm::vec3& factor);
-	glm::vec3 scale() const { return constData()->scale; }
 	bool canCollide() override;
 	bool canCollide(OWCollisionData* other) override;
 	void collided(OWCollisionData* other) override;

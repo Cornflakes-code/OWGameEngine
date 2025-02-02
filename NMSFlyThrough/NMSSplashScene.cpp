@@ -39,7 +39,7 @@
 #define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
 #define INCLUDE_ENJOY
-int GDEBUG_PICKING = 1;
+int GDEBUG_PICKING = 2;
 #define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
@@ -84,7 +84,7 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	CollisionSystem::collide();
 }
 
-static float off = 500;
+static float off = 100;
 void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
@@ -213,10 +213,10 @@ BoxComponent* createBox(const std::string& _name, const glm::vec4& colour,
 				OWUtils::to_string(colour) });
 	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV3F, "viewLightPos", 
 				OWUtils::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
-	bcd->scale = scale;
 	bcd->name = _name;
 	bcd->physics.velocity = direction * speed;
-	bcd->physics.position = origin;
+	bcd->physics.translate(origin);
+	bcd->physics.scale(scale);
 	BoxComponent* box = new BoxComponent(mScenery, bcd);
 	gBox = box;
 	return box;
@@ -227,10 +227,10 @@ PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos
 {
 	PlaneComponentData* pcd = new PlaneComponentData();
 	pcd->colour = { 1.0f, 0.33f, 0.33f, 0.2f };
-	pcd->physics.position += pos;
+	pcd->physics.translate(pos);
 	pcd->name = _name;
-	pcd->scale = glm::vec3(scale);
-	glm::rotate(pcd->physics.localMatrix, glm::radians(rotDegrees), rotAxis);
+	pcd->physics.scale(glm::vec3(scale));
+	pcd->physics.rotate(glm::radians(rotDegrees), rotAxis);
 	pcd->canMove = false;
 	PlaneComponent* p = new PlaneComponent(mScenery, pcd);
 	p->init();
@@ -317,23 +317,27 @@ void NMSSplashScenePhysics::setup()
 	glm::vec3 scale1 = { 10, 10, 10 };
 	glm::vec3 scale2 = { 3, 3, 3 };
 	glm::vec3 scale3 = { 20, 20, 20 };
-	int denom = 40;
+	int denom = 10;
 
 	for (int i = 0; i < GDEBUG_PICKING; i++)
 	{
 		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
 		glm::vec3 rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f }; // random speed
-		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro + glm::vec3(100, 100, 100), rs, mSpeed * 0.0f, scale2));
+		ro = glm::vec3(100, 0, 0);
+		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro, rs, mSpeed * 0.0f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro - glm::vec3(100, 100, 100), rs, mSpeed * 0.8f, scale1));
-		break;
+		ro = glm::vec3(0, 100, 0);
+		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		ro = glm::vec3(0, 0, 100);
 		addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		ro = glm::vec3(0, 0, 0);
 		addToOcTree.push_back(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), ro, rs, mSpeed * 0.8f, scale1));
+		break;
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 		addToOcTree.push_back(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), ro, rs, mSpeed * 0.8f, scale1));

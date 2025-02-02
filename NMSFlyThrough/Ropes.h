@@ -72,7 +72,7 @@ public:
 	const AABB& bounds() const { return mBounds; }
 	const OWRopeData* constData() const
 	{
-		return static_cast<const OWRopeData*>(script()->data());
+		return dynamic_cast<const OWRopeData*>(script()->data());
 	}
 private:
 	bool prepare();
@@ -83,12 +83,12 @@ private:
 		const glm::vec2& _spacing, const glm::vec2& scale,
 		const std::string& f = "arial.ttf",
 		const glm::vec4& col = { 0.0, 0.0, 0.0, 1.0f });
-	void labels(const glm::vec2& textSpacing = { 0,0 }, const glm::vec2& textScale = { 0,0 });
+	void makeLabels(const glm::vec2& textSpacing = { 0,0 }, const glm::vec2& textScale = { 0,0 });
 	OWSceneComponent* createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	OWSceneComponent* createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	OWSceneComponent* createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
-	bool mLines = false;
-	bool mSurfaces = false;
-	bool mEnds = false;
-	bool mLabels = false;
+	bool mLines = true;
+	bool mSurfaces = true;
+	bool mEnds = true;
+	bool mLabels = true;
 };

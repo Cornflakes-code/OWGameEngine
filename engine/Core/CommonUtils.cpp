@@ -181,3 +181,10 @@ std::string OWUtils::to_string(const glm::vec2& v)
 	ss << v;
 	return ss.str();
 }
+
+std::string OWUtils::to_string(float v)
+{
+	std::stringstream ss;
+	ss << v;
+	return ss.str();
+}

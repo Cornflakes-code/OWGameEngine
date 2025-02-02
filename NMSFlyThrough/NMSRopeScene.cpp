@@ -16,28 +16,29 @@ void NMSRopeScenePhysics::setup()
 {
 	const AABB& _world = NMSScene::world();
 	OWRopeData* rd = new OWRopeData();
-	OWRopeDataImp* rdi = &rd->ropeData;
-	rdi->bannerText = "Rope Text";
-	rdi->ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
+	rd->ropeData.bannerText = "Rope Text";
+	rd->ropeData.ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
-	rdi->textData.fontHeight = 24;
-	rdi->textData.fontSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
-		rdi->textData.fontHeight, globals->camera()->aspectRatio());
-	rdi->textData.fontScale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
+	rd->ropeData.textData.fontHeight = 24;
+	rd->ropeData.textData.fontSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
+					rd->ropeData.textData.fontHeight, globals->camera()->aspectRatio());
+	rd->ropeData.textData.fontScale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
 						5.2f * _world.size().y / globals->physicalWindowSize().y };
 	/*
 	* 30822 - simple
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	rdi->ropeDBId = 9239;
-	rdi->numDepthLayers = 45;
+	rd->ropeData.ropeDBId = 9239;
+	rd->ropeData.numDepthLayers = 45;
 	rd->ropeVisibility.ends = true;
-	rd->ropeVisibility.lines = false;
+	rd->ropeVisibility.lines = true;
 	rd->ropeVisibility.surfaces = true;
-	rd->ropeVisibility.labels = false;
+	rd->ropeVisibility.labels = true;
+	glm::vec2 jfw = rd->ropeData.textData.fontSpacing;
 	OWRopeScript* rs = new OWRopeScript(rd);
 	Rope* rope = new Rope(this->owner(), rs);
+	rope->init();
 	mCameraFocus = rope->bounds().center();
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));
@@ -116,9 +117,14 @@ NMSRopeScene::NMSRopeScene(const Movie* _movie)
 
 void NMSRopeScene::doSetup(ScenePhysicsState* state)
 {
+	auto init = [](OWActor* a)
+		{
+			a->init();
+		};
+	traverseSceneGraph(init);
 }
 
-void NMSRopeScene::render(const ScenePhysicsState* OW_UNUSED(state),
+void NMSRopeScene::render(const ScenePhysicsState* state,
 	const glm::mat4& proj, const glm::mat4& view,
 	const glm::vec3& cameraPos)
 {

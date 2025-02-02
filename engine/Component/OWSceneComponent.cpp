@@ -81,7 +81,7 @@ void OWSceneComponent::collided(OWCollisionData* other)
 	float len = glm::length(ourCenter - otherCenter);
 	//float len2 = glm::length(ourCenter - position());
 	float prorataTimeStep = distance / len;// curtailedTimeStep / fullTimeStep;
-	data()->physics.position += prorataTimeStep * glm::length(data()->physics.velocity) * glm::normalize(reboundDir);
+	data()->physics.translate(prorataTimeStep * glm::length(data()->physics.velocity) * glm::normalize(reboundDir));
 	data()->physics.velocity += reboundDir * glm::length(data()->physics.velocity);
 }
 
@@ -93,16 +93,15 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	RenderTypes::ShaderResizer resizeCb) 
 {
 	std::string ss = name();
-	if (ss == "Text:Z")
+	if (ss == "Rope Ends")
 	{
-		ss = "Text:Z";
+		ss = "Rope Ends";
 	}
-	OWPhysicsDataImp* imp = &data()->physics;
-	const glm::mat4 I(1.0f);
-	//glm::mat4 r = glm::rotate(model, mRotateRadians, mRotateAxis);
-	glm::mat4 s = glm::scale(model, data()->scale);
-	glm::mat4 t = glm::translate(I, data()->physics.position);
-	glm::mat4 _model = t * data()->physics.localMatrix * s;
-	mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
+	if (data()->physics.visibility > 0.001f)
+	{
+		OWPhysicsDataImp* imp = &data()->physics;
+		glm::mat4 _model = model * data()->physics.localModel();
+		mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
+	}
 }
 

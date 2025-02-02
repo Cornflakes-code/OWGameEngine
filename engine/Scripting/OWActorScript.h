@@ -33,6 +33,7 @@ struct OWENGINE_API OWActorDataImp
 struct OWENGINE_API OWActorData
 {
 	OWActorDataImp actorData;
+	virtual ~OWActorData() {}
 };
 
 class OWENGINE_API OWActorScript: public OWScript
