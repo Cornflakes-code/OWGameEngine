@@ -122,7 +122,7 @@ void OWSceneComponent::collided(OWCollisionData* other)
 	//float len2 = glm::length(ourCenter - position());
 	float prorataTimeStep = distance / len;// curtailedTimeStep / fullTimeStep;
 	translate(prorataTimeStep * glm::length(data()->physics.velocity) * glm::normalize(reboundDir));
-	velocity(reboundDir * velocity());
+	velocity(velocity() + reboundDir * velocity());
 }
 
 void OWSceneComponent::render(const glm::mat4& proj,
