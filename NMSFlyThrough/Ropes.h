@@ -15,22 +15,16 @@ struct OWRopeDataImp
 	glm::vec2 ropeZoom;
 	unsigned int numDepthLayers = 30;
 	TextData textData;
-	//unsigned int FontHeight = 24;
-	//glm::vec2 textSpacing = glm::vec2({0.00625f, 0.0125f});
-	//glm::vec2 textScale = glm::vec2({1.3f, 1.3f});
-	bool displayEnds = true;
-	bool displayLines = false;
-	bool displaySurfaces = true;
-	bool displayLabels = false;
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
 };
 
 struct OWRopeVisibilityData
 {
 	bool ends = true;
-	bool lines = false;
+	bool lines = true;
 	bool surfaces = true;
-	bool labels = false;
+	bool strandLabels = false;
+	bool bannerLabel = true;
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
 };
 
@@ -78,7 +72,7 @@ private:
 	bool prepare();
 	void prepareRope(int ropeNum, float width, float height, int numDepthLayers);
 	void prepareText(int fontHeight, const glm::vec2& textSpacing, const glm::vec2& textScale);
-	void prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _labels);
+	void prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel);
 	void makeBanner(const std::string& s, int height,
 		const glm::vec2& _spacing, const glm::vec2& scale,
 		const std::string& f = "arial.ttf",
@@ -90,5 +84,6 @@ private:
 	bool mLines = true;
 	bool mSurfaces = true;
 	bool mEnds = true;
-	bool mLabels = true;
+	bool mStrandLabels = false;
+	bool mBannerLabel = false;
 };

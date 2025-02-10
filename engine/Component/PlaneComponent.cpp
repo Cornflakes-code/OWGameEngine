@@ -13,7 +13,7 @@ bool PlaneComponent::intersects(const AABB& box) const
 
 void PlaneComponent::doInit()
 {
-	std::vector<glm::vec3> vertices = GeometricShapes::rectangle(glm::vec2(1));
+    std::vector<glm::vec3> vertices = GeometricShapes::rectangle(glm::vec2(1));
     Shader* lineShader = new Shader(&data()->shaderData);
     MeshDataLight lineData;
     lineData.vertices(vertices, GL_TRIANGLES);
@@ -30,5 +30,6 @@ void PlaneComponent::doInit()
     vao->add(&lineData);
     vao->prepare();
     addRenderer(vao);
+    ShapeComponent::doInit();
 }
 

@@ -40,4 +40,5 @@ void RayComponent::doInit()
     vao->add(&lineData);
     vao->prepare();
     addRenderer(vao);
+    ShapeComponent::doInit();
 }

@@ -19,7 +19,7 @@ public:
 	ResourcePathFactory() {}
 	enum class ResourceType
 	{
-		Shader, Font, Texture, Model, SaveFile, UnknownType
+		Shader, Font, Texture, Model, Sound, SaveFile, UnknownType
 	};
 	void addPath(const std::filesystem::path& path, 
 				 ResourceType key = ResourceType::UnknownType);

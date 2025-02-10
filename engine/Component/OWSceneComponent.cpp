@@ -2,6 +2,9 @@
 
 #include "../Geometry/OWRay.h"
 #include "../Actor/OWActor.h"
+#include "../Helpers/Shader.h"
+#include "../Component/MeshComponentVAO.h"
+
 
 OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
 	: OWComponent(_owner)
@@ -11,6 +14,43 @@ OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
 	name(_data->name);
 	_owner->addSceneComponent(this);
 }
+
+void OWSceneComponent::doInit()
+{
+	if (mBoundingBoxRenderer == nullptr)
+	{
+		ShaderData* sd = new ShaderData();
+		sd->PVMName = "pvm";
+		MeshComponentVAOData* mvd = new MeshComponentVAOData();
+		mvd->shaderData.shaderV = "Wires.v.glsl";
+		mvd->shaderData.shaderF = "Wires.f.glsl";
+		mvd->shaderData.PVMName = "pvm";
+		mvd->shaderData.projectionName = "projection";
+		mvd->shaderData.viewName = "view";
+		mvd->shaderData.modelName = "model";
+
+		Shader* lineShader = new Shader(&mvd->shaderData);
+		lineShader->loadBoilerPlates();
+		mvd->meshData = VAOBuffer(lineShader, VAOBuffer::DRAW_MULTI);
+
+		VAOBuffer* vao = new VAOBuffer(lineShader, VAOBuffer::DRAW_ARRAYS);
+		std::vector<std::vector<glm::vec3>> surfaces = data()->boundingBox.surfaces();
+		for (const std::vector<glm::vec3>& p : surfaces)
+		{
+			MeshDataLight lineData;
+			lineData.colour(OWUtils::colour(OWUtils::SolidColours::BLACK), "colour");
+			lineData.vertices(p, GL_LINE_STRIP);
+			vao->add(&lineData);
+		}
+		vao->prepare();
+		mBoundingBoxRenderer = vao;
+
+	}
+	else
+		throw NMSLogicException(
+			"Error. mBoundingBoxRenderer should be null OWSceneComponent::doInit() for [" + name() + "]\n");
+}
+
 
 bool OWSceneComponent::canCollide()
 {
@@ -81,8 +121,8 @@ void OWSceneComponent::collided(OWCollisionData* other)
 	float len = glm::length(ourCenter - otherCenter);
 	//float len2 = glm::length(ourCenter - position());
 	float prorataTimeStep = distance / len;// curtailedTimeStep / fullTimeStep;
-	data()->physics.translate(prorataTimeStep * glm::length(data()->physics.velocity) * glm::normalize(reboundDir));
-	data()->physics.velocity += reboundDir * glm::length(data()->physics.velocity);
+	translate(prorataTimeStep * glm::length(data()->physics.velocity) * glm::normalize(reboundDir));
+	velocity(reboundDir * velocity());
 }
 
 void OWSceneComponent::render(const glm::mat4& proj,
@@ -100,8 +140,10 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	if (data()->physics.visibility > 0.001f)
 	{
 		OWPhysicsDataImp* imp = &data()->physics;
-		glm::mat4 _model = model * data()->physics.localModel();
+		glm::mat4 _model = model * data()->physics.localMatrix;
 		mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
+		if (mBoundingBoxRenderer != nullptr)
+			mBoundingBoxRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
 	}
 }
 

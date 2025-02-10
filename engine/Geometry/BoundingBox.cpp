@@ -117,7 +117,12 @@ AABB AABB::findBoundsIfRotated(float rot, const glm::vec3& rotAxis) const
 {
 	if (glm::epsilonEqual(rot, 0.0f, OWUtils::epsilon()))
 		return *this;
-	constexpr glm::mat4 model(1);
+	glm::mat4 model = glm::rotate(glm::mat4(1), rot, rotAxis);
+	return findBoundsIfRotated(model);
+}
+
+AABB AABB::findBoundsIfRotated(const glm::mat4& m) const
+{
 	std::vector<std::vector<glm::vec3>> surfaces = this->surfaces();
 	std::vector<glm::vec3> corners;
 	for (const std::vector<glm::vec3>& surf : surfaces)
@@ -125,7 +130,7 @@ AABB AABB::findBoundsIfRotated(float rot, const glm::vec3& rotAxis) const
 		for (const glm::vec3& pt : surf)
 		{
 			glm::vec3 pt1 = pt - center();
-			glm::vec4 rotatedPoint = glm::rotate(model, rot, rotAxis) * glm::vec4(pt1, 0);
+			glm::vec4 rotatedPoint = m * glm::vec4(pt1, 0);
 			pt1 = glm::vec3({ rotatedPoint.x, rotatedPoint.y, rotatedPoint.z }) + center();
 			corners.push_back(pt1);
 		}

@@ -15,6 +15,7 @@ struct OWENGINE_API OWSceneComponentData: public OWPhysicsData
 
 class OWENGINE_API OWSceneComponent: public OWComponent, public OWIPhysical, public OWIRenderable
 {
+	RendererBase* mBoundingBoxRenderer = nullptr;
 protected:
 	RendererBase* mRenderer = nullptr;
 	virtual OWSceneComponentData* data() override
@@ -25,26 +26,11 @@ protected:
 public:
 	typedef std::function<void(OWSceneComponent* sc)> OWSceneComponentCallbackType;
 	OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data = nullptr);
-	virtual const OWSceneComponentData* constData() const override
-	{
-		return static_cast<const OWSceneComponentData*>(OWIPhysical::constData());
-	}
-	float visibility() const
-	{
-		return constData()->physics.visibility;
-	}
-	void visibility(float newValue) 
-	{
-		if (newValue < 0.0f)
-			newValue = 0.0f;
-		else if (newValue > 1.0f)
-			newValue = 1.0f;
-		data()->physics.visibility = newValue;
-	}
 	bool canCollide() override;
 	bool canCollide(OWCollisionData* other) override;
 	void collided(OWCollisionData* other) override;
 	bool collides(OWCollisionData* other) override;
+	void doInit() override;
 
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,

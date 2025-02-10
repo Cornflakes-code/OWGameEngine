@@ -10,4 +10,5 @@ void MeshComponentVec4::doInit()
 	r->setup(d->meshData, d->vertexMode, d->vertexLocation);
 	d->boundingBox = convertToV3(d->meshData);
 	addRenderer(r);
+	OWSceneComponent::doInit();
 }

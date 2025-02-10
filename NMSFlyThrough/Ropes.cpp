@@ -39,13 +39,14 @@ void Rope::doInit()
 	createRopeSurfaces(mPolyBuilder->slices());
 	createRopeEnds(mPolyBuilder->slices());
 	const OWRopeVisibilityData* vd = &constData()->ropeVisibility;
-	prepareVisibility(vd->ends, vd->lines, vd->surfaces, vd->labels);
+	prepareVisibility(vd->ends, vd->lines, vd->surfaces, vd->strandLabels, vd->bannerLabel);
 	OWActor::doInit();
 }
 
-void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _labels)
+void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel)
 {
-	if (mEnds != _ends)
+	static int firstTime = true;
+	if ((firstTime) || (mEnds != _ends))
 	{
 		auto toggleRender = [_ends](OWSceneComponent* sc)
 			{
@@ -57,7 +58,8 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _labe
 		traverse(toggleRender);
 		mEnds = _ends;
 	}
-	if (mLines != _lines)
+
+	if ((firstTime) || (mLines != _lines))
 	{
 		auto toggleRender = [_lines](OWSceneComponent* sc)
 			{
@@ -69,7 +71,8 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _labe
 		traverse(toggleRender);
 		mLines = _lines;
 	}
-	if (mSurfaces != _surfaces)
+	
+	if ((firstTime) || (mSurfaces != _surfaces))
 	{
 		auto toggleRender = [_surfaces](OWSceneComponent* sc)
 			{
@@ -81,17 +84,35 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _labe
 		traverse(toggleRender);
 		mSurfaces = _surfaces;
 	}
-	if (_labels != mLabels)
+
+	if ((firstTime) || (_strandLabels != mStrandLabels))
 	{
-		auto toggleRender = [_labels](OWSceneComponent* sc)
-		{
-			if (sc->name().find("Text:") != std::string::npos)
+		std::string banner = "Text:" + constData()->ropeData.bannerText;
+		auto toggleRender = [_strandLabels, banner](OWSceneComponent* sc)
 			{
-				sc->visibility(_labels ? 1.0f : 0.0f);
-			}
-		};
+				if ((sc->name().find("Text:") != std::string::npos) && 
+					(sc->name() != banner))
+				{
+					sc->visibility(_strandLabels ? 1.0f : 0.0f);
+				}
+			};
 		traverse(toggleRender);
 	}
+
+	if ((firstTime) || (_bannerLabel != mBannerLabel))
+	{
+		std::string banner = "Text:" + constData()->ropeData.bannerText;
+		auto toggleRender = [_bannerLabel, banner](OWSceneComponent* sc)
+			{
+				if (sc->name() == banner)
+				{
+					sc->visibility(_bannerLabel ? 1.0f : 0.0f);
+				}
+			};
+		traverse(toggleRender);
+	}
+	if (firstTime)
+		firstTime = false;
 }
 
 bool Rope::prepare()
@@ -152,7 +173,8 @@ void Rope::makeLabels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 		td->textData.fontHeight = constData()->ropeData.labelFontHeight;
 		td->textData.fontSpacing = textSpacing * 10.0f;
 		td->textData.fontScale = textScale;
-		td->physics.translate(si.pos);
+		glm::mat4 m(1.0f);
+		td->physics.localMatrix = glm::translate(m, si.pos);
 		TextComponent* tc = new TextComponent(this, td);
 		tc->init();
 	}

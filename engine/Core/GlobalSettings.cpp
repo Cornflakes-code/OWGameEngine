@@ -222,8 +222,9 @@ void from_json(const json& j, ConfigFileStruct& d)
 			{"../engine/Resources/shaders", ResourcePathFactory::ResourceType::Shader},
 			{"../engine/Resources/fonts", ResourcePathFactory::ResourceType::Font},
 			{"../../engine/Resources/shaders", ResourcePathFactory::ResourceType::Shader},
-			{"../../engine/Resources/fonts", ResourcePathFactory::ResourceType::Font}
-		};		
+			{"../../engine/Resources/Sounds", ResourcePathFactory::ResourceType::Sound},
+			{ "../../engine/Resources/fonts", ResourcePathFactory::ResourceType::Font }
+		};
 		LogStream(LogStreamLevel::Error) << "Cannot parse config file Directories "
 			<< "Exception [" << ex.what() << "]\n";
 	}

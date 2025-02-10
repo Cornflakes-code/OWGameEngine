@@ -17,6 +17,7 @@ std::string ResourcePathFactory::toString(ResourceType rt)
 		case ResourceType::Font: return "Font";
 		case ResourceType::Texture: return "Texture";
 		case ResourceType::Model: return "Model";
+		case ResourceType::Sound: return "Sound";
 		case ResourceType::SaveFile: return "SaveFile";
 		case ResourceType::UnknownType: return "UnknownType";
 		default: return "Internal logic error";
@@ -30,6 +31,7 @@ ResourcePathFactory::ResourceType
 	if (rt == "Font") return ResourceType::Font;
 	if (rt == "Texture") return ResourceType::Texture;
 	if (rt == "Model") return ResourceType::Model;
+	if (rt == "Sound") return ResourceType::Sound;
 	if (rt == "SaveFile") return ResourceType::SaveFile;
 	if (rt == "UnknownType") return ResourceType::UnknownType;
 	throw NMSException(std::stringstream()

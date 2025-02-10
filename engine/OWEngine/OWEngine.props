@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glfw\include;E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;E:\Apps\json;E:\Apps\OpenGL\Glitter\Glitter\Vendor\assimp\include;E:\Apps\OpenGL\Glitter\Build\Glitter\Vendor\assimp\include;E:\Apps\OpenGL\Glitter\Glitter\Vendor;E:\Apps\OpenGL\freetype-2.10.2\include;E:\Apps\NMS\OWGameEngine\engine;E:\Apps\OpenGL\Glitter\Glitter\Vendor\glad\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Apps\OpenGL\Glitter\Build\lib\Release;E:\Apps\OpenGL\freetype-2.10.2\objs\x64\Release;E:\Apps\OpenGL\Glitter\Build\Glitter\Vendor\assimp\lib\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\Apps\OpenGL\Glitter\Glitter\Vendor\glfw\include;E:\Apps\OpenGL\Glitter\Glitter\Vendor\glm;E:\Apps\json;E:\Apps\OpenGL\Glitter\Glitter\Vendor\assimp\include;E:\Apps\OpenGL\Glitter\Build\Glitter\Vendor\assimp\include;E:\Apps\OpenGL\Glitter\Glitter\Vendor;E:\Apps\OpenGL\freetype-2.10.2\include;E:\Apps\NMS\OWGameEngine\engine;E:\Apps\OpenGL\Glitter\Glitter\Vendor\glad\include;E:\Apps\Sound;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\Apps\OpenGL\Glitter\Build\lib\Release;E:\Apps\OpenGL\freetype-2.10.2\objs\x64\Release;E:\Apps\OpenGL\Glitter\Build\Glitter\Vendor\assimp\lib\Release;E:\Apps\Sound;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

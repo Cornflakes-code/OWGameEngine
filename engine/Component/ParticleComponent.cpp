@@ -23,4 +23,5 @@ void ParticleComponent::doInit()
 {
 	throw NMSException(std::stringstream()
 		<< "Unimplemented function [ParticleComponent::doInit()].");
+	ShapeComponent::doInit();
 }

@@ -36,4 +36,5 @@ void BoxComponent::doInit()
 	glm::vec4 colour = data()->colour;
 	vao->prepare();
 	addRenderer(vao);
+	ShapeComponent::doInit();
 }

@@ -17,7 +17,7 @@ const std::string& ShaderFactory::getShader(const std::string& fileName)
 	// TODO: Do not store istream* as this keeps the file locked.
 	if (!fileName.size())
 		throw NMSLogicException(std::stringstream()
-			<< "Empty string passed to ResourcePathFactory::getShader()");
+			<< "Empty string passed to ShaderFactory::getShader()");
 
 	//std::lock_guard<std::mutex> guard(mut);
 

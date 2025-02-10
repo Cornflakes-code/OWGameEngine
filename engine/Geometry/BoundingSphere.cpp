@@ -51,3 +51,48 @@ bool Ball::contains(const AABB<Dim, Type>& other) const
 	return glm::length(difference) < mRadius;
 }
 */
+
+/*
+* https://github.com/raysan5/raylib/blob/master/examples/models/models_rlgl_solar_system.c
+// Draw sphere without any matrix transformation
+// NOTE: Sphere is drawn in world position ( 0, 0, 0 ) with radius 1.0f
+void DrawSphereBasic(Color color)
+{
+    int rings = 16;
+    int slices = 16;
+
+    // Make sure there is enough space in the internal render batch
+    // buffer to store all required vertex, batch is reseted if required
+    rlCheckRenderBatchLimit((rings + 2) * slices * 6);
+
+    rlBegin(RL_TRIANGLES);
+    rlColor4ub(color.r, color.g, color.b, color.a);
+
+    for (int i = 0; i < (rings + 2); i++)
+    {
+        for (int j = 0; j < slices; j++)
+        {
+            glm::vec3(cosf(DEG2RAD * (270 + (180 / (rings + 1)) * i)) * sinf(DEG2RAD * (j * 360 / slices)),
+                sinf(DEG2RAD * (270 + (180 / (rings + 1)) * i)),
+                cosf(DEG2RAD * (270 + (180 / (rings + 1)) * i)) * cosf(DEG2RAD * (j * 360 / slices)));
+            glm::vec3(cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))) * sinf(DEG2RAD * ((j + 1) * 360 / slices)),
+                sinf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))),
+                cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))) * cosf(DEG2RAD * ((j + 1) * 360 / slices)));
+            glm::vec3(cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))) * sinf(DEG2RAD * (j * 360 / slices)),
+                sinf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))),
+                cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))) * cosf(DEG2RAD * (j * 360 / slices)));
+
+            glm::vec3(cosf(DEG2RAD * (270 + (180 / (rings + 1)) * i)) * sinf(DEG2RAD * (j * 360 / slices)),
+                sinf(DEG2RAD * (270 + (180 / (rings + 1)) * i)),
+                cosf(DEG2RAD * (270 + (180 / (rings + 1)) * i)) * cosf(DEG2RAD * (j * 360 / slices)));
+            glm::vec3(cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i))) * sinf(DEG2RAD * ((j + 1) * 360 / slices)),
+                sinf(DEG2RAD * (270 + (180 / (rings + 1)) * (i))),
+                cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i))) * cosf(DEG2RAD * ((j + 1) * 360 / slices)));
+            glm::vec3(cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))) * sinf(DEG2RAD * ((j + 1) * 360 / slices)),
+                sinf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))),
+                cosf(DEG2RAD * (270 + (180 / (rings + 1)) * (i + 1))) * cosf(DEG2RAD * ((j + 1) * 360 / slices)));
+        }
+    }
+    rlEnd();
+}
+*/

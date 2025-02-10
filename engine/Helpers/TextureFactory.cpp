@@ -6,6 +6,7 @@
 #include "stb/stb_image.h"
 
 #include "../Core/ResourcePathFactory.h"
+#include "../Core/ErrorHandling.h"
 
 /*
 template<typename Q>
@@ -89,3 +90,10 @@ const Texture& TextureFactory::getTexture(
 	}
 }
 
+void TextureFactory::initTexture(
+	const Texture& tb, int width, int height, GLint filter,
+	unsigned char* data, GLenum internalFormat, GLint level,
+	GLenum bitmapType)
+{
+	throw NMSException("Not implemented");
+}

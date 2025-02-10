@@ -132,6 +132,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -187,6 +188,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>openal-soft\bin\Release\alsoft.common.lib;openal-soft\bin\Release\alsoft.excommon.lib;openal-soft\bin\Release\OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -231,6 +233,7 @@
     <ClInclude Include="..\Core\Scene.h" />
     <ClInclude Include="..\Core\SceneGraphNode.h" />
     <ClInclude Include="..\Core\ScenePhysicsState.h" />
+    <ClInclude Include="..\Core\SoundManager.h" />
     <ClInclude Include="..\Core\UserInput.h" />
     <ClInclude Include="..\Geometry\BoundingBox.h" />
     <ClInclude Include="..\Geometry\BoundingFrustum.h" />
@@ -267,12 +270,14 @@
     <ClInclude Include="..\Renderers\VAOBuffer.h" />
     <ClInclude Include="..\Scripting\OWActorScript.h" />
     <ClInclude Include="..\Scripting\OWScript.h" />
+    <ClInclude Include="..\Sound\miniAud.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OWEngine.h" />
     <ClInclude Include="OWGameIFace.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
+    <ClCompile Include="..\..\..\..\Sound\miniaudio\extras\miniaudio_split\miniaudio.c" />
     <ClCompile Include="..\Actor\BB2DRenderer.cpp" />
     <ClCompile Include="..\Actor\BB3DRenderer.cpp" />
     <ClCompile Include="..\Actor\Button.cpp" />
@@ -315,6 +320,7 @@
     <ClCompile Include="..\Core\Scene.cpp" />
     <ClCompile Include="..\Core\SceneGraphNode.cpp" />
     <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
+    <ClCompile Include="..\Core\SoundManager.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
     <ClCompile Include="..\Geometry\BoundingBox.cpp" />
     <ClCompile Include="..\Geometry\BoundingFrustum.cpp" />
@@ -352,6 +358,7 @@
     <ClCompile Include="..\Renderers\VAOBuffer.cpp" />
     <ClCompile Include="..\Scripting\OWActorScript.cpp" />
     <ClCompile Include="..\Scripting\OWScript.cpp" />
+    <ClCompile Include="..\Sound\miniAud.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>

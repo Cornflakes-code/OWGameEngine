@@ -31,10 +31,11 @@ void NMSRopeScenePhysics::setup()
 	*/
 	rd->ropeData.ropeDBId = 9239;
 	rd->ropeData.numDepthLayers = 45;
-	rd->ropeVisibility.ends = true;
-	rd->ropeVisibility.lines = true;
-	rd->ropeVisibility.surfaces = true;
-	rd->ropeVisibility.labels = true;
+	rd->ropeVisibility.ends = false;
+	rd->ropeVisibility.lines = false;
+	rd->ropeVisibility.surfaces = false;
+	rd->ropeVisibility.strandLabels = false;
+	rd->ropeVisibility.bannerLabel = true;
 	glm::vec2 jfw = rd->ropeData.textData.fontSpacing;
 	OWRopeScript* rs = new OWRopeScript(rd);
 	Rope* rope = new Rope(this->owner(), rs);

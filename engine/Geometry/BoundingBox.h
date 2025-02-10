@@ -130,6 +130,7 @@ public:
 
 	// We may need to a new AABB that fits this if this was rotated.
 	AABB findBoundsIfRotated(float rot, const glm::vec3& rotAxis) const;
+	AABB findBoundsIfRotated(const glm::mat4& m) const;
 
 	void move(const glm::vec3& delta) override
 	{

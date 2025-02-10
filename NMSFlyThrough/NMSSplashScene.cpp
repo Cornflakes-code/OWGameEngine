@@ -21,6 +21,7 @@
 #include <Actor/Button.h>
 #include <Component/BoxComponent.h>
 #include <Component/PlaneComponent.h>
+#include <Component/SoundListener.h>
 #include <Component/RayComponent.h>
 #include <Component/MeshComponentHeavy.h>
 #include <Component/MeshComponentLight.h>
@@ -35,11 +36,11 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-//#define INCLUDE_PLANES
-#define INCLUDE_FULLSCREEN
-#define INCLUDE_WELCOME
-#define INCLUDE_ENJOY
-int GDEBUG_PICKING = 2;
+#define INCLUDE_PLANES
+//#define INCLUDE_FULLSCREEN
+//#define INCLUDE_WELCOME
+//#define INCLUDE_ENJOY
+int GDEBUG_PICKING = 0;
 #define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
@@ -84,7 +85,7 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	CollisionSystem::collide();
 }
 
-static float off = 100;
+static constexpr float off = 50;
 void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
@@ -215,8 +216,8 @@ BoxComponent* createBox(const std::string& _name, const glm::vec4& colour,
 				OWUtils::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
 	bcd->name = _name;
 	bcd->physics.velocity = direction * speed;
-	bcd->physics.translate(origin);
-	bcd->physics.scale(scale);
+	glm::mat4 m = glm::scale(glm::mat4(1.0f), scale);
+	bcd->physics.localMatrix = glm::translate(m, origin);
 	BoxComponent* box = new BoxComponent(mScenery, bcd);
 	gBox = box;
 	return box;
@@ -227,10 +228,19 @@ PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos
 {
 	PlaneComponentData* pcd = new PlaneComponentData();
 	pcd->colour = { 1.0f, 0.33f, 0.33f, 0.2f };
-	pcd->physics.translate(pos);
+	glm::mat4 m(1.0f);
+	if (false)
+	{
+		m = glm::scale(m, glm::vec3(scale));
+		m = glm::rotate(m, glm::radians(rotDegrees), rotAxis);
+	}
+	else
+	{
+		m = glm::rotate(m, glm::radians(rotDegrees), rotAxis);
+		m = glm::scale(m, glm::vec3(scale));
+	}
+	pcd->physics.localMatrix = glm::translate(m, pos);
 	pcd->name = _name;
-	pcd->physics.scale(glm::vec3(scale));
-	pcd->physics.rotate(glm::radians(rotDegrees), rotAxis);
 	pcd->canMove = false;
 	PlaneComponent* p = new PlaneComponent(mScenery, pcd);
 	p->init();
@@ -385,15 +395,15 @@ void NMSSplashScenePhysics::setup()
 	mButtonData.mText = mEnjoyData;
 	mButtonData.mText.text("Click Me");
 #endif
-	const float pos = off / 2.1f;
+	const float pos = off / 20.0f;
 	// Create a box of planes for the objects to bounce off
 #ifdef INCLUDE_PLANES
 	createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::In
-	createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::Out
-	createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::East
-	createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::West
-	createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::North
-	createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::Bottom
+	//createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::Out
+	//createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::East
+	//createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::West
+	//createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::North
+	//createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::Bottom
 #endif
 }
 
