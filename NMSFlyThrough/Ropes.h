@@ -10,11 +10,8 @@
 struct OWRopeDataImp
 {
 	unsigned int ropeDBId;
-	std::string bannerText;
-	unsigned int labelFontHeight = 10;
 	glm::vec2 ropeZoom;
 	unsigned int numDepthLayers = 30;
-	TextData textData;
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
 };
 
@@ -31,12 +28,9 @@ struct OWRopeVisibilityData
 struct OWRopeData: public OWActorData
 {
 	OWRopeDataImp ropeData;
-	TextData textData;
+	TextComponentData labelTextData;
+	TextComponentData bannerTextData;
 	OWRopeVisibilityData ropeVisibility;
-	//unsigned int FontHeight = 24;
-	//glm::vec2 textSpacing = glm::vec2({0.00625f, 0.0125f});
-	//glm::vec2 textScale = glm::vec2({1.3f, 1.3f});
-	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
 };
 
 class OWRopeScript: public OWActorScript

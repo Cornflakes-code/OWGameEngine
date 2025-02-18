@@ -135,7 +135,7 @@ bool OWRay::externalIntersects(const AABB& box, glm::vec3& normal, float& distan
 
 bool OWRay::intersects(const AABB& box, glm::vec3& normal, float& distance) const
 {
-	if (false)//box.contains(mOrigin))
+	if (box.contains(mOrigin))
 	{
 		return internalIntersects(box, normal, distance);
 	}

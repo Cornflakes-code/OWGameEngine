@@ -16,14 +16,16 @@ void NMSRopeScenePhysics::setup()
 {
 	const AABB& _world = NMSScene::world();
 	OWRopeData* rd = new OWRopeData();
-	rd->ropeData.bannerText = "Rope Text";
+	rd->bannerTextData.textData.text = "Rope Text";
 	rd->ropeData.ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
-	rd->ropeData.textData.fontHeight = 24;
-	rd->ropeData.textData.fontSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
-					rd->ropeData.textData.fontHeight, globals->camera()->aspectRatio());
-	rd->ropeData.textData.fontScale = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
-						5.2f * _world.size().y / globals->physicalWindowSize().y };
+	rd->bannerTextData.textData.fontHeight = 24;
+	rd->bannerTextData.textData.fontSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
+					rd->bannerTextData.textData.fontHeight, globals->camera()->aspectRatio());
+	glm::vec3 sc = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
+						5.2f * _world.size().y / globals->physicalWindowSize().y,
+	1.0f };
+	rd->bannerTextData.physics.scale(sc);
 	/*
 	* 30822 - simple
 	* 29081 - strand for core
@@ -31,12 +33,11 @@ void NMSRopeScenePhysics::setup()
 	*/
 	rd->ropeData.ropeDBId = 9239;
 	rd->ropeData.numDepthLayers = 45;
-	rd->ropeVisibility.ends = false;
-	rd->ropeVisibility.lines = false;
-	rd->ropeVisibility.surfaces = false;
+	rd->ropeVisibility.ends = true;
+	rd->ropeVisibility.lines = true;
+	rd->ropeVisibility.surfaces = true;
 	rd->ropeVisibility.strandLabels = false;
-	rd->ropeVisibility.bannerLabel = true;
-	glm::vec2 jfw = rd->ropeData.textData.fontSpacing;
+	rd->ropeVisibility.bannerLabel = false;
 	OWRopeScript* rs = new OWRopeScript(rd);
 	Rope* rope = new Rope(this->owner(), rs);
 	rope->init();

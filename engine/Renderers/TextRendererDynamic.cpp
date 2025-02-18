@@ -38,15 +38,14 @@ void TextRendererDynamic::doSetup(const TextComponent* td, const glm::vec3& init
 		glm::mat4 newModel = glm::translate(model, position);
 		shader->setVector3f("BillboardPos", newModel[3]);
 	});
-	
+	glm::vec3 sc = td->scale();
+	//mBounds.scale(td->scale());
 	AABB bounds = mBounds;
-	const glm::vec2 scale = td->constTextData()->fontScale;
-	shader()->appendResizer([bounds, scale](const Shader* shader,
+	shader()->appendResizer([bounds, sc](const Shader* shader,
 			RenderTypes::ScaleByAspectRatioType scaler,
 			float aspectRatio)
 	{
-		glm::vec2 bbSize({ bounds.size().x * scale.x, bounds.size().y * scale.y });
-		shader->setVector2f("BillboardSize", bbSize);
+		shader->setVector2f("BillboardSize", bounds.size() * sc);
 	});
 
 }

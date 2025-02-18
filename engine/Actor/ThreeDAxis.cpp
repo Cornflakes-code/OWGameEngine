@@ -31,11 +31,11 @@ TextComponent* ThreeDAxis::createText(const glm::vec3& pos, const std::string& s
 		fontHeight, globals->camera()->aspectRatio());
 
 	TextComponentData* td = new TextComponentData();
-	td->physics.localMatrix = glm::translate(glm::mat4(1.0f), pos);
+	td->physics.translate(pos);
 	td->textData.fontSpacing = nice;
 	td->textData.fontHeight = 12;
 	td->textData.colour = data()->axisData.labelColour;
-	td->textData.fontScale = glm::vec2(1.0f);
+	td->physics.scale(2.0f);
 	td->textData.referencePos = refPos;
 	td->textData.text = s;
 	td->textData.tdt = TextData::TextDisplayType::Static;

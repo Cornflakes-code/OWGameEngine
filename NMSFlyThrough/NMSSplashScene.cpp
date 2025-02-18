@@ -35,11 +35,12 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-#define INCLUDE_PLANES
+//#define INCLUDE_PLANES
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
-//#define INCLUDE_ENJOY
-int GDEBUG_PICKING = 0;
+#define INCLUDE_ENJOY
+int GDEBUG_PICKING = 4;
+//#define BOXES_CENTERED
 #define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
@@ -48,6 +49,7 @@ AABB NMSSplashScenePhysics::mWindowBounds;
 BoxComponent* gBox = nullptr;
 TextComponent* gWelcome = nullptr;
 TextComponent* gEnjoy = nullptr;
+std::vector<OWSceneComponent*> addToOcTree;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
@@ -84,7 +86,7 @@ void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
 	CollisionSystem::collide();
 }
 
-static constexpr float off = 50;
+static constexpr float off = 500;
 void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	OWUtils::Time::duration dt)
 {
@@ -134,7 +136,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			LogStream(LogStreamLevel::Info) << "MouseToWorld Position " << mousePos << "\n";
 			glm::vec3 normMouse = glm::normalize(mousePos);
 			glm::vec3 cam_pos = camera->position();
-			glm::vec3 dir = mousePos - cam_pos;
+			glm::vec3 dir = cam_pos - mousePos;
 			RayComponentData* rcd = new RayComponentData();
 			rcd->colour = { 0.7, 0.7, 0.0, 1.0f };
 			rcd->direction = normMouse;
@@ -145,23 +147,31 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			float distance;
 			bool intersects = false;
 			glm::vec3 intersectPoint(0);
-			if (gBox != nullptr)
+			for (auto& a : addToOcTree)
 			{
-				intersects = r->intersects(gBox->constData()->boundingBox, normal, distance);
+				intersects = r->intersects(a->constData()->boundingBox, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "box intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+				LogStream(LogStreamLevel::Info) << "ray intersects [" << a->name() << "] position [" 
+					<< a->constData()->physics.mTranslate << "] ["
+					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
 			}
 			if (gWelcome != nullptr)
 			{
-				intersects = r->intersects(gWelcome->constData()->boundingBox, normal, distance);
+				const AABB& bb = gWelcome->constData()->boundingBox;
+				intersects = r->intersects(bb, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "Welcome intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+				LogStream(LogStreamLevel::Info) << "Welcome intersects ["
+					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
+					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
 			}
 			if (gEnjoy != nullptr)
 			{
-				intersects = r->intersects(gEnjoy->constData()->boundingBox, normal, distance);
+				const AABB& bb = gEnjoy->constData()->boundingBox;
+				intersects = r->intersects(bb, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "Enjoy intersects [" << (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+				LogStream(LogStreamLevel::Info) << "Enjoy intersects [" 
+					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
+					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
 			}
 		}
 	}
@@ -215,8 +225,9 @@ BoxComponent* createBox(const std::string& _name, const glm::vec4& colour,
 				OWUtils::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
 	bcd->name = _name;
 	bcd->physics.velocity = direction * speed;
-	glm::mat4 m = glm::scale(glm::mat4(1.0f), scale);
-	bcd->physics.localMatrix = glm::translate(m, origin);
+	bcd->physics.rotate(glm::radians(45.0f), glm::vec3(1,0,0));
+	bcd->physics.scale(scale);
+	bcd->physics.translate(origin);
 	BoxComponent* box = new BoxComponent(mScenery, bcd);
 	gBox = box;
 	return box;
@@ -228,17 +239,9 @@ PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos
 	PlaneComponentData* pcd = new PlaneComponentData();
 	pcd->colour = { 1.0f, 0.33f, 0.33f, 0.2f };
 	glm::mat4 m(1.0f);
-	if (false)
-	{
-		m = glm::scale(m, glm::vec3(scale));
-		m = glm::rotate(m, glm::radians(rotDegrees), rotAxis);
-	}
-	else
-	{
-		m = glm::rotate(m, glm::radians(rotDegrees), rotAxis);
-		m = glm::scale(m, glm::vec3(scale));
-	}
-	pcd->physics.localMatrix = glm::translate(m, pos);
+	pcd->physics.scale(glm::vec3(scale));
+	pcd->physics.rotate(glm::radians(rotDegrees), rotAxis);
+	pcd->physics.translate(pos);
 	pcd->name = _name;
 	pcd->canMove = false;
 	PlaneComponent* p = new PlaneComponent(mScenery, pcd);
@@ -248,7 +251,6 @@ PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos
 
 void NMSSplashScenePhysics::setup()
 {
-	std::vector<OWIPhysical*> addToOcTree;
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 100.0f;
@@ -294,11 +296,13 @@ void NMSSplashScenePhysics::setup()
 		Compass::Rose[Compass::East] +
 		Compass::Rose[Compass::In] * mSpeed;
 	//welcomeData->physics.velocity = velocity;
+	welcomeData->physics.translate(glm::vec3(0, 0, 0));
 	welcomeData->textData.fontName = "arial.ttf";
 	welcomeData->textData.fontHeight = fontHeight;
 	welcomeData->textData.colour = { 0.0, 0.0, 0.0, 1.0f };
 	welcomeData->textData.fontSpacing = { 10 * nice.x, 10 * nice.y };
-	welcomeData->textData.fontScale = scale;
+	welcomeData->physics.scale(glm::vec3(scale, 1.0));
+	//welcomeData->physics.scale(glm::vec3(10.0f));
 	welcomeData->textData.text = "Welcome to reality.";
 	TextComponent* welcome = new TextComponent(mScenery, welcomeData);
 	addToOcTree.push_back(welcome);
@@ -312,11 +316,12 @@ void NMSSplashScenePhysics::setup()
 	glm::vec3 velocity2 = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West] * mSpeed / 20.0f;
 	//enjoyData->physics.velocity = velocity2;
+	enjoyData->physics.translate(glm::vec3(0, 0, 0));
 	enjoyData->textData.fontName = "arial.ttf";
 	enjoyData->textData.fontHeight = fontHeight;
 	enjoyData->textData.colour = { 0.1, 0.9, 0.1, 1.0 };
 	enjoyData->textData.fontSpacing = { nice.x, nice.y };
-	enjoyData->textData.fontScale = scale;
+	enjoyData->physics.scale(glm::vec3(scale, 1.0));
 	enjoyData->textData.text = "Enjoy it while you can.";
 	TextComponent* enjoy = new TextComponent(mScenery, enjoyData);
 	//addToOcTree.push_back(enjoy);
@@ -332,21 +337,31 @@ void NMSSplashScenePhysics::setup()
 	{
 		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
 		glm::vec3 rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f }; // random speed
+#ifdef BOXES_CENTERED
 		ro = glm::vec3(100, 0, 0);
+#endif
 		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro, rs, mSpeed * 0.0f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+#ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 100, 0);
+#endif
 		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+#ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 100);
+#endif
 		addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+#ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 0);
+#endif
 		addToOcTree.push_back(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), ro, rs, mSpeed * 0.8f, scale1));
+#ifdef BOXES_CENTERED
 		break;
+#endif
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 		addToOcTree.push_back(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), ro, rs, mSpeed * 0.8f, scale1));
@@ -394,15 +409,15 @@ void NMSSplashScenePhysics::setup()
 	mButtonData.mText = mEnjoyData;
 	mButtonData.mText.text("Click Me");
 #endif
-	const float pos = off / 20.0f;
+	const float pos = off / 2.0f;
 	// Create a box of planes for the objects to bounce off
 #ifdef INCLUDE_PLANES
 	createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::In
-	//createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::Out
-	//createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::East
-	//createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::West
-	//createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::North
-	//createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::Bottom
+	createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::Out
+	createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::East
+	createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::West
+	createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::North
+	createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::Bottom
 #endif
 }
 
@@ -422,6 +437,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	AABB w = world();
 	axisData->axisData.world = w;
 	axisData->actorData.position = glm::vec3(0);// w.center();
+	axisData->axisData.labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW);
 	OWThreeDAxisScript* script = new OWThreeDAxisScript(axisData);
 	ThreeDAxis* axis = new ThreeDAxis(this, script);
 
@@ -545,7 +561,7 @@ void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene),
 {
 	//globals->application()->backgroundColour(glm::vec4(0, 0, 0, 1));
 	//camera->position({ -39.9999f, 40, 240 });
-	camera->position({ 200, 200, 200 });
+	camera->position({ 0, 0, 200 });
 	//camera->lookAt({ -39.758, 40, 239.029 });
 	camera->lookAt({ 0,0,0 });
 	float speed = camera->moveScale();

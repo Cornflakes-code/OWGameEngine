@@ -287,7 +287,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 			d->textData.text = elms[0];
 			d->textData.colour = { 0.0, 0.0, 0.0, 1.0f };
 			d->textData.fontSpacing = niceFontSpacing;
-			d->textData.fontScale = { 1.0,1.0 };
+			d->physics.scale({ 1.0, 1.0, 1.0 });
 			d->textData.referencePos = TextData::PositionType::Right;
 			TextComponent* td = new TextComponent(this, d);
 		}

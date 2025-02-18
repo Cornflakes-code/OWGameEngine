@@ -106,12 +106,12 @@ public:
 	AABB(std::vector<glm::vec3>::const_iterator begin, std::vector<glm::vec3>::const_iterator end);
 	AABB(const std::vector<glm::vec4>& v);
 	AABB(const std::vector<AABB>& v);
-
+	float diagonal() const;
 	glm::vec3 size() const { return mMaxPoint - mMinPoint; }
 	const glm::vec3 minPoint() const { return mMinPoint; }
 	const glm::vec3 maxPoint() const { return mMaxPoint; }
 
-	AABB scale(const glm::vec3& factor) const;
+	void scale(const glm::vec3& factor);
 	bool intersects(const OWBounding* other) const override;
 	bool intersects(const AABB& other) const;
 

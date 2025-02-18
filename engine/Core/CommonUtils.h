@@ -1,7 +1,4 @@
 #pragma once
-#include "../OWEngine/OWEngine.h"
-
-
 #include <chrono>
 #include <vector>
 #include <algorithm>
@@ -11,10 +8,15 @@
 #include <string>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
 
 #ifndef __gl_h_
 #include <glad/glad.h>
 #endif
+
+
+
+#include "../OWEngine/OWEngine.h"
 
 /*
 	Usefull functionality that needs a place to live. Bit of a mess atm
@@ -65,7 +67,14 @@ struct OWENGINE_API OWUtils
 	static void trim(std::string &s);
 
 	static std::vector<std::string> split(const std::string& s, char delim);
-
+	static bool isZero(const glm::vec3& v)
+	{
+		return glm::all(glm::epsilonEqual(v, glm::vec3(0), OWUtils::epsilon()));
+	}
+	static bool isZero(float f)
+	{
+		return glm::epsilonEqual(f, 0.0f, OWUtils::epsilon());
+	}
 	static bool nearlyEqual(Float a, Float b, Float _epsilon)
 	{
 		// https://floating-point-gui.de/errors/comparison/

@@ -15,8 +15,9 @@ struct OWENGINE_API OWSceneComponentData: public OWPhysicsData
 
 class OWENGINE_API OWSceneComponent: public OWComponent, public OWIPhysical, public OWIRenderable
 {
-	RendererBase* mBoundingBoxRenderer = nullptr;
 protected:
+	RendererBase* mBoundingBoxRenderer = nullptr;
+	AABB mOriginalBoundingBox;
 	RendererBase* mRenderer = nullptr;
 	virtual OWSceneComponentData* data() override
 	{

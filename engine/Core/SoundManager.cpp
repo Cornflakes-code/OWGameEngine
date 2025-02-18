@@ -8,6 +8,8 @@
 
 #include "../Core/ResourcePathFactory.h"
 
+// https://miniaud.io/docs/manual/
+// https://www.reddit.com/r/miniaudio/comments/ry3vjz/getting_started_with_miniaudio/
 std::map<int, SoundManager::SoundType> SoundManager::mUniqueSounds;
 
 SoundManager::SoundManager()

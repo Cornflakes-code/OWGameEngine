@@ -279,7 +279,8 @@ void Shader::setStandardUniformValues(const glm::mat4& proj,
 		std::string pvm = mUniforms[StandardUniforms::PVM];
 		if (pvm.size() < 3)
 		{
-			setMatrix4(pvm, proj * view);
+			glm::mat4 vp = proj * view;
+			setMatrix4(pvm, vp);
 		}
 		else
 		{

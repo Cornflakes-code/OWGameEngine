@@ -21,8 +21,7 @@ bool BoxComponent::intersects(const AABB& other) const
 void BoxComponent::doInit()
 {
 	std::vector<glm::vec3> vertices = GeometricShapes::cube();
-	AABB b = AABB(vertices);
-	data()->boundingBox = b;
+	data()->boundingBox = AABB(vertices);
 	ComputeNormals cn(vertices);
 	MeshDataLight lineData = cn.compute();
 	

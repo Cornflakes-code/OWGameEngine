@@ -15,6 +15,10 @@ struct OWENGINE_API ParticleComponentData: public ShapeComponentData
 class OWENGINE_API ParticleComponent: public ShapeComponent
 {
 	// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.html
+
+	// Complete Tutorial for particles
+//https://www.team-nutshell.dev/nutshellengine/articles/particle-rendering-2.html
+//https://www.team-nutshell.dev/nutshellengine/articles/particle-rendering.html
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	OWSphere* mSphere;

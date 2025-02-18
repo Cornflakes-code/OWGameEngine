@@ -1,5 +1,5 @@
 #include "BoundingBox.h"
-
+#include <cmath>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -73,13 +73,17 @@ AABB::AABB(const std::vector<AABB>& v)
 	}
 }
 
-AABB AABB::scale(const glm::vec3& factor) const
+void AABB::scale(const glm::vec3& factor)
 {
-	const glm::vec3 mi = (minPoint() - center()) * factor;
-	const glm::vec3 ma = (maxPoint() - center()) * factor;
+	const glm::vec3 c = center();
+	mMinPoint = (mMinPoint - c) * factor;
+	mMaxPoint = (mMaxPoint - c) * factor;
+}
 
-	return AABB (mi + center(), ma + center());
-
+float AABB::diagonal() const
+{
+	glm::vec3 span = (maxPoint() - minPoint()) / 2.0f;
+	return std::sqrtf(span.x * span.x + span.y * span.y + span.z * span.z);
 }
 
 bool AABB::intersects(const OWBounding* other) const
@@ -115,7 +119,7 @@ std::vector<glm::vec3> convertToV3(const std::vector<glm::vec4>& v4)
 
 AABB AABB::findBoundsIfRotated(float rot, const glm::vec3& rotAxis) const
 {
-	if (glm::epsilonEqual(rot, 0.0f, OWUtils::epsilon()))
+	if (OWUtils::isZero(rot))
 		return *this;
 	glm::mat4 model = glm::rotate(glm::mat4(1), rot, rotAxis);
 	return findBoundsIfRotated(model);
@@ -130,7 +134,7 @@ AABB AABB::findBoundsIfRotated(const glm::mat4& m) const
 		for (const glm::vec3& pt : surf)
 		{
 			glm::vec3 pt1 = pt - center();
-			glm::vec4 rotatedPoint = m * glm::vec4(pt1, 0);
+			glm::vec4 rotatedPoint = m * glm::vec4(pt1, 1);
 			pt1 = glm::vec3({ rotatedPoint.x, rotatedPoint.y, rotatedPoint.z }) + center();
 			corners.push_back(pt1);
 		}

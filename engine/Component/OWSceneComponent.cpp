@@ -1,5 +1,7 @@
 #include "OWSceneComponent.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "../Geometry/OWRay.h"
 #include "../Actor/OWActor.h"
 #include "../Helpers/Shader.h"
@@ -44,13 +46,13 @@ void OWSceneComponent::doInit()
 		}
 		vao->prepare();
 		mBoundingBoxRenderer = vao;
-
 	}
 	else
 		throw NMSLogicException(
 			"Error. mBoundingBoxRenderer should be null OWSceneComponent::doInit() for [" + name() + "]\n");
+	mOriginalBoundingBox = data()->boundingBox;
+	physicalDoInit();
 }
-
 
 bool OWSceneComponent::canCollide()
 {
@@ -98,7 +100,7 @@ void OWSceneComponent::collided(OWCollisionData* other)
 	glm::vec3 v = data()->physics.velocity + other->component->data()->physics.velocity;
 	glm::vec3 normal;
 	float distance;
-	if (glm::all(glm::epsilonEqual(v, glm::vec3(0), OWUtils::epsilon())))
+	if (OWUtils::isZero(v))
 		return;
 	glm::vec3 c1 = other->component->data()->boundingBox.minPoint() - glm::vec3(2, 2, 2);
 	OWRay r2(data()->boundingBox.center(), v);
@@ -140,10 +142,28 @@ void OWSceneComponent::render(const glm::mat4& proj,
 	if (data()->physics.visibility > 0.001f)
 	{
 		OWPhysicsDataImp* imp = &data()->physics;
-		glm::mat4 _model = model * data()->physics.localMatrix;
+		const glm::mat4 I(1.0f);
+		float len = glm::length(imp->mRotate);
+		glm::vec3 norm = glm::normalize(imp->mRotate);
+		glm::mat4 r = OWUtils::isZero(len) ? I : glm::rotate(model, len, norm);
+		glm::mat4 s = glm::scale(I, imp->mScale);
+		glm::mat4 t = glm::translate(I, imp->mTranslate);
+		glm::mat4 _model = t * r * s;
 		mRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
 		if (mBoundingBoxRenderer != nullptr)
-			mBoundingBoxRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
+		{
+			glm::vec3 newScaling(0);
+			const AABB& orig = mOriginalBoundingBox;
+			const AABB& current = data()->boundingBox;
+			newScaling.x = glm::abs(((current.maxPoint().x - current.minPoint().x)) / (orig.maxPoint().x - orig.minPoint().x));
+			newScaling.y = glm::abs(((current.maxPoint().y - current.minPoint().y)) / (orig.maxPoint().y - orig.minPoint().y));
+			newScaling.z = glm::abs(((current.maxPoint().z - current.minPoint().z)) / (orig.maxPoint().z - orig.minPoint().z));
+			const glm::mat4 I2(1.0f);
+			glm::mat4 s2 = glm::scale(model, newScaling);
+			glm::mat4 t2 = glm::translate(I2, translation());
+			glm::mat4 model2 = t2 * s2;
+			mBoundingBoxRenderer->render(proj, view, model2, cameraPos, renderCb, resizeCb);
+		}
 	}
 }
 

@@ -33,8 +33,9 @@ void Rope::doInit()
 	if (!prepare())
 		return; //fail to init DLL
 	const OWRopeDataImp* rd = &constData()->ropeData;
+	const TextComponentData* tcd = &constData()->labelTextData;
 	prepareRope(rd->ropeDBId, rd->ropeZoom.x, rd->ropeZoom.y, rd->numDepthLayers);
-	prepareText(rd->textData.fontHeight, rd->textData.fontSpacing, rd->textData.fontScale);
+	prepareText(tcd->textData.fontHeight, tcd->textData.fontSpacing, tcd->physics.scale());
 	createRopeLines(mPolyBuilder->slices());
 	createRopeSurfaces(mPolyBuilder->slices());
 	createRopeEnds(mPolyBuilder->slices());
@@ -87,7 +88,7 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _stra
 
 	if ((firstTime) || (_strandLabels != mStrandLabels))
 	{
-		std::string banner = "Text:" + constData()->ropeData.bannerText;
+		std::string banner = "Text:" + constData()->bannerTextData.textData.text;
 		auto toggleRender = [_strandLabels, banner](OWSceneComponent* sc)
 			{
 				if ((sc->name().find("Text:") != std::string::npos) && 
@@ -101,7 +102,7 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _stra
 
 	if ((firstTime) || (_bannerLabel != mBannerLabel))
 	{
-		std::string banner = "Text:" + constData()->ropeData.bannerText;
+		std::string banner = "Text:" + constData()->bannerTextData.textData.text;
 		auto toggleRender = [_bannerLabel, banner](OWSceneComponent* sc)
 			{
 				if (sc->name() == banner)
@@ -145,7 +146,7 @@ void Rope::prepareRope(int ropeNum, float width, float height, int numDepthLayer
 void Rope::prepareText(int fontHeight, const glm::vec2& textSpacing, const glm::vec2& textScale)
 {
 	makeLabels(textSpacing, textScale);
-	makeBanner(constData()->ropeData.bannerText, fontHeight, textSpacing * 10.0f, textScale);
+	makeBanner(constData()->bannerTextData.textData.text, fontHeight, textSpacing * 10.0f, textScale);
 }
 
 void Rope::makeBanner(const std::string& s, int height,
@@ -158,7 +159,7 @@ void Rope::makeBanner(const std::string& s, int height,
 	td->textData.text = s;
 	td->textData.fontHeight = height;
 	td->textData.fontSpacing = _spacing;
-	td->textData.fontScale = scale;
+	td->physics.scale(glm::vec3(scale, 1.0));
 	TextComponent* textData = new TextComponent(this, td);
 	textData->init();
 }
@@ -170,11 +171,10 @@ void Rope::makeLabels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 		TextComponentData* td = new TextComponentData();
 		td->textData.tdt = TextData::TextDisplayType::Dynamic;
 		td->textData.text = std::to_string(si.id);
-		td->textData.fontHeight = constData()->ropeData.labelFontHeight;
+		td->textData.fontHeight = constData()->labelTextData.textData.fontHeight;
 		td->textData.fontSpacing = textSpacing * 10.0f;
-		td->textData.fontScale = textScale;
-		glm::mat4 m(1.0f);
-		td->physics.localMatrix = glm::translate(m, si.pos);
+		td->physics.scale(glm::vec3(textScale, 1.0));
+		td->physics.translate(si.pos);
 		TextComponent* tc = new TextComponent(this, td);
 		tc->init();
 	}
@@ -194,7 +194,7 @@ OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::
 		for (auto& polygon : slice)
 		{
 			MeshDataLight lineData;
-			glm::vec4 colour = data()->colour;
+			glm::vec4 colour = data()->ropeData.colour;
 			lineData.colour(colour, "colour");
 			lineData.vertices(polygon, GL_LINE_LOOP);
 			mvd->meshData.add(&lineData);

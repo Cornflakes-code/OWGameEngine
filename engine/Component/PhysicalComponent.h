@@ -36,7 +36,20 @@ struct OWENGINE_API OWPhysicsDataImp
 	// 0(invisibility -> 1 (fully opaque)
 	float visibility = 1.0f;
 	glm::vec3 steerForce = glm::vec3(0); // These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
-	glm::mat4 localMatrix = glm::mat4(1.0f);
+	void translate(const glm::vec3& newValue);
+	void rotate(float rads, const glm::vec3& axis);
+	void scale(const glm::vec3& newValue);
+	void scale(float newValue)
+	{
+		scale(glm::vec3(newValue));
+	}
+	glm::vec3 scale() const
+	{
+		return mScale;
+	}
+	glm::vec3 mRotate = glm::vec3(0);
+	glm::vec3 mTranslate = glm::vec3(0);
+	glm::vec3 mScale = glm::vec3(1);
 private:
 };
 
@@ -116,6 +129,9 @@ public:
 	void rotate(float radians, const glm::vec3& axis);
 	void scale(const glm::vec3& v);
 	void translate(const glm::vec3& v);
+	glm::vec3 translation() const {
+		return mData->physics.mTranslate;
+	}
 	glm::vec3 scale() const;
 	virtual OWPhysicsData* data() { return mData; }
 	virtual const OWPhysicsData* constData() const { return mData; }
@@ -128,4 +144,5 @@ public:
 	virtual bool canCollide(OWCollisionData* other) = 0;
 	virtual bool collides(OWCollisionData* other) = 0;
 	virtual void collided(OWCollisionData* other) = 0;
+	void physicalDoInit();
 };
