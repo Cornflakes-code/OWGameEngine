@@ -61,16 +61,24 @@ struct OWENGINE_API OWUtils
 	static std::string nowAsString();
 	static std::vector<std::string> split1(const std::string &s, char delim);
 	static std::vector<std::string> split2(const std::string &text, char sep);
+	static std::vector<std::string> split(const std::string& s, char delim);
+
 	// trim (in place)
 	static void ltrim(std::string &s);
 	static void rtrim(std::string &s);
 	static void trim(std::string &s);
 
-	static std::vector<std::string> split(const std::string& s, char delim);
-	static bool isZero(const glm::vec3& v)
+	template <int Dim, typename Type>
+	static bool isZero(const glm::vec<Dim,Type>& v)
 	{
-		return glm::all(glm::epsilonEqual(v, glm::vec3(0), OWUtils::epsilon()));
+		return glm::all(glm::epsilonEqual(v, glm::vec<Dim,Type>(0), OWUtils::epsilon()));
 	}
+	template<float> 
+	static bool isZero(float f)
+	{
+		return glm::epsilonEqual(f, 0.0f, OWUtils::epsilon());
+	}
+
 	static bool isZero(float f)
 	{
 		return glm::epsilonEqual(f, 0.0f, OWUtils::epsilon());

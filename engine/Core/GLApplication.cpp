@@ -376,6 +376,26 @@ void GLAPIENTRY error_callback(int error, const char* description)
 	}
 }
 
+void GLApplication::setWindowSize(const glm::uvec2& size)
+{
+	if (size.x == 0 && size.y == 0)
+	{
+		glfwIconifyWindow(mWindow);
+	}
+	else if ((size.x == static_cast<unsigned int>(-1)) || 
+		(size.y == static_cast<unsigned int>(-1)))
+	{
+		if ((glfwGetWindowAttrib(mWindow, GLFW_MAXIMIZED) == 1)||
+			(glfwGetWindowAttrib(mWindow, GLFW_ICONIFIED) == 1))
+			glfwRestoreWindow(mWindow);
+		else 
+			glfwMaximizeWindow(mWindow);
+	}
+	else
+		glfwSetWindowSize(mWindow, size.x, size.y);
+}
+
+
 void GLApplication::errorReporting(int error, const char* description)
 {
 	LogStream(LogStreamLevel::Warning) << "GLFW ERROR: code [" << error

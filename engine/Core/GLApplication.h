@@ -37,6 +37,7 @@ public:
 	void init(Movie* movie, UserInput* ui, MacroRecorder* recorder, 
 			SaveAndRestore* saveRestore, Camera* camera);
 	void run(Movie* movieSaveAndRestore);
+	void setWindowSize(const glm::uvec2& size);
 	void errorReporting(int error, const char* description);
 	void onDebugMessageCallback(GLenum source, GLenum type, GLuint id,
 		GLenum severity, GLsizei length,

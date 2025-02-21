@@ -35,15 +35,15 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-//#define INCLUDE_PLANES
-//#define INCLUDE_FULLSCREEN
-//#define INCLUDE_WELCOME
+#define INCLUDE_PLANES
+#define INCLUDE_FULLSCREEN
+#define INCLUDE_WELCOME
 #define INCLUDE_ENJOY
 int GDEBUG_PICKING = 4;
 //#define BOXES_CENTERED
 #define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
-//#define INCLUDE_IMPORTED_MODEL
+#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
 BoxComponent* gBox = nullptr;
@@ -151,7 +151,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			{
 				intersects = r->intersects(a->constData()->boundingBox, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "ray intersects [" << a->name() << "] position [" 
+				LogStream(LogStreamLevel::Info) << "ray intersects [" << a->name() << "] position ["
 					<< a->constData()->physics.mTranslate << "] ["
 					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
 			}
@@ -169,11 +169,15 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 				const AABB& bb = gEnjoy->constData()->boundingBox;
 				intersects = r->intersects(bb, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "Enjoy intersects [" 
+				LogStream(LogStreamLevel::Info) << "Enjoy intersects ["
 					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
 					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
 			}
 		}
+	}
+	if (userInput.mouseInput.action == UserInput::PointingDeviceAction::RightMouseButtonClick)
+	{
+		globals->application()->setWindowSize(glm::vec2(-1, 0));
 	}
 	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
 	{
@@ -390,18 +394,19 @@ void NMSSplashScenePhysics::setup()
 	//box->rotate
 
 #ifdef INCLUDE_IMPORTED_MODEL
-	MeshComponent* dice = new MeshComponent(mScenery, glm::vec3(0));
-	dice->name("Dice");
-	ModelData md = ModelFactory().create("Dice2.obj", false);
-	Shader* shader = new Shader("meshTest.v.glsl", "meshTest.f.glsl", "");
-	shader->setStandardUniformNames("pvm");
-	glm::vec3 scaleBy = glm::vec3(10.0, 10.0, 10.0);
-	auto mm = [scaleBy](const glm::mat4& model)
-		{
-			return glm::scale(model, scaleBy);
-		};
-	dice->scale(glm::vec3(10.0, 10.0, 10.0));
-	dice->setup(md.children[0].meshes[0], shader, GL_TRIANGLES, 0);
+	MeshComponentHeavyData* mch = new MeshComponentHeavyData();
+	mch->name = "Dice";
+	mch->shaderData.shaderV = "meshTest.v.glsl";
+	mch->shaderData.shaderF = "meshTest.f.glsl";
+	mch->shaderData.shaderG = "";
+	mch->shaderData.PVMName = "pvm";
+	mch->physics.scale(glm::vec3(10.0, 10.0, 10.0));
+	{
+		ModelData md = ModelFactory().create("Dice2.obj", false);
+		mch->meshData = *(md.children[0].meshes[0]);
+	}
+	mch->vertexMode = GL_TRIANGLES;
+	MeshComponentHeavy* dice = new MeshComponentHeavy(mScenery, mch);
 	addToOcTree.push_back(dice);
 #endif
 #ifdef INCLUDE_STAR_RENDER

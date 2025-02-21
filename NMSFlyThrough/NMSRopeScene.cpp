@@ -20,12 +20,14 @@ void NMSRopeScenePhysics::setup()
 	rd->ropeData.ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
 	rd->bannerTextData.textData.fontHeight = 24;
-	rd->bannerTextData.textData.fontSpacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
-					rd->bannerTextData.textData.fontHeight, globals->camera()->aspectRatio());
+	glm::vec2 spacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
+		rd->bannerTextData.textData.fontHeight, globals->camera()->aspectRatio());
+	rd->bannerTextData.textData.fontSpacing = spacing;
 	glm::vec3 sc = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
 						5.2f * _world.size().y / globals->physicalWindowSize().y,
-	1.0f };
+					1.0f };
 	rd->bannerTextData.physics.scale(sc);
+	rd->labelTextData.textData.fontSpacing = spacing;
 	/*
 	* 30822 - simple
 	* 29081 - strand for core

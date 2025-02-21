@@ -164,6 +164,9 @@ void TextComponent::render(const glm::mat4& proj,
 				//mBoundingBoxRenderer->render(proj, view, model2, cameraPos, renderCb, resizeCb);
 				mBoundingBoxRenderer->render(proj, view, _model, cameraPos, renderCb, resizeCb);
 			}
+			else
+			{
+			}
 		}
 	}
 }
