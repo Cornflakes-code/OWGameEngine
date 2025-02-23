@@ -47,16 +47,16 @@ struct NoMansSkyDataImp
 	int numberOfStars = 500000;
 };
 
-struct NoMansSkyData: public OWActorData
+struct NoMansSkyData: public OLDActorData
 {
 	NoMansSkyDataImp nmsData;
 };
 
-class NMSScript: public OWActorScript
+class NMSScript: public OLDActorScript
 {
 public:
 	NMSScript(NoMansSkyData* _data)
-		: OWActorScript(_data) {
+		: OLDActorScript(_data) {
 	}
 	void tick(float deltaSecods) override;
 
@@ -68,7 +68,7 @@ protected:
 	void doInit() override;
 };
 
-class NoMansSky: public OWActor
+class NoMansSky: public OLDActor
 {
 	glm::vec2 mStarRadius;
 	std::vector<glm::vec3> mRandomMinorStars;

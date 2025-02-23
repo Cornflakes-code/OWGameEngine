@@ -15,11 +15,11 @@ struct OWENGINE_API LightSourceData
 	glm::vec3 position;
 };
 
-class OWENGINE_API LightSource : public OWComponent, public OWIRenderable
+class OWENGINE_API LightSource : public OLDComponent, public OLDIRenderable
 {
 	LightSourceData* mData;
 public:
-	LightSource(OWActor* _owner, LightSourceData* _data);
+	LightSource(OLDActor* _owner, LightSourceData* _data);
 	~LightSource();
 	void doInit() override;
 private:

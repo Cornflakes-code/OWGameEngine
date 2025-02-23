@@ -9,7 +9,7 @@
 
 class TextComponent;
 
-struct OWENGINE_API ButtonData: public OWActorData
+struct OWENGINE_API ButtonData: public OLDActorData
 {
 	enum ClickState
 	{
@@ -23,23 +23,23 @@ struct OWENGINE_API ButtonData: public OWActorData
 	ClickState mClickState;
 };
 
-class OWENGINE_API ButtonScript: public OWActorScript
+class OWENGINE_API ButtonScript: public OLDActorScript
 {
 protected:
 public:
 	ButtonScript(ButtonData* _data)
-		: OWActorScript(_data) 
+		: OLDActorScript(_data) 
 	{}
 };
 
-class OWButton : public OWActor
+class OLDButton : public OLDActor
 {
 	virtual ButtonData* data()
 	{
 		return static_cast<ButtonData*>(script()->data());
 	}
 public:
-	OWButton(Scene* _owner, ButtonScript* _data);
+	OLDButton(Scene* _owner, ButtonScript* _data);
 	virtual const ButtonData* data() const
 	{
 		return static_cast<const ButtonData*>(script()->data());

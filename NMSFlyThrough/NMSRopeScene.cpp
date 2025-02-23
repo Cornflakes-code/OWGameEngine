@@ -121,7 +121,7 @@ NMSRopeScene::NMSRopeScene(const Movie* _movie)
 
 void NMSRopeScene::doSetup(ScenePhysicsState* state)
 {
-	auto init = [](OWActor* a)
+	auto init = [](OLDActor* a)
 		{
 			a->init();
 		};
@@ -133,7 +133,7 @@ void NMSRopeScene::render(const ScenePhysicsState* state,
 	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	auto rend = [proj, view, model, cameraPos](OWActor* a)
+	auto rend = [proj, view, model, cameraPos](OLDActor* a)
 		{
 			a->render(proj, view, model, cameraPos);
 		};

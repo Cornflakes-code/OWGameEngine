@@ -102,7 +102,7 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	OWThreeDAxisScript* threeDAxisDataScript = new OWThreeDAxisScript(threeDAxisData);
 	ThreeDAxis* axis = new ThreeDAxis(this, threeDAxisDataScript);
 
-	auto init = [](OWActor* a)
+	auto init = [](OLDActor* a)
 		{
 			a->init();
 		};
@@ -115,7 +115,7 @@ void NMSMainScene::render(const ScenePhysicsState* state,
 {
 	glm::mat4 model(1.0);
 
-	auto rend = [proj, view, model, cameraPos](OWActor* a)
+	auto rend = [proj, view, model, cameraPos](OLDActor* a)
 	{
 		a->render(proj, view, model, cameraPos);
 	};

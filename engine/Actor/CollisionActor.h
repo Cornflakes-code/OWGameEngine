@@ -10,16 +10,16 @@
 #include "../Renderers/OWRenderable.h"
 
 class OWRay;
-class OWENGINE_API CollisionEngine : public OWComponent
+class OWENGINE_API CollisionEngine : public OLDComponent
 {
 public:
-	CollisionEngine(OWActor* _owner)
-		: OWComponent(_owner) {
+	CollisionEngine(OLDActor* _owner)
+		: OLDComponent(_owner) {
 	}
-	void addStatic(OWSceneComponent* o);
-	void addMoveableObject(OWSceneComponent* o);
+	void addStatic(OLDSceneComponent* o);
+	void addMoveableObject(OLDSceneComponent* o);
 	//int preTick() override;
 	//int tick(float dt) override;
 	//int postTick() override;
-	std::vector< OWSceneComponent*> fireRay(OWRay* r);
+	std::vector< OLDSceneComponent*> fireRay(OWRay* r);
 };

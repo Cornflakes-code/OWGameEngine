@@ -17,7 +17,7 @@ Screen Space to NDC
 X(ndc) = 2 * X(screen) / window_width - 1
 Y(ndc) = 2 * Y(screen) / window_height - 1
 */
-ParticleComponent::ParticleComponent(OWActor* _owner, ParticleComponentData* _data)
+ParticleComponent::ParticleComponent(OLDActor* _owner, ParticleComponentData* _data)
     : ShapeComponent(_owner, _data)
 {
 }

@@ -30,7 +30,7 @@
 	A scene change will involve a gross change in functionality and is often considered 
 	an "out of game" experience.	
 */
-class OWActor;
+class OLDActor;
 class OWENGINE_API Scene
 {
 public:
@@ -39,7 +39,7 @@ public:
 	virtual std::string name() const = 0;
 	virtual void activate(const std::string& previousScene, 
 	ScenePhysicsState* state, Camera* camera, unsigned int callCount) = 0;
-	void addActor(OWActor* a);
+	void addActor(OLDActor* a);
 	// Scene has been paged out. Scene may never come back so an 
 	// opportunity to free resources maybe?
 	virtual void deActivate(const Camera* camera, ScenePhysicsState* state) = 0;
@@ -52,10 +52,10 @@ public:
 						const glm::mat4& proj, const glm::mat4& view,
 						const glm::vec3& cameraPos) = 0;
 	const Movie* movie() const { return mMovie; }
-	typedef std::function<void(OWActor* sc)> OWActorCallbackType;
+	typedef std::function<void(OLDActor* sc)> OWActorCallbackType;
 	void traverseSceneGraph(OWActorCallbackType cb) const;
 protected:
-	std::vector<OWActor*> mRootNode;
+	std::vector<OLDActor*> mRootNode;
 	Scene(const Movie* movie);
 
 	virtual void doSetup(ScenePhysicsState* state) = 0;

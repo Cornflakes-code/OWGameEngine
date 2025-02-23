@@ -1,21 +1,21 @@
 #include "OWActorScript.h"
 
-void OWScript::tick(float deltaSecods)
+void OLDScript::tick(float deltaSecods)
 {
 }
 
-void OWScript::begin()
+void OLDScript::begin()
 {
 }
 
-void OWScript::end()
+void OLDScript::end()
 {
 }
 
-void OWScript::destroy()
+void OLDScript::destroy()
 {
 }
 
-void OWScript::doInit()
+void OLDScript::doInit()
 {
 }

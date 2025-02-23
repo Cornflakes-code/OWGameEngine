@@ -8,7 +8,7 @@
 class Scene;
 class OcTree;
 class Camera;
-class OWActor;
+class OLDActor;
 /*
 	My implementation of a Fixed timestep physics/Variable timestep Render Game 
 	Loop requires the separation of static and dynamic information. Class Scene 
@@ -41,7 +41,7 @@ public:
 	Scene* owner() { return mOwner; }
 	virtual void clear() {}
 	OcTree* mOctTreeEx = nullptr;
-	OWActor* mSceneryEx = nullptr;
+	OLDActor* mSceneryEx = nullptr;
 protected:
 
 	// https://gafferongames.com/post/fix_your_timestep/

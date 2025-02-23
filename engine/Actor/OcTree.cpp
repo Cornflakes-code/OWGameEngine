@@ -14,14 +14,14 @@ OcTree::~OcTree()
 {
 }
 
-void OcTree::add(OWCollisionData* mc, unsigned int threshold,
+void OcTree::add(OLDCollisionData* mc, unsigned int threshold,
     unsigned int maximumDepth)
 {
-    std::vector<OWCollisionData*> toAdd;
+    std::vector<OLDCollisionData*> toAdd;
     toAdd.push_back(mc);
 }
 
-void OcTree::add(const std::vector<OWCollisionData*>& toAdd, unsigned int threshold,
+void OcTree::add(const std::vector<OLDCollisionData*>& toAdd, unsigned int threshold,
     unsigned int maximumDepth)
 {
     build(toAdd, threshold, maximumDepth, mBounds, 0);
@@ -29,7 +29,7 @@ void OcTree::add(const std::vector<OWCollisionData*>& toAdd, unsigned int thresh
 
 const AABB negative(glm::vec3(-1), glm::vec3(-1));
 
-void OcTree::addToBin(OWCollisionData* a, std::vector<std::vector<OWCollisionData*>>& childBin)
+void OcTree::addToBin(OLDCollisionData* a, std::vector<std::vector<OLDCollisionData*>>& childBin)
 {
     // Center of this node
     glm::vec3 center = mBounds.center();
@@ -82,7 +82,7 @@ void OcTree::addToBin(OWCollisionData* a, std::vector<std::vector<OWCollisionDat
     }
 }
 
-void OcTree::addBinToChildren(const std::vector<std::vector<OWCollisionData*>>& bin,
+void OcTree::addBinToChildren(const std::vector<std::vector<OLDCollisionData*>>& bin,
                                 unsigned int threshold, unsigned int maximumDepth,
                                 const AABB& bounds, unsigned int currentDepth)
 {
@@ -117,7 +117,7 @@ void OcTree::addBinToChildren(const std::vector<std::vector<OWCollisionData*>>& 
     }
 }
 
-void OcTree::build(const std::vector<OWCollisionData*>& points,
+void OcTree::build(const std::vector<OLDCollisionData*>& points,
     unsigned int threshold,
     unsigned int maximumDepth,
     const AABB& bounds,
@@ -142,9 +142,9 @@ void OcTree::build(const std::vector<OWCollisionData*>& points,
         return;
     }
 
-    std::vector<std::vector<OWCollisionData*>> bin(8);
+    std::vector<std::vector<OLDCollisionData*>> bin(8);
 
-    for (OWCollisionData* a : points)
+    for (OLDCollisionData* a : points)
         addToBin(a, bin);
     addBinToChildren(bin, threshold, maximumDepth, bounds, currentDepth + 1);
 }

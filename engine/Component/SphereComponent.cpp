@@ -6,7 +6,7 @@
 #include "../Renderers/VAOBuffer.h"
 
 
-SphereComponent::SphereComponent(OWActor* _owner, SphereComponentData* _data)
+SphereComponent::SphereComponent(OLDActor* _owner, SphereComponentData* _data)
 	: ShapeComponent(_owner, _data)
 {
 }

@@ -7,8 +7,8 @@
 #include "../Renderers/TextRendererStatic.h"
 #include "../Component/TextComponent.h"
 
-OWButton::OWButton(Scene* _owner, ButtonScript* _data)
-	:OWActor(_owner, _data)
+OLDButton::OLDButton(Scene* _owner, ButtonScript* _data)
+	:OLDActor(_owner, _data)
 { }
 
 bool ButtonData::intersectArea(const glm::vec3& pt)
@@ -16,7 +16,7 @@ bool ButtonData::intersectArea(const glm::vec3& pt)
 	return false;
 }
 
-void OWButton::setup(const ButtonData& data, const glm::vec3& position)
+void OLDButton::setup(const ButtonData& data, const glm::vec3& position)
 {
 	throw NMSException("Incomplete function");
 	ShaderData* shd = new ShaderData("button.v.glsl", "button.f.glsl", "", "pvm");
@@ -47,10 +47,10 @@ void OWButton::setup(const ButtonData& data, const glm::vec3& position)
 	TextComponent* td = new TextComponent(this, tdc);
 }
 
-void OWButton::textures()
+void OLDButton::textures()
 {}
 
-void OWButton::text()
+void OLDButton::text()
 {}
 
 

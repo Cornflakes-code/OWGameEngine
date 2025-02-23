@@ -6,28 +6,28 @@
 #include <Helpers/Shader.h>
 
 struct MeshDataHeavy;
-class OWActor;
+class OLDActor;
 
-struct OWENGINE_API MeshComponentLightData: public OWSceneComponentData
+struct OWENGINE_API MeshComponentLightData: public OLDSceneComponentData
 {
 	ShaderData shaderData;
 	MeshDataLight meshData;
 };
 
-class OWENGINE_API MeshComponentLight: public OWSceneComponent
+class OWENGINE_API MeshComponentLight: public OLDSceneComponent
 {
 protected:
 	MeshComponentLightData* data() override
 	{
-		return static_cast<MeshComponentLightData*>(OWSceneComponent::data());
+		return static_cast<MeshComponentLightData*>(OLDSceneComponent::data());
 	}
 public:
-	MeshComponentLight(OWActor* _owner, MeshComponentLightData* _data)
-		: OWSceneComponent(_owner, _data) {
+	MeshComponentLight(OLDActor* _owner, MeshComponentLightData* _data)
+		: OLDSceneComponent(_owner, _data) {
 	}
 	const MeshComponentLightData* constData() const override
 	{
-		return static_cast<const MeshComponentLightData*>(OWSceneComponent::constData());
+		return static_cast<const MeshComponentLightData*>(OLDSceneComponent::constData());
 	}
 	void doInit() override;
 private:

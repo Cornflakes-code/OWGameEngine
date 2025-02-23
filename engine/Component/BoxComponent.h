@@ -19,7 +19,7 @@ class OWENGINE_API BoxComponent: public ShapeComponent
 #pragma warning( disable : 4251 )
 #pragma warning( pop )
 public:
-	BoxComponent(OWActor* _owner, BoxComponentData* _data);
+	BoxComponent(OLDActor* _owner, BoxComponentData* _data);
 	bool intersects(const AABB& box) const override;
 	void doInit() override;
 };

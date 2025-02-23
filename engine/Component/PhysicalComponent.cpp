@@ -16,12 +16,12 @@ void OWPhysicsDataImp::scale(const glm::vec3& newValue)
     mScale *= newValue;
 }
 
-void OWIPhysical::setData(OWPhysicsData* newValue)
+void OLDIPhysical::setData(OWPhysicsData* newValue)
 { 
     mData = newValue;
 }
 
-void OWIPhysical::physicalDoInit()
+void OLDIPhysical::physicalDoInit()
 {
     // bb needs to catch up on its settings
     float len = glm::length(data()->physics.mRotate);
@@ -40,7 +40,7 @@ void OWIPhysical::physicalDoInit()
     mData->boundingBox.move(data()->physics.mTranslate);
 }
 
-void OWIPhysical::rotate(float radians, const glm::vec3& axis)
+void OLDIPhysical::rotate(float radians, const glm::vec3& axis)
 {
     if (!OWUtils::isZero(radians))
     {
@@ -48,7 +48,7 @@ void OWIPhysical::rotate(float radians, const glm::vec3& axis)
     }
 }
 
-void OWIPhysical::scale(const glm::vec3& v)
+void OLDIPhysical::scale(const glm::vec3& v)
 {
     glm::vec3 center = mData->boundingBox.center();
     mData->boundingBox.move(-center);
@@ -56,13 +56,13 @@ void OWIPhysical::scale(const glm::vec3& v)
     mData->boundingBox.move(center);
     mData->physics.scale(v);
 }
-void OWIPhysical::translate(const glm::vec3& v)
+void OLDIPhysical::translate(const glm::vec3& v)
 {
     mData->boundingBox.move(v);
     mData->physics.translate(v);
 }
 
-glm::vec3 OWIPhysical::scale() const
+glm::vec3 OLDIPhysical::scale() const
 {
     return mData->physics.mScale;
 }

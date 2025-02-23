@@ -25,7 +25,7 @@ struct OWRopeVisibilityData
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
 };
 
-struct OWRopeData: public OWActorData
+struct OWRopeData: public OLDActorData
 {
 	OWRopeDataImp ropeData;
 	TextComponentData labelTextData;
@@ -33,15 +33,15 @@ struct OWRopeData: public OWActorData
 	OWRopeVisibilityData ropeVisibility;
 };
 
-class OWRopeScript: public OWActorScript
+class OWRopeScript: public OLDActorScript
 {
 public:
 	OWRopeScript(OWRopeData* _data)
-		: OWActorScript(_data) {}
+		: OLDActorScript(_data) {}
 };
 
-class OWSceneComponent;
-class Rope: public OWActor
+class OLDSceneComponent;
+class Rope: public OLDActor
 {
 private:
 	bool initRopes();
@@ -72,9 +72,9 @@ private:
 		const std::string& f = "arial.ttf",
 		const glm::vec4& col = { 0.0, 0.0, 0.0, 1.0f });
 	void makeLabels(const glm::vec2& textSpacing = { 0,0 }, const glm::vec2& textScale = { 0,0 });
-	OWSceneComponent* createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
-	OWSceneComponent* createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
-	OWSceneComponent* createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
+	OLDSceneComponent* createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
+	OLDSceneComponent* createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
+	OLDSceneComponent* createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	bool mLines = true;
 	bool mSurfaces = true;
 	bool mEnds = true;

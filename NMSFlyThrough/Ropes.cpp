@@ -24,7 +24,7 @@ static std::string gRopeLines = "RopeLines";
 static std::string gRopeSurfaces = "RopeSurfaces";
 
 Rope::Rope(Scene* _scene, OWRopeScript* _script)
-	: OWActor(_scene, _script) 
+	: OLDActor(_scene, _script) 
 {
 }
 
@@ -41,7 +41,7 @@ void Rope::doInit()
 	createRopeEnds(mPolyBuilder->slices());
 	const OWRopeVisibilityData* vd = &constData()->ropeVisibility;
 	prepareVisibility(vd->ends, vd->lines, vd->surfaces, vd->strandLabels, vd->bannerLabel);
-	OWActor::doInit();
+	OLDActor::doInit();
 }
 
 void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel)
@@ -49,7 +49,7 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _stra
 	static int firstTime = true;
 	if ((firstTime) || (mEnds != _ends))
 	{
-		auto toggleRender = [_ends](OWSceneComponent* sc)
+		auto toggleRender = [_ends](OLDSceneComponent* sc)
 			{
 				if (sc->name().find(gRopeEnds) != std::string::npos)
 				{
@@ -62,7 +62,7 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _stra
 
 	if ((firstTime) || (mLines != _lines))
 	{
-		auto toggleRender = [_lines](OWSceneComponent* sc)
+		auto toggleRender = [_lines](OLDSceneComponent* sc)
 			{
 				if (sc->name().find(gRopeLines) != std::string::npos)
 				{
@@ -75,7 +75,7 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _stra
 	
 	if ((firstTime) || (mSurfaces != _surfaces))
 	{
-		auto toggleRender = [_surfaces](OWSceneComponent* sc)
+		auto toggleRender = [_surfaces](OLDSceneComponent* sc)
 			{
 				if (sc->name().find(gRopeSurfaces) != std::string::npos)
 				{
@@ -89,7 +89,7 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _stra
 	if ((firstTime) || (_strandLabels != mStrandLabels))
 	{
 		std::string banner = "Text:" + constData()->bannerTextData.textData.text;
-		auto toggleRender = [_strandLabels, banner](OWSceneComponent* sc)
+		auto toggleRender = [_strandLabels, banner](OLDSceneComponent* sc)
 			{
 				if ((sc->name().find("Text:") != std::string::npos) && 
 					(sc->name() != banner))
@@ -103,7 +103,7 @@ void Rope::prepareVisibility(bool _ends, bool _lines, bool _surfaces, bool _stra
 	if ((firstTime) || (_bannerLabel != mBannerLabel))
 	{
 		std::string banner = "Text:" + constData()->bannerTextData.textData.text;
-		auto toggleRender = [_bannerLabel, banner](OWSceneComponent* sc)
+		auto toggleRender = [_bannerLabel, banner](OLDSceneComponent* sc)
 			{
 				if (sc->name() == banner)
 				{
@@ -181,7 +181,7 @@ void Rope::makeLabels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 }
 
 
-OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+OLDSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	MeshComponentVAOData* mvd = new MeshComponentVAOData();
 	mvd->shaderData.PVMName = "pvm";
@@ -208,7 +208,7 @@ OWSceneComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::
 	return m;
 }
 
-OWSceneComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+OLDSceneComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	MeshComponentVAOData* mvd = new MeshComponentVAOData();
 	mvd->shaderData.PVMName = "pvm";
@@ -285,7 +285,7 @@ static unsigned int safeWrap(const std::vector<unsigned int>& vv, size_t ndx)
 	return i < 0 ? vv[ndx] : vv[i];
 }
 
-OWSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
+OLDSceneComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires)
 {
 	MeshComponentVAOData* mvd = new MeshComponentVAOData();
 	mvd->shaderData.shaderV = "Wires.v.glsl";

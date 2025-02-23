@@ -8,8 +8,8 @@
 #include "../Component/MeshComponentVAO.h"
 
 
-OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
-	: OWComponent(_owner)
+OLDSceneComponent::OLDSceneComponent(OLDActor* _owner, OLDSceneComponentData* _data)
+	: OLDComponent(_owner)
 {
 	_data->component = this;
 	setData(_data);
@@ -17,7 +17,7 @@ OWSceneComponent::OWSceneComponent(OWActor* _owner, OWSceneComponentData* _data)
 	_owner->addSceneComponent(this);
 }
 
-void OWSceneComponent::doInit()
+void OLDSceneComponent::doInit()
 {
 	if (mBoundingBoxRenderer == nullptr)
 	{
@@ -54,12 +54,12 @@ void OWSceneComponent::doInit()
 	physicalDoInit();
 }
 
-bool OWSceneComponent::canCollide()
+bool OLDSceneComponent::canCollide()
 {
 	return true;
 }
 
-bool OWSceneComponent::canCollide(OWCollisionData* other) 
+bool OLDSceneComponent::canCollide(OLDCollisionData* other) 
 {
 	if (other->component == this)
 		return false;
@@ -67,12 +67,12 @@ bool OWSceneComponent::canCollide(OWCollisionData* other)
 	return true;
 
 }
-bool OWSceneComponent::collides(OWCollisionData* other)
+bool OLDSceneComponent::collides(OLDCollisionData* other)
 {
 	return false;
 }
 
-void OWSceneComponent::collided(OWCollisionData* other) 
+void OLDSceneComponent::collided(OLDCollisionData* other) 
 {
 	// https://gamedev.stackexchange.com/questions/47888/find-the-contact-normal-of-rectangle-collision?noredirect=1&lq=1
 	const glm::vec3 otherRelVel = other->component->data()->physics.velocity;
@@ -127,7 +127,7 @@ void OWSceneComponent::collided(OWCollisionData* other)
 	velocity(velocity() + reboundDir * velocity());
 }
 
-void OWSceneComponent::render(const glm::mat4& proj,
+void OLDSceneComponent::render(const glm::mat4& proj,
 	const glm::mat4& view,
 	const glm::mat4& model,
 	const glm::vec3& cameraPos,

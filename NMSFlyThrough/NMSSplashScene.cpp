@@ -49,7 +49,7 @@ AABB NMSSplashScenePhysics::mWindowBounds;
 BoxComponent* gBox = nullptr;
 TextComponent* gWelcome = nullptr;
 TextComponent* gEnjoy = nullptr;
-std::vector<OWSceneComponent*> addToOcTree;
+std::vector<OLDSceneComponent*> addToOcTree;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
@@ -515,7 +515,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mButton = new OWButton();
 	mButton->setup(sps->mButtonData, glm::vec3(100));
 #endif
-	auto init = [](OWActor* a)
+	auto init = [](OLDActor* a)
 		{
 			a->init();
 		};
@@ -552,7 +552,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	mStarRenderer->render(proj, view, model, cameraPos, nullptr, pointRender);
 	mButton->render(proj, view, model, cameraPos);
 #endif
-	auto rend = [proj, view, model, cameraPos](OWActor* a)
+	auto rend = [proj, view, model, cameraPos](OLDActor* a)
 		{
 			a->render(proj, view, model, cameraPos);
 		};

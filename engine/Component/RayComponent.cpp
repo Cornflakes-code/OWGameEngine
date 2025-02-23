@@ -6,7 +6,7 @@
 #include "../Renderers/VAOBuffer.h"
 
 
-RayComponent::RayComponent(OWActor* _owner, RayComponentData* _data)
+RayComponent::RayComponent(OLDActor* _owner, RayComponentData* _data)
 	: ShapeComponent(_owner, _data), mRay(new OWRay(_data->origin, _data->direction))
 {
 }

@@ -4,20 +4,20 @@
 #include "OWComponent.h"
 #include "../Renderers/OWRenderable.h"
 
-class OWActor;
+class OLDActor;
 class RendererBase;
-class OWENGINE_API OWRenderableComponent: public OWIRenderable
+class OWENGINE_API OLDRenderableComponent: public OLDIRenderable
 {
 	RendererBase* mRenderer = nullptr;
 	bool mRenderThis = true;
 	bool mReadyForRender = false;
 protected:
-	OWActor* mOwner;
+	OLDActor* mOwner;
 	void readyForRender(bool newValue) { mReadyForRender = newValue; }
 public:
 	bool readyForRender() const { return mReadyForRender; }
-	OWRenderableComponent(OWActor* _owner)
-		: OWComponent(_owner) {
+	OLDRenderableComponent(OLDActor* _owner)
+		: mOwner(_owner) {
 	}
 	virtual int preTick() = 0;
 	virtual int tick(float dt) = 0;

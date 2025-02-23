@@ -30,33 +30,33 @@ struct OWENGINE_API TextData
 	TextDisplayType tdt = Dynamic;
 };
 
-struct OWENGINE_API TextComponentData: public OWSceneComponentData
+struct OWENGINE_API TextComponentData: public OLDSceneComponentData
 {
 	TextData textData;
 };
 
-class OWENGINE_API TextComponent: public OWSceneComponent
+class OWENGINE_API TextComponent: public OLDSceneComponent
 {
 protected:
 	TextData* textData()
 	{
-		return &(static_cast<TextComponentData*>(OWSceneComponent::data())->textData);
+		return &(static_cast<TextComponentData*>(OLDSceneComponent::data())->textData);
 	}
 public:
 	const TextData* constTextData() const
 	{
-		return &(static_cast<const TextComponentData*>(OWSceneComponent::constData())->textData);
+		return &(static_cast<const TextComponentData*>(OLDSceneComponent::constData())->textData);
 	}
 
-	TextComponent(OWActor* _owner)
-		: OWSceneComponent(_owner)
+	TextComponent(OLDActor* _owner)
+		: OLDSceneComponent(_owner)
 	{}
 	const TextComponentData* constData() const override
 	{
-		return static_cast<const TextComponentData*>(OWSceneComponent::constData());
+		return static_cast<const TextComponentData*>(OLDSceneComponent::constData());
 	}
 
-	TextComponent(OWActor* _owner, TextComponentData* _data);
+	TextComponent(OLDActor* _owner, TextComponentData* _data);
 
 	void render(const glm::mat4& proj,
 		const glm::mat4& view,

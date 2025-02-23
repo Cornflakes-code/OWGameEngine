@@ -6,9 +6,9 @@
 #include <Helpers/Shader.h>
 
 struct MeshDataHeavy;
-class OWActor;
+class OLDActor;
 
-struct OWENGINE_API MeshComponentVec4Data: public OWSceneComponentData
+struct OWENGINE_API MeshComponentVec4Data: public OLDSceneComponentData
 {
 	ShaderData shaderData;
 	std::vector<glm::vec4> meshData;
@@ -16,20 +16,20 @@ struct OWENGINE_API MeshComponentVec4Data: public OWSceneComponentData
 	unsigned int vertexLocation;
 };
 
-class OWENGINE_API MeshComponentVec4: public OWSceneComponent
+class OWENGINE_API MeshComponentVec4: public OLDSceneComponent
 {
 protected:
 	MeshComponentVec4Data* data() override
 	{
-		return static_cast<MeshComponentVec4Data*>(OWSceneComponent::data());
+		return static_cast<MeshComponentVec4Data*>(OLDSceneComponent::data());
 	}
 public:
-	MeshComponentVec4(OWActor* _owner, MeshComponentVec4Data* _data)
-		: OWSceneComponent(_owner, _data) {
+	MeshComponentVec4(OLDActor* _owner, MeshComponentVec4Data* _data)
+		: OLDSceneComponent(_owner, _data) {
 	}
 	const MeshComponentVec4Data* constData() const override
 	{
-		return static_cast<const MeshComponentVec4Data*>(OWSceneComponent::constData());
+		return static_cast<const MeshComponentVec4Data*>(OLDSceneComponent::constData());
 	}
 	void doInit() override;
 private:

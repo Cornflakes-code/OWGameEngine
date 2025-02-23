@@ -7,14 +7,14 @@ Scene::Scene(const Movie* movie)
 {
 }
 
-void Scene::addActor(OWActor* a)
+void Scene::addActor(OLDActor* a)
 {
 	mRootNode.push_back(a);
 }
 
 void Scene::traverseSceneGraph(OWActorCallbackType cb) const
 {
-	for (OWActor* a : mRootNode)
+	for (OLDActor* a : mRootNode)
 	{
 		cb(a);
 	}

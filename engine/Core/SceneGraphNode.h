@@ -15,7 +15,7 @@
 
 class SceneGraphNode;
 
-class OWActor;
+class OLDActor;
 typedef std::function<bool(SceneGraphNode* o)> SceneGraphNodeCallbackType;
 
 class OWENGINE_API SceneGraphNode
@@ -37,7 +37,7 @@ public:
 	{
 		mTranslateVector = translateVector;
 	}
-	size_t add(OWActor* toAdd)
+	size_t add(OLDActor* toAdd)
 	{
 		mActors.push_back(toAdd);
 		return mActors.size() - 1;
@@ -57,7 +57,7 @@ protected:
 	SceneGraphNode* mParent = nullptr;
 	std::vector<SceneGraphNode*> mChildren;
 private:
-	std::vector<OWActor*> mActors;
+	std::vector<OLDActor*> mActors;
 	bool mReadyForRender = false;
 };
 

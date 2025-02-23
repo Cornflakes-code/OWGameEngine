@@ -11,7 +11,7 @@
 #include "../Component/OWSceneComponent.h"
 #include "../Renderers/OWRenderable.h"
 
-class OWENGINE_API BB2DRenderer : public OWObject, public OWGameIFace, public OWIRenderable
+class OWENGINE_API BB2DRenderer : public OLDObject, public OLDGameIFace, public OLDIRenderable
 {
 
 };

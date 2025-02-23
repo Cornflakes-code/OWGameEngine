@@ -46,7 +46,7 @@ void NMSScript::doInit()
 }
 
 NoMansSky::NoMansSky(Scene* _owner, NMSScript* _data)
-: OWActor(_owner, _data)
+: OLDActor(_owner, _data)
 {
 	mStarRadius = glm::vec2(0, 0);
 	name(data()->nmsData.name);
@@ -55,7 +55,7 @@ NoMansSky::NoMansSky(Scene* _owner, NMSScript* _data)
 void NoMansSky::doInit()
 {
 	setUp(data()->nmsData.starFile, data()->nmsData.starWorld);
-	OWActor::doInit();
+	OLDActor::doInit();
 }
 
 void NoMansSky::setUp(const std::string& fileName, const AABB& world)

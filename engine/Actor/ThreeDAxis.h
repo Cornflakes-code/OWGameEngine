@@ -19,19 +19,19 @@ struct OWENGINE_API OWThreeDAxisDataImp
 	bool useGlobalBounds = false;
 };
 
-struct OWENGINE_API OWThreeDAxisData: public OWActorData
+struct OWENGINE_API OWThreeDAxisData: public OLDActorData
 {
 	OWThreeDAxisDataImp axisData;
 };
 
-class OWENGINE_API OWThreeDAxisScript: public OWActorScript
+class OWENGINE_API OWThreeDAxisScript: public OLDActorScript
 {
 public:
 	OWThreeDAxisScript(OWThreeDAxisData* _data)
-		: OWActorScript(_data) {}
+		: OLDActorScript(_data) {}
 };
 
-class OWENGINE_API ThreeDAxis: public OWActor
+class OWENGINE_API ThreeDAxis: public OLDActor
 {
 private:
 protected:

@@ -9,5 +9,5 @@ void MeshComponentVAO::doInit()
 	vao->meshData.prepare();
 
 	addRenderer(&vao->meshData);
-	OWSceneComponent::doInit();
+	OLDSceneComponent::doInit();
 }

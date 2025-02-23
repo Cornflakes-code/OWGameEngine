@@ -6,9 +6,9 @@
 #include <Renderers/VAOBuffer.h>
 #include <Helpers/Shader.h>
 
-class OWActor;
+class OLDActor;
 
-struct OWENGINE_API MeshComponentVAOData: public OWSceneComponentData
+struct OWENGINE_API MeshComponentVAOData: public OLDSceneComponentData
 {
 	ShaderData shaderData;
 	VAOBuffer meshData;
@@ -16,20 +16,20 @@ struct OWENGINE_API MeshComponentVAOData: public OWSceneComponentData
 	unsigned int vertexLocation;
 };
 
-class OWENGINE_API MeshComponentVAO: public OWSceneComponent
+class OWENGINE_API MeshComponentVAO: public OLDSceneComponent
 {
 protected:
 	MeshComponentVAOData* data() override
 	{
-		return static_cast<MeshComponentVAOData*>(OWSceneComponent::data());
+		return static_cast<MeshComponentVAOData*>(OLDSceneComponent::data());
 	}
 public:
-	MeshComponentVAO(OWActor* _owner, MeshComponentVAOData* _data)
-		: OWSceneComponent(_owner, _data) {
+	MeshComponentVAO(OLDActor* _owner, MeshComponentVAOData* _data)
+		: OLDSceneComponent(_owner, _data) {
 	}
 	const MeshComponentVAOData* constData() const override
 	{
-		return static_cast<const MeshComponentVAOData*>(OWSceneComponent::constData());
+		return static_cast<const MeshComponentVAOData*>(OLDSceneComponent::constData());
 	}
 	void doInit() override;
 private:

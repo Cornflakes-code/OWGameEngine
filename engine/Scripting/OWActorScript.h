@@ -30,29 +30,29 @@ struct OWENGINE_API OWActorDataImp
 	glm::mat4 localMatrix = glm::mat4(1.0f);
 };
 
-struct OWENGINE_API OWActorData
+struct OWENGINE_API OLDActorData
 {
 	OWActorDataImp actorData;
-	virtual ~OWActorData() {}
+	virtual ~OLDActorData() {}
 };
 
-class OWENGINE_API OWActorScript: public OWScript
+class OWENGINE_API OLDActorScript: public OLDScript
 {
-	OWActorData* mData;
+	OLDActorData* mData;
 public: 		
 
-	OWActorData* data()
+	OLDActorData* data()
 	{
 		return mData;
 	}
 
-	OWActorScript(OWActorData* _data)
+	OLDActorScript(OLDActorData* _data)
 		: mData(_data)
 	{
 	}
-	const OWActorData* data() const
+	const OLDActorData* data() const
 	{
 		return mData;
 	}
-	friend class OWActor;
+	friend class OLDActor;
 };

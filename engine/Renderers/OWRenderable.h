@@ -9,7 +9,7 @@
 #include "RenderTypes.h"
 
 class Shader;
-class OWENGINE_API OWIRenderable
+class OWENGINE_API OLDIRenderable
 {
 	bool mRenderThis = true;
 protected:

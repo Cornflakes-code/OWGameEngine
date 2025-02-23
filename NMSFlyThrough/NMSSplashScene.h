@@ -44,12 +44,12 @@ class Axis;
 class InstanceRenderer;
 class TextRenderer;
 class HeavyRenderer;
-class OWButton;
+class OLDButton;
 
 class NMSSplashScene : public NMSScene
 {
 	InstanceRenderer* mStarRenderer = nullptr;
-	OWButton* mButton = nullptr;
+	OLDButton* mButton = nullptr;
 public:
 	NMSSplashScene(const Movie* movie);
 	std::string name() const { return "Splash"; }

@@ -16,11 +16,11 @@ namespace OWPhysicalMetaData
 	enum ChangeType { increment, absolute };
 };
 
-class OWIPhysical;
-struct OWENGINE_API OWCollisionData
+class OLDIPhysical;
+struct OWENGINE_API OLDCollisionData
 {
 	AABB boundingBox = AABB(glm::vec3(-1), glm::vec3(-1));
-	OWIPhysical* component = nullptr;
+	OLDIPhysical* component = nullptr;
 	bool canMove = true;
 	bool canCollide = true;
 };
@@ -53,12 +53,12 @@ struct OWENGINE_API OWPhysicsDataImp
 private:
 };
 
-struct OWENGINE_API OWPhysicsData: public OWCollisionData
+struct OWENGINE_API OWPhysicsData: public OLDCollisionData
 {
 	OWPhysicsDataImp physics;
 };
 
-class OWENGINE_API OWIPhysical
+class OWENGINE_API OLDIPhysical
 {
 	OWPhysicsData* mData = nullptr;
 protected:
@@ -138,11 +138,11 @@ public:
 
 	// OWCollisionData has a smaller footprint than OWPhysicsData.
 	// Use it for the collision engine
-	OWCollisionData* collisionData() { return mData; }
+	OLDCollisionData* collisionData() { return mData; }
 	void setData(OWPhysicsData* newValue);
 	virtual bool canCollide() = 0;
-	virtual bool canCollide(OWCollisionData* other) = 0;
-	virtual bool collides(OWCollisionData* other) = 0;
-	virtual void collided(OWCollisionData* other) = 0;
+	virtual bool canCollide(OLDCollisionData* other) = 0;
+	virtual bool collides(OLDCollisionData* other) = 0;
+	virtual void collided(OLDCollisionData* other) = 0;
 	void physicalDoInit();
 };

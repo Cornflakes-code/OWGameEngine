@@ -15,20 +15,20 @@ struct OWENGINE_API StaticSceneryDataImp
 {
 };
 
-struct OWENGINE_API StaticSceneryData: public OWActorData
+struct OWENGINE_API StaticSceneryData: public OLDActorData
 {
 	StaticSceneryDataImp sceneryData;
 };
 
-class OWENGINE_API StaticSceneryScript: public OWActorScript
+class OWENGINE_API StaticSceneryScript: public OLDActorScript
 {
 public:
 	StaticSceneryScript(StaticSceneryData* _data)
-		: OWActorScript(_data) {
+		: OLDActorScript(_data) {
 	}
 };
 
-class OWENGINE_API StaticSceneryActor: public OWActor
+class OWENGINE_API StaticSceneryActor: public OLDActor
 {
 protected:
 	StaticSceneryData* data()

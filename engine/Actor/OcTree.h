@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------
 
 class OcTree;
-struct OWCollisionData;
+struct OLDCollisionData;
 
 typedef std::function<bool(OcTree* o)> OctreeCallbackType;
 
@@ -34,12 +34,12 @@ public:
     OcTree();
     virtual ~OcTree();
 
-    const std::vector<OWCollisionData*> points() const { return mPoints; }
-    void add(const std::vector<OWCollisionData*>&, unsigned int threshold,
+    const std::vector<OLDCollisionData*> points() const { return mPoints; }
+    void add(const std::vector<OLDCollisionData*>&, unsigned int threshold,
         unsigned int maximumDepth);
-    void add(OWCollisionData* mc, unsigned int threshold,
+    void add(OLDCollisionData* mc, unsigned int threshold,
         unsigned int maximumDepth);
-    void build(const std::vector<OWCollisionData*>& points,
+    void build(const std::vector<OLDCollisionData*>& points,
         unsigned int threshold,
         unsigned int maximumDepth,
         const AABB& bounds,
@@ -48,12 +48,12 @@ public:
 //protected:
 public:
     std::vector<OcTree*> mChildren = std::vector<OcTree*>(8, nullptr);
-    std::vector<OWCollisionData*> mPoints;
+    std::vector<OLDCollisionData*> mPoints;
     AABB mBounds;
     unsigned int mDepth = 0;
 private:
-    void addToBin(OWCollisionData* a, std::vector<std::vector<OWCollisionData*>>& childBin);
-    void addBinToChildren(const std::vector<std::vector<OWCollisionData*>>& bin,
+    void addToBin(OLDCollisionData* a, std::vector<std::vector<OLDCollisionData*>>& childBin);
+    void addBinToChildren(const std::vector<std::vector<OLDCollisionData*>>& bin,
         unsigned int threshold, unsigned int maximumDepth,
         const AABB& bounds, unsigned int currentDepth);
 };

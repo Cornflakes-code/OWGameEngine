@@ -10,5 +10,5 @@ void MeshComponentHeavy::doInit()
 	r->setup(&d->meshData, d->vertexMode, d->vertexLocation);
 	d->boundingBox = d->meshData.bounds();
 	addRenderer(r);
-	OWSceneComponent::doInit();
+	OLDSceneComponent::doInit();
 }

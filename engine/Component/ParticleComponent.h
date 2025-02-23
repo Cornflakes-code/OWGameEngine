@@ -24,7 +24,7 @@ class OWENGINE_API ParticleComponent: public ShapeComponent
 	OWSphere* mSphere;
 #pragma warning( pop )
 public:
-	ParticleComponent(OWActor* _owner, ParticleComponentData* _data);
+	ParticleComponent(OLDActor* _owner, ParticleComponentData* _data);
 	// returns true if ray goes through box else false Populates normal vector with 
 	// distance is length of ray until intersection
 	// distance is -ve if the AABB is behind this

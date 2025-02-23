@@ -9,7 +9,7 @@
 #include "../Core/CommonUtils.h"
 #include "../Renderers/VAOBuffer.h"
 
-BoxComponent::BoxComponent(OWActor* _owner, BoxComponentData* _data)
+BoxComponent::BoxComponent(OLDActor* _owner, BoxComponentData* _data)
 	: ShapeComponent(_owner, _data)
 {}
 

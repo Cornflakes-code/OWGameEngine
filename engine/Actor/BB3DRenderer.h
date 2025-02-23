@@ -15,17 +15,17 @@ struct OWENGINE_API BB3DRendererData
 {
 };
 
-class OWENGINE_API BB3DRenderer: public OWObject, public OWGameIFace, public OWIRenderable
+class OWENGINE_API BB3DRenderer: public OLDObject, public OLDGameIFace, public OLDIRenderable
 {
-	std::vector<OWSceneComponent*> m2DComponents;
-	std::vector<OWSceneComponent*> m3DComponents;
+	std::vector<OLDSceneComponent*> m2DComponents;
+	std::vector<OLDSceneComponent*> m3DComponents;
 	BB3DRendererData* mData;
 public:
 	BB3DRenderer(Scene* _scene, BB3DRendererData* _data)
 	{
 	}
-	void add2DBoundingBox(OWSceneComponent* o);
-	void add3DBoundingBox(OWSceneComponent* o);
+	void add2DBoundingBox(OLDSceneComponent* o);
+	void add3DBoundingBox(OLDSceneComponent* o);
 	int preTick();// override;
 	void tick(float dt);// override;
 	int postTick();// override;

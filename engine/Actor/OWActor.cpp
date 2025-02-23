@@ -1,13 +1,13 @@
 #include "OWActor.h"
 #include "../Core/Scene.h"
 
-OWActor::OWActor(Scene* _scene, OWActorScript* _script)
+OLDActor::OLDActor(Scene* _scene, OLDActorScript* _script)
 	: mScene(_scene), mScript(_script)
 {
 	_scene->addActor(this);
 }
 
-void OWActor::doInit()
+void OLDActor::doInit()
 {
 	for (auto& a : mSceneComponents)
 	{
@@ -15,24 +15,24 @@ void OWActor::doInit()
 	}	
 }
 
-void OWActor::begin()
+void OLDActor::begin()
 {
 }
 
-void OWActor::tick(float deltaSecods)
+void OLDActor::tick(float deltaSecods)
 {
 }
 
-void OWActor::end()
+void OLDActor::end()
 {
 }
 
-void OWActor::destroy()
+void OLDActor::destroy()
 {
 }
 
 
-void OWActor::render(const glm::mat4& proj,
+void OLDActor::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4& _model,
 	const glm::vec3& cameraPos,
 	RenderTypes::ShaderMutator renderCb,
@@ -45,7 +45,7 @@ void OWActor::render(const glm::mat4& proj,
 	{
 		s = "Text: Enjoy it while you can.";
 	}
-	for (OWSceneComponent* c : mSceneComponents)
+	for (OLDSceneComponent* c : mSceneComponents)
 	{
 		if (c->initCalled())
 		{

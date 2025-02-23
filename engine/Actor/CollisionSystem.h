@@ -4,12 +4,12 @@
 
 #include "../OWEngine/OWEngine.h"
 
-class OWSceneComponent;
+class OLDSceneComponent;
 class OWRay;
-class OWIPhysical;
+class OLDIPhysical;
 namespace CollisionSystem
 {
-	void OWENGINE_API build(std::vector<OWIPhysical*>& objects);
+	void OWENGINE_API build(std::vector<OLDIPhysical*>& objects);
 	void OWENGINE_API addRay(OWRay* r);
 	void OWENGINE_API deleteRay(OWRay* r);
 

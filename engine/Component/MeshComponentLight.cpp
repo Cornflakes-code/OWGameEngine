@@ -13,5 +13,5 @@ void MeshComponentLight::doInit()
 	r->setup(d->meshData);
 	d->boundingBox = d->meshData.bounds();
 	addRenderer(r);
-	OWSceneComponent::doInit();
+	OLDSceneComponent::doInit();
 }

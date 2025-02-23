@@ -13,7 +13,7 @@
 #include <Core/Scene.h>
 
 ThreeDAxis::ThreeDAxis(Scene* _scene, OWThreeDAxisScript* _script)
-	: OWActor(_scene, _script)
+	: OLDActor(_scene, _script)
 {
 	name("Labelled 3DAxis");
 }
@@ -21,7 +21,7 @@ ThreeDAxis::ThreeDAxis(Scene* _scene, OWThreeDAxisScript* _script)
 void ThreeDAxis::doInit()
 {
 	createAxisData(data()->axisData.world);
-	OWActor::doInit();
+	OLDActor::doInit();
 }
 
 TextComponent* ThreeDAxis::createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b)

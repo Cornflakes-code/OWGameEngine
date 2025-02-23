@@ -23,7 +23,7 @@ class OWENGINE_API RayComponent: public ShapeComponent
 	OWRay* mRay;
 #pragma warning( pop )
 public:
-	RayComponent(OWActor* _owner, RayComponentData* _data);
+	RayComponent(OLDActor* _owner, RayComponentData* _data);
 	// returns true if ray goes through box else false Populates normal vector with 
 	// distance is length of ray until intersection
 	// distance is -ve if the AABB is behind this

@@ -20,7 +20,7 @@ class OWENGINE_API SphereComponent : public ShapeComponent
 	OWSphere* mSphere;
 #pragma warning( pop )
 public:
-	SphereComponent(OWActor* _owner, SphereComponentData* _data);
+	SphereComponent(OLDActor* _owner, SphereComponentData* _data);
 	// returns true if ray goes through box else false Populates normal vector with 
 	// distance is length of ray until intersection
 	// distance is -ve if the AABB is behind this

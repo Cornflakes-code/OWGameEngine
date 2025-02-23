@@ -9,8 +9,8 @@
 #include "../Core/GlobalSettings.h"
 #include "../Helpers/Shader.h"
 
-TextComponent::TextComponent(OWActor* _owner, TextComponentData* _data)
-	: OWSceneComponent(_owner, _data)
+TextComponent::TextComponent(OLDActor* _owner, TextComponentData* _data)
+	: OLDSceneComponent(_owner, _data)
 {
 }
 
@@ -40,7 +40,7 @@ void TextComponent::doInit()
 	ren->setup(this, glm::vec3(0));
 	data()->boundingBox = ren->bounds();
 	addRenderer(ren);
-	OWSceneComponent::doInit();
+	OLDSceneComponent::doInit();
 }
 
 AABB calcOrthogonalAABB(const glm::vec3& right, const glm::vec3& up,

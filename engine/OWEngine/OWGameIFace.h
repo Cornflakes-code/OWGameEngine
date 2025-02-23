@@ -2,12 +2,12 @@
 
 #include "OWEngine.h"
 
-class OWENGINE_API OWGameIFace
+class OWENGINE_API OLDGameIFace
 {
 	bool mActivated = false;
 public:
-	OWGameIFace() {}
-	virtual ~OWGameIFace() {}
+	OLDGameIFace() {}
+	virtual ~OLDGameIFace() {}
 
 	// Every objects init is called before anything else
 	void init()

@@ -5,20 +5,20 @@
 
 #include <string>
 
-class OWActor;
-class OWENGINE_API OWComponent: public OWObject
+class OLDActor;
+class OWENGINE_API OLDComponent: public OLDObject
 {
-	OWActor* mActor = nullptr;
+	OLDActor* mActor = nullptr;
 	bool mInitCalled = false;
 protected:
-	OWActor* actor() const { return mActor; }
+	OLDActor* actor() const { return mActor; }
 public:
-	OWComponent(OWActor* _actor = nullptr)
+	OLDComponent(OLDActor* _actor = nullptr)
 		:mActor(_actor)
 	{
 	}
 	bool initCalled() const { return mInitCalled; }
-	void actor(OWActor* _actor) { mActor = _actor; }
+	void actor(OLDActor* _actor) { mActor = _actor; }
 	void init()
 	{
 		if (!mInitCalled)

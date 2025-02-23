@@ -23,8 +23,8 @@ const std::string& lightSourceVertexShader()
 }
 
 
-LightSource::LightSource(OWActor* _owner, LightSourceData* _data)
-    : OWComponent(_owner), mData(_data)
+LightSource::LightSource(OLDActor* _owner, LightSourceData* _data)
+    : OLDComponent(_owner), mData(_data)
 {
         name(_data->name);
 /*

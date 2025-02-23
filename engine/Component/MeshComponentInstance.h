@@ -5,28 +5,28 @@
 #include <Helpers/Shader.h>
 #include <Renderers/InstanceRenderer.h>
 
-class OWActor;
+class OLDActor;
 
-struct OWENGINE_API MeshComponentInstanceData: public OWSceneComponentData
+struct OWENGINE_API MeshComponentInstanceData: public OLDSceneComponentData
 {
 	ShaderData shaderData;
 	MeshDataInstance meshData;
 };
 
-class OWENGINE_API MeshComponentInstance: public OWSceneComponent
+class OWENGINE_API MeshComponentInstance: public OLDSceneComponent
 {
 protected:
 	MeshComponentInstanceData* data() override
 	{
-		return static_cast<MeshComponentInstanceData*>(OWSceneComponent::data());
+		return static_cast<MeshComponentInstanceData*>(OLDSceneComponent::data());
 	}
 public:
-	MeshComponentInstance(OWActor* _owner, MeshComponentInstanceData* _data)
-		: OWSceneComponent(_owner, _data) 
+	MeshComponentInstance(OLDActor* _owner, MeshComponentInstanceData* _data)
+		: OLDSceneComponent(_owner, _data) 
 	{}
 	const MeshComponentInstanceData* constData() const override
 	{
-		return static_cast<const MeshComponentInstanceData*>(OWSceneComponent::constData());
+		return static_cast<const MeshComponentInstanceData*>(OLDSceneComponent::constData());
 	}
 	void doInit() override;
 private:

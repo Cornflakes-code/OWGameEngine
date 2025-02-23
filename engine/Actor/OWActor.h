@@ -11,44 +11,44 @@
 #include "../Renderers/OWRenderable.h"
 
 class Scene;
-class OWSceneComponent;
-class OWENGINE_API OWActor: public OWObject, public OWGameIFace, public OWIRenderable
+class OLDSceneComponent;
+class OWENGINE_API OLDActor: public OLDObject, public OLDGameIFace, public OLDIRenderable
 {
 	Scene* mScene;
-	OWActorScript* mScript;
-	std::vector<OWSceneComponent*> mSceneComponents;
+	OLDActorScript* mScript;
+	std::vector<OLDSceneComponent*> mSceneComponents;
 protected:
-	virtual OWActorScript* script()
+	virtual OLDActorScript* script()
 	{
 		return mScript;
 	}
 	void doInit() override;
 public:
-	OWActor(Scene* _scene, OWActorScript* _script);
-	const OWActorData* data() const
+	OLDActor(Scene* _scene, OLDActorScript* _script);
+	const OLDActorData* data() const
 	{
 		return mScript->data();
 	}
-	virtual const OWActorScript* script() const
+	virtual const OLDActorScript* script() const
 	{
 		return mScript;
 	}
-	virtual void addSceneComponent(OWSceneComponent* c) { mSceneComponents.push_back(c); }
-	bool collideHandled(OWIPhysical* OW_UNUSED(_ourComponent), OWActor* OW_UNUSED(other), OWIPhysical* OW_UNUSED(otherComponent))
+	virtual void addSceneComponent(OLDSceneComponent* c) { mSceneComponents.push_back(c); }
+	bool collideHandled(OLDIPhysical* OW_UNUSED(_ourComponent), OLDActor* OW_UNUSED(other), OLDIPhysical* OW_UNUSED(otherComponent))
 	{
 		// returning true means we have dealt with it
 		// returning false lets _ourComponent deal with it. I assume they just rebound.
 		return false;
 	}
-	virtual bool canCollide(OWIPhysical* OW_UNUSED(_ourComponent), OWActor* OW_UNUSED(other), OWIPhysical* OW_UNUSED(otherComponent))
+	virtual bool canCollide(OLDIPhysical* OW_UNUSED(_ourComponent), OLDActor* OW_UNUSED(other), OLDIPhysical* OW_UNUSED(otherComponent))
 	{
 		// for example our thigh and shin of same leg may interesect but they cannot collide
 		// but hands of different arms can.
 		return true;
 	}
-	void traverse(OWSceneComponent::OWSceneComponentCallbackType cb)
+	void traverse(OLDSceneComponent::OWSceneComponentCallbackType cb)
 	{
-		for (OWSceneComponent* sc : mSceneComponents)
+		for (OLDSceneComponent* sc : mSceneComponents)
 		{
 			cb(sc);
 		}

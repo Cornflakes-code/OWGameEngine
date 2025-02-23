@@ -36,10 +36,10 @@ namespace CollisionSystem
 	// https://leanrada.com/notes/sweep-and-prune-2/#final-code
 	struct Edge
 	{
-		Edge(OWMovableComponent* _o, unsigned int _ndx, bool _isLeft)
+		Edge(OLDMovableComponent* _o, unsigned int _ndx, bool _isLeft)
 			:o(_o), ndx(_ndx), isLeft(_isLeft)
 		{ }
-		OWMovableComponent* o;
+		OLDMovableComponent* o;
 		mutable float jfw;
 		unsigned int ndx;
 		bool isLeft;
@@ -139,9 +139,9 @@ namespace CollisionSystem
 			//					return a.o->name() < b.o->name();
 			return a.val() < b.val();
 		};
-	void buildSweepAndPrune(std::vector<OWMovableComponent*>& objects)
+	void buildSweepAndPrune(std::vector<OLDMovableComponent*>& objects)
 	{
-		for (OWMovableComponent* o : objects)
+		for (OLDMovableComponent* o : objects)
 		{
 			gEdgesX.push_back({ o, 0, true });
 			gEdgesX.push_back({ o, 0, false });
@@ -169,8 +169,8 @@ namespace CollisionSystem
 		}
 		for (const EdgePair& const_pr : colliding)
 		{
-			OWMovableComponent* a1 = const_cast<EdgePair&>(const_pr).e1.o;
-			OWMovableComponent* a2 = const_cast<EdgePair&>(const_pr).e2.o;
+			OLDMovableComponent* a1 = const_cast<EdgePair&>(const_pr).e1.o;
+			OLDMovableComponent* a2 = const_cast<EdgePair&>(const_pr).e2.o;
 			if (a1->collides(a2))
 			{
 				//LogStream(LogStreamLevel::Info) << "collided [" + a1->name() + "] [" + a2->name() + "].\n";
@@ -210,15 +210,15 @@ namespace CollisionSystem
 	//	}
 	//}
 #ifdef BASIC_COLLISIONS
-	std::vector <OWCollisionData*> gStaticObjects;
-	std::vector <OWCollisionData*> gMoveableObjects;
+	std::vector <OLDCollisionData*> gStaticObjects;
+	std::vector <OLDCollisionData*> gMoveableObjects;
 
 	BoxComponent* bbp = nullptr;
 	static int ii = 10000;
 
-	void buildBasic(const std::vector<OWIPhysical*>& objects)
+	void buildBasic(const std::vector<OLDIPhysical*>& objects)
 	{
-		for (OWIPhysical* o : objects)
+		for (OLDIPhysical* o : objects)
 		{
 			if (o->constData()->canMove)
 			{
@@ -233,13 +233,13 @@ namespace CollisionSystem
 
 	void collidBasic()
 	{
-		for (OWCollisionData* a1 : gStaticObjects)
+		for (OLDCollisionData* a1 : gStaticObjects)
 		{
 			if (a1->canCollide)
 			{
 				for (int j = 0; j < gMoveableObjects.size(); j++)
 				{
-                    OWCollisionData* a2 = gMoveableObjects[j];
+                    OLDCollisionData* a2 = gMoveableObjects[j];
 					if (a2->canCollide)
 					{
 						if (a1->boundingBox.intersects(a2->boundingBox))
@@ -255,14 +255,14 @@ namespace CollisionSystem
 			}
 		}
 		int inc = 0;
-		for (OWCollisionData* a1 : gMoveableObjects)
+		for (OLDCollisionData* a1 : gMoveableObjects)
 		{
 			inc++;
 			if (a1->canCollide)
 			{
 				for (int j = inc; j < gMoveableObjects.size(); j++)
 				{
-                    OWCollisionData* a2 = gMoveableObjects[j];
+                    OLDCollisionData* a2 = gMoveableObjects[j];
                     if (a2->canCollide)
                     {
                         if (a1->boundingBox.intersects(a2->boundingBox))
@@ -284,7 +284,7 @@ namespace CollisionSystem
 #ifdef SWEEP_AND_PRUNE_EX
 
 
-	void buildSweepAndPruneEx(std::vector<OWMovableComponent*>& objects)
+	void buildSweepAndPruneEx(std::vector<OLDMovableComponent*>& objects)
 	{
 	}
 	void collideSweepAndPruneEx()
@@ -292,7 +292,7 @@ namespace CollisionSystem
 	}
 
 #endif
-	void build(std::vector<OWIPhysical*>& objects)
+	void build(std::vector<OLDIPhysical*>& objects)
 	{
 #ifdef BASIC_COLLISIONS
 		buildBasic(objects);

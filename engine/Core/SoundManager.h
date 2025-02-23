@@ -10,13 +10,13 @@
 
 #include "../OWEngine/OWEngine.h"
 
-class OWENGINE_API SoundManager: public OWObject
+class OWENGINE_API SoundManager: public OLDObject
 {
 	enum class SoundType
 	{
 		Bloop, Boing, SoundTypeCount
 	};
-	typedef std::map<SoundType, std::set<OWObject*>> OwnedSoundsType;
+	typedef std::map<SoundType, std::set<OLDObject*>> OwnedSoundsType;
 	static OwnedSoundsType mOwnedSounds;
 	typedef std::map<int, SoundType> UniqueSoundsType;
 	static UniqueSoundsType mUniqueSounds;
