@@ -9,61 +9,154 @@
 #include "../Component/PhysicalComponent.h"
 #include "../Component/OWSceneComponent.h"
 #include "../Renderers/OWRenderable.h"
+#include "../Helpers/Transform.h"
 
+class OWMeshComponent;
+class OWSoundComponent;
+class OWCollider;
+class OWScriptComponent;
+class OWPhysics;
 class Scene;
-class OLDSceneComponent;
-class OWENGINE_API OLDActor: public OLDObject, public OLDGameIFace, public OLDIRenderable
+class OWRenderer;
+
+class OWActor
 {
+	std::string mName;
 	Scene* mScene;
-	OLDActorScript* mScript;
-	std::vector<OLDSceneComponent*> mSceneComponents;
-protected:
-	virtual OLDActorScript* script()
-	{
-		return mScript;
-	}
-	void doInit() override;
+	OWTransform* mActorTransform;
+	OWScriptComponent* mScriptor;
+	bool mIsActive = false;
+	bool mSetup = false;
 public:
-	OLDActor(Scene* _scene, OLDActorScript* _script);
-	const OLDActorData* data() const
-	{
-		return mScript->data();
+	OWActor(Scene* _scene, const std::string& _name);
+	virtual ~OWActor() {}
+	OWTransform* transform() {
+		return mActorTransform;
 	}
-	virtual const OLDActorScript* script() const
-	{
-		return mScript;
+	void transform(OWTransform* newValue) {
+		newValue->actor(this);
+		mActorTransform = newValue;
 	}
-	virtual void addSceneComponent(OLDSceneComponent* c) { mSceneComponents.push_back(c); }
-	bool collideHandled(OLDIPhysical* OW_UNUSED(_ourComponent), OLDActor* OW_UNUSED(other), OLDIPhysical* OW_UNUSED(otherComponent))
-	{
-		// returning true means we have dealt with it
-		// returning false lets _ourComponent deal with it. I assume they just rebound.
-		return false;
+	void transform(const OWTransformData& td) {
+		transform(new OWTransform(this, td));
 	}
-	virtual bool canCollide(OLDIPhysical* OW_UNUSED(_ourComponent), OLDActor* OW_UNUSED(other), OLDIPhysical* OW_UNUSED(otherComponent))
-	{
-		// for example our thigh and shin of same leg may interesect but they cannot collide
-		// but hands of different arms can.
-		return true;
+	void transform(const glm::vec3& pos, 
+			const glm::vec3& scale, const glm::quat& rot = glm::quat()) {
+		transform(new OWTransform(this, pos, scale, rot));
 	}
-	void traverse(OLDSceneComponent::OWSceneComponentCallbackType cb)
+	
+	void scriptor(OWScriptComponent* newValue) {
+		mScriptor = newValue;
+	}
+	void setup()
 	{
-		for (OLDSceneComponent* sc : mSceneComponents)
+		if (!mSetup)
 		{
-			cb(sc);
+			doSetup();
+			mSetup = true;
 		}
 	}
 protected:
-public:
-	void begin() override;
-	void tick(float deltaSecods) override;
-	void end() override;
-	void destroy() override;
+	virtual void doSetup() = 0;
+	virtual void render(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model, 
+		const glm::vec3& cameraPos) = 0;
+};
 
+class OWActorSingle: public OWActor
+{
+public:
+	struct SingleSceneElement
+	{
+		OWCollider* c = nullptr;
+		OWPhysics* p = nullptr;
+		OWMeshComponentBase* m = nullptr;
+		OWRenderer* r = nullptr;
+		OWTransform* t = nullptr;
+		OWSoundComponent* s = nullptr;
+	};
+	OWActorSingle(Scene* _scene, const std::string& _name)
+		: OWActor(_scene, _name) {
+	}
+	void setComponent(const SingleSceneElement& sse);
+	virtual void render(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
+		const glm::vec3& cameraPos) override;
+protected:
+	void doSetup() override;
+	std::vector<SingleSceneElement> mElements;
+};
+
+struct OWENGINE_API OWRayComponentData
+{
+	glm::vec4 colour;
+	float cooldownTime = 1.0; // cooldown time of beam???
+	float elapsedTime = 0;
+	bool triggered = false;
+};
+/*
+class OWRayActor : public OWActorSingle
+{
+	OWRayComponentData mData;
+	OWRay* mRay = nullptr;
+public:
+	OWRayActor(Scene* _scene, const std::string& _name) //Colour??
+		: OWActorSingle(_scene, _name) {
+	};
+	void colour(const glm::vec4& newValue) { mData.colour = newValue; }
+	void direction(const glm::vec3& newValue) { 
+		glm::vec3 origin = transform()->worldPosition();
+		glm::vec3 dir = newValue;
+		glm::vec3 tgt = origin + glm::normalize(newValue) * 10000.0f;
+		// mElements[0].m->colour() = mData.colour;
+		mElements[0].c->points(origin, newValue, tgt);
+	}
+	bool trigger() { mData.triggered = true; }
+	bool intersects(const AABB& box, glm::vec3& normal, float& distance) const;
+	bool intersects(const OWCollider* c, glm::vec3& direction, float& distance) const;
+protected:
+	void doSetup() override
+	{
+		OWActorSingle::doSetup();
+		CollisionSystem::addRay(mElements[0].c, this, 0);
+	}
 	void render(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model,
-		const glm::vec3& cameraPos,
-		RenderTypes::ShaderMutator renderCb = nullptr,
-		RenderTypes::ShaderResizer resizeCb = nullptr) override;
+		const glm::mat4& view, const glm::mat4& model,
+		const glm::vec3& cameraPos) override
+};
+*/
+
+class OWActorMulti: public OWActor
+{
+public:
+	struct MultiSceneElement
+	{
+		glm::vec4 colour = { 0,0,0,0 };
+		OWCollider* c = nullptr;
+		OWTransform* t = nullptr;
+		OWPhysics* p = nullptr;
+	};
+	OWActorMulti(Scene* _scene, const std::string& _name)
+		: OWActor(_scene, _name) {
+	}
+	void addElement(const MultiSceneElement& toAdd);
+	void physics(OWPhysics* newValue);
+	void renderer(OWRenderer* newValue);
+	void sound(OWSoundComponent* newValue);
+	void meshComponent(OWMeshComponent* mc) {
+		mMeshComponentTemplate = mc;
+	}
+
+	virtual void render(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
+		const glm::vec3& cameraPos) override;
+protected:
+	void doSetup();
+private:
+	OWMeshComponent* mMeshComponentTemplate;
+	OWPhysics* mPhysics = nullptr;
+	OWRenderer* mRenderer = nullptr;
+	OWSoundComponent* mSound = nullptr;
+	bool mIsActive = false;
+	std::vector<MultiSceneElement> mElements;
 };

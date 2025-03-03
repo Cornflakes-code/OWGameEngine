@@ -5,7 +5,6 @@
 #include "../Geometry/OWRay.h"
 #include "../Actor/OWActor.h"
 #include "../Helpers/Shader.h"
-#include "../Component/MeshComponentVAO.h"
 
 
 OLDSceneComponent::OLDSceneComponent(OLDActor* _owner, OLDSceneComponentData* _data)
@@ -141,7 +140,7 @@ void OLDSceneComponent::render(const glm::mat4& proj,
 	}
 	if (data()->physics.visibility > 0.001f)
 	{
-		OWPhysicsDataImp* imp = &data()->physics;
+		OLDPhysicsDataImp* imp = &data()->physics;
 		const glm::mat4 I(1.0f);
 		float len = glm::length(imp->mRotate);
 		glm::vec3 norm = glm::normalize(imp->mRotate);

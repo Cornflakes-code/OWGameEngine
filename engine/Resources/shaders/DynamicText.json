@@ -1,0 +1,10 @@
+{
+    "colourName": "",
+    "shaderV": "textDynamicBillboard.v.glsl",
+    "shaderF": "text.f.glsl",
+    "shaderG": "",
+    "PVMName": "VP",
+    "projectionName": "",
+    "viewName": "view",
+    "modelName": "model",
+}

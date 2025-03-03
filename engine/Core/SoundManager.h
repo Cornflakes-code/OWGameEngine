@@ -10,6 +10,10 @@
 
 #include "../OWEngine/OWEngine.h"
 
+class OWSoundComponent
+{
+public:
+};
 class OWENGINE_API SoundManager: public OLDObject
 {
 	enum class SoundType

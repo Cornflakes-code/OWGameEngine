@@ -7,7 +7,7 @@ Scene::Scene(const Movie* movie)
 {
 }
 
-void Scene::addActor(OLDActor* a)
+void Scene::addActor(OWActor* a)
 {
 	mRootNode.push_back(a);
 }

@@ -1,0 +1,28 @@
+{
+    "colourName": "",
+    "shaderV": "Wires.v.glsl",
+    "shaderF": "Wires.f.glsl",
+    "shaderG": "",
+    "PVMName": "",
+    "projectionName": "projection",
+    "viewName": "view",
+    "modelName": "model",
+    "uniforms": [
+        {
+            "ut": "UV4F",
+            "name": "lightColor",
+            "value": "WHITE"
+        },
+        {
+            "ut": "UV4F",
+            "name": "objectColor",
+            "value": "?colour??"
+        },
+        {
+            "ut": "UV3F",
+            "name": "viewLightPos",
+            "value": glm::vec3(160.0f, 60.0f, 50.0f)
+        }
+		
+    ]
+}

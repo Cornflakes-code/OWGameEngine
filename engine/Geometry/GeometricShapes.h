@@ -5,8 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "../OWEngine/OWEngine.h"
-
-class OWENGINE_API GeometricShapes
+class OWENGINE_API OWGeometricShapes
 {
 public:
 	static std::pair<glm::vec3, glm::vec3> minMaxBox;
@@ -22,6 +21,8 @@ public:
 
 	static std::vector<glm::vec3> fibonacciSphere(int numPoints, float TAU);
 	static std::vector<glm::vec3> cube(const glm::vec3& scale = glm::vec3(1, 1, 1));
+	static std::vector<glm::vec3> beam(const glm::vec3& beamStart, const glm::vec3& beamEnd);
+	static std::vector<glm::vec3> beam(const glm::vec3& beamStart, const glm::vec3& direction, float length);
 	static std::vector<glm::vec3> star(
 		float innerRadius, float outerRadius,
 		unsigned int numPoints);

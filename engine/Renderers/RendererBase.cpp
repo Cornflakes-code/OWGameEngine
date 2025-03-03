@@ -4,12 +4,6 @@
 #include "../Core/GlobalSettings.h"
 #include "../Helpers/Shader.h"
 
-void RendererBase::validateBase() const
-{
-	if (constShader() == nullptr)
-		throw NMSLogicException("RendererBase::Shader must be set");
-}
-
 /*
 * Following three classes use the dtor to restore values after being called in render.
 */
@@ -104,20 +98,22 @@ public:
 GLenum BlendFuncRIAA::mSfactor;
 GLenum BlendFuncRIAA::mDfactor;
 
-void RendererBase::render(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4& model,
-	const glm::vec3& cameraPos,
-	RenderTypes::ShaderMutator renderCb,
-	RenderTypes::ShaderResizer resizeCb) 
+void OWRenderer::validateBase() const
+{
+	if (mShader == nullptr)
+		throw NMSLogicException("RendererBase::Shader must be set");
+}
+
+void OWRenderer::render(std::vector<glm::mat4> models, const glm::mat4& proj,
+	const glm::mat4& view, const glm::vec3& cameraPos)
 {
 	PolygonModeRIAA temp1(mPolygonFace, mPolygonMode);
 	LineWidthRIAA temp2(mLineWidth);
 	BlendFuncRIAA temp3(mSfactor, mDfactor);
 
-	constShader()->use();
-	constShader()->callResizers(resizeCb);
-	const_cast<Shader*>(constShader())->setStandardUniformValues(proj, view, model, cameraPos);
-	constShader()->callMutators(proj, view, model, cameraPos, renderCb);
+	shader()->use();
+	shader()->setStandardUniformValues(proj, view, models[0], cameraPos);
+	shader()->callMutators(proj, view, models[0], cameraPos, nullptr);
 
 	doRender();
 }

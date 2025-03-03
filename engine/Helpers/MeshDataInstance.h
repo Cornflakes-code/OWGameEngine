@@ -61,5 +61,5 @@ private:
 	std::vector<glm::vec3> mInstancePositions;
 	std::vector<glm::vec4> mInstanceColours;
 	RenderData mRenderData;
-	friend class InstanceRenderer;
+	friend class OWInstanceRenderer;
 };

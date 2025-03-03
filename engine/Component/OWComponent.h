@@ -1,32 +1,62 @@
 #pragma once
 
-#include "../OWEngine/OWEngine.h"
-#include "../Core/OWObject.h"
-
 #include <string>
 
-class OLDActor;
-class OWENGINE_API OLDComponent: public OLDObject
+#ifndef __gl_h_
+#include <glad/glad.h>
+#endif
+
+#include "../OWEngine/OWEngine.h"
+#include "../Core/OWObject.h"
+#include "../Renderers/RenderTypes.h"
+#include "../Helpers/Mesh.h"
+#include "../Helpers/Model.h"
+
+class OWActor;
+class OWComponent
 {
-	OLDActor* mActor = nullptr;
-	bool mInitCalled = false;
-protected:
-	OLDActor* actor() const { return mActor; }
 public:
-	OLDComponent(OLDActor* _actor = nullptr)
-		:mActor(_actor)
-	{
+	OWComponent(OWActor* _owner, const std::string& _name)
+		:mOwner(_owner), mName(_name) {
 	}
-	bool initCalled() const { return mInitCalled; }
-	void actor(OLDActor* _actor) { mActor = _actor; }
-	void init()
+	void actor(OWActor* newValue) { mOwner = newValue; }
+	const OWActor* actor() const { return mOwner; }
+	bool active() const { return mActive; }
+	void active(bool newValue) { mActive = newValue; }
+	std::string name() const { return mName; }
+	void name(const std::string& _name);
+	void setup()
 	{
-		if (!mInitCalled)
+		if (!mSetup)
 		{
-			doInit();
-			mInitCalled = true;
+			doSetup();
+			mSetup = true;
 		}
 	}
-	virtual void doInit() = 0;
+protected:
+	virtual void doSetup() = 0;
+private:
+	OWActor* mOwner;
+	bool mSetup = false;
+	bool mActive = false;
+	std::string mName;
 };
 
+struct OWModelData;
+
+class OWMeshComponentBase: public OWComponent
+{
+	RenderTypes::ShaderMutator mMutator;
+public:
+	OWMeshComponentBase(OWActor* _owner, const std::string& _name)
+		: OWComponent(_owner, _name) {
+	}
+	RenderTypes::ShaderMutator mutator() const {
+		return mMutator;
+	}
+	void mutator(RenderTypes::ShaderMutator newValue) {
+		mMutator = newValue;
+	}
+	virtual const std::vector<OWMeshData>& simpleMesh() const;
+	virtual const std::vector<OWModelData>& complexMesh() const;
+};

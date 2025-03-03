@@ -6,6 +6,36 @@
 #include "OWComponent.h"
 #include "../Geometry/BoundingBox.h"
 
+namespace OWPhysicalDataMaximums
+{
+	extern glm::vec3 gravity;
+	extern glm::vec3 elocity;
+	extern glm::vec3 acceleration;
+	extern float mass;
+	extern float hardness;
+};
+
+struct OWPhysicsData
+{
+	glm::vec3 velocity = glm::vec3(0);
+	glm::vec3 rotationalVelocity = glm::vec3(0);
+	glm::vec3 acceleration = glm::vec3(0);
+	// 0(invisibility -> 1 (fully opaque)
+	float visibility = 1.0f;
+	float mass = 1.0f;
+	float hardness = 0.5f;
+};
+
+class OWPhysics
+{
+	OWPhysicsData mData;
+public:
+	OWPhysics(const OWPhysicsData& _data = OWPhysicsData())
+		: mData(_data)
+	{
+	}
+};
+
 namespace OWPhysicalMetaData
 {
 	extern glm::vec3 gravity;
@@ -15,7 +45,6 @@ namespace OWPhysicalMetaData
 	extern float hardness;
 	enum ChangeType { increment, absolute };
 };
-
 class OLDIPhysical;
 struct OWENGINE_API OLDCollisionData
 {
@@ -25,7 +54,7 @@ struct OWENGINE_API OLDCollisionData
 	bool canCollide = true;
 };
 
-struct OWENGINE_API OWPhysicsDataImp
+struct OWENGINE_API OLDPhysicsDataImp
 {
 	glm::vec3 velocity = glm::vec3(0);
 	glm::vec3 acceleration = glm::vec3(0);
@@ -53,14 +82,14 @@ struct OWENGINE_API OWPhysicsDataImp
 private:
 };
 
-struct OWENGINE_API OWPhysicsData: public OLDCollisionData
+struct OWENGINE_API OLDPhysicsData: public OLDCollisionData
 {
-	OWPhysicsDataImp physics;
+	OLDPhysicsDataImp physics;
 };
 
 class OWENGINE_API OLDIPhysical
 {
-	OWPhysicsData* mData = nullptr;
+	OLDPhysicsData* mData = nullptr;
 protected:
 public:
 	glm::vec3 velocity()
@@ -133,13 +162,13 @@ public:
 		return mData->physics.mTranslate;
 	}
 	glm::vec3 scale() const;
-	virtual OWPhysicsData* data() { return mData; }
-	virtual const OWPhysicsData* constData() const { return mData; }
+	virtual OLDPhysicsData* data() { return mData; }
+	virtual const OLDPhysicsData* constData() const { return mData; }
 
-	// OWCollisionData has a smaller footprint than OWPhysicsData.
+	// OWCollisionData has a smaller footprint than OLDPhysicsData.
 	// Use it for the collision engine
 	OLDCollisionData* collisionData() { return mData; }
-	void setData(OWPhysicsData* newValue);
+	void setData(OLDPhysicsData* newValue);
 	virtual bool canCollide() = 0;
 	virtual bool canCollide(OLDCollisionData* other) = 0;
 	virtual bool collides(OLDCollisionData* other) = 0;

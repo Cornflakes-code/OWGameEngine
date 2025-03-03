@@ -25,44 +25,27 @@ struct OWRopeVisibilityData
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
 };
 
-struct OWRopeData: public OLDActorData
+struct OWRopeData
 {
 	OWRopeDataImp ropeData;
-	TextComponentData labelTextData;
-	TextComponentData bannerTextData;
+	OWTextComponentData labelTextData;
+	OWTextComponentData bannerTextData;
 	OWRopeVisibilityData ropeVisibility;
 };
 
-class OWRopeScript: public OLDActorScript
-{
-public:
-	OWRopeScript(OWRopeData* _data)
-		: OLDActorScript(_data) {}
-};
-
-class OLDSceneComponent;
-class Rope: public OLDActor
+class Rope: public OWActorSingle
 {
 private:
 	bool initRopes();
+	OWRopeData mData;
 	PolygonBuilder* mPolyBuilder = nullptr;
 	
-	std::pair<glm::vec3, glm::vec3> mMinMax = GeometricShapes::minMaxBox;
-	AABB mBounds;
 protected:
-	void doInit() override;
-	OWRopeData* data()
-	{
-		return static_cast<OWRopeData*>(script()->data());
-	}
+	void doSetup() override;
 public:
-	Rope(Scene* _scene, OWRopeScript* _script);
-	const AABB& bounds() const { return mBounds; }
-	const OWRopeData* constData() const
-	{
-		return dynamic_cast<const OWRopeData*>(script()->data());
-	}
+	Rope(Scene* _scene, const std::string& _name, const OWRopeData& _data);
 private:
+	AABB mBounds;
 	bool prepare();
 	void prepareRope(int ropeNum, float width, float height, int numDepthLayers);
 	void prepareText(int fontHeight, const glm::vec2& textSpacing, const glm::vec2& textScale);

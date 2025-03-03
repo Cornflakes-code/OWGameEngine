@@ -1,8 +1,8 @@
 #include "GeometricShapes.h"
-
+#include <algorithm>
 #include <glm/gtc/constants.hpp>
 
-std::pair<glm::vec3, glm::vec3> GeometricShapes::minMaxBox =
+std::pair<glm::vec3, glm::vec3> OWGeometricShapes::minMaxBox =
 {
 	glm::vec3(std::numeric_limits<float>::min(),
 			std::numeric_limits<float>::min(),
@@ -12,7 +12,7 @@ std::pair<glm::vec3, glm::vec3> GeometricShapes::minMaxBox =
 			std::numeric_limits<float>::max())
 };
 
-std::vector<glm::vec3> GeometricShapes::circle(float radius, float arcRadians)
+std::vector<glm::vec3> OWGeometricShapes::circle(float radius, float arcRadians)
 {
 	std::vector<glm::vec3> retval;
 	for (float i = 0.0f; i < glm::two_pi<float>(); i += arcRadians)
@@ -22,7 +22,7 @@ std::vector<glm::vec3> GeometricShapes::circle(float radius, float arcRadians)
 	return retval;
 }
 
-std::vector<glm::vec3> GeometricShapes::torus(float innerRadius,
+std::vector<glm::vec3> OWGeometricShapes::torus(float innerRadius,
 										float outerRadius,
 										float arcRadians)
 {
@@ -42,7 +42,7 @@ std::vector<glm::vec3> GeometricShapes::torus(float innerRadius,
 	return retval;
 }
 
-std::vector<glm::vec3> GeometricShapes::rectangle(const glm::vec2& dims)
+std::vector<glm::vec3> OWGeometricShapes::rectangle(const glm::vec2& dims)
 {
 	const float x = dims.x * 0.5f;
 	const float y = dims.y * 0.5f;
@@ -60,7 +60,7 @@ std::vector<glm::vec3> GeometricShapes::rectangle(const glm::vec2& dims)
 	return retval;
 }
 
-std::vector<glm::vec3> GeometricShapes::goldenRectangle(float scale,
+std::vector<glm::vec3> OWGeometricShapes::goldenRectangle(float scale,
 	const glm::vec2& bottomLeft)
 {
 	// Create at {0,0}, scale then move.
@@ -75,7 +75,7 @@ std::vector<glm::vec3> GeometricShapes::goldenRectangle(float scale,
 }
 
 // But the points are bunched near the poles.
-std::vector<glm::vec3> GeometricShapes::pointsOnSphere(
+std::vector<glm::vec3> OWGeometricShapes::pointsOnSphere(
 	int numHoroSegments, int numVertSegments, float TAU)
 {
 	// https://www.youtube.com/watch?v=lctXaT9pxA0
@@ -97,7 +97,7 @@ std::vector<glm::vec3> GeometricShapes::pointsOnSphere(
 }
 
 // Evenly distributed points on a sphere.
-std::vector<glm::vec3> GeometricShapes::fibonacciSphere(int numPoints, float TAU)
+std::vector<glm::vec3> OWGeometricShapes::fibonacciSphere(int numPoints, float TAU)
 {
 	// https://www.youtube.com/watch?v=lctXaT9pxA0
 
@@ -120,7 +120,7 @@ std::vector<glm::vec3> GeometricShapes::fibonacciSphere(int numPoints, float TAU
 	return retVal;
 }
 
-std::vector<glm::vec3> GeometricShapes::star(float innerRadius, float outerRadius,
+std::vector<glm::vec3> OWGeometricShapes::star(float innerRadius, float outerRadius,
 								unsigned int numPoints)
 {
 	std::vector<glm::vec3> retval;
@@ -148,7 +148,7 @@ std::vector<glm::vec3> GeometricShapes::star(float innerRadius, float outerRadiu
 	return retval;
 }
 
-std::vector<glm::vec3> GeometricShapes::cube(const glm::vec3& scale)
+std::vector<glm::vec3> OWGeometricShapes::cube(const glm::vec3& scale)
 {
 	float dx = scale.x;
 	float dy = scale.y;
@@ -172,5 +172,54 @@ std::vector<glm::vec3> GeometricShapes::cube(const glm::vec3& scale)
 		{-0.5f * dx,  0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy,  0.5f * dz},
 		{ 0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy,  0.5f * dz}, {-0.5f * dx,  0.5f * dy, -0.5f * dz}
 	};
+	return vertices;
+}
+
+static std::vector<glm::vec3> beam(const glm::vec3& beamStart, const glm::vec3& direction, float length)
+{
+	glm::vec3 beamEnd = glm::normalize(direction) * length;
+	return OWGeometricShapes::beam(beamStart, beamEnd);
+
+}
+std::vector<glm::vec3> OWGeometricShapes::beam(const glm::vec3& beamStart, const glm::vec3& beamEnd)
+{
+	// https://github.com/atomic/OpenGL/blob/master/openGLexamples/tetrahedron.cpp
+
+	std::vector<glm::vec3> vertices;
+	const float p = 0.010f;
+	const std::vector<glm::vec3> tetStart =
+	{
+		{ p, p, p }, { p, -p, -p }, { -p, p, -p }, { -p, -p, p }
+	};
+
+	const std::vector<glm::vec3> tetTriangles =
+	{
+		tetStart[0], tetStart[1], tetStart[2],
+		tetStart[1], tetStart[2], tetStart[3],
+		tetStart[2], tetStart[3], tetStart[0],
+		tetStart[3], tetStart[0], tetStart[1]
+	};
+	std::vector<glm::vec3> beam;
+	const glm::vec3 off = beamStart;
+	beam.push_back(tetStart[0]);
+	beam.push_back(beamEnd);
+	beam.push_back(tetStart[1]);
+
+	beam.push_back(tetStart[1]);
+	beam.push_back(beamEnd);
+	beam.push_back(tetStart[2]);
+
+	beam.push_back(tetStart[2]);
+	beam.push_back(beamEnd);
+	beam.push_back(tetStart[3]);
+
+	beam.push_back(tetStart[3]);
+	beam.push_back(beamEnd);
+	beam.push_back(tetStart[0]);
+
+	vertices.insert(vertices.end(), tetTriangles.begin(), tetTriangles.end());
+	vertices.insert(vertices.end(), beam.begin(), beam.end());
+	std::for_each(vertices.begin(), vertices.end(),
+		[off](glm::vec3& elm) { elm += off; });
 	return vertices;
 }

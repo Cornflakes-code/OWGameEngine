@@ -21,24 +21,26 @@
 // One buffer for the particles’ colors.
 
 
-void InstanceRenderer::setup(const MeshDataInstance* meshData)
+AABB OWInstanceRenderer::doSetup(const std::vector<OWMeshData>& meshes,
+	const std::vector<OWModelData>& models) 
 {
 	const float* ff = nullptr;
 	unsigned int vertexSize = 0;
-	validate(meshData);
-	mData = meshData->mRenderData;
-	if (!meshData->mVec3.empty())
+	const MeshDataInstance& mdi = meshes[0].instanceData;
+	validate(mdi);
+	mData = mdi.mRenderData;
+	if (!mdi.mVec3.empty())
 	{
-		const glm::vec3* p = meshData->mVec3.data();
+		const glm::vec3* p = mdi.mVec3.data();
 		ff = glm::value_ptr(*p);
-		mData.verticesCount = meshData->mVec3.size();
+		mData.verticesCount = mdi.mVec3.size();
 		vertexSize = 3;
 	}
-	else if (!meshData->mVec4.empty())
+	else if (!mdi.mVec4.empty())
 	{
-		const glm::vec4* p = meshData->mVec4.data();
+		const glm::vec4* p = mdi.mVec4.data();
 		ff = glm::value_ptr(*p);
-		mData.verticesCount = meshData->mVec4.size();
+		mData.verticesCount = mdi.mVec4.size();
 		vertexSize = 4;
 	}
 	validateBase();
@@ -70,7 +72,7 @@ void InstanceRenderer::setup(const MeshDataInstance* meshData)
 		(void*)0 // array buffer offset
 	);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * mData.positionCount,
-		meshData->mInstancePositions.data(), GL_STREAM_DRAW);
+		mdi.mInstancePositions.data(), GL_STREAM_DRAW);
 	// The colours
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[2]);
@@ -83,8 +85,8 @@ void InstanceRenderer::setup(const MeshDataInstance* meshData)
 		0, // stride
 		(void*)0 // array buffer offset
 	);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * meshData->mInstanceColours.size(),
-		meshData->mInstanceColours.data(), GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mdi.mInstanceColours.size(),
+		mdi.mInstanceColours.data(), GL_STREAM_DRAW);
 
 	// These functions are specific to glDrawArrays*Instanced*.
 	// The first parameter is the attribute buffer we're talking about.
@@ -111,7 +113,7 @@ void InstanceRenderer::setup(const MeshDataInstance* meshData)
 	glBindVertexArray(0);
 }
 
-void InstanceRenderer::doRender() const
+void OWInstanceRenderer::doRender() 
 {
 	glBindVertexArray(mVao);
 
@@ -125,18 +127,18 @@ void InstanceRenderer::doRender() const
 			static_cast<GLsizei>(mData.positionCount));
 }
 
-void InstanceRenderer::validate(const MeshDataInstance* meshData) const
+void OWInstanceRenderer::validate(const MeshDataInstance& meshData) const
 {
 	validateBase();
-	if (meshData->mVec3.empty())
+	if (meshData.mVec3.empty())
 		throw NMSLogicException("InstanceRenderer missing vertices");
-	if (meshData->mInstancePositions.empty())
+	if (meshData.mInstancePositions.empty())
 		throw NMSLogicException("InstanceRenderer missing positions");
-	if (meshData->mInstanceColours.empty())
+	if (meshData.mInstanceColours.empty())
 		throw NMSLogicException("InstanceRenderer missing colours");
-	if (meshData->mRenderData.positionDivisor == UINT_MAX)
+	if (meshData.mRenderData.positionDivisor == UINT_MAX)
 		throw NMSLogicException("InstanceRenderer missing position divisor");
-	if (meshData->mRenderData.colourDivisor == UINT_MAX)
+	if (meshData.mRenderData.colourDivisor == UINT_MAX)
 		throw NMSLogicException("InstanceRenderer missing colour divisor");
 
 }

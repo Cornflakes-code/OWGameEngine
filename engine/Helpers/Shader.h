@@ -9,10 +9,6 @@
 #include "../Renderers/RenderTypes.h"
 
 using json = nlohmann::json;
-/*
-	A wrapper for Shaders. Based on the Shader class at https://learnopengl.com/
-*/
-
 struct ShaderDataUniforms
 {
 	enum UniformType
@@ -35,14 +31,9 @@ struct OWENGINE_API ShaderData
 	std::string viewName = "view";
 	std::string modelName = "model";
 	std::vector<ShaderDataUniforms> uniforms;
-	std::vector<RenderTypes::ShaderMutator> mutatorCallbacks;
-	std::vector<RenderTypes::ShaderResizer> resizeCallbacks;
-	ShaderData() {}
-	ShaderData(const std::string& _v, const std::string& _f, const std::string& _g, const std::string& _pvm)
-	: shaderV(_v), shaderF(_f), shaderG(_g), PVMName(_pvm)
-	{}
 };
 
+// A wrapper for Shaders. Based on the Shader class at https://learnopengl.com/
 class OWENGINE_API Shader //: public ResourceSource
 {
 #pragma warning( push )
@@ -67,7 +58,10 @@ class OWENGINE_API Shader //: public ResourceSource
 	ShaderData* mData = nullptr;
 	mutable bool mUseCalled = false;
 public:
-	Shader(ShaderData* _data);
+	Shader(const std::string& vertexPath, const std::string& fragPath,
+		const std::string& geometryPath = "");
+	Shader(const std::string& fileName);
+	Shader(const ShaderData& sd);
 	~Shader();
 	void appendMutator(RenderTypes::ShaderMutator pfunc);
 	void appendResizer(RenderTypes::ShaderResizer pfunc);

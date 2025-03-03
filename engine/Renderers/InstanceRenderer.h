@@ -11,16 +11,21 @@
 #include "../Helpers/MeshDataInstance.h"
 
 #include "RendererBase.h"
+#include "../Geometry/BoundingBox.h"
+#include "../Helpers/Mesh.h"
 
-class OWENGINE_API InstanceRenderer: public RendererBase
+class OWENGINE_API OWInstanceRenderer: public OWRenderer
 {
 public:
-	InstanceRenderer(Shader* shader)
-		: RendererBase(shader) {}
-	void setup(const MeshDataInstance* meshData);
-	void doRender() const override;
+	OWInstanceRenderer(const std::string& shaderName)
+		: OWRenderer(shaderName) {
+	}
+	AABB doSetup(const std::vector<OWMeshData>& meshes,
+		const std::vector<OWModelData>& models) override;
+protected:
+	void doRender() override;
 private:
-	void validate(const MeshDataInstance* meshData) const;
+	void validate(const MeshDataInstance& meshData) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	MeshDataInstance::RenderData mData;

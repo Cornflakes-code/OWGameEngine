@@ -12,6 +12,7 @@
 #endif
 
 #include "../Core/GlobalSettings.h"
+#include "../Core/ResourcePathFactory.h"
 
 #include "../Core/CommonUtils.h"
 #include "../Core/ErrorHandling.h"
@@ -20,9 +21,62 @@
 
 #include "ShaderFactory.h"
 
-Shader::Shader(ShaderData* _data)
-	:mData(_data)
+void to_json(json& j, const ShaderDataUniforms& u)
 {
+	j = json{
+		{ "ut", u.ut},
+		{ "name", u.name },
+		{ "value", u.value }
+	};
+}
+void from_json(const json& j, ShaderDataUniforms& u)
+{
+	j.at("ut").get_to(u.ut);
+	j.at("name").get_to(u.name);
+	j.at("value").get_to(u.value);
+}
+
+void to_json(json& j, const ShaderData& p)
+{
+	j = json{
+		{ "colourName", p.colourName },
+		{ "shaderV", p.shaderV },
+		{ "shaderF", p.shaderF },
+		{ "shaderG", p.shaderG },
+		{ "PVMName", p.PVMName },
+		{ "projectionName", p.projectionName },
+		{ "viewName", p.viewName },
+		{ "modelName", p.modelName},
+		{"uniforms", {p.uniforms}}
+	};
+}
+
+void from_json(const json& j, ShaderData& p)
+{
+	j.at("colourName").get_to(p.colourName);
+	j.at("shaderV").get_to(p.shaderV);
+	j.at("shaderF").get_to(p.shaderF);
+	j.at("shaderG").get_to(p.shaderG);
+	j.at("PVMName").get_to(p.PVMName);
+	j.at("projectionName").get_to(p.projectionName);
+	j.at("viewName").get_to(p.viewName);
+	j.at("modelName").get_to(p.modelName);
+	j.at("uniforms").get_to(p.uniforms);
+}
+Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
+	const std::string& geometryPath)
+{
+	create(vertexPath, fragPath, geometryPath);
+}
+
+Shader::Shader(const std::string& fileName)
+{
+	std::filesystem::path jsonFilePath =
+		ResourcePathFactory().appendPath(fileName,
+			ResourcePathFactory::ResourceType::Shader);
+	json js = json::parse(jsonFilePath.u8string());
+	mData = new ShaderData();
+	from_json(js, *mData);
 	create(
 		mData->shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
 		: mData->shaderV,
@@ -31,6 +85,25 @@ Shader::Shader(ShaderData* _data)
 		mData->shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
 		: mData->shaderG);
 		
+	setStandardUniformNames(mData->PVMName, mData->projectionName, mData->viewName, mData->modelName);
+	use();
+	for (ShaderDataUniforms& a : mData->uniforms)
+	{
+		setUniform(a.ut, a.name, a.value);
+	}
+}
+
+Shader::Shader(const ShaderData& sd)
+	: mData(sd)
+{
+	create(
+		mData->shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
+		: mData->shaderV,
+		mData->shaderF.length() == 0 ? ShaderFactory::boilerPlateFragmentShader()
+		: mData->shaderF,
+		mData->shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
+		: mData->shaderG);
+
 	setStandardUniformNames(mData->PVMName, mData->projectionName, mData->viewName, mData->modelName);
 	use();
 	for (ShaderDataUniforms& a : mData->uniforms)

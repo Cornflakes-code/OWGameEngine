@@ -4,6 +4,10 @@
 #include "../OWEngine/OWEngine.h"
 #include "../OWEngine/OWGameIFace.h"
 #include "../Component/OWComponent.h"
+class OWENGINE_API OWScriptComponent
+{
+public:
+};
 
 class OWENGINE_API OLDScript: public OLDGameIFace
 {

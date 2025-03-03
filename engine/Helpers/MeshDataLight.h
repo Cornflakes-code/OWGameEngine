@@ -63,4 +63,5 @@ private:
 	RenderData mRenderData;
 	friend class LightRenderer;
 	friend class VAOBuffer;
+	friend class OWMeshComponent;
 };

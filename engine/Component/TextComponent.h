@@ -3,10 +3,10 @@
 
 #include <glm/glm.hpp>
 
-#include <Component/OWSceneComponent.h>
+#include <Component/OWComponent.h>
 #include <Core/CommonUtils.h>
 
-struct OWENGINE_API TextData
+struct OWENGINE_API OWTextComponentData
 {
 	enum PositionType : unsigned int
 	{
@@ -30,42 +30,16 @@ struct OWENGINE_API TextData
 	TextDisplayType tdt = Dynamic;
 };
 
-struct OWENGINE_API TextComponentData: public OLDSceneComponentData
+class OWTextComponent : public OWMeshComponentBase
 {
-	TextData textData;
-};
-
-class OWENGINE_API TextComponent: public OLDSceneComponent
-{
-protected:
-	TextData* textData()
-	{
-		return &(static_cast<TextComponentData*>(OLDSceneComponent::data())->textData);
-	}
+	OWTextComponentData mData;
 public:
-	const TextData* constTextData() const
-	{
-		return &(static_cast<const TextComponentData*>(OLDSceneComponent::constData())->textData);
-	}
-
-	TextComponent(OLDActor* _owner)
-		: OLDSceneComponent(_owner)
-	{}
-	const TextComponentData* constData() const override
-	{
-		return static_cast<const TextComponentData*>(OLDSceneComponent::constData());
-	}
-
-	TextComponent(OLDActor* _owner, TextComponentData* _data);
-
-	void render(const glm::mat4& proj,
-		const glm::mat4& view,
-		const glm::mat4& model,
-		const glm::vec3& cameraPos,
-		RenderTypes::ShaderMutator renderCb = nullptr,
-		RenderTypes::ShaderResizer resizeCb = nullptr) override;
-	void doInit() override;
-protected:
+	OWTextComponent(OWActor* _owner, const std::string& _name,
+		const OWTextComponentData& _data);
+	OWTextComponent(OWActor* _owner, const std::string& _name,
+		const std::string& textFileName);
+	void doSetup() override;
+	virtual const std::vector<OWMeshData>& simpleMesh() const;
 private:
-	friend class TextRenderer;
+	void prepareMutators();
 };

@@ -1,4 +1,4 @@
-#include "MeshComponentVAO.h"
+#include "MeshComponent.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -21,31 +21,33 @@ OWMeshComponent::OWMeshComponent(OWActor* _owner, const std::string& _name)
 {
 }
 
-void OWMeshComponent::add(const OWMeshData& meshData)
+void OWMeshComponent::add(const MeshData& meshData)
 {
 	validate(meshData);
-	mData.push_back(meshData);
+	OWMeshData md;
+	md.meshData = meshData;
+	mData.push_back(md);
 }
 
 void OWMeshComponent::add(const std::vector<glm::vec3>& v)
 {
-	OWMeshData mdl;
+	MeshData mdl;
 	mdl.v3 = v;
 	add(mdl);
 }
 
 void OWMeshComponent::add(const std::vector<glm::vec4>& v)
 {
-	OWMeshData mdl;
+	MeshData mdl;
 	mdl.v4 = v;
 	add(mdl);
 }
 
-void OWMeshComponent::validate(const OWMeshData& mdl)
+void OWMeshComponent::validate(const MeshData& md)
 {
-	if (mdl.v4.empty() == mdl.v3.empty())
+	if (md.v4.empty() == md.v3.empty())
 	{
-		if (mdl.v4.empty())
+		if (md.v4.empty())
 			throw NMSLogicException("LightRenderer has no data");
 		else
 			throw NMSLogicException("LightRenderer has both v3 and v4 data");

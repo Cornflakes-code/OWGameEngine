@@ -12,6 +12,8 @@
 #include <Core/GLApplication.h>
 #include <Core/GlobalSettings.h>
 #include <Core/Movie.h>
+#include <Core/SoundManager.h>
+#include <Core/ResourcePathFactory.h>
 #include <Core/LogStream.h>
 
 #include <Actor/StaticSceneryActor.h>
@@ -19,22 +21,25 @@
 #include <Actor/OcTree.h>
 #include <Actor/ThreeDAxis.h>
 #include <Actor/Button.h>
-#include <Component/BoxComponent.h>
-#include <Component/PlaneComponent.h>
-#include <Component/RayComponent.h>
-#include <Component/MeshComponentHeavy.h>
-#include <Component/MeshComponentLight.h>
+#include <Component/PhysicalComponent.h>
 #include <Component/TextComponent.h>
-#include <Geometry/BoundingBox.h>
+#include <Component/MeshComponent.h>
+#include <Component/ModelComponent.h>
+#include <Geometry/GeometricShapes.h>
+#include <Renderers/MeshRenderer.h>
+#include <Renderers/ModelRenderer.h>
+#include <Renderers/InstanceRenderer.h>
 
+#include <Helpers/Collider.h>
+#include <Helpers/Transform.h>
 #include <Helpers/FreeTypeFontAtlas.h>
-#include <Helpers/ModelData.h>
 #include <Helpers/ModelFactory.h>
 #include <Helpers/Shader.h>
 
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
+#define INCLUDE_RAY
 #define INCLUDE_PLANES
 #define INCLUDE_FULLSCREEN
 #define INCLUDE_WELCOME
@@ -46,31 +51,15 @@ int GDEBUG_PICKING = 4;
 #define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
-BoxComponent* gBox = nullptr;
-TextComponent* gWelcome = nullptr;
-TextComponent* gEnjoy = nullptr;
-std::vector<OLDSceneComponent*> addToOcTree;
-// We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. So 2 in 5 seconds 
+// We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. 
+// So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
-
-StaticSceneryActor* mScenery = nullptr;
-
-void makeGlobals(Scene* owner)
-{
-	if (mScenery == nullptr)
-	{
-		StaticSceneryData* data = new StaticSceneryData();
-		StaticSceneryScript* script = new StaticSceneryScript(data);
-		mScenery = new StaticSceneryActor(owner, script);
-//		mOctTree = new OcTree();
-	}
-}
+OWActorSingle* gRay = nullptr;
 
 NMSSplashScenePhysics::NMSSplashScenePhysics(Scene* owner)
 	: NMSWorldPhysicsState(owner)
 {
-	makeGlobals(owner);
 }
 
 void NMSSplashScenePhysics::clear() 
@@ -137,17 +126,32 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			glm::vec3 normMouse = glm::normalize(mousePos);
 			glm::vec3 cam_pos = camera->position();
 			glm::vec3 dir = cam_pos - mousePos;
-			RayComponentData* rcd = new RayComponentData();
-			rcd->colour = { 0.7, 0.7, 0.0, 1.0f };
-			rcd->direction = normMouse;
-			rcd->origin = cam_pos;
-			RayComponent* r = new RayComponent(mScenery, rcd);
-			r->init();
+#ifdef INCLUDE_RAY
+			if (gRay != nullptr)
+			{
+				// this will crash
+				// need to deactivate, remove from scene and remove from Collissions
+				delete gRay;
+			}
+			gRay = new OWActorSingle(this->owner(), "Ray Actor");
+			OWActorSingle::SingleSceneElement sse;
+			sse.c = new OWCollider(gRay, OWCollider::CollisionType::Ray);
+			OWMeshComponent* mc = new OWMeshComponent(gRay, "Ray Component");
+			mc->add(OWGeometricShapes::beam(cam_pos, dir, 1000));
+			sse.m = mc;
+			sse.r = new OWMeshRenderer("", OWMeshRenderer::RenderType::DRAW_ARRAYS);
+			sse.t = new OWTransform(gRay, cam_pos);
+			gRay->setComponent(sse);
+#endif
+			gRay->transform()->localPosition(cam_pos);
+			//gRay->colour({ 0.7, 0.7, 0.0, 1.0f });
+			//gRay->direction(normMouse);
 			glm::vec3 normal;
 			float distance;
 			bool intersects = false;
 			glm::vec3 intersectPoint(0);
-			for (auto& a : addToOcTree)
+			/*
+			for (auto& a : this->owner()->traverseSceneGraph
 			{
 				intersects = r->intersects(a->constData()->boundingBox, normal, distance);
 				intersectPoint = cam_pos + normMouse * distance;
@@ -173,6 +177,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
 					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
 			}
+			*/
 		}
 	}
 	if (userInput.mouseInput.action == UserInput::PointingDeviceAction::RightMouseButtonClick)
@@ -209,48 +214,38 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	return false;
 }
 
-BoxComponent* createBox(const std::string& _name, const glm::vec4& colour, 
+OWActorMulti::MultiSceneElement createBox(const std::string& _name, const glm::vec4& colour,
 	const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
 {
-	BoxComponentData* bcd = new BoxComponentData();
-	bcd->polygonMode = GL_FILL;
-	bcd->shaderData.shaderV = "Wires.v.glsl";
-	bcd->shaderData.shaderF = "Wires.f.glsl";
-	bcd->shaderData.shaderG = "";
-	bcd->shaderData.PVMName = "";
-	bcd->shaderData.projectionName = "projection";
-	bcd->shaderData.viewName = "view";
-	bcd->shaderData.modelName = "model";
-	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "lightColor", 
+	OWActorMulti::MultiSceneElement mse;
+	mse.colour = colour;
+	mse.c = new OWCollider(nullptr, OWCollider::CollisionType::Ovoid);
+	mse.t = new OWTransform(nullptr, origin, scale);
+	mse.t->rotation(glm::radians(45.0f), glm::vec3(1, 0, 0));
+	OWPhysicsData pd;
+	pd.velocity = direction * speed;
+	mse.p = new OWPhysics(pd);
+	return mse;
+/*
+	bcd->shaderData.uniforms.push_back({ShaderDataUniforms::UV4F, "lightColor",
 				OWUtils::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE)) });
 	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV4F, "objectColor", 
 				OWUtils::to_string(colour) });
 	bcd->shaderData.uniforms.push_back({ ShaderDataUniforms::UV3F, "viewLightPos", 
 				OWUtils::to_string(glm::vec3(160.0f, 60.0f, 50.0f)) });
-	bcd->name = _name;
-	bcd->physics.velocity = direction * speed;
-	bcd->physics.rotate(glm::radians(45.0f), glm::vec3(1,0,0));
-	bcd->physics.scale(scale);
-	bcd->physics.translate(origin);
-	BoxComponent* box = new BoxComponent(mScenery, bcd);
-	gBox = box;
-	return box;
+*/
 }
 
-PlaneComponent* createBumperPlane(const std::string& _name, const glm::vec3& pos, 
+OWActorMulti::MultiSceneElement createBumperPlane(const std::string& _name, const glm::vec3& pos,
 							float scale, float rotDegrees, const glm::vec3& rotAxis)
 {
-	PlaneComponentData* pcd = new PlaneComponentData();
-	pcd->colour = { 1.0f, 0.33f, 0.33f, 0.2f };
-	glm::mat4 m(1.0f);
-	pcd->physics.scale(glm::vec3(scale));
-	pcd->physics.rotate(glm::radians(rotDegrees), rotAxis);
-	pcd->physics.translate(pos);
-	pcd->name = _name;
-	pcd->canMove = false;
-	PlaneComponent* p = new PlaneComponent(mScenery, pcd);
-	p->init();
-	return p;
+	OWActorMulti::MultiSceneElement mse;
+	mse.c = new OWCollider(nullptr, OWCollider::CollisionType::Plane);
+	mse.t = new OWTransform(nullptr);
+	mse.t->rotation(glm::radians(rotDegrees), rotAxis);
+	mse.t->scale(glm::vec3(scale));
+	mse.t->localPosition(pos);
+	return mse;
 }
 
 void NMSSplashScenePhysics::setup()
@@ -292,51 +287,75 @@ void NMSSplashScenePhysics::setup()
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
 
+	OWActorSingle* textActor = new OWActorSingle(this->owner(), "Welcome and Goodbye");
+	textActor->transform(glm::vec3(0), glm::vec3(scale, 1.0));
+
 #ifdef INCLUDE_WELCOME
-	
-	TextComponentData* welcomeData = new TextComponentData();
-	welcomeData->textData.tdt = TextData::TextDisplayType::Dynamic;
-	glm::vec3 velocity = Compass::Rose[Compass::North] +
-		Compass::Rose[Compass::East] +
-		Compass::Rose[Compass::In] * mSpeed;
-	//welcomeData->physics.velocity = velocity;
-	welcomeData->physics.translate(glm::vec3(0, 0, 0));
-	welcomeData->textData.fontName = "arial.ttf";
-	welcomeData->textData.fontHeight = fontHeight;
-	welcomeData->textData.colour = { 0.0, 0.0, 0.0, 1.0f };
-	welcomeData->textData.fontSpacing = { 10 * nice.x, 10 * nice.y };
-	welcomeData->physics.scale(glm::vec3(scale, 1.0));
-	//welcomeData->physics.scale(glm::vec3(10.0f));
-	welcomeData->textData.text = "Welcome to reality.";
-	TextComponent* welcome = new TextComponent(mScenery, welcomeData);
-	addToOcTree.push_back(welcome);
-	gWelcome = welcome;
+	OWPhysicsData pd1;
+	pd1.velocity = Compass::Rose[Compass::North] +
+				Compass::Rose[Compass::East] +
+				Compass::Rose[Compass::In] * mSpeed;
+
+	OWTextComponentData welcomeData;
+	welcomeData.tdt = OWTextComponentData::TextDisplayType::Dynamic;
+	welcomeData.fontName = "arial.ttf";
+	welcomeData.fontHeight = fontHeight;
+	welcomeData.colour = { 0.0, 0.0, 0.0, 1.0f };
+	welcomeData.fontSpacing = { 10 * nice.x, 10 * nice.y };
+	welcomeData.text = "Welcome to reality.";
+
+	OWActorSingle::SingleSceneElement sse1;
+	sse1.c = new OWCollider(textActor, OWCollider::CollisionType::Box);
+	sse1.m = new OWTextComponent(textActor, "Welcome", welcomeData);
+	sse1.p = new OWPhysics(pd1);
+	sse1.r = new OWMeshRenderer("DynamicText.json");
+	sse1.s = new OWSoundComponent();
+	sse1.t = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 2.0));
+	textActor->setComponent(sse1);
+
 #endif
 	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
 	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
 #ifdef INCLUDE_ENJOY
-	TextComponentData* enjoyData = new TextComponentData();
-	enjoyData->textData.tdt = TextData::TextDisplayType::Static;
-	glm::vec3 velocity2 = Compass::Rose[Compass::South] +
+	OWPhysicsData pd2;
+	pd2.velocity = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West] * mSpeed / 20.0f;
-	//enjoyData->physics.velocity = velocity2;
-	enjoyData->physics.translate(glm::vec3(0, 0, 0));
-	enjoyData->textData.fontName = "arial.ttf";
-	enjoyData->textData.fontHeight = fontHeight;
-	enjoyData->textData.colour = { 0.1, 0.9, 0.1, 1.0 };
-	enjoyData->textData.fontSpacing = { nice.x, nice.y };
-	enjoyData->physics.scale(glm::vec3(scale, 1.0));
-	enjoyData->textData.text = "Enjoy it while you can.";
-	TextComponent* enjoy = new TextComponent(mScenery, enjoyData);
-	//addToOcTree.push_back(enjoy);
-	gEnjoy = enjoy;
+
+	OWTextComponentData enjoyData;
+	enjoyData.tdt = OWTextComponentData::TextDisplayType::Static;
+	enjoyData.fontName = "arial.ttf";
+	enjoyData.fontHeight = fontHeight;
+	enjoyData.colour = { 0.1, 0.9, 0.1, 1.0 };
+	enjoyData.fontSpacing = { nice.x, nice.y };
+	enjoyData.text = "Enjoy it while you can.";
+
+	OWActorSingle::SingleSceneElement sse2;
+	sse2.c = new OWCollider(textActor, OWCollider::CollisionType::Box);
+	sse2.m = new OWTextComponent(textActor, "Enjoy", enjoyData);
+	sse2.p = new OWPhysics(pd2);
+	sse2.r = new OWMeshRenderer("StaticText.json");
+	sse2.s = new OWSoundComponent();
+	sse2.t = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 3.0));
+	textActor->setComponent(sse2);
 #endif
+
+	OWActorMulti* boxActor = new OWActorMulti(this->owner(), "All Boxes");
+	boxActor->transform(new OWTransform(nullptr));
+	boxActor->scriptor(new OWScriptComponent());
+	boxActor->physics(new OWPhysics());
+	boxActor->sound(new OWSoundComponent());
+	MeshData mds;
+	mds.v3 = OWGeometricShapes::cube();
+
+	OWMeshComponent* mc = new OWMeshComponent(boxActor, "Box Template");
+	mc->add(mds);
+	boxActor->meshComponent(mc);
+	boxActor->renderer(new OWInstanceRenderer("BoxShader.json"));
 
 	glm::vec3 scale1 = { 10, 10, 10 };
 	glm::vec3 scale2 = { 3, 3, 3 };
 	glm::vec3 scale3 = { 20, 20, 20 };
 	int denom = 10;
-
 	for (int i = 0; i < GDEBUG_PICKING; i++)
 	{
 		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
@@ -344,70 +363,81 @@ void NMSSplashScenePhysics::setup()
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(100, 0, 0);
 #endif
-		addToOcTree.push_back(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), ro, rs, mSpeed * 0.0f, scale2));
+		boxActor->addElement(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), 
+							ro, rs, mSpeed * 0.0f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 100, 0);
 #endif
-		addToOcTree.push_back(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addElement(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), 
+							ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 100);
 #endif
-		addToOcTree.push_back(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addElement(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), 
+							ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 0);
 #endif
-		addToOcTree.push_back(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addElement(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
+							ro, rs, mSpeed * 0.8f, scale1));
 #ifdef BOXES_CENTERED
 		break;
 #endif
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), ro, rs, mSpeed * 0.8f, scale1));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addElement(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
+							ro, rs, mSpeed * 0.8f, scale1));
 
-		addToOcTree.push_back(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED), ro, { rs }, mSpeed * 1.8f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), ro, { rs }, mSpeed * 3.8f, scale2));
+		boxActor->addElement(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
+							ro, rs, mSpeed * 0.8f, scale1));
+
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), ro, { rs }, mSpeed * 0.1f, scale3));
+		boxActor->addElement(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED),
+							ro, { rs }, mSpeed * 1.8f, scale2));
+
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), ro, { rs }, mSpeed * 0.3f, scale3));
+		boxActor->addElement(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), 
+							ro, { rs }, mSpeed * 3.8f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), ro, { rs }, mSpeed * 0.5f, scale3));
+		boxActor->addElement(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), 
+							ro, { rs }, mSpeed * 0.1f, scale3));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		addToOcTree.push_back(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), ro, { rs }, mSpeed * 0.8f, scale2));
+		boxActor->addElement(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
+							ro, { rs }, mSpeed * 0.3f, scale3));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		boxActor->addElement(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
+							ro, { rs }, mSpeed * 0.5f, scale3));
+		ro = { rand() % denom, rand() % denom , rand() % denom };
+		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+		boxActor->addElement(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
+							ro, { rs }, mSpeed * 0.8f, scale2));
 	}
-	//glm::vec3 direction11 = Compass::Rose[Compass::North] + Compass::Rose[Compass::West];
-	//box->rotate
 
 #ifdef INCLUDE_IMPORTED_MODEL
-	MeshComponentHeavyData* mch = new MeshComponentHeavyData();
-	mch->name = "Dice";
-	mch->shaderData.shaderV = "meshTest.v.glsl";
-	mch->shaderData.shaderF = "meshTest.f.glsl";
-	mch->shaderData.shaderG = "";
-	mch->shaderData.PVMName = "pvm";
-	mch->physics.scale(glm::vec3(10.0, 10.0, 10.0));
-	{
-		ModelData md = ModelFactory().create("Dice2.obj", false);
-		mch->meshData = *(md.children[0].meshes[0]);
-	}
-	mch->vertexMode = GL_TRIANGLES;
-	MeshComponentHeavy* dice = new MeshComponentHeavy(mScenery, mch);
-	addToOcTree.push_back(dice);
+	OWActorSingle* singleModelActor = new OWActorSingle(this->owner(), "Dice");
+	OWActorSingle::SingleSceneElement sse;
+	sse.c = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
+	sse.m = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
+	sse.p = new OWPhysics();
+	sse.r = new OWModelRenderer("DiceShader.json", GL_TRIANGLES, 0)
+	sse.s = new OWSoundComponent();
+	OWTransformData td;
+	td.position = glm::vec3(0);
+	td.scale = glm::vec3(10.0, 10.0, 10.0);
+	sse.t = new OWTransform(nullptr, td);
 #endif
 #ifdef INCLUDE_STAR_RENDER
 	mButtonData.mButtonShape = GeometricShapes::goldenRectangle(10);
@@ -417,12 +447,31 @@ void NMSSplashScenePhysics::setup()
 	const float pos = off / 2.0f;
 	// Create a box of planes for the objects to bounce off
 #ifdef INCLUDE_PLANES
-	createBumperPlane("Plane Front", glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::In
-	createBumperPlane("Plane Back", glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0)); // Compass::Out
-	createBumperPlane("Plane East", glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::East
-	createBumperPlane("Plane West", glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0)); // Compass::West
-	createBumperPlane("Plane North", glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::North
-	createBumperPlane("Plane South", glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0)); // Compass::Bottom
+	OWActorMulti* planeActor = new OWActorMulti(this->owner(), "All Planes");
+	planeActor->transform(new OWTransform(nullptr));
+	planeActor->scriptor(new OWScriptComponent());
+	planeActor->physics(new OWPhysics());
+	planeActor->sound(new OWSoundComponent());
+	OWMeshDataSimple mds;
+	mds.v3 = OWGeometricShapes::rectangle(glm::vec2(1));
+	mds.v3[0].z -= 0.01f;
+	mds.v3[1].z += 0.01f;
+	mds.polygonMode = GL_FILL;
+	planeActor->meshComponent(new OWMeshComponent(boxActor, "Plane Template", mds));
+	planeActor->renderer(new OWInstanceRenderer("PlaneShader.json"));
+
+	planeActor->addElement(createBumperPlane("Plane Front", 
+		glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
+	planeActor->addElement(createBumperPlane("Plane Back", 
+		glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::Out
+	planeActor->addElement(createBumperPlane("Plane East", 
+		glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::East
+	planeActor->addElement(createBumperPlane("Plane West", 
+		glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
+	planeActor->addElement(createBumperPlane("Plane North", 
+		glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
+	planeActor->addElement(createBumperPlane("Plane South", 
+		glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
 #endif
 }
 
@@ -448,17 +497,10 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 
 #endif
 #ifdef INCLUDE_FULLSCREEN
-	MeshComponentLightData* mcd = new MeshComponentLightData();
-	mcd->name = "Fullscreen";
-	
-	mcd->shaderData.shaderV = "thebookofshaders.v.glsl";
-	mcd->shaderData.shaderF = "thebookofshaders.f.glsl";
-	mcd->shaderData.shaderG = "thebookofshaders_square.g.glsl";
-	mcd->shaderData.PVMName = "pvm";
-	std::vector<glm::vec4> pts;
-	pts.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
-	mcd->meshData.vertices(pts, GL_POINTS, 0);
-	//fullScreen->renderBoundingBox(false);
+	Shader* sh = new Shader("thebookofshaders.v.glsl",
+		"thebookofshaders.f.glsl",
+		"thebookofshaders_square.g.glsl");
+	sh->setStandardUniformNames("pvm");
 	auto fullScreenRender = [](
 		const glm::mat4& OW_UNUSED(proj),
 		const glm::mat4& OW_UNUSED(view),
@@ -476,9 +518,18 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 			glm::vec2 vv = globals->physicalWindowSize();
 			shader->setVector2f("u_resolution", vv);
 		};
-	mcd->shaderData.mutatorCallbacks.push_back(fullScreenRender);
-	mcd->shaderData.resizeCallbacks.push_back(fullScreenResize);
-	MeshComponentLight* fullScreen = new MeshComponentLight(mScenery, mcd);
+	sh->appendMutator(fullScreenRender);
+	sh->appendResizer(fullScreenResize);
+	OWActorSingle* fullScreenActor = new OWActorSingle(this, "Fullscreen");
+	OWMeshDataSimple mds;
+	mds.v4.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
+	mds.polygonMode = GL_FILL;
+	OWActorSingle::SingleSceneElement sse;
+	sse.c = new OWCollider(fullScreenActor, OWCollider::CollisionType::Permeable);
+	sse.m = new OWMeshComponent(fullScreenActor, "Fullscreen Component", mds);
+	sse.p = new OWPhysics();
+	sse.r = new OWModelRenderer(sh);
+	sse.s = new OWSoundComponent();
 #endif
 
 #ifdef INCLUDE_STAR_RENDER
@@ -515,9 +566,9 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mButton = new OWButton();
 	mButton->setup(sps->mButtonData, glm::vec3(100));
 #endif
-	auto init = [](OLDActor* a)
+	auto init = [](OWActor* a)
 		{
-			a->init();
+			a->doSetup();
 		};
 	traverseSceneGraph(init);
 }
@@ -552,7 +603,7 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	mStarRenderer->render(proj, view, model, cameraPos, nullptr, pointRender);
 	mButton->render(proj, view, model, cameraPos);
 #endif
-	auto rend = [proj, view, model, cameraPos](OLDActor* a)
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
 		{
 			a->render(proj, view, model, cameraPos);
 		};
