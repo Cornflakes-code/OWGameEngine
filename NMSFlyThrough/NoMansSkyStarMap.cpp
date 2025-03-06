@@ -21,73 +21,56 @@
 #include <Component/TextComponent.h>
 
 #include <Renderers/InstanceRenderer.h>
-#include <Renderers/TextRendererStatic.h>
-#include <Renderers/LightRenderer.h>
 
 #define DEBUG_GRID
 #define DEBUG_STARS
 
-void NMSScript::tick(float deltaSecods) {}
-
-void NMSScript::begin()
-{
-}
-
-void NMSScript::end()
-{
-}
-
-void NMSScript::destroy()
-{
-}
-
-void NMSScript::doInit()
-{
-}
-
-NoMansSky::NoMansSky(Scene* _owner, NMSScript* _data)
-: OLDActor(_owner, _data)
+NoMansSky::NoMansSky(Scene* _scene, const std::string& _name, const NoMansSkyData& _data)
+: OWActor(_scene, _name, nullptr), mData(_data)
 {
 	mStarRadius = glm::vec2(0, 0);
-	name(data()->nmsData.name);
 }
 
-void NoMansSky::doInit()
+void NoMansSky::doSetup()
 {
-	setUp(data()->nmsData.starFile, data()->nmsData.starWorld);
-	OLDActor::doInit();
+	init(mData.starFile, mData.starWorld);
 }
 
-void NoMansSky::setUp(const std::string& fileName, const AABB& world)
+void NoMansSky::init(const std::string& fileName, const AABB& world)
 {
+	this->transform(new OWTransform(nullptr));
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
 	AABB NMSSize(glm::vec3(-0x7FF, -0x7F, -0x7FF),
 				 glm::vec3(0x7FF, 0x7F, 0x7FF));
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
-	createGrid(NMSSize, gridSizes, scaleNMStoWorld);
-	MeshComponentLightData* mcld = &data()->nmsData.meshComponentLightData;
-	mcld->meshData.vertices(mGrid, GL_LINES, 0);
-	mcld->meshData.colour({ 0, 1.0, 0.5, 1 }, "uColour");
-	mcld->shaderData.shaderV = "Lines.v.glsl";
-	mcld->shaderData.shaderF = "Lines.f.glsl";
-	mcld->shaderData.PVMName = "pvm";
-	Shader* shader = new Shader(&mcld->shaderData);
-	MeshComponentLight* grid = new MeshComponentLight(this, mcld);
+	MeshData gridData;
+	gridData.setVertices(createGrid(NMSSize, gridSizes, scaleNMStoWorld), GL_LINES, 0);
+	gridData.setColour({ 0, 1.0, 0.5, 1 }, "uColour");
+	mData.gridShader.shaderV = "Lines.v.glsl";
+	mData.gridShader.shaderF = "Lines.f.glsl";
+	mData.gridShader.PVMName = "pvm";
+	Shader* shader = new Shader(mData.gridShader);
+	OWActorSingle::SingleSceneElement sse;
+	sse.c = new OWCollider(this, OWCollider::CollisionType::Permeable);
+	sse.m = (new OWMeshComponent(this, "Grid"))->add(gridData);
+	sse.r = new OWInstanceRenderer(shader);
+	sse.t = new OWTransform(nullptr);
+	addComponents(sse);
 #endif
 
 #ifdef DEBUG_STARS
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
-	MeshComponentInstanceData* mcid = &data()->nmsData.meshComponentInstanceData;
-	mStarRadius = data()->nmsData.starRadius;
+	mStarRadius = mData.starRadius;
 	std::vector<glm::vec3> squareVertices =
-		GeometricShapes::star(mStarRadius.x / 5.0f, mStarRadius.x / 3.3f, 15);
+		OWGeometricShapes::star(mStarRadius.x / 5.0f, mStarRadius.x / 3.3f, 15);
 //		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
-	mcid->meshData.vertices(squareVertices, GL_TRIANGLES, 0);
+	InstanceData starData;
+	starData.vertices(squareVertices, GL_TRIANGLES, 0);
 
-	const int numStars = data()->nmsData.numberOfStars;
+	const int numStars = mData.numberOfStars;
 	mRandomMinorStars = createRandomVectors(NMSSize, numStars, scaleNMStoWorld);
-	mcid->meshData.positions(mRandomMinorStars, 1, 1);
+	starData.positions(mRandomMinorStars, 1, 1);
 
 	const int numColours = 4;
 	const int numColourIterations = ceil( numStars * 1.0 / numColours);
@@ -101,13 +84,11 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::MAGENTA));
 		//instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	}
-	mcid->meshData.colours(instanceColours, instanceColours.size(), 2);
-	mcid->shaderData.shaderV = "instanced.v.glsl";
-	mcid->shaderData.shaderF = "glow.f.glsl";
-	mcid->shaderData.PVMName = "VP";
-	mcid->name = "stars";
-	mcid->shaderData.uniforms.push_back({ ShaderDataUniforms::UniformType::UFloat,
-		"cutoffRadius", OWUtils::to_string(mStarRadius.x) });
+	starData.colours(instanceColours, instanceColours.size(), 2);
+	Shader* starShader = new Shader("instanced.v.glsl", "glow.f.glsl", "");
+	starShader->setStandardUniformNames("VP");
+	starShader->setUniform(ShaderDataUniforms::UniformType::UFloat,
+		"cutoffRadius", OWUtils::to_string(mStarRadius.x));
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),
@@ -124,18 +105,22 @@ void NoMansSky::setUp(const std::string& fileName, const AABB& world)
 			shader->setFloat("u_time", globals->secondsSinceLoad());
 			shader->setVector2f("u_resolution", w);
 		};
-	mcid->shaderData.mutatorCallbacks.push_back(pointRender);
-	Shader* starShader = new Shader(&mcid->shaderData);
-	MeshComponentInstance* stars = new MeshComponentInstance(this, mcid);
+	starShader->appendMutator(pointRender);
+	OWActorSingle::SingleSceneElement sse1;
+	sse1.c = new OWCollider(this, OWCollider::CollisionType::Permeable);
+	sse1.m = (new OWMeshComponent(this, "Star Template"))->add(starData);
+	sse1.r = new OWInstanceRenderer(starShader);
+	sse1.t = new OWTransform(nullptr);
+	addComponents(sse1);
 #endif
 }
 
-void NoMansSky::createGrid(const AABB& nmsSpace,
+std::vector<glm::vec3> NoMansSky::createGrid(const AABB& nmsSpace,
 						   const glm::u32vec3& gridSizes,
 						   float scaleToWorld)
 {
 	// https://nomanssky.gamepedia.com/Portal_address
-
+	std::vector<glm::vec3> grid;
 	for (glm::vec4::value_type x = nmsSpace.minPoint().x;
 			x <= nmsSpace.maxPoint().x; x += gridSizes.x)
 	{
@@ -149,18 +134,19 @@ void NoMansSky::createGrid(const AABB& nmsSpace,
 			{
 				const float zf = z * scaleToWorld;
 
-				mGrid.push_back({ xf, nmsSpace.minPoint().y * scaleToWorld, zf });
-				mGrid.push_back({ xf, nmsSpace.maxPoint().y * scaleToWorld, zf });
+				grid.push_back({ xf, nmsSpace.minPoint().y * scaleToWorld, zf });
+				grid.push_back({ xf, nmsSpace.maxPoint().y * scaleToWorld, zf });
 
 				// horozontal lines
-				mGrid.push_back({ nmsSpace.minPoint().x * scaleToWorld, yf, zf });
-				mGrid.push_back({ nmsSpace.maxPoint().x * scaleToWorld, yf, zf });
+				grid.push_back({ nmsSpace.minPoint().x * scaleToWorld, yf, zf });
+				grid.push_back({ nmsSpace.maxPoint().x * scaleToWorld, yf, zf });
 
-				mGrid.push_back({ xf, yf, nmsSpace.minPoint().z * scaleToWorld });
-				mGrid.push_back({ xf, yf, nmsSpace.maxPoint().z * scaleToWorld });
+				grid.push_back({ xf, yf, nmsSpace.minPoint().z * scaleToWorld });
+				grid.push_back({ xf, yf, nmsSpace.maxPoint().z * scaleToWorld });
 			}
 		}
 	}
+	return grid;
 }
 
 void NoMansSky::loadStars(const std::string& fileName,
@@ -168,7 +154,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 						  float scaleToWorld)
 {
 	const glm::vec2 niceFontSpacing = { 0.00625f, 2 * 0.00625f };
-
+	OWActorMulti* starLabels = new OWActorMulti(this->scene(), "Star Labels", this);
 	std::string line;
 	std::ifstream myfile(fileName);
 	if (myfile.is_open())
@@ -282,14 +268,18 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
-			TextComponentData* d = new TextComponentData();
-			d->textData.tdt = TextData::TextDisplayType::Static;
-			d->textData.text = elms[0];
-			d->textData.colour = { 0.0, 0.0, 0.0, 1.0f };
-			d->textData.fontSpacing = niceFontSpacing;
-			d->physics.scale({ 1.0, 1.0, 1.0 });
-			d->textData.referencePos = TextData::PositionType::Right;
-			TextComponent* td = new TextComponent(this, d);
+			OWActorMulti* multipleTexts = new OWActorMulti(this->scene(), "Star Labels", this);
+			OWTextComponentData td;
+			td.tdt = OWTextComponentData::TextDisplayType::Static;
+			td.text = elms[0];
+			td.colour = { 0.0, 0.0, 0.0, 1.0f };
+			td.fontSpacing = niceFontSpacing;
+			td.referencePos = OWTextComponentData::PositionType::Right;
+			OWActorMulti::MultiSceneElement mse;
+			mse.m = new OWTextComponent(this, td.text, td);
+			mse.p = new OWPhysics();
+			mse.t = new OWTransform(this->transform(), point);
+			starLabels->addComponents(mse);
 		}
 
 		myfile.close();

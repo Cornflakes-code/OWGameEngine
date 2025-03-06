@@ -6,9 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "../OWEngine/OWEngine.h"
-#include "../Core/Renderable.h"
 #include "../Renderers/RenderTypes.h"
-#include "../Component/OWComponent.h"
 #include "../Geometry/BoundingBox.h"
 #include "../Helpers/Mesh.h"
 #include "../Helpers/Model.h"
@@ -19,28 +17,31 @@ class OWENGINE_API OWRenderer
 {
 	bool mSetup = false;
 public:
-	virtual AABB doSetup(const std::vector<OWMeshData>& meshes,
-		const std::vector<OWModelData>& models) = 0;
-	AABB setup(const std::vector<OWMeshData>& meshes,
+	OWRenderer(const std::string& shaderFileName);
+	OWRenderer(Shader* _shader)
+		: mShader(_shader)
+	{
+	}
+	void setup(const std::vector<OWMeshData>& meshes,
 		const std::vector<OWModelData>& models)
 	{
 		if (!mSetup)
 		{
 			mSetup = true;
-			return doSetup(meshes, models);
+			doSetup(meshes, models);
 		}
-		return AABB();
 	}
-	virtual void render(std::vector<glm::mat4> models, const glm::mat4& proj,
+	void render(std::vector<glm::mat4> models, const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos);
 
-	OWRenderer(const std::string& shaderFileName)
-	{
-	}
-	OWRenderer(Shader* shader)
-	{
-	}
 	// OpenGL state functions
+	void drawModes(unsigned int indices, unsigned int vertices)
+	{
+		// Used by drawElements
+		mIndicesMode = indices;
+		// used by drawArrays
+		mVertexMode = vertices;
+	}
 	void lineWidth(float width) { mLineWidth = width; }
 	void polygonMode(unsigned int mode = GL_FILL)
 	{
@@ -53,9 +54,13 @@ public:
 	}
 	virtual ~OWRenderer() {}
 protected:
+	virtual void doSetup(const std::vector<OWMeshData>& meshes,
+		const std::vector<OWModelData>& models) = 0;
 	virtual void doRender() = 0;
 	virtual void validateBase() const;
 	Shader* shader() { return mShader; }
+	unsigned int indicesMode() const { return mIndicesMode; }
+	unsigned int vertexMode() const { return mVertexMode; }
 private:
 	Shader* mShader = nullptr;
 
@@ -65,6 +70,9 @@ private:
 	float mLineWidth = -1.0f;
 	unsigned int mPolygonFace = GL_FRONT_AND_BACK;
 	unsigned int mPolygonMode = UINT_MAX;
+
+	unsigned int mIndicesMode = GL_TRIANGLES; // drawElements
+	unsigned int mVertexMode = GL_TRIANGLES; // drawArrays
 
 	unsigned int mSfactor = UINT_MAX;
 	unsigned int mDfactor = UINT_MAX;

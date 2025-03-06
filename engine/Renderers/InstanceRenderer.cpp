@@ -21,26 +21,43 @@
 // One buffer for the particles’ colors.
 
 
-AABB OWInstanceRenderer::doSetup(const std::vector<OWMeshData>& meshes,
-	const std::vector<OWModelData>& models) 
+void OWInstanceRenderer::doSetup(const std::vector<OWMeshData>& meshes,
+	const std::vector<OWModelData>& models)
+{
+	if (meshes.size())
+		setupMeshes(meshes);
+	else
+		throw NMSLogicException("Meshes should not be empty for OWInstanceRenderer::doSetup. Cannot recover.");
+
+	if (models.size())
+		setupModels(models);
+}
+
+void OWInstanceRenderer::setupModels(const std::vector<OWModelData>& models)
+{
+	throw NMSLogicException("Models not yet implmeneted for OWInstanceRenderer::doSetup.Cannot recover.");
+}
+
+
+void OWInstanceRenderer::setupMeshes(const std::vector<OWMeshData>& meshes)
 {
 	const float* ff = nullptr;
 	unsigned int vertexSize = 0;
-	const MeshDataInstance& mdi = meshes[0].instanceData;
+	const InstanceData& mdi = meshes[0].instanceData;
 	validate(mdi);
-	mData = mdi.mRenderData;
-	if (!mdi.mVec3.empty())
+	mData = mdi.renderData;
+	if (!mdi.v3.empty())
 	{
-		const glm::vec3* p = mdi.mVec3.data();
+		const glm::vec3* p = mdi.v3.data();
 		ff = glm::value_ptr(*p);
-		mData.verticesCount = mdi.mVec3.size();
+		mData.verticesCount = mdi.v3.size();
 		vertexSize = 3;
 	}
-	else if (!mdi.mVec4.empty())
+	else if (!mdi.v4.empty())
 	{
-		const glm::vec4* p = mdi.mVec4.data();
+		const glm::vec4* p = mdi.v4.data();
 		ff = glm::value_ptr(*p);
-		mData.verticesCount = mdi.mVec4.size();
+		mData.verticesCount = mdi.v4.size();
 		vertexSize = 4;
 	}
 	validateBase();
@@ -72,7 +89,7 @@ AABB OWInstanceRenderer::doSetup(const std::vector<OWMeshData>& meshes,
 		(void*)0 // array buffer offset
 	);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * mData.positionCount,
-		mdi.mInstancePositions.data(), GL_STREAM_DRAW);
+		mdi.instancePositions.data(), GL_STREAM_DRAW);
 	// The colours
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[2]);
@@ -85,8 +102,8 @@ AABB OWInstanceRenderer::doSetup(const std::vector<OWMeshData>& meshes,
 		0, // stride
 		(void*)0 // array buffer offset
 	);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mdi.mInstanceColours.size(),
-		mdi.mInstanceColours.data(), GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mdi.instanceColours.size(),
+		mdi.instanceColours.data(), GL_STREAM_DRAW);
 
 	// These functions are specific to glDrawArrays*Instanced*.
 	// The first parameter is the attribute buffer we're talking about.
@@ -127,18 +144,18 @@ void OWInstanceRenderer::doRender()
 			static_cast<GLsizei>(mData.positionCount));
 }
 
-void OWInstanceRenderer::validate(const MeshDataInstance& meshData) const
+void OWInstanceRenderer::validate(const InstanceData& meshData) const
 {
 	validateBase();
-	if (meshData.mVec3.empty())
+	if (meshData.v3.empty())
 		throw NMSLogicException("InstanceRenderer missing vertices");
-	if (meshData.mInstancePositions.empty())
+	if (meshData.instancePositions.empty())
 		throw NMSLogicException("InstanceRenderer missing positions");
-	if (meshData.mInstanceColours.empty())
+	if (meshData.instanceColours.empty())
 		throw NMSLogicException("InstanceRenderer missing colours");
-	if (meshData.mRenderData.positionDivisor == UINT_MAX)
+	if (meshData.renderData.positionDivisor == UINT_MAX)
 		throw NMSLogicException("InstanceRenderer missing position divisor");
-	if (meshData.mRenderData.colourDivisor == UINT_MAX)
+	if (meshData.renderData.colourDivisor == UINT_MAX)
 		throw NMSLogicException("InstanceRenderer missing colour divisor");
 
 }

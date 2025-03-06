@@ -3,14 +3,12 @@
 #include "../Core/CommonUtils.h"
 #include "../Core/ErrorHandling.h"
 
-#include "../Helpers/MeshDataHeavy.h"
 #include "../Helpers/Shader.h"
 
-AABB OWModelRenderer::doSetup(const std::vector<OWMeshData>& meshes,
+void OWModelRenderer::doSetup(const std::vector<OWMeshData>& meshes,
 	const std::vector<OWModelData>& models)
 {
 	mData = models[0];
-	return mData.bounds();
 }
 
 void OWModelRenderer::prepareOpenGL()
@@ -26,7 +24,7 @@ void OWModelRenderer::prepareOpenGL()
 	glBindVertexArray(mVao);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
 
-	constexpr GLsizei vertexSize = sizeof(MeshDataHeavy::Vertex);
+	constexpr GLsizei vertexSize = sizeof(OWModelData::Vertex);
 	constexpr GLsizei glmv3Size = glm::vec3::length();
 	constexpr GLsizei glmv2Size = glm::vec2::length();
 
@@ -85,12 +83,12 @@ void OWModelRenderer::doRender()
 
 	if (mData.indices.size())
 	{
-		glDrawElements(mIndicesMode,
+		glDrawElements(indicesMode(),
 			static_cast<GLsizei>(mData.indices.size()), GL_UNSIGNED_INT, 0);
 	}
 	else if (mData.vertices.size())
 	{
-		glDrawArrays(mVertexMode, 0,
+		glDrawArrays(vertexMode(), 0,
 			static_cast<GLsizei>(mData.vertices.size()));
 	}
 	if (mData.textures.size())

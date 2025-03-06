@@ -11,14 +11,16 @@
 
 unsigned int OWMeshRenderer::mPrimitiveRestart = 0xFFFF;
 
-AABB OWMeshRenderer::doSetup(const std::vector<OWMeshData>& meshes,
+void OWMeshRenderer::doSetup(const std::vector<OWMeshData>& meshes,
 	const std::vector<OWModelData>& models)
 {
 	if (models.size())
 		throw NMSLogicException(
 			"Error. OWMeshRender cannot draw OWModelData \n");
 	for (const auto& m : meshes)
+	{
 		add(m.meshData);
+	}
 	prepareOpenGL();
 }
 

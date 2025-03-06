@@ -5,46 +5,48 @@
 
 #include "../OWEngine/OWEngine.h"
 #include "../Scripting/OWActorScript.h"
-#include "../Component/OWComponent.h"
 #include "../Component/PhysicalComponent.h"
-#include "../Component/OWSceneComponent.h"
-#include "../Renderers/OWRenderable.h"
+#include "../Component/MeshComponent.h"
+#include "../Renderers/RendererBase.h"
 #include "../Helpers/Transform.h"
+#include "../Core/SoundManager.h"
+#include "../Helpers/Collider.h"
+#include "../Scripting/OWScript.h"
 
-class OWMeshComponent;
-class OWSoundComponent;
-class OWCollider;
-class OWScriptComponent;
-class OWPhysics;
 class Scene;
-class OWRenderer;
 
-class OWActor
+class OWENGINE_API OWActor
 {
 	std::string mName;
 	Scene* mScene;
-	OWTransform* mActorTransform;
-	OWScriptComponent* mScriptor;
+	OWTransform* mActorTransform = nullptr;
+	OWScriptComponent* mScriptor = nullptr;
 	bool mIsActive = false;
 	bool mSetup = false;
+	OWActor* mHostActor = nullptr;
 public:
-	OWActor(Scene* _scene, const std::string& _name);
+	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
+	Scene* scene() { return mScene; }
+	const OWActor* hostActor() const { return mHostActor; }
+	std::string name() const { return mName; }
 	OWTransform* transform() {
 		return mActorTransform;
 	}
 	void transform(OWTransform* newValue) {
-		newValue->actor(this);
+		newValue->hostingTransform(mActorTransform);
 		mActorTransform = newValue;
 	}
 	void transform(const OWTransformData& td) {
-		transform(new OWTransform(this, td));
+		transform(new OWTransform(mActorTransform, td));
 	}
 	void transform(const glm::vec3& pos, 
 			const glm::vec3& scale, const glm::quat& rot = glm::quat()) {
-		transform(new OWTransform(this, pos, scale, rot));
+		transform(new OWTransform(mActorTransform, pos, scale, rot));
 	}
-	
+	const OWTransform* transform() const {
+		return mActorTransform; 
+	}
 	void scriptor(OWScriptComponent* newValue) {
 		mScriptor = newValue;
 	}
@@ -56,14 +58,21 @@ public:
 			mSetup = true;
 		}
 	}
+	void render(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
+		const glm::vec3& cameraPos)
+	{
+		doRender(proj, view, model, cameraPos);
+	}
 protected:
-	virtual void doSetup() = 0;
-	virtual void render(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model, 
+	virtual void doRender(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) = 0;
+	virtual void doSetup() = 0;
 };
 
-class OWActorSingle: public OWActor
+// Use this class for aggregating Components that each have different mesh and Renderers.
+class OWENGINE_API OWActorSingle: public OWActor
 {
 public:
 	struct SingleSceneElement
@@ -75,18 +84,69 @@ public:
 		OWTransform* t = nullptr;
 		OWSoundComponent* s = nullptr;
 	};
-	OWActorSingle(Scene* _scene, const std::string& _name)
-		: OWActor(_scene, _name) {
+	OWActorSingle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
+		: OWActor(_scene, _name, _hostActor) {
 	}
-	void setComponent(const SingleSceneElement& sse);
-	virtual void render(const glm::mat4& proj,
+	size_t addComponents(const SingleSceneElement& sse);
+protected:
+	void ensureActor(OWComponent* c)
+	{
+		if (c->actor() == nullptr)
+			c->actor(this);
+	}
+	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;
-protected:
 	void doSetup() override;
 	std::vector<SingleSceneElement> mElements;
 };
 
+// Use this class for Components that use the same Renderer
+class OWENGINE_API OWActorMulti : public OWActor
+{
+public:
+	struct MultiSceneElement
+	{
+		// We could add a OWMeshComponent* here with the logic being
+		// getComponent[i] 
+		// { if mElements[i] is nullptr then
+		//		return mMeshComponentTemplate
+		// This would allow all the null OWMeshComponent to use the mesh
+		// in mMeshComponentTemplate.
+
+		glm::vec4 colour = { 0,0,0,0 };
+		OWCollider* c = nullptr;
+		OWTransform* t = nullptr;
+		OWPhysics* p = nullptr;
+		// If OWMeshComponentBase is nullptr then use the mesh in mMeshComponentTemplate
+		//OWMeshComponentBase* m = nullptr;
+	};
+	OWActorMulti(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
+		: OWActor(_scene, _name, _hostActor) {
+	}
+	void addComponents(const MultiSceneElement& toAdd);
+	void physics(OWPhysics* newValue);
+	void renderer(OWRenderer* newValue);
+	void sound(OWSoundComponent* newValue);
+	void meshComponent(OWMeshComponent* mc) {
+		mMeshComponentTemplate = mc;
+	}
+
+protected:
+	virtual void doRender(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
+		const glm::vec3& cameraPos) override;
+	void doSetup();
+private:
+	OWMeshComponent* mMeshComponentTemplate = nullptr;
+	OWPhysics* mPhysics = nullptr;
+	OWRenderer* mRenderer = nullptr;
+	OWSoundComponent* mSound = nullptr;
+	bool mIsActive = false;
+	std::vector<MultiSceneElement> mElements;
+};
+
+/*
 struct OWENGINE_API OWRayComponentData
 {
 	glm::vec4 colour;
@@ -94,7 +154,7 @@ struct OWENGINE_API OWRayComponentData
 	float elapsedTime = 0;
 	bool triggered = false;
 };
-/*
+
 class OWRayActor : public OWActorSingle
 {
 	OWRayComponentData mData;
@@ -126,37 +186,3 @@ protected:
 };
 */
 
-class OWActorMulti: public OWActor
-{
-public:
-	struct MultiSceneElement
-	{
-		glm::vec4 colour = { 0,0,0,0 };
-		OWCollider* c = nullptr;
-		OWTransform* t = nullptr;
-		OWPhysics* p = nullptr;
-	};
-	OWActorMulti(Scene* _scene, const std::string& _name)
-		: OWActor(_scene, _name) {
-	}
-	void addElement(const MultiSceneElement& toAdd);
-	void physics(OWPhysics* newValue);
-	void renderer(OWRenderer* newValue);
-	void sound(OWSoundComponent* newValue);
-	void meshComponent(OWMeshComponent* mc) {
-		mMeshComponentTemplate = mc;
-	}
-
-	virtual void render(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos) override;
-protected:
-	void doSetup();
-private:
-	OWMeshComponent* mMeshComponentTemplate;
-	OWPhysics* mPhysics = nullptr;
-	OWRenderer* mRenderer = nullptr;
-	OWSoundComponent* mSound = nullptr;
-	bool mIsActive = false;
-	std::vector<MultiSceneElement> mElements;
-};

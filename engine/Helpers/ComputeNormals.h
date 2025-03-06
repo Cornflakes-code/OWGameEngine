@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include "Mesh.h"
 
 namespace GLMHelpers
 {
@@ -37,5 +38,5 @@ public:
 
 	// Call compute when mPoints contains vec3 already arranged in triangles
 	// populates data with vertices and indices
-	MeshDataLight compute();
+	MeshData compute();
 };

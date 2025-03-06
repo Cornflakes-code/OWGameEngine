@@ -14,7 +14,7 @@ void Scene::addActor(OWActor* a)
 
 void Scene::traverseSceneGraph(OWActorCallbackType cb) const
 {
-	for (OLDActor* a : mRootNode)
+	for (OWActor* a : mRootNode)
 	{
 		cb(a);
 	}

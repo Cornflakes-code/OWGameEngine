@@ -19,14 +19,12 @@ public:
 	OWMeshRenderer(const std::string& shaderName, RenderType rt = DRAW_ARRAYS)
 	: OWRenderer(shaderName), mDrawType(rt)
 	{
-		if (shaderName.size() == 0)
-			;// Use default shaderdata
 	}
-	OWMeshRenderer(Shader* shader)
-		: OWRenderer(shader)
+	OWMeshRenderer(Shader* shader, RenderType rt = DRAW_ARRAYS)
+		: OWRenderer(shader), mDrawType(rt)
 	{
 	}
-	AABB doSetup(const std::vector<OWMeshData>& meshes,
+	void doSetup(const std::vector<OWMeshData>& meshes,
 		const std::vector<OWModelData>& models) override;
 protected:
 	void add(const MeshData& meshData);

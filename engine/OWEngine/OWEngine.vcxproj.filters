@@ -99,30 +99,6 @@
     <ClInclude Include="..\Helpers\TextureFactory.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Helpers\ModelData.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\RendererBase.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Helpers\MeshDataLight.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\TextRenderer.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\TextRendererDynamic.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\TextRendererStatic.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Helpers\MeshDataHeavy.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\InstanceRenderer.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\CommonUtils.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -138,26 +114,14 @@
     <ClInclude Include="..\Core\ResourcePathFactory.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderers\VAOBuffer.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Helpers\ComputeNormals.h">
       <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\SceneGraphNode.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Core\Renderable.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Core\OWObject.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\OWRenderable.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\RenderTypes.h">
-      <Filter>Renderers</Filter>
     </ClInclude>
     <ClInclude Include="..\Geometry\BoundingBox.h">
       <Filter>Geometry</Filter>
@@ -189,37 +153,10 @@
     <ClInclude Include="..\Actor\OWActor.h">
       <Filter>Actor</Filter>
     </ClInclude>
-    <ClInclude Include="..\Actor\CollisionSystem.h">
-      <Filter>Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Renderers\HardwareBuffer.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\OWComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\OWSceneComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\Actor\ThreeDAxis.h">
       <Filter>Actor</Filter>
     </ClInclude>
     <ClInclude Include="..\Actor\Button.h">
-      <Filter>Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Actor\OcTree.h">
-      <Filter>Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Actor\BB2DRenderer.h">
-      <Filter>Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Actor\BB3DRenderer.h">
-      <Filter>Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\OWRenderableComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Actor\CollisionActor.h">
       <Filter>Actor</Filter>
     </ClInclude>
     <ClInclude Include="OWGameIFace.h">
@@ -230,27 +167,6 @@
     </ClInclude>
     <ClInclude Include="..\Scripting\OWScript.h">
       <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\ShapeComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Helpers\MeshDataInstance.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\ParticleComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\LightSource.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\TextComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Component\PhysicalComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Actor\StaticSceneryActor.h">
-      <Filter>Actor</Filter>
     </ClInclude>
     <ClInclude Include="..\Sound\miniAud.h">
       <Filter>Sound</Filter>
@@ -270,11 +186,11 @@
     <ClInclude Include="..\Helpers\Model.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderers\MeshRenderer.h">
-      <Filter>Renderers</Filter>
+    <ClInclude Include="..\Component\Component.h">
+      <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderers\ModelRenderer.h">
-      <Filter>Renderers</Filter>
+    <ClInclude Include="..\Component\LightSource.h">
+      <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Component\MeshComponent.h">
       <Filter>Components</Filter>
@@ -282,24 +198,33 @@
     <ClInclude Include="..\Component\ModelComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\Component\PhysicalComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\TextComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderers\InstanceRenderer.h">
+      <Filter>Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderers\MeshRenderer.h">
+      <Filter>Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderers\ModelRenderer.h">
+      <Filter>Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderers\RendererBase.h">
+      <Filter>Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderers\RenderTypes.h">
+      <Filter>Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\CollisionSystem.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Actor\BB2DRenderer.cpp">
-      <Filter>Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Actor\BB3DRenderer.cpp">
-      <Filter>Actor</Filter>
-    </ClCompile>
     <ClCompile Include="..\Actor\Button.cpp">
-      <Filter>Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Actor\CollisionActor.cpp">
-      <Filter>Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Actor\CollisionSystem.cpp">
-      <Filter>Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Actor\OcTree.cpp">
       <Filter>Actor</Filter>
     </ClCompile>
     <ClCompile Include="..\Actor\OWActor.cpp">
@@ -307,18 +232,6 @@
     </ClCompile>
     <ClCompile Include="..\Actor\ThreeDAxis.cpp">
       <Filter>Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\OWComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\OWRenderableComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\OWSceneComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\ShapeComponent.cpp">
-      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\CommonUtils.cpp">
       <Filter>Core</Filter>
@@ -350,9 +263,6 @@
     <ClCompile Include="..\Core\QuitScene.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\Renderable.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\ResourcePathFactory.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -360,9 +270,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\Scene.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\SceneGraphNode.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\ScenePhysicsState.cpp">
@@ -410,18 +317,6 @@
     <ClCompile Include="..\Helpers\MacroRecorder.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Helpers\MeshDataHeavy.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Helpers\MeshDataInstance.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Helpers\MeshDataLight.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Helpers\ModelData.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Helpers\ModelFactory.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
@@ -443,30 +338,6 @@
     <ClCompile Include="..\Helpers\TextureFactory.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderers\HardwareBuffer.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\InstanceRenderer.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\OWRenderable.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\RendererBase.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\TextRenderer.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\TextRendererDynamic.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\TextRendererStatic.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\VAOBuffer.cpp">
-      <Filter>Renderers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Scripting\OWActorScript.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
@@ -478,21 +349,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c">
       <Filter>Global</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\ParticleComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\LightSource.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\TextComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Component\PhysicalComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Actor\StaticSceneryActor.cpp">
-      <Filter>Actor</Filter>
     </ClCompile>
     <ClCompile Include="..\Sound\miniAud.cpp">
       <Filter>Sound</Filter>
@@ -515,17 +371,38 @@
     <ClCompile Include="..\Helpers\Model.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderers\MeshRenderer.cpp">
-      <Filter>Renderers</Filter>
+    <ClCompile Include="..\Component\Component.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderers\ModelRenderer.cpp">
-      <Filter>Renderers</Filter>
+    <ClCompile Include="..\Component\LightSource.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Component\MeshComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Component\ModelComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\PhysicalComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\TextComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderers\InstanceRenderer.cpp">
+      <Filter>Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderers\MeshRenderer.cpp">
+      <Filter>Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderers\ModelRenderer.cpp">
+      <Filter>Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderers\RendererBase.cpp">
+      <Filter>Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\CollisionSystem.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

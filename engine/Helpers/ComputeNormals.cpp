@@ -1,7 +1,6 @@
 #include "ComputeNormals.h"
 
 #include <Core/ErrorHandling.h>
-#include "../Helpers/MeshDataLight.h"
 
 namespace GLMHelpers
 {
@@ -128,9 +127,9 @@ void ComputeNormals::createNormals(std::vector<glm::vec3>& triAngles, unsigned i
 	}
 }
 
-MeshDataLight ComputeNormals::compute()
+MeshData ComputeNormals::compute()
 {
-	MeshDataLight data;
+	MeshData data;
 	std::vector<unsigned int> tempWireIndices(mPoints.size());
 	std::vector<glm::vec3> trianglePoints;
 	for (int i = 0; i < mPoints.size(); i++)
@@ -142,7 +141,7 @@ MeshDataLight ComputeNormals::compute()
 		appendTriangle(trianglePoints, tempWireIndices[i], tempWireIndices[i + 1], tempWireIndices[i + 2]);
 	}
 	createNormals(trianglePoints, 1, 2);
-	data.vertices(trianglePoints, GL_TRIANGLES);
-	data.indices(mIndexBuffer, GL_TRIANGLES);
+	data.setVertices(trianglePoints, GL_TRIANGLES);
+	data.setIndices(mIndexBuffer, GL_TRIANGLES);
 	return data;
 }

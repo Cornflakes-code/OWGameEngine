@@ -7,18 +7,25 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-#include "OWComponent.h"
+#include "Component.h"
 
 
-class OWENGINE_API OWMeshComponent : public OWMeshComponentBase
+class OWENGINE_API OWMeshComponent: public OWMeshComponentBase
 {
 public:
 	OWMeshComponent(OWActor* _owner, const std::string& _name);
-	void add(const MeshData& meshData);
-	void add(const std::vector<glm::vec3>& v);
-	void add(const std::vector<glm::vec4>& v);
-	virtual const std::vector<OWMeshData>& simpleMesh() const
+	OWMeshComponent* add(const InstanceData& instanceData);
+	OWMeshComponent* add(const MeshData& meshData);
+	OWMeshComponent* add(const std::vector<glm::vec3>& v);
+	OWMeshComponent* add(const std::vector<glm::vec4>& v);
+	virtual const std::vector<OWMeshData> simpleMesh(AABB& bounds) const
 	{
+		AABB b;
+		for (const OWMeshData& md : mData)
+		{
+			b = b | md.bounds();
+		}
+		bounds = b;
 		return mData;
 	}
 protected:

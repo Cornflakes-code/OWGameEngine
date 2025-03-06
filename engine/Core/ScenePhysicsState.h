@@ -8,7 +8,6 @@
 class Scene;
 class OcTree;
 class Camera;
-class OLDActor;
 /*
 	My implementation of a Fixed timestep physics/Variable timestep Render Game 
 	Loop requires the separation of static and dynamic information. Class Scene 
@@ -31,7 +30,7 @@ public:
 									 Camera* camera) = 0;
 	virtual void variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt)) {}
 
-	// Good site for advanced interpolation (inclkuding eueler and RK4)
+	// Good site for advanced interpolation (including eueler and RK4)
 	// https://github.com/BryanCai/6.S096-Final-Project/blob/master/nbody-project/src/System.cpp
 	virtual void interpolateRatio(const ScenePhysicsState* OW_UNUSED(previousState),
 								  double OW_UNUSED(multPrev),
@@ -40,8 +39,6 @@ public:
 	virtual ScenePhysicsState* clone() = 0;
 	Scene* owner() { return mOwner; }
 	virtual void clear() {}
-	OcTree* mOctTreeEx = nullptr;
-	OLDActor* mSceneryEx = nullptr;
 protected:
 
 	// https://gafferongames.com/post/fix_your_timestep/

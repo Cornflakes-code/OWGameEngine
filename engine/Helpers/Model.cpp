@@ -52,7 +52,7 @@ std::string determineTextureType(const aiScene* scene, aiMaterial* mat)
 	return ".";
 }
 
-void OWModel::create(aiMesh* mesh, const aiScene* scene)
+void OWModelData::create(aiMesh* mesh, const aiScene* scene)
 {
 	// Copied from ModelLoader::processMesh in \assimp\samples\
 	// SimpleTexturedDirectx11\SimpleTexturedDirectx11\ModelLoader.cpp
@@ -111,7 +111,7 @@ void OWModel::create(aiMesh* mesh, const aiScene* scene)
 	}
 }
 
-void OWModel::calcNormals()
+void OWModelData::calcNormals()
 {
 	for (int i = 0; i < indices.size(); i += 3)
 	{
@@ -132,7 +132,7 @@ void OWModel::calcNormals()
 	for (int i = 0; i < vertices.size(); i++)
 		vertices[i].normal = glm::normalize(vertices[i].normal);
 }
-AABB OWModel::bounds() const
+AABB OWModelData::bounds() const
 {
 	static constexpr float _max = std::numeric_limits<float>::max();
 	glm::vec3 minPoint(_max, _max, _max);

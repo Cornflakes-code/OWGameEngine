@@ -175,12 +175,18 @@ std::vector<glm::vec3> OWGeometricShapes::cube(const glm::vec3& scale)
 	return vertices;
 }
 
-static std::vector<glm::vec3> beam(const glm::vec3& beamStart, const glm::vec3& direction, float length)
+std::vector<glm::vec3> OWGeometricShapes::line(float thickness)
+{
+	return { { -0.5f, 0, 0 }, { 0.5f, 0, 0 } };
+}
+
+std::vector<glm::vec3> OWGeometricShapes::beam(const glm::vec3& beamStart, const glm::vec3& direction, float length)
 {
 	glm::vec3 beamEnd = glm::normalize(direction) * length;
 	return OWGeometricShapes::beam(beamStart, beamEnd);
 
 }
+
 std::vector<glm::vec3> OWGeometricShapes::beam(const glm::vec3& beamStart, const glm::vec3& beamEnd)
 {
 	// https://github.com/atomic/OpenGL/blob/master/openGLexamples/tetrahedron.cpp

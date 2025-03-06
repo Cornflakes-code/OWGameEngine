@@ -1,16 +1,14 @@
 #include "OWActor.h"
 #include "../Core/Scene.h"
-#include "../Helpers/Collider.h"
-#include "../Renderers/RendererBase.h"
-#include "CollisionSystem.h"
+#include "../Core/CollisionSystem.h"
 
-OWActor::OWActor(Scene* _scene, const std::string& _name)
-	: mScene(_scene), mName(_name)
+OWActor::OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor)
+	: mScene(_scene), mName(_name), mHostActor(_hostActor)
 {
 	_scene->addActor(this);
 }
 
-void OWActorSingle::render(const glm::mat4& proj,
+void OWActorSingle::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4 model,
 	const glm::vec3& cameraPos) 
 {
@@ -27,38 +25,69 @@ void OWActorSingle::doSetup()
 	for (int i = 0; i < mElements.size(); i++)
 	{
 		SingleSceneElement& sse = mElements[i];
-		sse.m->doSetup();
-		AABB bounds = sse.r->setup(sse.m->simpleMesh(), sse.m->complexMesh());
-		sse.c->points(bounds);
+		sse.m->setup();
+		AABB b1, b2;
+		sse.r->setup(sse.m->simpleMesh(b1), sse.m->complexMesh(b2));
+		sse.c->points(b1 | b2);
 		if (sse.c->collisionType() != OWCollider::CollisionType::Permeable)
 			CollisionSystem::addCollider(sse.c, this, i);
 	}
 }
 
-void OWActorSingle::setComponent(const SingleSceneElement& sse)
+size_t OWActorSingle::addComponents(const SingleSceneElement& newElement)
 {
+	mElements.push_back(newElement);
+	SingleSceneElement& sse = mElements.back();
+	if (sse.c == nullptr)
+		throw NMSLogicException("OWActorSingle [" + name() + "] has no Collider. Cannot recover.");
+	if (sse.p == nullptr)
+		sse.p = new OWPhysics(); // Physics may not be used.
+	if (sse.m == nullptr)
+		throw NMSLogicException("OWActorSingle [" + name() + "] has no OWMeshComponentBase. Cannot recover.");
+	ensureActor(sse.m);
+	if (sse.r == nullptr)
+		throw NMSLogicException("OWActorSingle [" + name() + "] has no OWRenderer. Cannot recover.");
+	if (sse.t == nullptr)
+		sse.t = new OWTransform(transform()); // Often just need default Transform
+	sse.t->hostingTransform(transform());
+	if (sse.s == nullptr)
+		sse.s = new OWSoundComponent(); // Not all Actors have sound
+	return mElements.size() - 1;
 }
 
-void OWActorMulti::addElement(const MultiSceneElement& toAdd)
+void OWActorMulti::addComponents(const MultiSceneElement& newElement)
 {
-	if (toAdd.t->actor() == nullptr)
-		toAdd.t->actor(this);
-
-	mElements.push_back(toAdd);
-	unsigned int ndx = mElements.size() - 1;
+	mElements.push_back(newElement);
 	MultiSceneElement& mse = mElements.back();
-	mse.c->componentIndex(ndx);
-	glm::vec3 dummy = glm::vec3(0);
-	mse.c->points(dummy, dummy, dummy); // need to do this once the size of the mesh is known;
+	if (mse.c == nullptr)
+		throw NMSLogicException("OWActorMulti [" + name() + "] has no Collider. Cannot recover.");
+	if (mse.p == nullptr)
+		mse.p = new OWPhysics(); // Physics may not be used.
+	if (mse.t == nullptr)
+		mse.t = new OWTransform(transform()); // Often just need default Transform
+	mse.t->hostingTransform(transform());
+	mse.c->componentIndex(mElements.size()-1);
 }
 
 void OWActorMulti::doSetup()
 {
-	mRenderer->doSetup(mMeshComponentTemplate->simpleMesh(),
-		mMeshComponentTemplate->complexMesh());
+	mMeshComponentTemplate->setup();
+	AABB b, b1, b2;
+	mRenderer->setup(mMeshComponentTemplate->simpleMesh(b1),
+		mMeshComponentTemplate->complexMesh(b2));
+	b = b1 | b2;
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		MultiSceneElement& mse = mElements[i];
+		mse.c->points(b);
+		if (mse.c->collisionType() != OWCollider::CollisionType::Permeable)
+		{
+			CollisionSystem::addCollider(mse.c, this, i);
+		}
+	}
 }
 
-void OWActorMulti::render(const glm::mat4& proj,
+void OWActorMulti::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4 model,
 	const glm::vec3& cameraPos) 
 {

@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-#include <Component/OWComponent.h>
+#include <Component/Component.h>
 #include <Core/CommonUtils.h>
 
 struct OWENGINE_API OWTextComponentData
@@ -30,7 +30,7 @@ struct OWENGINE_API OWTextComponentData
 	TextDisplayType tdt = Dynamic;
 };
 
-class OWTextComponent : public OWMeshComponentBase
+class OWENGINE_API OWTextComponent : public OWMeshComponentBase
 {
 	OWTextComponentData mData;
 public:
@@ -39,7 +39,7 @@ public:
 	OWTextComponent(OWActor* _owner, const std::string& _name,
 		const std::string& textFileName);
 	void doSetup() override;
-	virtual const std::vector<OWMeshData>& simpleMesh() const;
+	virtual const std::vector<OWMeshData> simpleMesh(AABB& bounds) const;
 private:
 	void prepareMutators();
 };

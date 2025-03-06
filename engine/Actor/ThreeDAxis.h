@@ -6,7 +6,7 @@
 
 class TextComponent;
 
-struct OWENGINE_API OWThreeDAxisDataImp
+struct OWENGINE_API OWThreeDAxisData
 {
 	glm::vec4 axisColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN);
 	std::string axisColourName = "colour";
@@ -14,39 +14,16 @@ struct OWENGINE_API OWThreeDAxisDataImp
 	std::string axisName;
 	std::string font = std::string("arial.ttf");
 	AABB bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
-	AABB axisSize;
-	AABB world;
-	bool useGlobalBounds = false;
 };
 
-struct OWENGINE_API OWThreeDAxisData: public OLDActorData
-{
-	OWThreeDAxisDataImp axisData;
-};
-
-class OWENGINE_API OWThreeDAxisScript: public OLDActorScript
-{
-public:
-	OWThreeDAxisScript(OWThreeDAxisData* _data)
-		: OLDActorScript(_data) {}
-};
-
-class OWENGINE_API ThreeDAxis: public OLDActor
+class OWENGINE_API ThreeDAxis: public OWActorSingle
 {
 private:
+	OWThreeDAxisData mData;
 protected:
-	OWThreeDAxisData* data() 
-	{
-		return static_cast<OWThreeDAxisData*>(script()->data());
-	}
 public:
-	ThreeDAxis(Scene* _scene, OWThreeDAxisScript* _script);
-	void doInit() override;
-	const OWThreeDAxisData* constData() const
-	{
-		return static_cast<const OWThreeDAxisData*>(script()->data());
-	}
+	ThreeDAxis(Scene* _scene, const std::string& _name, const OWThreeDAxisData& _data = OWThreeDAxisData());
+	void doSetup() override;
 private:
-	TextComponent* createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b);
-	void createAxisData(const AABB& w);
+	OWActorSingle::SingleSceneElement createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b);
 };

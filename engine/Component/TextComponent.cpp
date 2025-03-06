@@ -6,6 +6,7 @@
 #include "../Core/GlobalSettings.h"
 #include "../Helpers/Shader.h"
 #include "../Core/ErrorHandling.h"
+#include "../Helpers/FontFactory.h"
 
 OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
 	const OWTextComponentData& _data)
@@ -19,6 +20,43 @@ OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
 	: OWMeshComponentBase(_owner, _name)
 {
 	// Load mData from textFileName;
+}
+
+AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
+{
+	AABB bounds(v4);
+
+	glm::vec4 displacement = glm::vec4(0);
+	if (mReferencePos & OWTextComponentData::PositionType::Left)
+	{
+		displacement.x = -bounds.minPoint().x;
+	}
+	else if (mReferencePos & OWTextComponentData::PositionType::Right)
+	{
+		displacement.x = -bounds.maxPoint().x;
+	}
+	else
+	{
+		displacement.x = -bounds.center().x;
+	}
+	if (mReferencePos & OWTextComponentData::PositionType::Bottom)
+	{
+		displacement.y = -bounds.minPoint().y;
+	}
+	else if (mReferencePos & OWTextComponentData::PositionType::Right)
+	{
+		displacement.y = -bounds.maxPoint().y;
+	}
+	else
+	{
+		displacement.y = -bounds.center().y;
+	}
+	for (auto& v : v4)
+	{
+		v += displacement;
+	}
+	bounds.move(displacement);
+	return bounds;
 }
 
 void OWTextComponent::prepareMutators()
@@ -49,6 +87,27 @@ void OWTextComponent::prepareMutators()
 		throw NMSLogicException("Error: Unkown OWTextComponentData::TextDisplayType.");
 	}
 }
+
+const std::vector<OWMeshData> OWTextComponent::simpleMesh(AABB& bounds) const
+{
+	OWMeshData md;
+
+	const FreeTypeFontAtlas::FontDetails* fontData
+		= FontFactory().loadFreeTypeFont(mData.fontName, mData.fontHeight);
+	md.meshData.v4 = fontData->createText(mData.text, mData.fontSpacing.x, mData.fontSpacing.y);
+	if (md.meshData.v4.empty())
+	{
+		throw NMSLogicException(std::stringstream()
+			<< "No Triangles generated for Text ["
+			<< mData.text << "] is empty\n");
+	}
+	bounds = adjustPosition(md.meshData.v4, mData.referencePos);
+	md.meshData.setColour(mData.colour, "textcolor");
+	std::vector<OWMeshData> retval;
+	retval.push_back(md);
+	return retval;
+}
+
 
 void OWTextComponent::doSetup()
 {

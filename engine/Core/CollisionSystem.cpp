@@ -2,9 +2,8 @@
 
 #include <set>
 #include <algorithm>
-#include "OWActor.h"
+#include "../Actor/OWActor.h"
 #include "../Component/PhysicalComponent.h"
-#include "../Component/BoxComponent.h"
 #include "../Core/LogStream.h"
 
 // spring mass system hookes law
@@ -20,7 +19,7 @@
 
 //#define SWEEP_AND_PRUNE
 //#define SWEEP_AND_PRUNE_EX
-#define BASIC_COLLISIONS
+//#define BASIC_COLLISIONS
 //#define FIXED_SIZED_VOLUMES //  this was a misplaced post by the authot
 //#define BETTER_FIXED_SIZED_VOLUMES
 // Awesome series of posts about optimised collision systems
@@ -292,7 +291,7 @@ namespace CollisionSystem
 	}
 
 #endif
-	void build(std::vector<OLDIPhysical*>& objects)
+	void build(std::vector<OWCollider*>& objects)
 	{
 #ifdef BASIC_COLLISIONS
 		buildBasic(objects);
@@ -304,7 +303,7 @@ namespace CollisionSystem
 		buildSweepAndPruneEx(objects);
 #endif
 	}
-    void addRay(OWRay* r)
+    void addCollider(OWCollider* coll, OWActor* a, int componentId)
     {
 #ifdef BASIC_COLLISIONS
 #endif
@@ -314,7 +313,17 @@ namespace CollisionSystem
 #endif
     }
 
-    void deleteRay(OWRay* r)
+    void addRay(OWCollider* coll, OWActor* a, int componentId)
+    {
+#ifdef BASIC_COLLISIONS
+#endif
+#ifdef SWEEP_AND_PRUNE
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+#endif
+    }
+
+    void deleteRay(OWActor* r)
     {
 #ifdef BASIC_COLLISIONS
 #endif

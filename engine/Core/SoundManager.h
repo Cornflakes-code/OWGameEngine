@@ -13,7 +13,9 @@
 class OWSoundComponent
 {
 public:
+	OWSoundComponent() {}
 };
+
 class OWENGINE_API SoundManager: public OLDObject
 {
 	enum class SoundType

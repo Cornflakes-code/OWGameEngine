@@ -98,6 +98,11 @@ public:
 GLenum BlendFuncRIAA::mSfactor;
 GLenum BlendFuncRIAA::mDfactor;
 
+OWRenderer::OWRenderer(const std::string& shaderFileName)
+	: mShader(new Shader(shaderFileName))
+{
+}
+
 void OWRenderer::validateBase() const
 {
 	if (mShader == nullptr)

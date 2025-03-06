@@ -1,19 +1,35 @@
 #include "Mesh.h"
 #include "../Geometry/BoundingBox.h"
 
-AABB MeshData::bounds() const
+AABB InstanceData::bounds() const
 {
-	if (mVec3.size())
+	if (v3.size())
 	{
-		return AABB(mVec3);
+		return AABB(v3);
 	}
-	else if (mVec4.size())
+	else if (v4.size())
 	{
-		return AABB(mVec4);
+		return AABB(v4);
 	}
 	else
 	{
-		throw NMSLogicException("Data for MeshDataLight not set.");
+		throw NMSLogicException("Data for InstanceData not set.");
+	}
+}
+
+AABB MeshData::bounds() const
+{
+	if (v3.size())
+	{
+		return AABB(v3);
+	}
+	else if (v4.size())
+	{
+		return AABB(v4);
+	}
+	else
+	{
+		throw NMSLogicException("Data for MeshData not set.");
 	}
 }
 

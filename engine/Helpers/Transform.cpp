@@ -1,9 +1,14 @@
 #include "Transform.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "../Actor/OWActor.h"
 
-OWTransform(OWActor* _owner, const OWTransformData& _data = OWTransformData())
-	: mData(_data), mOwner(_owner) 
+OWTransform::OWTransform(OWTransform* _owner, const OWTransformData& _data)
+	: mData(_data), mParent(_owner)
+{
+}
+
+OWTransform::OWTransform(OWTransform* _owner, const glm::vec3& pos,
+	const glm::vec3& scale, const glm::quat& rot)
+	: OWTransform(_owner, OWTransformData({ rot, pos, scale }))
 {
 }
 
@@ -14,17 +19,30 @@ void OWTransform::rotation(float radians, const glm::vec3& axis)
 
 const glm::vec3 OWTransform::worldPosition() const
 {
-	return mOwner ? mOwner->localPosition() + mData.position : mData.position;
+	const OWTransform* grandPa = mParent != nullptr ? mParent : nullptr;
+	if (grandPa == nullptr)
+		return mParent ? mParent->localPosition() + mData.position : mData.position;
+	else
+		return grandPa->localPosition() + mParent->localPosition() + mData.position;
 }
 
 const glm::mat4 OWTransform::modelMatrix() const
 {
-	glm::mat4 m = glm::mat4(rotation()) * glm::scale(glm::mat4(1), scale());
-	m = glm::translate(m, mData.position);
-	return mOwner ? mOwner->modelMatrix() * m : m;
+	glm::mat4 local = glm::mat4(rotation()) * glm::scale(glm::mat4(1), scale());
+	const OWTransform* grandPa = mParent != nullptr ? mParent : nullptr;
+	if (grandPa == nullptr)
+	{
+		glm::mat4 m = mParent ? mParent->modelMatrix() * local : local;
+		return m;
+	}
+	else
+	{
+		glm::mat4 m = grandPa->modelMatrix() * mParent->modelMatrix() * local;
+		return m;
+	}
 }
 
-const glm::vec3 OWTransform::up()
+const glm::vec3 OWTransform::up() const
 {
 	const glm::vec4 v = modelMatrix() * glm::vec4(0, 1, 0, 0);
 	return glm::normalize(glm::vec3(v.x, v.y, v.z));

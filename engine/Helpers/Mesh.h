@@ -66,11 +66,12 @@ struct InstanceData
 	std::vector<glm::vec3> instancePositions;
 	std::vector<glm::vec4> instanceColours;
 	RenderData renderData;
+	AABB bounds() const;
 };
 
 struct MeshData
 {
-	void vertices(const std::vector<glm::vec3>& v,
+	void setVertices(const std::vector<glm::vec3>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0)
 	{
 		v4.clear();
@@ -79,7 +80,7 @@ struct MeshData
 		renderData.vertexMode = vertexMode;
 		renderData.vertexLocation = vertexLocation;
 	}
-	void vertices(const std::vector<glm::vec4>& v,
+	void setVertices(const std::vector<glm::vec4>& v,
 		unsigned int vertexMode, unsigned int vertexLocation = 0)
 	{
 		v3.clear();
@@ -88,15 +89,10 @@ struct MeshData
 		renderData.vertexMode = vertexMode;
 		renderData.vertexLocation = vertexLocation;
 	}
-	void colour(const glm::vec4& colour, const std::string& shaderColourName)
+	void setColour(const glm::vec4& colour, const std::string& shaderColourName)
 	{
 		renderData.colour = colour;
 		renderData.shaderColourName = shaderColourName;
-	}
-	// Can be GL_POINT, GL_LINE or GL_FILL
-	void polygonMode(unsigned int mode)
-	{
-		renderData.polygonMode_mode = mode;
 	}
 	void setIndices(const std::vector<unsigned int> _indices, unsigned int indicesMode)
 	{
@@ -104,7 +100,11 @@ struct MeshData
 		renderData.indicesMode = indicesMode;
 		renderData.indicesCount = _indices.size();
 	}
-	AABB bounds() const;
+	// Can be GL_POINT, GL_LINE or GL_FILL
+	void setPolygonMode(unsigned int mode)
+	{
+		renderData.polygonMode_mode = mode;
+	}
 	struct RenderData
 	{
 		std::string shaderColourName;
@@ -121,10 +121,15 @@ struct MeshData
 	std::vector<glm::vec4> v4;
 	std::vector<unsigned int> indices;
 	RenderData renderData;
+	AABB bounds() const;
 };
 
 struct OWMeshData
 {
 	InstanceData instanceData;
 	MeshData meshData;
+	AABB bounds() const 
+	{
+		return instanceData.bounds() | meshData.bounds();
+	}
 };

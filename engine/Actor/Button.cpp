@@ -3,22 +3,17 @@
 #include <glm/gtx/transform.hpp>
 
 #include "../Helpers/Shader.h"
-#include "../Renderers/VAOBuffer.h"
-#include "../Renderers/TextRendererStatic.h"
 #include "../Component/TextComponent.h"
 
-OLDButton::OLDButton(Scene* _owner, ButtonScript* _data)
-	:OLDActor(_owner, _data)
-{ }
-
-bool ButtonData::intersectArea(const glm::vec3& pt)
+OWButton::OWButton(Scene* _scene, const std::string& _name)
+	: OWActor(_scene, _name, nullptr)
 {
-	return false;
 }
 
-void OLDButton::setup(const ButtonData& data, const glm::vec3& position)
+void OWButton::doSetup()
 {
 	throw NMSException("Incomplete function");
+	/*
 	ShaderData* shd = new ShaderData("button.v.glsl", "button.f.glsl", "", "pvm");
 	if (false)
 	{
@@ -45,12 +40,5 @@ void OLDButton::setup(const ButtonData& data, const glm::vec3& position)
 	tdc->textData.tdt = TextData::TextDisplayType::Static;
 	//tdc->physics.localMatrix += glm::vec4(10, 0);
 	TextComponent* td = new TextComponent(this, tdc);
+	*/
 }
-
-void OLDButton::textures()
-{}
-
-void OLDButton::text()
-{}
-
-

@@ -9,7 +9,7 @@
 
 class TextComponent;
 
-struct OWENGINE_API ButtonData: public OLDActorData
+struct OWENGINE_API ButtonData
 {
 	enum ClickState
 	{
@@ -23,30 +23,21 @@ struct OWENGINE_API ButtonData: public OLDActorData
 	ClickState mClickState;
 };
 
-class OWENGINE_API ButtonScript: public OLDActorScript
+class OWENGINE_API ButtonScript
 {
 protected:
 public:
 	ButtonScript(ButtonData* _data)
-		: OLDActorScript(_data) 
 	{}
 };
 
-class OLDButton : public OLDActor
+class OWButton: public OWActor
 {
-	virtual ButtonData* data()
-	{
-		return static_cast<ButtonData*>(script()->data());
-	}
 public:
-	OLDButton(Scene* _owner, ButtonScript* _data);
-	virtual const ButtonData* data() const
-	{
-		return static_cast<const ButtonData*>(script()->data());
-	}
-	void setup(const ButtonData& data, const glm::vec3& position);
-	void textures();
-	void text();
+	OWButton(Scene* _scene, const std::string& _name);
+	void doSetup() override;
+	//void textures();
+	//void text();
 protected:
 private:
 };

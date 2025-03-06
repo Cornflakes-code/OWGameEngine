@@ -6,8 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-class OWActor;
-
 struct OWTransformData
 {
 	glm::quat rotation = {};
@@ -20,18 +18,17 @@ class OWENGINE_API OWTransform final
 	OWTransformData mData;
 
 	// The actor containing the entity that this transform is linked to
-	OWActor* mParent;
+	OWTransform* mParent = nullptr;
 public:
-	OWTransform(OWActor* _owner, const OWTransformData& _data);
-	OWTransform(OWActor* _owner, const glm::vec3& pos = glm::vec3(0),
+	OWTransform(OWTransform* _owner, const OWTransformData& _data);
+	OWTransform(OWTransform* _owner, const glm::vec3& pos = glm::vec3(0),
 		const glm::vec3& scale = glm::vec3(1), const glm::quat& rot = glm::quat());
 	~OWTransform() {}
-	const OWActor* actor() const { return mParent; }
-	void actor(OWActor* newValue)
-	{
+
+	const OWTransform* hostingTransform() const { return mParent;  }
+	void hostingTransform(OWTransform* newValue) {
 		mParent = newValue;
 	}
-
 	void rotation(float radians, const glm::vec3& axis);
 	glm::quat rotation() const {
 		return mData.rotation;

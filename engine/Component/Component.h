@@ -13,7 +13,7 @@
 #include "../Helpers/Model.h"
 
 class OWActor;
-class OWComponent
+class OWENGINE_API OWComponent
 {
 public:
 	OWComponent(OWActor* _owner, const std::string& _name)
@@ -44,19 +44,19 @@ private:
 
 struct OWModelData;
 
-class OWMeshComponentBase: public OWComponent
+class OWENGINE_API OWMeshComponentBase: public OWComponent
 {
-	RenderTypes::ShaderMutator mMutator;
+	OWRenderTypes::ShaderMutator mMutator;
 public:
 	OWMeshComponentBase(OWActor* _owner, const std::string& _name)
 		: OWComponent(_owner, _name) {
 	}
-	RenderTypes::ShaderMutator mutator() const {
+	OWRenderTypes::ShaderMutator mutator() const {
 		return mMutator;
 	}
-	void mutator(RenderTypes::ShaderMutator newValue) {
+	void mutator(OWRenderTypes::ShaderMutator newValue) {
 		mMutator = newValue;
 	}
-	virtual const std::vector<OWMeshData>& simpleMesh() const;
-	virtual const std::vector<OWModelData>& complexMesh() const;
+	virtual const std::vector<OWMeshData> simpleMesh(AABB& bounds) const;
+	virtual const std::vector<OWModelData> complexMesh(AABB& bounds) const;
 };

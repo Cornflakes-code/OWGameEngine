@@ -14,7 +14,7 @@ enum class NMSErrorLevel
 */
 #pragma warning( push )
 #pragma warning( disable : 4275 )
-class OWENGINE_API NMSException : public std::exception
+class OWENGINE_API NMSException: public std::exception
 {
 public:
 	NMSException(std::stringstream ss): NMSException(ss.str())
@@ -31,7 +31,7 @@ public:
 	{}
 };
 
-class OWENGINE_API NMSLogicException : public NMSException
+class OWENGINE_API NMSLogicException: public NMSException
 {
 public:
 	NMSLogicException(std::stringstream ss) : NMSException(ss.str())

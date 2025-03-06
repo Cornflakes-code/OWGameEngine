@@ -16,9 +16,7 @@
 #include <Core/ResourcePathFactory.h>
 #include <Core/LogStream.h>
 
-#include <Actor/StaticSceneryActor.h>
-#include <Actor/CollisionSystem.h>
-#include <Actor/OcTree.h>
+#include <Core/CollisionSystem.h>
 #include <Actor/ThreeDAxis.h>
 #include <Actor/Button.h>
 #include <Component/PhysicalComponent.h>
@@ -134,14 +132,15 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 				delete gRay;
 			}
 			gRay = new OWActorSingle(this->owner(), "Ray Actor");
+			gRay->transform(new OWTransform(nullptr));
 			OWActorSingle::SingleSceneElement sse;
 			sse.c = new OWCollider(gRay, OWCollider::CollisionType::Ray);
 			OWMeshComponent* mc = new OWMeshComponent(gRay, "Ray Component");
 			mc->add(OWGeometricShapes::beam(cam_pos, dir, 1000));
 			sse.m = mc;
 			sse.r = new OWMeshRenderer("", OWMeshRenderer::RenderType::DRAW_ARRAYS);
-			sse.t = new OWTransform(gRay, cam_pos);
-			gRay->setComponent(sse);
+			sse.t = new OWTransform(gRay->transform(), cam_pos);
+			gRay->addComponents(sse);
 #endif
 			gRay->transform()->localPosition(cam_pos);
 			//gRay->colour({ 0.7, 0.7, 0.0, 1.0f });
@@ -311,7 +310,7 @@ void NMSSplashScenePhysics::setup()
 	sse1.r = new OWMeshRenderer("DynamicText.json");
 	sse1.s = new OWSoundComponent();
 	sse1.t = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 2.0));
-	textActor->setComponent(sse1);
+	textActor->addComponents(sse1);
 
 #endif
 	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
@@ -336,7 +335,7 @@ void NMSSplashScenePhysics::setup()
 	sse2.r = new OWMeshRenderer("StaticText.json");
 	sse2.s = new OWSoundComponent();
 	sse2.t = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 3.0));
-	textActor->setComponent(sse2);
+	textActor->addComponents(sse2);
 #endif
 
 	OWActorMulti* boxActor = new OWActorMulti(this->owner(), "All Boxes");
@@ -363,66 +362,66 @@ void NMSSplashScenePhysics::setup()
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(100, 0, 0);
 #endif
-		boxActor->addElement(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), 
+		boxActor->addComponents(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), 
 							ro, rs, mSpeed * 0.0f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 100, 0);
 #endif
-		boxActor->addElement(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), 
+		boxActor->addComponents(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), 
 							ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 100);
 #endif
-		boxActor->addElement(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), 
+		boxActor->addComponents(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), 
 							ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 0);
 #endif
-		boxActor->addElement(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
+		boxActor->addComponents(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
 							ro, rs, mSpeed * 0.8f, scale1));
 #ifdef BOXES_CENTERED
 		break;
 #endif
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
+		boxActor->addComponents(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
 							ro, rs, mSpeed * 0.8f, scale1));
 
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
+		boxActor->addComponents(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
 							ro, rs, mSpeed * 0.8f, scale1));
 
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED),
+		boxActor->addComponents(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED),
 							ro, { rs }, mSpeed * 1.8f, scale2));
 
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), 
+		boxActor->addComponents(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), 
 							ro, { rs }, mSpeed * 3.8f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), 
+		boxActor->addComponents(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), 
 							ro, { rs }, mSpeed * 0.1f, scale3));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
+		boxActor->addComponents(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
 							ro, { rs }, mSpeed * 0.3f, scale3));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
+		boxActor->addComponents(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
 							ro, { rs }, mSpeed * 0.5f, scale3));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addElement(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
+		boxActor->addComponents(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
 							ro, { rs }, mSpeed * 0.8f, scale2));
 	}
 
@@ -432,7 +431,7 @@ void NMSSplashScenePhysics::setup()
 	sse.c = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
 	sse.m = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
 	sse.p = new OWPhysics();
-	sse.r = new OWModelRenderer("DiceShader.json", GL_TRIANGLES, 0)
+	sse.r = new OWModelRenderer("DiceShader.json");
 	sse.s = new OWSoundComponent();
 	OWTransformData td;
 	td.position = glm::vec3(0);
@@ -452,25 +451,27 @@ void NMSSplashScenePhysics::setup()
 	planeActor->scriptor(new OWScriptComponent());
 	planeActor->physics(new OWPhysics());
 	planeActor->sound(new OWSoundComponent());
-	OWMeshDataSimple mds;
+	MeshData mds;
 	mds.v3 = OWGeometricShapes::rectangle(glm::vec2(1));
 	mds.v3[0].z -= 0.01f;
 	mds.v3[1].z += 0.01f;
-	mds.polygonMode = GL_FILL;
-	planeActor->meshComponent(new OWMeshComponent(boxActor, "Plane Template", mds));
+	mds.setPolygonMode(GL_FILL);
+	OWMeshComponent* mc = new OWMeshComponent(boxActor, "Plane Template");
+	mc->add(mds);
+	planeActor->meshComponent(mc);
 	planeActor->renderer(new OWInstanceRenderer("PlaneShader.json"));
 
-	planeActor->addElement(createBumperPlane("Plane Front", 
+	planeActor->addComponents(createBumperPlane("Plane Front", 
 		glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
-	planeActor->addElement(createBumperPlane("Plane Back", 
+	planeActor->addComponents(createBumperPlane("Plane Back", 
 		glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::Out
-	planeActor->addElement(createBumperPlane("Plane East", 
+	planeActor->addComponents(createBumperPlane("Plane East", 
 		glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::East
-	planeActor->addElement(createBumperPlane("Plane West", 
+	planeActor->addComponents(createBumperPlane("Plane West", 
 		glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
-	planeActor->addElement(createBumperPlane("Plane North", 
+	planeActor->addComponents(createBumperPlane("Plane North", 
 		glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
-	planeActor->addElement(createBumperPlane("Plane South", 
+	planeActor->addComponents(createBumperPlane("Plane South", 
 		glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
 #endif
 }
@@ -487,20 +488,17 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		= dynamic_cast<NMSSplashScenePhysics*>(state);
 
 #ifdef INCLUDE_XYZ_AXIS
-	OWThreeDAxisData* axisData = new OWThreeDAxisData();
-	AABB w = world();
-	axisData->axisData.world = w;
-	axisData->actorData.position = glm::vec3(0);// w.center();
-	axisData->axisData.labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW);
-	OWThreeDAxisScript* script = new OWThreeDAxisScript(axisData);
-	ThreeDAxis* axis = new ThreeDAxis(this, script);
+	OWThreeDAxisData axisData;
+	axisData.bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
+	axisData.labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW);
+	ThreeDAxis* axis = new ThreeDAxis(this, "3D Axis", axisData);
 
 #endif
 #ifdef INCLUDE_FULLSCREEN
-	Shader* sh = new Shader("thebookofshaders.v.glsl",
+	Shader* shader = new Shader("thebookofshaders.v.glsl",
 		"thebookofshaders.f.glsl",
 		"thebookofshaders_square.g.glsl");
-	sh->setStandardUniformNames("pvm");
+	shader->setStandardUniformNames("pvm");
 	auto fullScreenRender = [](
 		const glm::mat4& OW_UNUSED(proj),
 		const glm::mat4& OW_UNUSED(view),
@@ -511,24 +509,29 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 			//shader->setVector2f("u_mouse", globals->pointingDevicePosition());
 			shader->setFloat("u_time", globals->secondsSinceLoad());
 		};
-	auto fullScreenResize = [](const Shader* shader,
-		RenderTypes::ScaleByAspectRatioType scaleByAspectRatio,
-		float OW_UNUSED(aspectRatio))
+		auto fullScreenResize = [](
+			const glm::mat4& OW_UNUSED(proj),
+			const glm::mat4& OW_UNUSED(view),
+			const glm::mat4& OW_UNUSED(model),
+			const glm::vec3& OW_UNUSED(cameraPos),
+			const Shader* shader)
 		{
 			glm::vec2 vv = globals->physicalWindowSize();
 			shader->setVector2f("u_resolution", vv);
 		};
-	sh->appendMutator(fullScreenRender);
-	sh->appendResizer(fullScreenResize);
+	shader->appendMutator(fullScreenRender);
+	shader->appendMutator(fullScreenResize);
 	OWActorSingle* fullScreenActor = new OWActorSingle(this, "Fullscreen");
-	OWMeshDataSimple mds;
+	MeshData mds;
 	mds.v4.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
-	mds.polygonMode = GL_FILL;
+	mds.setPolygonMode(GL_FILL);
 	OWActorSingle::SingleSceneElement sse;
 	sse.c = new OWCollider(fullScreenActor, OWCollider::CollisionType::Permeable);
-	sse.m = new OWMeshComponent(fullScreenActor, "Fullscreen Component", mds);
+	OWMeshComponent* mc = new OWMeshComponent(fullScreenActor, "Fullscreen Component");
+	mc->add(mds);
+	sse.m = mc;
 	sse.p = new OWPhysics();
-	sse.r = new OWModelRenderer(sh);
+	sse.r = new OWModelRenderer(shader);
 	sse.s = new OWSoundComponent();
 #endif
 
@@ -568,7 +571,7 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 #endif
 	auto init = [](OWActor* a)
 		{
-			a->doSetup();
+			a->setup();
 		};
 	traverseSceneGraph(init);
 }

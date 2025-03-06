@@ -7,7 +7,7 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-#include "OWComponent.h"
+#include "Component.h"
 
 
 class OWENGINE_API OWModelComponent : public OWMeshComponentBase
@@ -18,7 +18,8 @@ public:
 		const std::string& _name, const std::string& _modelName)
 		: OWMeshComponentBase(_owner, _name) {
 	}
-	const std::vector<OWModelData>& complexMesh() const {
+	void add(const OWModelData& md) { mData.push_back(md); }
+	const std::vector<OWModelData> complexMesh() const {
 		return mData;
 	}
 protected:

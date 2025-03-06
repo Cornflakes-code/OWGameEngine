@@ -1,16 +1,18 @@
-#include "OWComponent.h"
+#include "Component.h"
 #include "../Core/ErrorHandling.h"
 
 static std::vector<OWMeshData> gEmptyMeshes;
 
-const std::vector<OWMeshData>& OWMeshComponentBase::simpleMesh() const
+const std::vector<OWMeshData> OWMeshComponentBase::simpleMesh(AABB& bounds) const
 {
+	bounds = AABB(0);
 	return gEmptyMeshes;
 }
 
 static std::vector<OWModelData> gEmptyModels;
-const std::vector<OWModelData>& OWMeshComponentBase::complexMesh() const
+const std::vector<OWModelData> OWMeshComponentBase::complexMesh(AABB& bounds) const
 {
+	bounds = AABB(0);
 	return gEmptyModels;
 }
 

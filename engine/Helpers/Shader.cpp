@@ -63,6 +63,7 @@ void from_json(const json& j, ShaderData& p)
 	j.at("modelName").get_to(p.modelName);
 	j.at("uniforms").get_to(p.uniforms);
 }
+
 Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
 	const std::string& geometryPath)
 {
@@ -75,19 +76,18 @@ Shader::Shader(const std::string& fileName)
 		ResourcePathFactory().appendPath(fileName,
 			ResourcePathFactory::ResourceType::Shader);
 	json js = json::parse(jsonFilePath.u8string());
-	mData = new ShaderData();
-	from_json(js, *mData);
+	from_json(js, mData);
 	create(
-		mData->shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
-		: mData->shaderV,
-		mData->shaderF.length() == 0 ? ShaderFactory::boilerPlateFragmentShader()
-		: mData->shaderF,
-		mData->shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
-		: mData->shaderG);
+		mData.shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
+		: mData.shaderV,
+		mData.shaderF.length() == 0 ? ShaderFactory::boilerPlateFragmentShader()
+		: mData.shaderF,
+		mData.shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
+		: mData.shaderG);
 		
-	setStandardUniformNames(mData->PVMName, mData->projectionName, mData->viewName, mData->modelName);
+	setStandardUniformNames(mData.PVMName, mData.projectionName, mData.viewName, mData.modelName);
 	use();
-	for (ShaderDataUniforms& a : mData->uniforms)
+	for (ShaderDataUniforms& a : mData.uniforms)
 	{
 		setUniform(a.ut, a.name, a.value);
 	}
@@ -97,16 +97,16 @@ Shader::Shader(const ShaderData& sd)
 	: mData(sd)
 {
 	create(
-		mData->shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
-		: mData->shaderV,
-		mData->shaderF.length() == 0 ? ShaderFactory::boilerPlateFragmentShader()
-		: mData->shaderF,
-		mData->shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
-		: mData->shaderG);
+		mData.shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
+		: mData.shaderV,
+		mData.shaderF.length() == 0 ? ShaderFactory::boilerPlateFragmentShader()
+		: mData.shaderF,
+		mData.shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
+		: mData.shaderG);
 
-	setStandardUniformNames(mData->PVMName, mData->projectionName, mData->viewName, mData->modelName);
+	setStandardUniformNames(mData.PVMName, mData.projectionName, mData.viewName, mData.modelName);
 	use();
-	for (ShaderDataUniforms& a : mData->uniforms)
+	for (ShaderDataUniforms& a : mData.uniforms)
 	{
 		setUniform(a.ut, a.name, a.value);
 	}
@@ -121,25 +121,20 @@ void Shader::debugPrint()
 	Logger::print_all(mShaderProgram);
 }
 
-void Shader::appendMutator(RenderTypes::ShaderMutator pfunc)
+void Shader::appendMutator(OWRenderTypes::ShaderMutator pfunc)
 {
-	mData->mutatorCallbacks.push_back(pfunc);
-}
-
-void Shader::appendResizer(RenderTypes::ShaderResizer pfunc)
-{
-	mData->resizeCallbacks.push_back(pfunc);
+	mData.mutatorCallbacks.push_back(pfunc);
 }
 
 void Shader::callMutators(const glm::mat4& proj, const glm::mat4& view,
-	const glm::mat4& model, const glm::vec3& cameraPos, RenderTypes::ShaderMutator renderCb) const
+	const glm::mat4& model, const glm::vec3& cameraPos, OWRenderTypes::ShaderMutator renderCb) const
 {
 	use();
 	if (renderCb)
 	{
 		renderCb(proj, view, model, cameraPos, this);
 	}
-	for (auto& cb : mData->mutatorCallbacks)
+	for (auto& cb : mData.mutatorCallbacks)
 	{
 		cb(proj, view, model, cameraPos, this);
 	}
@@ -169,28 +164,6 @@ glm::vec2 Shader::scaleByAspectRatio(const glm::vec2& toScale) const
 		//retval.y *= _aspectRatio ;
 	}
 	return retval;
-}
-
-void Shader::callResizers(RenderTypes::ShaderResizer resizeCb) const
-{
-	if (mFirstTimeRender || globals->aspectRatioChanged())
-	{
-		// If no callback parameters then used the stored callbacks
-		use();
-		if (resizeCb)
-		{
-			resizeCb(this,
-				std::bind(&Shader::scaleByAspectRatio, this, std::placeholders::_1),
-				aspectRatio());
-		}
-		for (auto& cb : mData->resizeCallbacks)
-		{
-			cb(this, std::bind(&Shader::scaleByAspectRatio,
-				this, std::placeholders::_1),
-				aspectRatio());
-			mFirstTimeRender = false;
-		}
-	}
 }
 
 void Shader::use() const

@@ -8,8 +8,6 @@
 
 #include "../OWEngine/OWEngine.h"
 
-#include "../Helpers/MeshDataInstance.h"
-
 #include "RendererBase.h"
 #include "../Geometry/BoundingBox.h"
 #include "../Helpers/Mesh.h"
@@ -20,15 +18,20 @@ public:
 	OWInstanceRenderer(const std::string& shaderName)
 		: OWRenderer(shaderName) {
 	}
-	AABB doSetup(const std::vector<OWMeshData>& meshes,
-		const std::vector<OWModelData>& models) override;
+	OWInstanceRenderer(Shader* _shader)
+		: OWRenderer(_shader) {
+	}
 protected:
+	void doSetup(const std::vector<OWMeshData>& meshes,
+		const std::vector<OWModelData>& models) override;
 	void doRender() override;
 private:
-	void validate(const MeshDataInstance& meshData) const;
+	void setupMeshes(const std::vector<OWMeshData>& meshes);
+	void setupModels(const std::vector<OWModelData>& models);
+	void validate(const InstanceData& meshData) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	MeshDataInstance::RenderData mData;
+	InstanceData::RenderData mData;
 	// mVbo[0] The VBO containing the triangles to draw
 	// mVbo[1] The VBO containing the positions of the particles
 	// mVbo[2] The VBO containing the colors of the particles

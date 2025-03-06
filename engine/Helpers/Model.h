@@ -46,3 +46,10 @@ struct OWModelData
 	void calcNormals();
 	AABB bounds() const;
 };
+
+
+struct OWModelDataEx
+{
+	std::vector<OWModelDataEx> children;
+	std::vector<OWModelData> meshes;
+};

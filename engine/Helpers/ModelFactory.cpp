@@ -11,16 +11,16 @@
 #include "../Core/LogStream.h"
 #include "../Core/ResourcePathFactory.h"
 
-#include "ModelData.h"
-#include "MeshDataHeavy.h"
+#include "Model.h"
+#include "Mesh.h"
 #include "Texture.h"
 
 ModelFactory::ModelFactory()
 {}
 
-ModelData processNode(aiNode *node, const aiScene *scene);
+OWModelDataEx processNode(aiNode *node, const aiScene *scene);
 
-ModelData ModelFactory::create(const std::string& modelFileName, bool cache)
+OWModelDataEx ModelFactory::create(const std::string& modelFileName, bool cache)
 {
 	std::filesystem::path modelPath =
 		ResourcePathFactory().appendPath(modelFileName,
@@ -35,28 +35,28 @@ ModelData ModelFactory::create(const std::string& modelFileName, bool cache)
 		LogStream(LogStreamLevel::Info)
 			<< "Mesh load failed for model ["
 			<< modelPath << "] ASSIMP error [" << importer.GetErrorString() << "]";
-		return ModelData();
+		return OWModelDataEx();
 	}
-	ModelData root = processNode(aiscene->mRootNode, aiscene);
+	OWModelDataEx root = processNode(aiscene->mRootNode, aiscene);
 	return root;
 }
 
-ModelData processNode(aiNode *node, const aiScene *scene)
+OWModelDataEx processNode(aiNode *node, const aiScene *scene)
 {
-	ModelData retval;
+	OWModelDataEx retval;
 
 	// process all the node's meshes (if any)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
-		MeshDataHeavy* m = new MeshDataHeavy();
-		m->create(scene->mMeshes[node->mMeshes[i]], scene);
+		OWModelData m;
+		m.create(scene->mMeshes[node->mMeshes[i]], scene);
 		retval.meshes.push_back(m);
 	}
 
 	// then do the same for each of its children
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
-		ModelData child = processNode(node->mChildren[i], scene);
+		OWModelDataEx child = processNode(node->mChildren[i], scene);
 		retval.children.push_back(child);
 	}
 	return retval;

@@ -30,6 +30,7 @@ struct OWENGINE_API ShaderData
 	std::string projectionName = "projection";
 	std::string viewName = "view";
 	std::string modelName = "model";
+	std::vector<OWRenderTypes::ShaderMutator> mutatorCallbacks;
 	std::vector<ShaderDataUniforms> uniforms;
 };
 
@@ -55,19 +56,19 @@ class OWENGINE_API Shader //: public ResourceSource
 	// loop will be broken.
 	mutable bool mFirstTimeRender = true;
 	float aspectRatio() const;
-	ShaderData* mData = nullptr;
+	ShaderData mData;
 	mutable bool mUseCalled = false;
 public:
+	Shader() {}
 	Shader(const std::string& vertexPath, const std::string& fragPath,
 		const std::string& geometryPath = "");
 	Shader(const std::string& fileName);
 	Shader(const ShaderData& sd);
 	~Shader();
-	void appendMutator(RenderTypes::ShaderMutator pfunc);
-	void appendResizer(RenderTypes::ShaderResizer pfunc);
+	void appendMutator(OWRenderTypes::ShaderMutator pfunc);
 	void callMutators(const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, const glm::vec3& cameraPos, RenderTypes::ShaderMutator renderCb) const;
-	void callResizers(RenderTypes::ShaderResizer resizeCb) const;
+		const glm::mat4& model, const glm::vec3& cameraPos, 
+		OWRenderTypes::ShaderMutator renderCb) const;
 
 	void setStandardUniformNames(const std::string& pvm,
 		const std::string& projection = "",

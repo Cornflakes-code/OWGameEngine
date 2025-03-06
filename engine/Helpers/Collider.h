@@ -19,7 +19,7 @@ public:
 		return mColliderType;
 	}
 
-	void componentIndex(unsigned int newValue) {
+	void componentIndex(size_t newValue) {
 		mComponentIndex = newValue;
 	}
 	/*
@@ -73,6 +73,6 @@ private:
 	glm::vec3 mPt2 = glm::vec3(0);
 	glm::vec3 mPt3 = glm::vec3(0);
 	OWActor* mOwner;
-	unsigned int mComponentIndex;
+	size_t mComponentIndex;
 	CollisionType mColliderType = CollisionType::Ovoid;
 };
