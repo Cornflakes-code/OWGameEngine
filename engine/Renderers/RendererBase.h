@@ -8,8 +8,7 @@
 #include "../OWEngine/OWEngine.h"
 #include "../Renderers/RenderTypes.h"
 #include "../Geometry/BoundingBox.h"
-#include "../Helpers/Mesh.h"
-#include "../Helpers/Model.h"
+#include "../Helpers/RenderData.h"
 
 class Shader;
 
@@ -17,18 +16,23 @@ class OWENGINE_API OWRenderer
 {
 	bool mSetup = false;
 public:
-	OWRenderer(const std::string& shaderFileName);
-	OWRenderer(Shader* _shader)
-		: mShader(_shader)
+	enum RenderType { DRAW_NONE, DRAW_MULTI, DRAW_PRIMITIVE };
+	struct SSBO
+	{
+		void* data = nullptr; // Owned by original creator of the SSBO
+		size_t size = 0;
+	};
+	OWRenderer(const std::string& shaderFileName, RenderType rt);
+	OWRenderer(Shader* _shader, RenderType rt)
+		: mShader(_shader), mDrawType(rt)
 	{
 	}
-	void setup(const std::vector<OWMeshData>& meshes,
-		const std::vector<OWModelData>& models)
+	void setup(const OWRenderData& renderData)
 	{
 		if (!mSetup)
 		{
 			mSetup = true;
-			doSetup(meshes, models);
+			doSetup(renderData);
 		}
 	}
 	void render(std::vector<glm::mat4> models, const glm::mat4& proj,
@@ -52,15 +56,21 @@ public:
 		mSfactor = sfactor;
 		mDfactor = dfactor;
 	}
+	void ssbo(const SSBO& _data)
+	{
+		mSSBO = _data;
+	}
+
 	virtual ~OWRenderer() {}
 protected:
-	virtual void doSetup(const std::vector<OWMeshData>& meshes,
-		const std::vector<OWModelData>& models) = 0;
+	virtual void doSetup(const OWRenderData& renderData) = 0;
 	virtual void doRender() = 0;
 	virtual void validateBase() const;
 	Shader* shader() { return mShader; }
 	unsigned int indicesMode() const { return mIndicesMode; }
 	unsigned int vertexMode() const { return mVertexMode; }
+	SSBO mSSBO;
+	RenderType mDrawType = DRAW_NONE;
 private:
 	Shader* mShader = nullptr;
 

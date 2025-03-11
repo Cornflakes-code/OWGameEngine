@@ -17,35 +17,32 @@ class Scene;
 
 class OWENGINE_API OWActor
 {
-	std::string mName;
-	Scene* mScene;
-	OWTransform* mActorTransform = nullptr;
-	OWScriptComponent* mScriptor = nullptr;
-	bool mIsActive = false;
-	bool mSetup = false;
-	OWActor* mHostActor = nullptr;
 public:
 	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
+	const AABB& bounds() const { return mBounds; }
+	void bounds(const AABB& newValue) { mBounds = newValue; }
 	Scene* scene() { return mScene; }
 	const OWActor* hostActor() const { return mHostActor; }
 	std::string name() const { return mName; }
-	OWTransform* transform() {
+	const OWTransform* transform() const
+	{
 		return mActorTransform;
 	}
-	void transform(OWTransform* newValue) {
-		newValue->hostingTransform(mActorTransform);
+	OWTransform* transform() 
+	{
+		return mActorTransform;
+	}
+	void transform(OWTransform* newValue)
+	{
 		mActorTransform = newValue;
 	}
-	void transform(const OWTransformData& td) {
+	void transform(OWTransformData& td) {
 		transform(new OWTransform(mActorTransform, td));
 	}
 	void transform(const glm::vec3& pos, 
 			const glm::vec3& scale, const glm::quat& rot = glm::quat()) {
 		transform(new OWTransform(mActorTransform, pos, scale, rot));
-	}
-	const OWTransform* transform() const {
-		return mActorTransform; 
 	}
 	void scriptor(OWScriptComponent* newValue) {
 		mScriptor = newValue;
@@ -64,86 +61,136 @@ public:
 	{
 		doRender(proj, view, model, cameraPos);
 	}
+	bool setupCompleted() const { return mSetup; }
 protected:
+	virtual void doSetup() = 0;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) = 0;
-	virtual void doSetup() = 0;
+private:
+	std::string mName;
+	Scene* mScene;
+	OWTransform* mActorTransform = nullptr;
+	OWScriptComponent* mScriptor = nullptr;
+	bool mIsActive = false;
+	bool mSetup = false;
+	OWActor* mHostActor = nullptr;
+	AABB mBounds;
 };
 
-// Use this class for aggregating Components that each have different mesh and Renderers.
-class OWENGINE_API OWActorSingle: public OWActor
+// Use this class for aggregating discrete Components.
+class OWENGINE_API OWActorDiscrete: public OWActor
 {
 public:
-	struct SingleSceneElement
+	struct DiscreteEntity
 	{
-		OWCollider* c = nullptr;
-		OWPhysics* p = nullptr;
-		OWMeshComponentBase* m = nullptr;
-		OWRenderer* r = nullptr;
-		OWTransform* t = nullptr;
-		OWSoundComponent* s = nullptr;
+		OWCollider* coll = nullptr;
+		OWPhysics* phys = nullptr;
+		OWMeshComponentBase* mesh = nullptr;
+		OWRenderer* rend = nullptr;
+		OWTransform* trans = nullptr;
+		OWSoundComponent* sound = nullptr;
 	};
-	OWActorSingle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
+	OWActorDiscrete(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
 		: OWActor(_scene, _name, _hostActor) {
 	}
-	size_t addComponents(const SingleSceneElement& sse);
+	size_t addComponents(const DiscreteEntity& newElement);
 protected:
-	void ensureActor(OWComponent* c)
-	{
-		if (c->actor() == nullptr)
-			c->actor(this);
-	}
-	virtual void doRender(const glm::mat4& proj,
+	void doSetup() override;
+	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;
-	void doSetup() override;
-	std::vector<SingleSceneElement> mElements;
+	std::vector<DiscreteEntity> mElements;
 };
 
-// Use this class for Components that use the same Renderer
-class OWENGINE_API OWActorMulti : public OWActor
+// Use this class for aggregating N distinct meshes that share 
+// a common Renderer and Texture
+// Use this class to render Text
+class OWENGINE_API OWActorNCom1Ren: public OWActor
 {
 public:
-	struct MultiSceneElement
+	struct NCom1RenElement
 	{
-		// We could add a OWMeshComponent* here with the logic being
-		// getComponent[i] 
-		// { if mElements[i] is nullptr then
-		//		return mMeshComponentTemplate
-		// This would allow all the null OWMeshComponent to use the mesh
-		// in mMeshComponentTemplate.
-
 		glm::vec4 colour = { 0,0,0,0 };
-		OWCollider* c = nullptr;
-		OWTransform* t = nullptr;
-		OWPhysics* p = nullptr;
-		// If OWMeshComponentBase is nullptr then use the mesh in mMeshComponentTemplate
-		//OWMeshComponentBase* m = nullptr;
+		OWCollider* coll = nullptr;
+		OWMeshComponentBase* mesh = nullptr;
+		OWPhysics* phys = nullptr;
+		OWSoundComponent* sound = nullptr;
+		OWTransform* trans = nullptr;
 	};
-	OWActorMulti(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
+	OWActorNCom1Ren(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
 		: OWActor(_scene, _name, _hostActor) {
 	}
-	void addComponents(const MultiSceneElement& toAdd);
-	void physics(OWPhysics* newValue);
+	size_t addComponents(const NCom1RenElement& newElement);
+	void renderer(OWRenderer* newValue) { 
+		mRenderer = newValue; 
+	}
+protected:
+	void doSetup() override;
+	void doRender(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
+		const glm::vec3& cameraPos) override;
+private:
+	std::vector<float> mSSBO;
+	OWRenderer* mRenderer = nullptr;
+	std::vector<NCom1RenElement> mElements;
+};
+
+// Use this class for aggregating mutable Particles (one Mesh, one Renderer, independant movement)
+class OWENGINE_API OWActorMutableParticle: public OWActor
+{
+public:
+	struct MutableParticleElement
+	{
+		glm::vec4 colour = { 0,0,0,0 };
+		OWCollider* coll = nullptr;
+		OWTransform* trans = nullptr;
+		OWPhysics* phys = nullptr;
+	};
+	OWActorMutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
+		: OWActor(_scene, _name, _hostActor) {
+	}
+	size_t addComponents(const MutableParticleElement& newElement);
 	void renderer(OWRenderer* newValue);
 	void sound(OWSoundComponent* newValue);
 	void meshComponent(OWMeshComponent* mc) {
-		mMeshComponentTemplate = mc;
+		mMeshTemplate = mc;
 	}
 
 protected:
+	void doSetup() override;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;
-	void doSetup();
 private:
-	OWMeshComponent* mMeshComponentTemplate = nullptr;
+	OWMeshComponent* mMeshTemplate = nullptr;
 	OWPhysics* mPhysics = nullptr;
 	OWRenderer* mRenderer = nullptr;
 	OWSoundComponent* mSound = nullptr;
-	bool mIsActive = false;
-	std::vector<MultiSceneElement> mElements;
+	std::vector<MutableParticleElement> mElements;
+};
+
+class OWInstanceRenderer;
+struct InstanceData;
+// Use this class for aggregating immutable Particles 
+// (one Mesh, one Renderer, no movement, fixed positions, no interaction with anything)
+class OWENGINE_API OWActorImmutableParticle: public OWActor
+{
+public:
+	OWActorImmutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
+	void renderer(OWInstanceRenderer* newValue);
+	void sound(OWSoundComponent* newValue);
+	void instanceMesh(const InstanceData& _data, std::string& _name);
+protected:
+	void doSetup() override;
+	void doRender(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
+		const glm::vec3& cameraPos) override;
+private:
+	OWMeshComponent* mMeshTemplate = nullptr;
+	OWPhysics* mPhysics = nullptr;
+	OWInstanceRenderer* mRenderer = nullptr;
+	OWSoundComponent* mSound = nullptr;
 };
 
 /*

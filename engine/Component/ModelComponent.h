@@ -10,19 +10,15 @@
 #include "Component.h"
 
 
-class OWENGINE_API OWModelComponent : public OWMeshComponentBase
+class OWENGINE_API OWModelComponent: public OWMeshComponentBase
 {
 	std::vector<OWModelData> mData;
 public:
 	OWModelComponent(OWActor* _owner,
-		const std::string& _name, const std::string& _modelName)
-		: OWMeshComponentBase(_owner, _name) {
-	}
-	void add(const OWModelData& md) { mData.push_back(md); }
-	const std::vector<OWModelData> complexMesh() const {
-		return mData;
-	}
+		const std::string& _name, const std::string& _modelName);
+	void add(const OWModelData& md);
+	const OWRenderData renderData(AABB& bounds) const override;
 protected:
-	virtual void doSetup() override {}
+	virtual void doSetup() override;
 };
 

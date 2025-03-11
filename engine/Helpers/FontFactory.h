@@ -8,7 +8,7 @@
 class OWENGINE_API FontFactory
 {
 public:
-	const FreeTypeFontAtlas::FontDetails* loadFreeTypeFont(
+	const FreeTypeFontAtlas::FontDetails& loadFreeTypeFont(
 		const std::string&, unsigned int fontHeight);
 private:
 #pragma warning( push )

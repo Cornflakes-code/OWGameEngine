@@ -26,7 +26,7 @@
 #define DEBUG_STARS
 
 NoMansSky::NoMansSky(Scene* _scene, const std::string& _name, const NoMansSkyData& _data)
-: OWActor(_scene, _name, nullptr), mData(_data)
+: OWActorDiscrete(_scene, _name, nullptr), mData(_data)
 {
 	mStarRadius = glm::vec2(0, 0);
 }
@@ -51,11 +51,11 @@ void NoMansSky::init(const std::string& fileName, const AABB& world)
 	mData.gridShader.shaderF = "Lines.f.glsl";
 	mData.gridShader.PVMName = "pvm";
 	Shader* shader = new Shader(mData.gridShader);
-	OWActorSingle::SingleSceneElement sse;
-	sse.c = new OWCollider(this, OWCollider::CollisionType::Permeable);
-	sse.m = (new OWMeshComponent(this, "Grid"))->add(gridData);
-	sse.r = new OWInstanceRenderer(shader);
-	sse.t = new OWTransform(nullptr);
+	OWActorDiscrete::DiscreteEntity sse;
+	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
+	sse.mesh = (new OWMeshComponent(this, "Grid"))->add(gridData);
+	sse.rend = new OWInstanceRenderer(shader);
+	sse.trans = new OWTransform(nullptr);
 	addComponents(sse);
 #endif
 
@@ -66,14 +66,14 @@ void NoMansSky::init(const std::string& fileName, const AABB& world)
 		OWGeometricShapes::star(mStarRadius.x / 5.0f, mStarRadius.x / 3.3f, 15);
 //		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
 	InstanceData starData;
-	starData.vertices(squareVertices, GL_TRIANGLES, 0);
+	starData.setVertices(squareVertices, GL_TRIANGLES, 0);
 
 	const int numStars = mData.numberOfStars;
 	mRandomMinorStars = createRandomVectors(NMSSize, numStars, scaleNMStoWorld);
-	starData.positions(mRandomMinorStars, 1, 1);
+	starData.setPositions(mRandomMinorStars, 1, 1);
 
 	const int numColours = 4;
-	const int numColourIterations = ceil( numStars * 1.0 / numColours);
+	const int numColourIterations = static_cast<int>(ceil( numStars * 1.0 / numColours));
 	std::vector<glm::vec4> instanceColours;
 	for (int i = 0; i < numColourIterations; i++)
 	{
@@ -84,7 +84,7 @@ void NoMansSky::init(const std::string& fileName, const AABB& world)
 		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::MAGENTA));
 		//instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
 	}
-	starData.colours(instanceColours, instanceColours.size(), 2);
+	starData.setColours(instanceColours, static_cast<unsigned int>(instanceColours.size()), 2);
 	Shader* starShader = new Shader("instanced.v.glsl", "glow.f.glsl", "");
 	starShader->setStandardUniformNames("VP");
 	starShader->setUniform(ShaderDataUniforms::UniformType::UFloat,
@@ -106,11 +106,12 @@ void NoMansSky::init(const std::string& fileName, const AABB& world)
 			shader->setVector2f("u_resolution", w);
 		};
 	starShader->appendMutator(pointRender);
-	OWActorSingle::SingleSceneElement sse1;
-	sse1.c = new OWCollider(this, OWCollider::CollisionType::Permeable);
-	sse1.m = (new OWMeshComponent(this, "Star Template"))->add(starData);
-	sse1.r = new OWInstanceRenderer(starShader);
-	sse1.t = new OWTransform(nullptr);
+	OWActorDiscrete::DiscreteEntity sse1;
+	sse1.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
+	throw NMSLogicException("Need to fix adding InstanceDAta to MeshComponent. Cannot recover.");
+	//sse1.mesh = (new OWMeshComponent(this, "Star Template"))->add(starData);
+	sse1.rend = new OWInstanceRenderer(starShader);
+	sse1.trans = new OWTransform(nullptr);
 	addComponents(sse1);
 #endif
 }
@@ -154,7 +155,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 						  float scaleToWorld)
 {
 	const glm::vec2 niceFontSpacing = { 0.00625f, 2 * 0.00625f };
-	OWActorMulti* starLabels = new OWActorMulti(this->scene(), "Star Labels", this);
+	OWActorNCom1Ren* starLabels = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
 	std::string line;
 	std::ifstream myfile(fileName);
 	if (myfile.is_open())
@@ -268,18 +269,19 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
-			OWActorMulti* multipleTexts = new OWActorMulti(this->scene(), "Star Labels", this);
+			OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
 			OWTextComponentData td;
 			td.tdt = OWTextComponentData::TextDisplayType::Static;
 			td.text = elms[0];
 			td.colour = { 0.0, 0.0, 0.0, 1.0f };
 			td.fontSpacing = niceFontSpacing;
 			td.referencePos = OWTextComponentData::PositionType::Right;
-			OWActorMulti::MultiSceneElement mse;
-			mse.m = new OWTextComponent(this, td.text, td);
-			mse.p = new OWPhysics();
-			mse.t = new OWTransform(this->transform(), point);
-			starLabels->addComponents(mse);
+			OWActorNCom1Ren::NCom1RenElement elm;
+			elm.phys = new OWPhysics();
+			elm.mesh = new OWTextComponent(this, td.text, td);
+			elm.trans = new OWTransform(this->transform(), point);
+			elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
+			starLabels->addComponents(elm);
 		}
 
 		myfile.close();

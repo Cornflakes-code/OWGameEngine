@@ -1,12 +1,12 @@
 #include "Transform.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-OWTransform::OWTransform(OWTransform* _owner, const OWTransformData& _data)
+OWTransform::OWTransform(const OWTransform* _owner, const OWTransformData& _data)
 	: mData(_data), mParent(_owner)
 {
 }
 
-OWTransform::OWTransform(OWTransform* _owner, const glm::vec3& pos,
+OWTransform::OWTransform(const OWTransform* _owner, const glm::vec3& pos,
 	const glm::vec3& scale, const glm::quat& rot)
 	: OWTransform(_owner, OWTransformData({ rot, pos, scale }))
 {

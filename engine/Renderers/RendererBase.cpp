@@ -98,7 +98,7 @@ public:
 GLenum BlendFuncRIAA::mSfactor;
 GLenum BlendFuncRIAA::mDfactor;
 
-OWRenderer::OWRenderer(const std::string& shaderFileName)
+OWRenderer::OWRenderer(const std::string& shaderFileName, RenderType rt)
 	: mShader(new Shader(shaderFileName))
 {
 }
@@ -112,7 +112,8 @@ void OWRenderer::validateBase() const
 void OWRenderer::render(std::vector<glm::mat4> models, const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos)
 {
-	PolygonModeRIAA temp1(mPolygonFace, mPolygonMode);
+	PolygonModeRIAA temp0(mPolygonFace, mPolygonMode);
+	PolygonModeRIAA temp1(mPolygonMode, mPolygonMode);
 	LineWidthRIAA temp2(mLineWidth);
 	BlendFuncRIAA temp3(mSfactor, mDfactor);
 

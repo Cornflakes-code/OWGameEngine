@@ -16,7 +16,7 @@ struct OWENGINE_API OWThreeDAxisData
 	AABB bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
 };
 
-class OWENGINE_API ThreeDAxis: public OWActorSingle
+class OWENGINE_API ThreeDAxis: public OWActorDiscrete
 {
 private:
 	OWThreeDAxisData mData;
@@ -25,5 +25,5 @@ public:
 	ThreeDAxis(Scene* _scene, const std::string& _name, const OWThreeDAxisData& _data = OWThreeDAxisData());
 	void doSetup() override;
 private:
-	OWActorSingle::SingleSceneElement createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b);
+	OWActorDiscrete::DiscreteEntity createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b);
 };

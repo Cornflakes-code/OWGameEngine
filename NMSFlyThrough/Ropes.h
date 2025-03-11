@@ -13,6 +13,7 @@ struct OWRopeDataImp
 	glm::uvec2 ropeZoom;
 	unsigned int numDepthLayers = 30;
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
+	glm::vec3 bannerTextScale;
 };
 
 struct OWRopeVisibilityData
@@ -33,7 +34,7 @@ struct OWRopeData
 	OWRopeVisibilityData ropeVisibility;
 };
 
-class Rope: public OWActorSingle
+class Rope: public OWActorDiscrete
 {
 private:
 	bool initRopes();

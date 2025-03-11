@@ -13,14 +13,13 @@
 class OWENGINE_API OWModelRenderer: public OWRenderer
 {
 public:
-	void doSetup(const std::vector<OWMeshData>& meshes,
-		const std::vector<OWModelData>& models) override;
-	OWModelRenderer(const std::string& shaderFileName)
-		: OWRenderer(shaderFileName)
+	void doSetup(const OWRenderData& renderData) override;
+	OWModelRenderer(const std::string& shaderFileName, RenderType rt = DRAW_MULTI)
+		: OWRenderer(shaderFileName, rt)
 	{
 	}
-	OWModelRenderer(Shader* shader)
-		: OWRenderer(shader)
+	OWModelRenderer(Shader* shader, RenderType rt = DRAW_MULTI)
+		: OWRenderer(shader, rt)
 	{
 	}
 protected:

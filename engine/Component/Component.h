@@ -9,8 +9,7 @@
 #include "../OWEngine/OWEngine.h"
 #include "../Core/OWObject.h"
 #include "../Renderers/RenderTypes.h"
-#include "../Helpers/Mesh.h"
-#include "../Helpers/Model.h"
+#include "../Helpers/RenderData.h"
 
 class OWActor;
 class OWENGINE_API OWComponent
@@ -46,17 +45,15 @@ struct OWModelData;
 
 class OWENGINE_API OWMeshComponentBase: public OWComponent
 {
-	OWRenderTypes::ShaderMutator mMutator;
 public:
 	OWMeshComponentBase(OWActor* _owner, const std::string& _name)
 		: OWComponent(_owner, _name) {
 	}
-	OWRenderTypes::ShaderMutator mutator() const {
-		return mMutator;
-	}
-	void mutator(OWRenderTypes::ShaderMutator newValue) {
-		mMutator = newValue;
-	}
-	virtual const std::vector<OWMeshData> simpleMesh(AABB& bounds) const;
-	virtual const std::vector<OWModelData> complexMesh(AABB& bounds) const;
+	virtual const OWRenderData renderData(AABB& bounds) const = 0;
+protected:
+	static bool validMode(GLenum mode);
+	static bool validPolygonMode(GLenum mode);
+
+	void validate(const MeshData& md) const;
+private:
 };

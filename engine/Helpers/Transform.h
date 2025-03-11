@@ -18,15 +18,15 @@ class OWENGINE_API OWTransform final
 	OWTransformData mData;
 
 	// The actor containing the entity that this transform is linked to
-	OWTransform* mParent = nullptr;
+	const OWTransform* mParent = nullptr;
 public:
-	OWTransform(OWTransform* _owner, const OWTransformData& _data);
-	OWTransform(OWTransform* _owner, const glm::vec3& pos = glm::vec3(0),
+	OWTransform(const OWTransform* _owner, const OWTransformData& _data);
+	OWTransform(const OWTransform* _owner, const glm::vec3& pos = glm::vec3(0),
 		const glm::vec3& scale = glm::vec3(1), const glm::quat& rot = glm::quat());
 	~OWTransform() {}
 
-	const OWTransform* hostingTransform() const { return mParent;  }
-	void hostingTransform(OWTransform* newValue) {
+	const OWTransform* hostTransform() const { return mParent;  }
+	void hostTransform(const OWTransform* newValue) {
 		mParent = newValue;
 	}
 	void rotation(float radians, const glm::vec3& axis);

@@ -236,6 +236,7 @@
     <ClInclude Include="..\Helpers\Model.h" />
     <ClInclude Include="..\Helpers\ModelFactory.h" />
     <ClInclude Include="..\Helpers\PhongShader.h" />
+    <ClInclude Include="..\Helpers\RenderData.h" />
     <ClInclude Include="..\Helpers\Shader.h" />
     <ClInclude Include="..\Helpers\ShaderFactory.h" />
     <ClInclude Include="..\Helpers\Texture.h" />
@@ -300,6 +301,7 @@
     <ClCompile Include="..\Helpers\Model.cpp" />
     <ClCompile Include="..\Helpers\ModelFactory.cpp" />
     <ClCompile Include="..\Helpers\PhongShader.cpp" />
+    <ClCompile Include="..\Helpers\RenderData.cpp" />
     <ClCompile Include="..\Helpers\Shader.cpp" />
     <ClCompile Include="..\Helpers\ShaderFactory.cpp" />
     <ClCompile Include="..\Helpers\stb_image.cpp" />

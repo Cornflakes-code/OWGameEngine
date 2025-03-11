@@ -42,7 +42,6 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 
 class Axis;
 class InstanceRenderer;
-class TextRenderer;
 class HeavyRenderer;
 class OLDButton;
 

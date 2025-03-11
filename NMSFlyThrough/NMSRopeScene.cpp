@@ -5,45 +5,42 @@
 
 #include <Component/TextComponent.h>
 #include <Helpers/FreeTypeFontAtlas.h>
-#include <Helpers/MeshDataLight.h>
 #include <Helpers/ShaderFactory.h>
 #include <Component/LightSource.h>
 
 #include "NMSUserInput.h"
 #include "ropes.h"
 
+Rope* gRope = nullptr;
 void NMSRopeScenePhysics::setup()
 {
 	const AABB& _world = NMSScene::world();
-	OWRopeData* rd = new OWRopeData();
-	rd->bannerTextData.textData.text = "Rope Text";
-	rd->ropeData.ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
+	OWRopeData rd;
+	rd.bannerTextData.text = "Ropes";
+	rd.ropeData.ropeZoom = { 500.0f * _world.size().x / globals->physicalWindowSize().x,
 					500.0f * _world.size().y / globals->physicalWindowSize().y };
-	rd->bannerTextData.textData.fontHeight = 24;
+	rd.bannerTextData.fontHeight = 24;
 	glm::vec2 spacing = FreeTypeFontAtlas::FontDetails::pleasingSpacing(
-		rd->bannerTextData.textData.fontHeight, globals->camera()->aspectRatio());
-	rd->bannerTextData.textData.fontSpacing = spacing;
+		rd.bannerTextData.fontHeight, globals->camera()->aspectRatio());
+	rd.bannerTextData.fontSpacing = spacing;
 	glm::vec3 sc = { 5.2f * _world.size().x / globals->physicalWindowSize().x,
 						5.2f * _world.size().y / globals->physicalWindowSize().y,
 					1.0f };
-	rd->bannerTextData.physics.scale(sc);
-	rd->labelTextData.textData.fontSpacing = spacing;
+	rd.ropeData.bannerTextScale = sc;
+	rd.labelTextData.fontSpacing = spacing;
 	/*
 	* 30822 - simple
 	* 29081 - strand for core
 	* 9239 - Original used for testing
 	*/
-	rd->ropeData.ropeDBId = 9239;
-	rd->ropeData.numDepthLayers = 45;
-	rd->ropeVisibility.ends = true;
-	rd->ropeVisibility.lines = true;
-	rd->ropeVisibility.surfaces = true;
-	rd->ropeVisibility.strandLabels = false;
-	rd->ropeVisibility.bannerLabel = false;
-	OWRopeScript* rs = new OWRopeScript(rd);
-	Rope* rope = new Rope(this->owner(), rs);
-	rope->init();
-	mCameraFocus = rope->bounds().center();
+	rd.ropeData.ropeDBId = 9239;
+	rd.ropeData.numDepthLayers = 45;
+	rd.ropeVisibility.ends = true;
+	rd.ropeVisibility.lines = true;
+	rd.ropeVisibility.surfaces = true;
+	rd.ropeVisibility.strandLabels = false;
+	rd.ropeVisibility.bannerLabel = false;
+	gRope = new Rope(this->owner(), "Rope", rd);
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(60.0f, 60.0f, -150.0f));
@@ -95,7 +92,7 @@ bool NMSRopeScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 		}
 		else if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::Special1)
 		{
-			const AABB& _world = NMSScene::world();
+			//const AABB& _world = NMSScene::world();
 			//drawRope(_world);
 			return true;
 		}
@@ -121,11 +118,22 @@ NMSRopeScene::NMSRopeScene(const Movie* _movie)
 
 void NMSRopeScene::doSetup(ScenePhysicsState* state)
 {
-	auto init = [](OLDActor* a)
+	auto init = [](OWActor* a)
 		{
-			a->init();
+			a->setup();
 		};
-	traverseSceneGraph(init);
+	bool moreToGo = true;
+	auto testFinished = [&moreToGo](OWActor* a)
+		{
+			if (!a->setupCompleted())
+				moreToGo = true;
+		};
+	while (moreToGo)
+	{
+		traverseSceneGraph(init);
+		moreToGo = false;
+		traverseSceneGraph(testFinished);
+	}
 }
 
 void NMSRopeScene::render(const ScenePhysicsState* state,
@@ -133,7 +141,7 @@ void NMSRopeScene::render(const ScenePhysicsState* state,
 	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	auto rend = [proj, view, model, cameraPos](OLDActor* a)
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
 		{
 			a->render(proj, view, model, cameraPos);
 		};
@@ -147,13 +155,16 @@ void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
 	NMSRopeScenePhysics* sp = dynamic_cast<NMSRopeScenePhysics*>(state);
 	if (!callCount)
 	{
-		sp->mCameraFocus.z = -200;
+		sp->mCameraFocus = { 62.5595f, 62.5297, -200 };
 		camera->position(sp->mCameraFocus);
 		sp->mCameraFocus.z = 0;
 		camera->lookAt(sp->mCameraFocus);
 		float speed = camera->moveScale();
 		camera->moveScale(speed * 5.0f);
 		//camera->FOV(glm::radians(45.0f));
+		glm::mat4 view = camera->view();
+		view = view;
+
 	}
 }
 

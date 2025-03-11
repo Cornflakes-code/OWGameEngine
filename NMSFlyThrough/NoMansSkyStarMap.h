@@ -14,7 +14,6 @@
 #include <Helpers/Mesh.h>
 
 class Shader;
-class TextRenderer;
 /*
 	The NMS game is a simple fly through of Solar Systems visited while
 	playing the No Man's Sky game.
@@ -36,7 +35,7 @@ struct NoMansSkyData
 	int numberOfStars = 500000;
 };
 
-class NoMansSky: public OWActorSingle
+class NoMansSky: public OWActorDiscrete
 {
 	NoMansSkyData mData;
 	glm::vec2 mStarRadius;

@@ -30,6 +30,7 @@ struct OWENGINE_API OWTextComponentData
 	TextDisplayType tdt = Dynamic;
 };
 
+class Texture;
 class OWENGINE_API OWTextComponent : public OWMeshComponentBase
 {
 	OWTextComponentData mData;
@@ -39,7 +40,7 @@ public:
 	OWTextComponent(OWActor* _owner, const std::string& _name,
 		const std::string& textFileName);
 	void doSetup() override;
-	virtual const std::vector<OWMeshData> simpleMesh(AABB& bounds) const;
+	const OWRenderData renderData(AABB& bounds) const override;
+	static OWRenderTypes::ShaderMutator shaderMutator(OWTextComponentData::TextDisplayType displayType);
 private:
-	void prepareMutators();
 };

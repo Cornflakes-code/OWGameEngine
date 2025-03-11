@@ -21,20 +21,9 @@ OWMeshComponent::OWMeshComponent(OWActor* _owner, const std::string& _name)
 {
 }
 
-OWMeshComponent* OWMeshComponent::add(const InstanceData& instanceData)
-{
-	OWMeshData md;
-	md.instanceData = instanceData;
-	mData.push_back(md);
-	return this;
-}
-
 OWMeshComponent* OWMeshComponent::add(const MeshData& meshData)
 {
-	validate(meshData);
-	OWMeshData md;
-	md.meshData = meshData;
-	mData.push_back(md);
+	mData.meshes.push_back(meshData);
 	return this;
 }
 
@@ -54,13 +43,16 @@ OWMeshComponent* OWMeshComponent::add(const std::vector<glm::vec4>& v)
 	return this;
 }
 
-void OWMeshComponent::validate(const MeshData& md)
+const OWRenderData OWMeshComponent::renderData(AABB& bounds) const
 {
-	if (md.v4.empty() == md.v3.empty())
+	bounds = mData.bounds();
+	return mData;
+}
+
+void OWMeshComponent::doSetup()
+{
+	for (int i = 0; i < mData.meshes.size(); i++)
 	{
-		if (md.v4.empty())
-			throw NMSLogicException("LightRenderer has no data");
-		else
-			throw NMSLogicException("LightRenderer has both v3 and v4 data");
+		validate(mData.meshes[i]);
 	}
 }

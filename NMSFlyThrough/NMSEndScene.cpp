@@ -83,7 +83,7 @@ void NMSEndScene::render(const ScenePhysicsState* OW_UNUSED(state),
 	const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0f);
-	auto rend = [proj, view, model, cameraPos](OLDActor* a)
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
 	{
 		a->render(proj, view, model, cameraPos);
 	};

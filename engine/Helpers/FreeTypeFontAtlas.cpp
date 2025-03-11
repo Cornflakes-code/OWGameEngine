@@ -13,7 +13,7 @@
 #include "../Core/ErrorHandling.h"
 #include "../Core/LogStream.h"
 
-const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
+const FreeTypeFontAtlas::FontDetails& FreeTypeFontAtlas::loadFont(
 		const std::filesystem::path& path, int fontHeight)
 {
 	auto iter = mFonts.begin();
@@ -38,7 +38,7 @@ const FreeTypeFontAtlas::FontDetails* FreeTypeFontAtlas::loadFont(
 		LogStream log(LogStreamLevel::Info);
 		iter->second.debugData(log, fontHeight);
 	}
-	return &(iter->second.fontDimensions[fontHeight]);
+	return iter->second.fontDimensions[fontHeight];
 }
 
 FreeTypeFontAtlas::LoadedFace::LoadedFace(

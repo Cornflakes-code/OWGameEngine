@@ -63,7 +63,7 @@ public:
 				unsigned int& width, unsigned int& height,
 				unsigned int maxRowWidth, int fontHeight) const;
 	};
-	const FontDetails* loadFont(
+	const FontDetails& loadFont(
 				const std::filesystem::path& path,
 				int fontHeight);
 #pragma warning( pop )

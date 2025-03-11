@@ -5,10 +5,16 @@
 
 #include "../Helpers/Shader.h"
 
-void OWModelRenderer::doSetup(const std::vector<OWMeshData>& meshes,
-	const std::vector<OWModelData>& models)
+void OWModelRenderer::doSetup(const OWRenderData& renderData)
 {
-	mData = models[0];
+	if (renderData.models.size() == 0)
+		throw NMSLogicException(
+			"Error. OWModelRenderer::doSetup has no models\n");
+	if (renderData.models.size() > 1)
+		throw NMSLogicException(
+			"Error. OWModelRenderer::doSetup cannot process multiple models\n");
+
+	mData = renderData.models[0];
 }
 
 void OWModelRenderer::prepareOpenGL()

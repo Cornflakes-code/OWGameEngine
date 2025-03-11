@@ -23,6 +23,5 @@
             "name": "viewLightPos",
             "value": glm::vec3(160.0f, 60.0f, 50.0f)
         }
-		
     ]
 }

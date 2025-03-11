@@ -92,26 +92,26 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	nmsd.starWorld = world();
 	nmsd.name = "grid";
 	nmsd.numberOfStars = 50000;
-	NoMansSky* starMap = new NoMansSky(this, "NMS", nmsd);
+	new NoMansSky(this, "NMS", nmsd);
 
 	OWThreeDAxisData threeDAxisData;
 	threeDAxisData.bounds = world();
-	ThreeDAxis* axis = new ThreeDAxis(this, "NMS Axis", threeDAxisData);
+	new ThreeDAxis(this, "NMS Axis", threeDAxisData);
 
 	auto init = [](OWActor* a)
 		{
-			a->init();
+			a->setup();
 		};
 	traverseSceneGraph(init);
 }
 
-void NMSMainScene::render(const ScenePhysicsState* state,
+void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),
 						  const glm::mat4& proj, const glm::mat4& view, 
 						const glm::vec3& cameraPos)
 {
 	glm::mat4 model(1.0);
 
-	auto rend = [proj, view, model, cameraPos](OLDActor* a)
+	auto rend = [proj, view, model, cameraPos](OWActor* a)
 	{
 		a->render(proj, view, model, cameraPos);
 	};

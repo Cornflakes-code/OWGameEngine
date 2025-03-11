@@ -59,74 +59,80 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	return bounds;
 }
 
-void OWTextComponent::prepareMutators()
+OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType displayType)
 {
-	if (mData.tdt == OWTextComponentData::TextDisplayType::Dynamic)
-		mutator([](const glm::mat4& proj, const glm::mat4& view,
-			const glm::mat4& model, const glm::vec3& cameraPos,
-			const Shader* shader)
+	if (displayType == OWTextComponentData::TextDisplayType::Dynamic)
+	{
+		return
+			[](const glm::mat4& proj, const glm::mat4& view,
+				const glm::mat4& model, const glm::vec3& cameraPos,
+				const Shader* shader)
 			{
 				glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
 				shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
 				glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 				shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
 				shader->setVector3f("BillboardPos", model[3]);
-			}
-		);
-	else if (mData.tdt == OWTextComponentData::TextDisplayType::Static)
+				glm::vec2 bbSize({ 5.4, 3.6 });
+				shader->setVector2f("BillboardSize", bbSize);
+			};
+	}
+	else if (displayType == OWTextComponentData::TextDisplayType::Static)
 	{
-		mutator([](const glm::mat4& proj, const glm::mat4& view,
-			const glm::mat4& model, const glm::vec3& cameraPos, const Shader* shader)
+		return
+			[](const glm::mat4& proj, const glm::mat4& view,
+				const glm::mat4& model, const glm::vec3& cameraPos, const Shader* shader)
 			{
 				shader->setVector3f("BillboardPos", model[3]);
-			}
-		);
+			};
 	}
 	else
 	{
-		throw NMSLogicException("Error: Unkown OWTextComponentData::TextDisplayType.");
+		throw NMSLogicException("OWTextComponent::shaderMutator. Unknown RenderType");
 	}
 }
 
-const std::vector<OWMeshData> OWTextComponent::simpleMesh(AABB& bounds) const
+const OWRenderData OWTextComponent::renderData(AABB& bounds) const
 {
-	OWMeshData md;
-
-	const FreeTypeFontAtlas::FontDetails* fontData
+	const FreeTypeFontAtlas::FontDetails& fontData
 		= FontFactory().loadFreeTypeFont(mData.fontName, mData.fontHeight);
-	md.meshData.v4 = fontData->createText(mData.text, mData.fontSpacing.x, mData.fontSpacing.y);
-	if (md.meshData.v4.empty())
+	MeshData md;
+	md.v4 = fontData.createText(mData.text, mData.fontSpacing.x, mData.fontSpacing.y);
+	if (md.v4.empty())
 	{
 		throw NMSLogicException(std::stringstream()
 			<< "No Triangles generated for Text ["
 			<< mData.text << "] is empty\n");
 	}
-	bounds = adjustPosition(md.meshData.v4, mData.referencePos);
-	md.meshData.setColour(mData.colour, "textcolor");
-	std::vector<OWMeshData> retval;
-	retval.push_back(md);
+	bounds = adjustPosition(md.v4, mData.referencePos);
+	md.setColour(mData.colour, "textcolor");
+	md.indicesMode = md.vertexMode = GL_TRIANGLES;
+	md.setPolygonMode(GL_FILL);
+	validate(md);
+	OWRenderData retval;
+	retval.meshes.push_back(md);
+	FreeTypeFontAtlas::FontDetails fd
+		= FontFactory().loadFreeTypeFont(mData.fontName, mData.fontHeight);
+	retval.textures.push_back(fd.texture());
 	return retval;
 }
 
-
 void OWTextComponent::doSetup()
 {
-	prepareMutators();
-	OWTextComponentData& td = mData;
-
 	// If both left and right then remove them
-	if (((td.referencePos & OWTextComponentData::PositionType::Left) &&
-		(td.referencePos & OWTextComponentData::PositionType::Right)))
+	if (((mData.referencePos & OWTextComponentData::PositionType::Left) &&
+		(mData.referencePos & OWTextComponentData::PositionType::Right)))
 	{
-		td.referencePos = OWTextComponentData::PositionType(td.referencePos & 0xC);
+		mData.referencePos = OWTextComponentData::PositionType(mData.referencePos & 0xC);
 	}
 
 	// If both Top and Bottom then remove them
-	if (((td.referencePos & OWTextComponentData::PositionType::Top) &&
-		(td.referencePos & OWTextComponentData::PositionType::Bottom)))
+	if (((mData.referencePos & OWTextComponentData::PositionType::Top) &&
+		(mData.referencePos & OWTextComponentData::PositionType::Bottom)))
 	{
-		td.referencePos = OWTextComponentData::PositionType(td.referencePos & 0x3);
+		mData.referencePos = OWTextComponentData::PositionType(mData.referencePos & 0x3);
 	}
+	
 }
 
 AABB calcOrthogonalAABB(const glm::vec3& right, const glm::vec3& up,

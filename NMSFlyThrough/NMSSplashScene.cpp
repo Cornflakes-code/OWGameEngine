@@ -53,7 +53,7 @@ AABB NMSSplashScenePhysics::mWindowBounds;
 // So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScenePhysics::mSpeed;
-OWActorSingle* gRay = nullptr;
+OWActorDiscrete* gRay = nullptr;
 
 NMSSplashScenePhysics::NMSSplashScenePhysics(Scene* owner)
 	: NMSWorldPhysicsState(owner)
@@ -131,15 +131,15 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 				// need to deactivate, remove from scene and remove from Collissions
 				delete gRay;
 			}
-			gRay = new OWActorSingle(this->owner(), "Ray Actor");
+			gRay = new OWActorDiscrete(this->owner(), "Ray Actor");
 			gRay->transform(new OWTransform(nullptr));
-			OWActorSingle::SingleSceneElement sse;
-			sse.c = new OWCollider(gRay, OWCollider::CollisionType::Ray);
+			OWActorDiscrete::DiscreteEntity sse;
+			sse.coll = new OWCollider(gRay, OWCollider::CollisionType::Ray);
 			OWMeshComponent* mc = new OWMeshComponent(gRay, "Ray Component");
 			mc->add(OWGeometricShapes::beam(cam_pos, dir, 1000));
-			sse.m = mc;
-			sse.r = new OWMeshRenderer("", OWMeshRenderer::RenderType::DRAW_ARRAYS);
-			sse.t = new OWTransform(gRay->transform(), cam_pos);
+			sse.mesh = mc;
+			sse.rend = new OWMeshRenderer("", OWMeshRenderer::RenderType::DRAW_MULTI);
+			sse.trans = new OWTransform(gRay->transform(), cam_pos);
 			gRay->addComponents(sse);
 #endif
 			gRay->transform()->localPosition(cam_pos);
@@ -213,18 +213,18 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 	return false;
 }
 
-OWActorMulti::MultiSceneElement createBox(const std::string& _name, const glm::vec4& colour,
+OWActorMutableParticle::MutableParticleElement createBox(const std::string& _name, const glm::vec4& colour,
 	const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
 {
-	OWActorMulti::MultiSceneElement mse;
-	mse.colour = colour;
-	mse.c = new OWCollider(nullptr, OWCollider::CollisionType::Ovoid);
-	mse.t = new OWTransform(nullptr, origin, scale);
-	mse.t->rotation(glm::radians(45.0f), glm::vec3(1, 0, 0));
+	OWActorMutableParticle::MutableParticleElement elm;
+	elm.colour = colour;
+	elm.coll = new OWCollider(nullptr, OWCollider::CollisionType::Ovoid);
+	elm.trans = new OWTransform(nullptr, origin, scale);
+	elm.trans->rotation(glm::radians(45.0f), glm::vec3(1, 0, 0));
 	OWPhysicsData pd;
 	pd.velocity = direction * speed;
-	mse.p = new OWPhysics(pd);
-	return mse;
+	elm.phys = new OWPhysics(pd);
+	return elm;
 /*
 	bcd->shaderData.uniforms.push_back({ShaderDataUniforms::UV4F, "lightColor",
 				OWUtils::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE)) });
@@ -235,16 +235,17 @@ OWActorMulti::MultiSceneElement createBox(const std::string& _name, const glm::v
 */
 }
 
-OWActorMulti::MultiSceneElement createBumperPlane(const std::string& _name, const glm::vec3& pos,
+OWActorMutableParticle::MutableParticleElement createBumperPlane(const std::string& _name, const glm::vec3& pos,
 							float scale, float rotDegrees, const glm::vec3& rotAxis)
 {
-	OWActorMulti::MultiSceneElement mse;
-	mse.c = new OWCollider(nullptr, OWCollider::CollisionType::Plane);
-	mse.t = new OWTransform(nullptr);
-	mse.t->rotation(glm::radians(rotDegrees), rotAxis);
-	mse.t->scale(glm::vec3(scale));
-	mse.t->localPosition(pos);
-	return mse;
+	OWActorMutableParticle::MutableParticleElement elm;
+	elm.coll = new OWCollider(nullptr, OWCollider::CollisionType::Plane);
+	elm.trans = new OWTransform(nullptr);
+	elm.trans->rotation(glm::radians(rotDegrees), rotAxis);
+	elm.trans->scale(glm::vec3(scale));
+	elm.trans->localPosition(pos);
+	elm.phys = new OWPhysics();
+	return elm;
 }
 
 void NMSSplashScenePhysics::setup()
@@ -286,8 +287,8 @@ void NMSSplashScenePhysics::setup()
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
 
-	OWActorSingle* textActor = new OWActorSingle(this->owner(), "Welcome and Goodbye");
-	textActor->transform(glm::vec3(0), glm::vec3(scale, 1.0));
+	OWActorNCom1Ren* dynamicTextActor = new OWActorNCom1Ren(this->owner(), "Dynamic Text Actor");
+	dynamicTextActor->transform(glm::vec3(0), glm::vec3(scale, 1.0));
 
 #ifdef INCLUDE_WELCOME
 	OWPhysicsData pd1;
@@ -302,20 +303,23 @@ void NMSSplashScenePhysics::setup()
 	welcomeData.colour = { 0.0, 0.0, 0.0, 1.0f };
 	welcomeData.fontSpacing = { 10 * nice.x, 10 * nice.y };
 	welcomeData.text = "Welcome to reality.";
-
-	OWActorSingle::SingleSceneElement sse1;
-	sse1.c = new OWCollider(textActor, OWCollider::CollisionType::Box);
-	sse1.m = new OWTextComponent(textActor, "Welcome", welcomeData);
-	sse1.p = new OWPhysics(pd1);
-	sse1.r = new OWMeshRenderer("DynamicText.json");
-	sse1.s = new OWSoundComponent();
-	sse1.t = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 2.0));
-	textActor->addComponents(sse1);
+	{
+		OWActorNCom1Ren::NCom1RenElement elm;
+		elm.coll = new OWCollider(dynamicTextActor, OWCollider::CollisionType::Box);
+		elm.mesh = new OWTextComponent(dynamicTextActor, "Welcome", welcomeData);
+		elm.phys = new OWPhysics(pd1);
+		elm.sound = new OWSoundComponent();
+		elm.trans = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 2.0));
+		dynamicTextActor->renderer(new OWMeshRenderer("DynamicText.json"));
+		dynamicTextActor->addComponents(elm);
+	}
 
 #endif
 	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
 	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
 #ifdef INCLUDE_ENJOY
+	OWActorNCom1Ren* staticTextActor = new OWActorNCom1Ren(this->owner(), "Static Text Actor");
+	staticTextActor->transform(glm::vec3(0), glm::vec3(scale, 1.0));
 	OWPhysicsData pd2;
 	pd2.velocity = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West] * mSpeed / 20.0f;
@@ -328,27 +332,29 @@ void NMSSplashScenePhysics::setup()
 	enjoyData.fontSpacing = { nice.x, nice.y };
 	enjoyData.text = "Enjoy it while you can.";
 
-	OWActorSingle::SingleSceneElement sse2;
-	sse2.c = new OWCollider(textActor, OWCollider::CollisionType::Box);
-	sse2.m = new OWTextComponent(textActor, "Enjoy", enjoyData);
-	sse2.p = new OWPhysics(pd2);
-	sse2.r = new OWMeshRenderer("StaticText.json");
-	sse2.s = new OWSoundComponent();
-	sse2.t = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 3.0));
-	textActor->addComponents(sse2);
+	{
+		OWActorNCom1Ren::NCom1RenElement elm;
+		elm.coll = new OWCollider(staticTextActor, OWCollider::CollisionType::Box);
+		elm.mesh = new OWTextComponent(staticTextActor, "Enjoy", enjoyData);
+		elm.phys = new OWPhysics(pd2);
+		elm.sound = new OWSoundComponent();
+		elm.trans = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 3.0));
+		staticTextActor->renderer(new OWMeshRenderer("StaticText.json"));
+		staticTextActor->addComponents(elm);
+	}
 #endif
 
-	OWActorMulti* boxActor = new OWActorMulti(this->owner(), "All Boxes");
+	OWActorMutableParticle* boxActor = new OWActorMutableParticle(this->owner(), "All Boxes");
 	boxActor->transform(new OWTransform(nullptr));
 	boxActor->scriptor(new OWScriptComponent());
-	boxActor->physics(new OWPhysics());
 	boxActor->sound(new OWSoundComponent());
-	MeshData mds;
-	mds.v3 = OWGeometricShapes::cube();
-
-	OWMeshComponent* mc = new OWMeshComponent(boxActor, "Box Template");
-	mc->add(mds);
-	boxActor->meshComponent(mc);
+	MeshData mds1;
+	mds1.v3 = OWGeometricShapes::cube();
+	{
+		OWMeshComponent* mc1 = new OWMeshComponent(boxActor, "Box Template");
+		mc1->add(mds1);
+		boxActor->meshComponent(mc1);
+	}
 	boxActor->renderer(new OWInstanceRenderer("BoxShader.json"));
 
 	glm::vec3 scale1 = { 10, 10, 10 };
@@ -426,17 +432,17 @@ void NMSSplashScenePhysics::setup()
 	}
 
 #ifdef INCLUDE_IMPORTED_MODEL
-	OWActorSingle* singleModelActor = new OWActorSingle(this->owner(), "Dice");
-	OWActorSingle::SingleSceneElement sse;
-	sse.c = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
-	sse.m = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
-	sse.p = new OWPhysics();
-	sse.r = new OWModelRenderer("DiceShader.json");
-	sse.s = new OWSoundComponent();
+	OWActorDiscrete* singleModelActor = new OWActorDiscrete(this->owner(), "Dice");
+	OWActorDiscrete::DiscreteEntity sse;
+	sse.coll = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
+	sse.mesh = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
+	sse.phys = new OWPhysics();
+	sse.rend = new OWModelRenderer("DiceShader.json");
+	sse.sound = new OWSoundComponent();
 	OWTransformData td;
 	td.position = glm::vec3(0);
 	td.scale = glm::vec3(10.0, 10.0, 10.0);
-	sse.t = new OWTransform(nullptr, td);
+	sse.trans = new OWTransform(nullptr, td);
 #endif
 #ifdef INCLUDE_STAR_RENDER
 	mButtonData.mButtonShape = GeometricShapes::goldenRectangle(10);
@@ -446,19 +452,20 @@ void NMSSplashScenePhysics::setup()
 	const float pos = off / 2.0f;
 	// Create a box of planes for the objects to bounce off
 #ifdef INCLUDE_PLANES
-	OWActorMulti* planeActor = new OWActorMulti(this->owner(), "All Planes");
+	OWActorMutableParticle* planeActor = new OWActorMutableParticle(this->owner(), "All Planes");
 	planeActor->transform(new OWTransform(nullptr));
 	planeActor->scriptor(new OWScriptComponent());
-	planeActor->physics(new OWPhysics());
 	planeActor->sound(new OWSoundComponent());
-	MeshData mds;
-	mds.v3 = OWGeometricShapes::rectangle(glm::vec2(1));
-	mds.v3[0].z -= 0.01f;
-	mds.v3[1].z += 0.01f;
-	mds.setPolygonMode(GL_FILL);
-	OWMeshComponent* mc = new OWMeshComponent(boxActor, "Plane Template");
-	mc->add(mds);
-	planeActor->meshComponent(mc);
+	MeshData mds2;
+	mds2.v3 = OWGeometricShapes::rectangle(glm::vec2(1));
+	mds2.v3[0].z -= 0.01f;
+	mds2.v3[1].z += 0.01f;
+	mds2.setPolygonMode(GL_FILL);
+	{
+		OWMeshComponent* mc2 = new OWMeshComponent(boxActor, "Plane Template");
+		mc2->add(mds2);
+		planeActor->meshComponent(mc2);
+	}
 	planeActor->renderer(new OWInstanceRenderer("PlaneShader.json"));
 
 	planeActor->addComponents(createBumperPlane("Plane Front", 
@@ -521,18 +528,18 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 		};
 	shader->appendMutator(fullScreenRender);
 	shader->appendMutator(fullScreenResize);
-	OWActorSingle* fullScreenActor = new OWActorSingle(this, "Fullscreen");
+	OWActorDiscrete* fullScreenActor = new OWActorDiscrete(this, "Fullscreen");
 	MeshData mds;
 	mds.v4.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
 	mds.setPolygonMode(GL_FILL);
-	OWActorSingle::SingleSceneElement sse;
-	sse.c = new OWCollider(fullScreenActor, OWCollider::CollisionType::Permeable);
+	OWActorDiscrete::DiscreteEntity sse;
+	sse.coll = new OWCollider(fullScreenActor, OWCollider::CollisionType::Permeable);
 	OWMeshComponent* mc = new OWMeshComponent(fullScreenActor, "Fullscreen Component");
 	mc->add(mds);
-	sse.m = mc;
-	sse.p = new OWPhysics();
-	sse.r = new OWModelRenderer(shader);
-	sse.s = new OWSoundComponent();
+	sse.mesh = mc;
+	sse.phys = new OWPhysics();
+	sse.rend = new OWModelRenderer(shader);
+	sse.sound = new OWSoundComponent();
 #endif
 
 #ifdef INCLUDE_STAR_RENDER

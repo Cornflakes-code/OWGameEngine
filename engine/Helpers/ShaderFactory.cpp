@@ -6,7 +6,6 @@
 #include "../Core/ErrorHandling.h"
 #include "../Core/ResourcePathFactory.h"
 
-
 #define GLSL(src) "#version 330 core\n" #src
 
 ShaderFactory::ShaderCache ShaderFactory::mLoadedFiles;

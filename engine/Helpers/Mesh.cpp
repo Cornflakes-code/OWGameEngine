@@ -13,7 +13,7 @@ AABB InstanceData::bounds() const
 	}
 	else
 	{
-		throw NMSLogicException("Data for InstanceData not set.");
+		throw NMSLogicException("No data for InstanceData.");
 	}
 }
 
@@ -29,7 +29,6 @@ AABB MeshData::bounds() const
 	}
 	else
 	{
-		throw NMSLogicException("Data for MeshData not set.");
+		throw NMSLogicException("No data for MeshData.");
 	}
 }
-

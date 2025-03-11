@@ -201,9 +201,6 @@
     <ClInclude Include="..\Component\PhysicalComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Component\TextComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderers\InstanceRenderer.h">
       <Filter>Renderers</Filter>
     </ClInclude>
@@ -221,6 +218,12 @@
     </ClInclude>
     <ClInclude Include="..\Core\CollisionSystem.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Component\TextComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\RenderData.h">
+      <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -386,9 +389,6 @@
     <ClCompile Include="..\Component\PhysicalComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\Component\TextComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="..\Renderers\InstanceRenderer.cpp">
       <Filter>Renderers</Filter>
     </ClCompile>
@@ -403,6 +403,12 @@
     </ClCompile>
     <ClCompile Include="..\Core\CollisionSystem.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Component\TextComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\RenderData.cpp">
+      <Filter>Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@
 FreeTypeFontAtlas FontFactory::mFreeType;
 std::vector<FontFactory::FreeTypeFont> FontFactory::mFreeTypes;
 
-const FreeTypeFontAtlas::FontDetails* FontFactory::loadFreeTypeFont(
+const FreeTypeFontAtlas::FontDetails& FontFactory::loadFreeTypeFont(
 	const std::string& fileName, unsigned int fontHeight)
 {
 	std::filesystem::path p

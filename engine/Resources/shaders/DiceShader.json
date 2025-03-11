@@ -21,8 +21,7 @@
         {
             "ut": "UV3F",
             "name": "viewLightPos",
-            "value": glm::vec3(160.0f, 60.0f, 50.0f)
+            "value": "160.0, 60.0, 50.0"
         }
-		
     ]
 }

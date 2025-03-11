@@ -15,23 +15,27 @@
 class OWENGINE_API OWInstanceRenderer: public OWRenderer
 {
 public:
-	OWInstanceRenderer(const std::string& shaderName)
-		: OWRenderer(shaderName) {
+	OWInstanceRenderer(const std::string& shaderName, RenderType rt = DRAW_MULTI)
+		: OWRenderer(shaderName, rt) {
 	}
-	OWInstanceRenderer(Shader* _shader)
-		: OWRenderer(_shader) {
+	OWInstanceRenderer(Shader* _shader, RenderType rt = DRAW_MULTI)
+		: OWRenderer(_shader, rt) {
 	}
 protected:
-	void doSetup(const std::vector<OWMeshData>& meshes,
-		const std::vector<OWModelData>& models) override;
+	void doSetup(const OWRenderData& renderData) override;
 	void doRender() override;
 private:
-	void setupMeshes(const std::vector<OWMeshData>& meshes);
-	void setupModels(const std::vector<OWModelData>& models);
+	void setupMesh(const MeshData& mesh);
+	void setupInstance();
+	void setupModel(const OWModelData& model);
 	void validate(const InstanceData& meshData) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
-	InstanceData::RenderData mData;
+	InstanceData mData;
+	// Keep the count seperate cos we could blow away mData.v3/v4
+	GLsizei mVerticeCount = 0;
+	GLsizei mPositionCount = 0;
+	GLsizei mColourCount = 0;
 	// mVbo[0] The VBO containing the triangles to draw
 	// mVbo[1] The VBO containing the positions of the particles
 	// mVbo[2] The VBO containing the colors of the particles

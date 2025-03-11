@@ -51,17 +51,22 @@ void to_json(json& j, const ShaderData& p)
 	};
 }
 
+static bool obj_exists(const json& j, const std::string& s)
+{
+	return j.find(s) != j.end();
+}
+
 void from_json(const json& j, ShaderData& p)
 {
-	j.at("colourName").get_to(p.colourName);
-	j.at("shaderV").get_to(p.shaderV);
-	j.at("shaderF").get_to(p.shaderF);
-	j.at("shaderG").get_to(p.shaderG);
-	j.at("PVMName").get_to(p.PVMName);
-	j.at("projectionName").get_to(p.projectionName);
-	j.at("viewName").get_to(p.viewName);
-	j.at("modelName").get_to(p.modelName);
-	j.at("uniforms").get_to(p.uniforms);
+	if (j.find("colourName") != j.end()) j.at("colourName").get_to(p.colourName);
+	if (j.find("shaderV") != j.end()) j.at("shaderV").get_to(p.shaderV);
+	if (j.find("shaderF") != j.end()) j.at("shaderF").get_to(p.shaderF);
+	if (j.find("shaderG") != j.end()) j.at("shaderG").get_to(p.shaderG);
+	if (j.find("PVMName") != j.end()) j.at("PVMName").get_to(p.PVMName);
+	if (j.find("projectionName") != j.end()) j.at("projectionName").get_to(p.projectionName);
+	if (j.find("viewName") != j.end()) j.at("viewName").get_to(p.viewName);
+	if (j.find("modelName") != j.end()) j.at("modelName").get_to(p.modelName);
+	if (j.find("uniforms") != j.end()) j.at("uniforms").get_to(p.uniforms);
 }
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
@@ -72,11 +77,23 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
 
 Shader::Shader(const std::string& fileName)
 {
-	std::filesystem::path jsonFilePath =
-		ResourcePathFactory().appendPath(fileName,
-			ResourcePathFactory::ResourceType::Shader);
-	json js = json::parse(jsonFilePath.u8string());
-	from_json(js, mData);
+	if (fileName.size())
+	{
+		std::filesystem::path jsonFilePath =
+			ResourcePathFactory().appendPath(fileName,
+				ResourcePathFactory::ResourceType::Shader);
+		json js;
+		std::ifstream ifs(jsonFilePath);
+		if (!ifs)
+		{
+			LogStream(LogStreamLevel::Error) << "Cannot open Shader file [" << jsonFilePath << "]\n";
+		}
+		else
+		{
+			js = json::parse(ifs);
+		}
+		from_json(js, mData);
+	}
 	create(
 		mData.shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()
 		: mData.shaderV,
