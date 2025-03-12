@@ -3,32 +3,30 @@
 // textDynamicBillboard.v.glsl
 layout(location = 0) in vec4 coord;
 
-layout(binding = 2, std430) readonly buffer ssbo1 {
+layout(binding = 1, std430) readonly buffer ssbo1 {
 	vec4 BillboardPos_SSB[];
 };
 
 // Output data ; will be interpolated for each fragment.
 out vec2 uv;
-out int dummy1;
-out vec4 jfw_ssb;
-out vec3 jfw_bbp;
+out vec4 jfw_pos;
 out int jfw_draw_id;
+out int jfw_gl_VertexID;
+//out vec4 jfw_ssb;
+//out int jfw_draw_id;
 
 // Values that stay constant for the whole mesh.
 uniform vec3 CameraRight_worldspace;
 uniform vec3 CameraUp_worldspace;
 uniform mat4 VP; // Model-View-Projection matrix, but without the Model (the position is in BillboardPos; the orientation depends on the camera)
-uniform vec3 BillboardPos; // Position of the center of the billboard
 uniform vec2 BillboardSize; // Size of the billboard, in world units (probably meters)
 
 void main()
 {
-	//vec3 particleCenter_wordspace = BillboardPos;
-	vec4 temp = BillboardPos_SSB[gl_DrawID];
-	vec3 particleCenter_wordspace = vec3(temp.xyz);
-	jfw_ssb = BillboardPos_SSB[gl_DrawID];
-	jfw_bbp = BillboardPos;
+	vec3 particleCenter_wordspace = vec3(BillboardPos_SSB[gl_DrawID].xyz);
+	jfw_pos = BillboardPos_SSB[gl_DrawID];
 	jfw_draw_id = gl_DrawID;
+	jfw_gl_VertexID = gl_VertexID;
 	vec3 vertexPosition_worldspace = 
 		particleCenter_wordspace
 		+ CameraRight_worldspace * coord.x * BillboardSize.x

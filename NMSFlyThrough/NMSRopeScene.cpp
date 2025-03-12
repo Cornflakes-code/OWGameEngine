@@ -34,12 +34,16 @@ void NMSRopeScenePhysics::setup()
 	* 9239 - Original used for testing
 	*/
 	rd.ropeData.ropeDBId = 9239;
+#ifdef _DEBUG
 	rd.ropeData.numDepthLayers = 45;
+#else
+	rd.ropeData.numDepthLayers = 1000;
+#endif
 	rd.ropeVisibility.ends = true;
-	rd.ropeVisibility.lines = true;
+	rd.ropeVisibility.lines = false;
 	rd.ropeVisibility.surfaces = true;
 	rd.ropeVisibility.strandLabels = false;
-	rd.ropeVisibility.bannerLabel = false;
+	rd.ropeVisibility.bannerLabel = true;
 	gRope = new Rope(this->owner(), "Rope", rd);
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));
@@ -155,7 +159,8 @@ void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
 	NMSRopeScenePhysics* sp = dynamic_cast<NMSRopeScenePhysics*>(state);
 	if (!callCount)
 	{
-		sp->mCameraFocus = { 62.5595f, 62.5297, -200 };
+		sp->mCameraFocus = { 62.5595f, 62.5297, 0 };// gRope->bounds().center();
+		sp->mCameraFocus.z = -200;
 		camera->position(sp->mCameraFocus);
 		sp->mCameraFocus.z = 0;
 		camera->lookAt(sp->mCameraFocus);

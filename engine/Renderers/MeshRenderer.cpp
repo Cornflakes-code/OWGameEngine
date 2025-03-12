@@ -16,13 +16,13 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 	if (renderData.models.size())
 		throw NMSLogicException(
 			"Error. OWMeshRender cannot draw OWModelData \n");
-	if (renderData.textures.size() > 1000000) // jfw fix me. The textures may be identical.
+	if (renderData.textures.size() > 1)
 	{
 		throw NMSLogicException(
 			"Error. OWMeshRender cannot handle more than one texture.\n");
 	}
 
-	// if (renderData.textures.size() == 1) jfw fix me
+	if (renderData.textures.size() == 1)
 		add(renderData.textures[0]);
 	for (const auto& m : renderData.meshes)
 	{
@@ -69,9 +69,10 @@ void OWMeshRenderer::add(const MeshData& meshData)
 	if (!meshData.indices.empty())
 	{
 		// https://stackoverflow.com/questions/24516993/is-it-possible-to-use-index-buffer-objects-ibo-with-the-function-glmultidrawe
-		mMultiElementStartIndexes.push_back(static_cast<GLsizei>(mData.indices.size() * sizeof(GLsizei)));
+		GLsizei xx = mData.indices.size() * sizeof(GLsizei);
+		mMultiElementStartIndexes.push_back(reinterpret_cast<void*>(xx));
 		mData.indices.insert(mData.indices.end(), meshData.indices.begin(), meshData.indices.end());
-		mMultiElementIndicesCounts.push_back(static_cast<GLsizei>(mData.indices.size()));
+		mMultiElementIndicesCounts.push_back(static_cast<GLsizei>(mData.indices.size() * sizeof(unsigned int)));
 	}
 	mData.shaderColourName = meshData.shaderColourName;
 	mData.colour = meshData.colour;
@@ -94,31 +95,23 @@ void OWMeshRenderer::prepareOpenGL()
 	if (mData.polygonMode_mode == GL_LINES)
 		mData.polygonMode_mode = GL_LINE;
 
-	if (mSSBO.size > 0)
+	if (mSSBO.data.size() > 0)
 	{
-		if (true)
-		{
-			glCreateBuffers(1, &mSbo);
-			glNamedBufferStorage(mSbo,
-				mSSBO.size,
-				(const void*)mSSBO.data,
-				GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
-			// Note the 1 matches our binding = 2 in the vertex shader
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, mSbo);
-		}
-		else
-		{
-			glGenBuffers(1, &mSbo);
-			glNamedBufferStorage(mSbo,
-				mSSBO.size,
-				(const void*)mSSBO.data,
-				GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
-		}
+		// This is good 
+		// https://www.khronos.org/opengl/wiki/Vertex_Shader/Defined_Inputs
+		// https://ktstephano.github.io/rendering/opengl/ssbos
+		glCreateBuffers(1, &mSbo);
+		glNamedBufferStorage(mSbo,
+			mSSBO.data.size() * sizeof(float),
+			(const void*)mSSBO.data.data(),
+			GL_DYNAMIC_STORAGE_BIT);
+		// Note the 1 matches our binding = 2 in the vertex shader
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
 	}
 	if (mVao == std::numeric_limits<unsigned int>::max())
 		glGenVertexArrays(1, &mVao);
 	glBindVertexArray(mVao);
-	if (mSSBO.size > 0)
+	if (mSSBO.data.size() > 0)
 	{
 		// Note the 1 matches our binding = 1 in the vertex shader
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
@@ -142,6 +135,9 @@ void OWMeshRenderer::prepareOpenGL()
 	unsigned int vertexLoc = shader()->getAttributeLocation("coord");
 	if (mData.v4.size())
 	{
+		// Very nice explanation of glVertexAttribPointer and glEnableVertexAttribArray 
+		// // and how they tie into the shader
+		// https://ktstephano.github.io/rendering/opengl/prog_vtx_pulling
 		glVertexAttribPointer(vertexLoc, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		glEnableVertexAttribArray(vertexLoc);
 		unsigned int sz = mData.v4.size() * 4 * sizeof(float);
@@ -210,15 +206,12 @@ void OWMeshRenderer::doRender()
 			// Look at:
 			// https://www.reddit.com/r/opengl/comments/19bgtcb/is_the_effort_of_glmultidrawelements_worth_it/
 			// If says that glMultiDrawElements is obsolete and instead use glMultiDrawElementsIndirect
-			GLsizei* x = mMultiElementStartIndexes.data();
-			const void* xx = static_cast<void*>(x);
-			glMultiDrawElements(mData.vertexMode, mMultiElementIndicesCounts.data(),  GL_UNSIGNED_INT, &xx, mNumMeshes);
+
+			glMultiDrawElements(mData.vertexMode, mMultiElementIndicesCounts.data(), GL_UNSIGNED_INT, 
+				(const void**)mMultiElementStartIndexes.data(), mNumMeshes);
 		}
 		else
 		{
-			// jfw fix me
-			//glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(mData.v4.size()));
-
 			glMultiDrawArrays(mData.vertexMode, mMultiArrayStartIndexes.data(), mMultiArrayVertexCount.data(), mNumMeshes);
 		}
 	}

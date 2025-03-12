@@ -37,11 +37,16 @@ void Rope::doSetup()
 	const OWTextComponentData& tcd = mData.labelTextData;
 	const OWRopeDataImp& rd = mData.ropeData;
 	prepareRope(rd.ropeDBId, rd.ropeZoom.x, rd.ropeZoom.y, rd.numDepthLayers);
-	if (true)
+	if (false)
 	{
-		prepareText(tcd.fontHeight, tcd.fontSpacing, glm::vec2(1));
+		createLabels(tcd.fontSpacing, glm::vec2(10));
 	}
 	if (false)
+	{
+		createBanner(mData.bannerTextData.text, mData.bannerTextData.fontHeight, 
+			tcd.fontSpacing * 10.0f, mData.ropeData.bannerTextScale);
+	}
+	if (true)
 	{
 		Shader* lineShader = new Shader("");
 		lineShader->setStandardUniformNames("pvm");
@@ -52,13 +57,13 @@ void Rope::doSetup()
 		sse.rend = new OWMeshRenderer(lineShader, OWMeshRenderer::DRAW_MULTI);
 		mRopeLinesElementIndex = this->addComponents(sse);
 	}
-	if (false) 
+	if (true) 
 	{
 		Shader* wireShader = new Shader();
 		wireShader->loadShaders("Wires.v.glsl",
 			"Wires.f.glsl",
 			ShaderFactory::boilerPlateGeometryShader());
-		wireShader->setStandardUniformNames("", "projection", "view", "model");
+		wireShader->setStandardUniformNames("pvm", "projection", "view", "model");
 		auto pointRender = [](
 			const glm::mat4& OW_UNUSED(proj),
 			const glm::mat4& OW_UNUSED(view),
@@ -80,7 +85,7 @@ void Rope::doSetup()
 		sse.rend = new OWMeshRenderer(wireShader, OWMeshRenderer::DRAW_MULTI);
 		mRopeSurfacesElementIndex = this->addComponents(sse);
 	}
-	if (false) 
+	if (true) 
 	{
 		Shader* lineShader = new Shader("");
 		lineShader->setStandardUniformNames("pvm");
@@ -131,33 +136,22 @@ void Rope::prepareRope(int ropeNum, int width, int height, int numDepthLayers)
 	mBounds = AABB(b.first, b.second);
 }
 
-void Rope::prepareText(int fontHeight, const glm::vec2& textSpacing, const glm::vec2& textScale)
-{
-	if (true)
-	{
-		makeLabels(textSpacing, textScale);
-	}
-	if (false)
-	{
-		makeBanner(mData.bannerTextData.text, mData.bannerTextData.fontHeight, textSpacing * 10.0f, mData.ropeData.bannerTextScale);
-	}
-}
-
-void Rope::makeBanner(const std::string& s, int height,
+void Rope::createBanner(const std::string& s, int height,
 	const glm::vec2& _spacing, const glm::vec2& scale,
 	const std::string& _font,
 	const glm::vec4& colour)
 {
+	OWTextComponentData::TextDisplayType tdt = OWTextComponentData::TextDisplayType::Dynamic;
 	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Labels", this);
 	multipleTexts->transform(new OWTransform(transform()));
-	Shader* shader = new Shader("DynamicText.json");
-	shader->appendMutator(OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType::Dynamic));
+	Shader* shader = new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", "");
+	shader->setStandardUniformNames("VP");
+	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
 	multipleTexts->renderer(new OWMeshRenderer(shader, OWMeshRenderer::RenderType::DRAW_MULTI));
-
 	for(int i = 0; i < 1; i++) // could do many
 	{
 		OWTextComponentData td;
-		td.tdt = OWTextComponentData::TextDisplayType::Dynamic;
+		td.tdt = tdt;
 		td.text = s;
 		td.fontName = _font;
 		td.fontHeight = height;
@@ -165,31 +159,32 @@ void Rope::makeBanner(const std::string& s, int height,
 
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.mesh = new OWTextComponent(multipleTexts, "Rope Banner", td);
-		elm.trans = new OWTransform(multipleTexts->transform(), glm::vec3(10,20,30));
+		elm.trans = new OWTransform(multipleTexts->transform(), glm::vec3(0,0,0));
 		elm.colour = colour;
 		elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
 		multipleTexts->addComponents(elm);
 	}
 }
 
-void Rope::makeLabels(const glm::vec2& textSpacing, const glm::vec2& textScale)
+void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 {
+	OWTextComponentData::TextDisplayType tdt = OWTextComponentData::TextDisplayType::Dynamic;
 	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Labels", this);
-	multipleTexts->transform(new OWTransform(transform()));
+	multipleTexts->transform(new OWTransform(transform(), glm::vec3(0, 0, 0)));
 	Shader* shader = new Shader("DynamicText.json");
-	shader->appendMutator(OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType::Dynamic));
+	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
 	multipleTexts->renderer(new OWMeshRenderer(shader, OWMeshRenderer::RenderType::DRAW_MULTI));
-	int counter = 0;
-	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
-	{
+	for (int i = 0; i < mPolyBuilder->labels().size(); i++)
+	{ 
+		const PolygonBuilder::SliceId& si = mPolyBuilder->labels()[i];
 		OWTextComponentData td;
-		td.tdt = OWTextComponentData::TextDisplayType::Dynamic;
+		td.tdt = tdt;
 		td.text = std::to_string(si.id);
 		td.fontHeight = mData.labelTextData.fontHeight;
 		td.fontSpacing = textSpacing * 10.0f;
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.mesh = new OWTextComponent(nullptr, td.text, td);
-		elm.trans = new OWTransform(multipleTexts->transform(), si.pos);
+		elm.trans = new OWTransform(multipleTexts->transform(), si.pos, glm::vec3(textScale, 1));
 		elm.colour = OWUtils::colour(OWUtils::SolidColours::BLUE);
 		elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
 		multipleTexts->addComponents(elm);
@@ -228,6 +223,7 @@ OWMeshComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::v
 		{
 			MeshData lineData;
 			lineData.setVertices(polygon, GL_LINE_LOOP);
+			lineData.setPolygonMode(GL_FILL);
 			mvd->add(lineData);
 		}
 		break;
@@ -284,6 +280,7 @@ OWMeshComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::
 			MeshData lineData;
 			lineData.setColour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED), "colour");
 			lineData.setVertices(aLine, GL_LINE_STRIP);
+			lineData.setPolygonMode(GL_LINE);
 			mc->add(lineData);
 		}
 	}

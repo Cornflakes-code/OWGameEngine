@@ -69,6 +69,7 @@ public:
 	void callMutators(const glm::mat4& proj, const glm::mat4& view,
 		const glm::mat4& model, const glm::vec3& cameraPos, 
 		OWRenderTypes::ShaderMutator renderCb) const;
+	glm::vec2 scaleByAspectRatioIfNeeded(const glm::vec2& toScale) const;
 
 	void setStandardUniformNames(const std::string& pvm,
 		const std::string& projection = "",

@@ -14,6 +14,6 @@ public:
 	std::vector<InstanceData> instances;
 	std::vector<Texture> textures;
 
-	void add(const OWRenderData& toAdd);
+	void add(const OWRenderData& toAdd, bool purgeTextures = false);
 	AABB bounds() const;
 };

@@ -10,35 +10,6 @@ OWActor::OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor)
 	_scene->addActor(this);
 }
 
-void OWActorDiscrete::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4 model,
-	const glm::vec3& cameraPos) 
-{
-	for (auto& elm: mElements)
-	{
-		std::vector<glm::mat4> positions;
-		positions.push_back(model * elm.trans->modelMatrix());
-		elm.rend->render(positions, proj, view, cameraPos);
-	}
-}
-
-void OWActorDiscrete::doSetup()
-{
-	AABB b;
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		DiscreteEntity& elm = mElements[i];
-		elm.mesh->setup();
-		AABB b1;
-		elm.rend->setup(elm.mesh->renderData(b1));
-		elm.coll->points(b1);
-		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
-			CollisionSystem::addCollider(elm.coll, this, i);
-		b = b | b1;
-	}
-	bounds(b);
-}
-
 size_t OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
 {
 	mElements.push_back(newElement);
@@ -61,6 +32,36 @@ size_t OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
 	return retval;
+}
+
+void OWActorDiscrete::doSetup()
+{
+	OWRenderData rd;
+	AABB b;
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		DiscreteEntity& elm = mElements[i];
+		elm.mesh->setup();
+		AABB b1;
+		elm.rend->setup(elm.mesh->renderData(b1));
+		elm.coll->points(b1);
+		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
+			CollisionSystem::addCollider(elm.coll, this, i);
+		b = b | b1;
+	}
+	bounds(b);
+}
+
+void OWActorDiscrete::doRender(const glm::mat4& proj,
+	const glm::mat4& view, const glm::mat4 model,
+	const glm::vec3& cameraPos) 
+{
+	for (auto& elm: mElements)
+	{
+		std::vector<glm::mat4> positions;
+		positions.push_back(model * elm.trans->modelMatrix());
+		elm.rend->render(positions, proj, view, cameraPos);
+	}
 }
 
 size_t OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
@@ -89,7 +90,7 @@ void OWActorNCom1Ren::doSetup()
 {
 	// Each element of the SSO is position (glm::vec4) + colour (glm::vec4).
 	//unsigned int ssoSize = 2 * sizeof(glm::vec4);
-	unsigned int ssoSize = 1 * sizeof(glm::vec4);
+	unsigned int ssoSize = 1 * sizeof(glm::vec4) / sizeof(float);
 
 	// mRenderer relies on the size not being changed
 	mSSBO.resize(ssoSize * mElements.size());
@@ -98,23 +99,22 @@ void OWActorNCom1Ren::doSetup()
 	AABB b;
 	for (int i = 0; i < mElements.size(); i++)
 	{
-		NCom1RenElement& elm = mElements[i];
+		const NCom1RenElement& elm = mElements[i];
 		elm.mesh->setup();
-		AABB b1, b2, b3;
+		AABB b1;
 		OWRenderData rd_elm = elm.mesh->renderData(b1);
-		rd.add(rd_elm);
-		AABB b123 = b1 | b2 | b3;
-		elm.coll->points(b123);
+		rd.add(rd_elm, true);
+		elm.coll->points(b1);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
-		b = b | b123;
+		b = b | b1;
 		const glm::vec3& p = elm.trans->worldPosition();
 		size_t offset = i * ssoSize;
 		mSSBO[offset + 0] = p.x;
 		mSSBO[offset + 1] = p.y;
-		mSSBO[offset + 2] = p.z;
+		mSSBO[offset + 2] = p.z;// 0.49308f;// p.z;
 		mSSBO[offset + 3] = 0;
 		/*
 		mSSBO[offset + 4] = elm.colour.x;
@@ -123,7 +123,7 @@ void OWActorNCom1Ren::doSetup()
 		mSSBO[offset + 7] = elm.colour.w;
 		*/
 	}
-	OWRenderer::SSBO ssbo(mSSBO.data(), mSSBO.size());
+	OWRenderer::SSBO ssbo(mSSBO);
 	mRenderer->ssbo(ssbo);
 	mRenderer->setup(rd);
 	bounds(b);
@@ -156,16 +156,6 @@ size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newEl
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
 	return retval;
-}
-
-void OWActorMutableParticle::renderer(OWRenderer* newValue)
-{
-	mRenderer = newValue;
-}
-
-void OWActorMutableParticle::sound(OWSoundComponent* newValue)
-{
-	mSound = newValue;
 }
 
 void OWActorMutableParticle::doSetup()
@@ -201,10 +191,37 @@ void OWActorMutableParticle::doRender(const glm::mat4& proj,
 	mRenderer->render(positions, proj, view, cameraPos);
 }
 
+void OWActorMutableParticle::renderer(OWRenderer* newValue)
+{
+	mRenderer = newValue;
+}
+
+void OWActorMutableParticle::sound(OWSoundComponent* newValue)
+{
+	mSound = newValue;
+}
+
+
 OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor)
 : OWActor(_scene, _name, _hostActor) 
 {
 
+}
+
+void OWActorImmutableParticle::doSetup()
+{
+	AABB b;
+	const OWRenderData rd = mMeshTemplate->renderData(b);
+	mRenderer->setup(rd);
+	bounds(b);
+}
+
+void OWActorImmutableParticle::doRender(const glm::mat4& proj,
+	const glm::mat4& view, const glm::mat4 model,
+	const glm::vec3& cameraPos)
+{
+	std::vector<glm::mat4> positions;
+	mRenderer->render(positions, proj, view, cameraPos);
 }
 
 void OWActorImmutableParticle::instanceMesh(const InstanceData& _data, std::string& _name)
@@ -224,18 +241,3 @@ void OWActorImmutableParticle::sound(OWSoundComponent* newValue)
 	mSound = newValue;
 }
 
-void OWActorImmutableParticle::doSetup()
-{
-	AABB b;
-	const OWRenderData rd = mMeshTemplate->renderData(b);
-	mRenderer->setup(rd);
-	bounds(b);
-}
-
-void OWActorImmutableParticle::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4 model,
-	const glm::vec3& cameraPos)
-{
-	std::vector<glm::mat4> positions;
-	mRenderer->render(positions, proj, view, cameraPos);
-}

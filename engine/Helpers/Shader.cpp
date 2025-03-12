@@ -183,6 +183,17 @@ glm::vec2 Shader::scaleByAspectRatio(const glm::vec2& toScale) const
 	return retval;
 }
 
+glm::vec2 Shader::scaleByAspectRatioIfNeeded(const glm::vec2& toScale) const
+{
+	if (mFirstTimeRender || globals->aspectRatioChanged())
+	{
+		mFirstTimeRender = false;
+		return scaleByAspectRatio(toScale);
+	}
+	else
+		return toScale;
+}
+
 void Shader::use() const
 {
 	if (mShaderProgram)

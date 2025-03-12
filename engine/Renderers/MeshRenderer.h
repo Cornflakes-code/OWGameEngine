@@ -42,7 +42,7 @@ protected:
 	// Draw multi vars
 	std::vector<GLsizei> mMultiArrayStartIndexes;
 	std::vector<GLsizei> mMultiArrayVertexCount;
-	std::vector<GLsizei> mMultiElementStartIndexes;
+	std::vector<void*> mMultiElementStartIndexes;
 	std::vector<GLsizei> mMultiElementIndicesCounts;
 	GLsizei mNumMeshes = 0;
 	// mVbo[0] The VBO containing the triangles to draw

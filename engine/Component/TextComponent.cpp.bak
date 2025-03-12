@@ -82,9 +82,7 @@ OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData:
 			[](const glm::mat4& proj, const glm::mat4& view,
 				const glm::mat4& model, const glm::vec3& cameraPos, const Shader* shader)
 			{
-				glm::vec2 vv = { 0.5, 0.5 };
-				vv = shader->scaleByAspectRatioIfNeeded(vv);
-				shader->setVector2f("BillboardSize", vv);
+				//shader->setVector3f("BillboardPos", model[3]);
 			};
 	}
 	else

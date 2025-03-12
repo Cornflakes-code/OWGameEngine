@@ -62,12 +62,16 @@ void OWMeshComponentBase::validate(const MeshData& md) const
 		else
 			throw NMSLogicException("OWMeshComponentBase::validate [" + name() + "] has both v3 and v4 data\n");
 	}
-	if (!validMode(md.indicesMode))
-		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
-			+ "] invalid indicesMode [" + std::to_string(md.indicesMode) + "]\n");
-	if (!validMode(md.vertexMode))
-		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
-			+ "] invalid vertexMode [" + std::to_string(md.vertexMode) + "]\n");
+	if (md.indices.size())
+	{
+		if (!validMode(md.indicesMode))
+			throw NMSLogicException("OWMeshComponentBase::validate [" + name()
+				+ "] invalid indicesMode [" + std::to_string(md.indicesMode) + "]\n");
+		if (!validMode(md.vertexMode))
+			throw NMSLogicException("OWMeshComponentBase::validate [" + name()
+				+ "] invalid vertexMode [" + std::to_string(md.vertexMode) + "]\n");
+	}
+		
 	if (!validPolygonMode(md.polygonMode_mode))
 		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
 			+ "] invalid polygon mode mode [" + std::to_string(md.polygonMode_mode) + "]\n");

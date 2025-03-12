@@ -19,8 +19,9 @@ public:
 	enum RenderType { DRAW_NONE, DRAW_MULTI, DRAW_PRIMITIVE };
 	struct SSBO
 	{
-		void* data = nullptr; // Owned by original creator of the SSBO
-		size_t size = 0;
+		std::vector<float> data;
+		//void* data = nullptr; // Owned by original creator of the SSBO
+		//size_t size = 0;
 	};
 	OWRenderer(const std::string& shaderFileName, RenderType rt);
 	OWRenderer(Shader* _shader, RenderType rt)

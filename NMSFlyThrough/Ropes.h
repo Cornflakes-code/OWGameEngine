@@ -49,13 +49,12 @@ private:
 	AABB mBounds;
 	bool prepare();
 	void prepareRope(int ropeNum, int width, int height, int numDepthLayers);
-	void prepareText(int fontHeight, const glm::vec2& textSpacing, const glm::vec2& textScale);
 	void makeVisible(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel);
-	void makeBanner(const std::string& s, int height,
+	void createBanner(const std::string& s, int height,
 		const glm::vec2& _spacing, const glm::vec2& scale,
 		const std::string& _font = "arial.ttf",
 		const glm::vec4& colour = { 0.0, 0.0, 0.0, 1.0f });
-	void makeLabels(const glm::vec2& textSpacing = { 0,0 }, const glm::vec2& textScale = { 0,0 });
+	void createLabels(const glm::vec2& textSpacing = { 0,0 }, const glm::vec2& textScale = { 0,0 });
 	OWMeshComponent* createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	OWMeshComponent* createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	OWMeshComponent* createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
