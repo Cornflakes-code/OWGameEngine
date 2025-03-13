@@ -37,9 +37,9 @@ void Rope::doSetup()
 	const OWTextComponentData& tcd = mData.labelTextData;
 	const OWRopeDataImp& rd = mData.ropeData;
 	prepareRope(rd.ropeDBId, rd.ropeZoom.x, rd.ropeZoom.y, rd.numDepthLayers);
-	if (false)
+	if (true)
 	{
-		createLabels(tcd.fontSpacing, glm::vec2(10));
+		createLabels(tcd.fontSpacing, rd.labelTextScale);
 	}
 	if (false)
 	{
@@ -168,6 +168,14 @@ void Rope::createBanner(const std::string& s, int height,
 
 void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale)
 {
+	std::string jfwparagraph =
+
+		std::string("I work on a software who need to print a lot of texts on the screen, around 200 to ")
+		+ "400 strings and a lot unique character(some objects are represented by a character), "
+		+ "the software is already drawing a lot of things using OpenGL.I already worked around "
+		+ "with text rendering and I'm able to render text, but drawing more than 200 string using "
+		+ "200 draw call lead in a performance issue.";
+
 	OWTextComponentData::TextDisplayType tdt = OWTextComponentData::TextDisplayType::Dynamic;
 	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Labels", this);
 	multipleTexts->transform(new OWTransform(transform(), glm::vec3(0, 0, 0)));

@@ -20,6 +20,16 @@ class OWENGINE_API OWActor
 public:
 	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
+	virtual void preRender()
+	{
+		// Placeholder called on the main thread. OWActor should quickly 
+		// create a background thread to do stuff while render is happenening.
+	}
+	virtual void postRender()
+	{
+		// Placeholder called on the main thread. OWActor should quickly tidy
+		// up whatever prePender did.
+	}
 	const AABB& bounds() const { return mBounds; }
 	void bounds(const AABB& newValue) { mBounds = newValue; }
 	Scene* scene() { return mScene; }

@@ -345,11 +345,14 @@ namespace CollisionSystem
 		collideSweepAndPruneEx();
 #endif
 	}
+    void preRender()
+    {
+    }
 
-	void refresh()
-	{
+    void postRender()
+    {
+    }
 
-	}
 }
 
 #ifdef FIXED_SIZED_VOLUMES

@@ -72,7 +72,10 @@ OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData:
 				shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
 				glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 				shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
-				glm::vec2 bbSize({ 5.4, 3.6 });
+
+				// 5.4 and 3.6 are magic numbers that seem to cause a nice look
+				glm::vec2 bbSize({ 5.4 * glm::length(glm::vec3(model[0])), 
+									3.6 * glm::length(glm::vec3(model[1])) });
 				shader->setVector2f("BillboardSize", bbSize);
 			};
 	}
@@ -82,9 +85,10 @@ OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData:
 			[](const glm::mat4& proj, const glm::mat4& view,
 				const glm::mat4& model, const glm::vec3& cameraPos, const Shader* shader)
 			{
-				glm::vec2 vv = { 0.5, 0.5 };
-				vv = shader->scaleByAspectRatioIfNeeded(vv);
-				shader->setVector2f("BillboardSize", vv);
+				const glm::vec2 scale = shader->scaleByAspectRatioIfNeeded(
+					{ glm::length(glm::vec3(model[0])),
+					glm::length(glm::vec3(model[1])) });
+				shader->setVector2f("BillboardSize", scale);
 			};
 	}
 	else
@@ -95,6 +99,8 @@ OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData:
 
 const OWRenderData OWTextComponent::renderData(AABB& bounds) const
 {
+	// Some good links to doing text better/faster
+	// https://www.reddit.com/r/opengl/comments/ga2o7a/so_im_new_to_opengl_but_is_it_just_me_or_does/
 	const FreeTypeFontAtlas::FontDetails& fontData
 		= FontFactory().loadFreeTypeFont(mData.fontName, mData.fontHeight);
 	MeshData md;

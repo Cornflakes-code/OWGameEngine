@@ -13,7 +13,8 @@ struct OWRopeDataImp
 	glm::uvec2 ropeZoom;
 	unsigned int numDepthLayers = 30;
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED);
-	glm::vec3 bannerTextScale;
+	glm::vec2 bannerTextScale;
+	glm::vec2 labelTextScale;
 };
 
 struct OWRopeVisibilityData

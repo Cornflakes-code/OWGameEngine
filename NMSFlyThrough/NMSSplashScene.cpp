@@ -80,7 +80,6 @@ void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
 	// Make the bounds a bit bigger than where the planes are.
 	float bf = 1.2f;
 	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off * bf));
-	CollisionSystem::refresh();
 	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
 	//CollisionSystem::tick(timeStep);
 	CollisionSystem::collide();

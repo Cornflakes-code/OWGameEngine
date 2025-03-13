@@ -27,6 +27,7 @@ void NMSRopeScenePhysics::setup()
 						5.2f * _world.size().y / globals->physicalWindowSize().y,
 					1.0f };
 	rd.ropeData.bannerTextScale = sc;
+	rd.ropeData.labelTextScale = sc / 2.0f;
 	rd.labelTextData.fontSpacing = spacing;
 	/*
 	* 30822 - simple
