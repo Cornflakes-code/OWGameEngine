@@ -121,36 +121,8 @@ NMSRopeScene::NMSRopeScene(const Movie* _movie)
 	//	const glm::uvec2& screen = globals->physicalWindowSize();
 }
 
-void NMSRopeScene::doSetup(ScenePhysicsState* state)
+void NMSRopeScene::doSetupScene(ScenePhysicsState* state)
 {
-	auto init = [](OWActor* a)
-		{
-			a->setup();
-		};
-	bool moreToGo = true;
-	auto testFinished = [&moreToGo](OWActor* a)
-		{
-			if (!a->setupCompleted())
-				moreToGo = true;
-		};
-	while (moreToGo)
-	{
-		traverseSceneGraph(init);
-		moreToGo = false;
-		traverseSceneGraph(testFinished);
-	}
-}
-
-void NMSRopeScene::render(const ScenePhysicsState* state,
-	const glm::mat4& proj, const glm::mat4& view,
-	const glm::vec3& cameraPos)
-{
-	glm::mat4 model(1.0f);
-	auto rend = [proj, view, model, cameraPos](OWActor* a)
-		{
-			a->render(proj, view, model, cameraPos);
-		};
-	traverseSceneGraph(rend);
 }
 
 void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),

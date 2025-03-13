@@ -18,11 +18,11 @@ void ThreeDAxis::doSetup()
 {
 	const AABB& bb = mData.bounds;
 	std::vector<glm::vec3> axisCoords = {
-	{ bb.center().x, bb.center().y, bb.center().z },
-	{ bb.maxPoint().x, 0.0, 0.0 },
-	{ 0.0, bb.maxPoint().y, 0.0 },
-	{ 0.0, 0.0, bb.maxPoint().z }
-};
+		{ bb.center().x, bb.center().y, bb.center().z },
+		{ bb.maxPoint().x, 0.0, 0.0 },
+		{ 0.0, bb.maxPoint().y, 0.0 },
+		{ 0.0, 0.0, bb.maxPoint().z }
+	};
 
 	transform(new OWTransform(nullptr)); // Always do this before populating sse
 	
@@ -33,6 +33,7 @@ void ThreeDAxis::doSetup()
 	md.setColour(mData.axisColour, mData.axisColourName);
 	md.setVertices(axisCoords, GL_LINES);
 	md.setIndices({ 0,1, 0,2, 0,3 }, GL_LINES);
+	md.setPolygonMode(GL_FILL);
 	sse.mesh = (new OWMeshComponent(this, "XYZ Axis"))->add(md);
 	Shader* shader = new Shader("");
 	shader->setStandardUniformNames("pvm");
@@ -56,7 +57,7 @@ void ThreeDAxis::doSetup()
 	//axis->renderBoundingBox(false);
 	//boxUnion |= axis->constData()->boundingBox;
 
-	OWActorDiscrete::doSetup();
+//	OWActorDiscrete::doSetup();
 }
 
 OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b)

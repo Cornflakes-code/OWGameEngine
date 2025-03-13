@@ -20,31 +20,40 @@ class OWENGINE_API OWActor
 public:
 	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
+
+	void setup();
 	virtual void preRender()
 	{
 		// Placeholder called on the main thread. OWActor should quickly 
 		// create a background thread to do stuff while render is happenening.
 	}
+	void render(const glm::mat4& proj,
+		const glm::mat4& view, const glm::mat4 model,
+		const glm::vec3& cameraPos);
+
 	virtual void postRender()
 	{
 		// Placeholder called on the main thread. OWActor should quickly tidy
-		// up whatever prePender did.
+		// up whatever prePender() did.
 	}
+
+	// Getters/Setters
+	void active(bool newValue) {
+		mIsActive = newValue;
+	}
+	bool active() const { return mIsActive; }
 	const AABB& bounds() const { return mBounds; }
 	void bounds(const AABB& newValue) { mBounds = newValue; }
 	Scene* scene() { return mScene; }
 	const OWActor* hostActor() const { return mHostActor; }
 	std::string name() const { return mName; }
-	const OWTransform* transform() const
-	{
+	const OWTransform* transform() const {
 		return mActorTransform;
 	}
-	OWTransform* transform() 
-	{
+	OWTransform* transform() {
 		return mActorTransform;
 	}
-	void transform(OWTransform* newValue)
-	{
+	void transform(OWTransform* newValue) {
 		mActorTransform = newValue;
 	}
 	void transform(OWTransformData& td) {
@@ -57,20 +66,6 @@ public:
 	void scriptor(OWScriptComponent* newValue) {
 		mScriptor = newValue;
 	}
-	void setup()
-	{
-		if (!mSetup)
-		{
-			doSetup();
-			mSetup = true;
-		}
-	}
-	void render(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos)
-	{
-		doRender(proj, view, model, cameraPos);
-	}
 	bool setupCompleted() const { return mSetup; }
 protected:
 	virtual void doSetup() = 0;
@@ -79,13 +74,13 @@ protected:
 		const glm::vec3& cameraPos) = 0;
 private:
 	std::string mName;
+	AABB mBounds;
 	Scene* mScene;
 	OWTransform* mActorTransform = nullptr;
 	OWScriptComponent* mScriptor = nullptr;
-	bool mIsActive = false;
-	bool mSetup = false;
 	OWActor* mHostActor = nullptr;
-	AABB mBounds;
+	bool mIsActive = true;
+	bool mSetup = false;
 };
 
 // Use this class for aggregating discrete Components.
@@ -142,8 +137,8 @@ protected:
 		const glm::vec3& cameraPos) override;
 private:
 	std::vector<float> mSSBO;
-	OWRenderer* mRenderer = nullptr;
 	std::vector<NCom1RenElement> mElements;
+	OWRenderer* mRenderer = nullptr;
 };
 
 // Use this class for aggregating mutable Particles (one Mesh, one Renderer, independant movement)
@@ -173,11 +168,10 @@ protected:
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;
 private:
+	std::vector<MutableParticleElement> mElements;
 	OWMeshComponent* mMeshTemplate = nullptr;
-	OWPhysics* mPhysics = nullptr;
 	OWRenderer* mRenderer = nullptr;
 	OWSoundComponent* mSound = nullptr;
-	std::vector<MutableParticleElement> mElements;
 };
 
 class OWInstanceRenderer;

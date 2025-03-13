@@ -52,8 +52,7 @@ class NMSSplashScene : public NMSScene
 public:
 	NMSSplashScene(const Movie* movie);
 	std::string name() const { return "Splash"; }
-	void doSetup(ScenePhysicsState* state) override;
-	virtual void render(const ScenePhysicsState* state,
+	virtual void doRenderScene(const ScenePhysicsState* state,
 		const glm::mat4& proj, const glm::mat4& view,
 		const glm::vec3& cameraPos) override;
 	void activate(const std::string& previousScene, 
@@ -61,6 +60,8 @@ public:
 				  Camera* camera, unsigned int callCount) override;
 	void deActivate(const Camera* camera, 
 					ScenePhysicsState* state) override;
+protected:
+	void doSetupScene(ScenePhysicsState* state) override;
 private:
 };
 

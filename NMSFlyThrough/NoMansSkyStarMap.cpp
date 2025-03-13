@@ -21,6 +21,7 @@
 #include <Component/TextComponent.h>
 
 #include <Renderers/InstanceRenderer.h>
+#include <Renderers/MeshRenderer.h>
 
 #define DEBUG_GRID
 #define DEBUG_STARS
@@ -33,38 +34,38 @@ NoMansSky::NoMansSky(Scene* _scene, const std::string& _name, const NoMansSkyDat
 
 void NoMansSky::doSetup()
 {
-	init(mData.starFile, mData.starWorld);
-}
-
-void NoMansSky::init(const std::string& fileName, const AABB& world)
-{
+	const std::string& fileName = mData.starFile;
+	const AABB& world = mData.starWorld;
 	this->transform(new OWTransform(nullptr));
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
 	AABB NMSSize(glm::vec3(-0x7FF, -0x7F, -0x7FF),
-				 glm::vec3(0x7FF, 0x7F, 0x7FF));
+		glm::vec3(0x7FF, 0x7F, 0x7FF));
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
-	MeshData gridData;
-	gridData.setVertices(createGrid(NMSSize, gridSizes, scaleNMStoWorld), GL_LINES, 0);
-	gridData.setColour({ 0, 1.0, 0.5, 1 }, "uColour");
-	mData.gridShader.shaderV = "Lines.v.glsl";
-	mData.gridShader.shaderF = "Lines.f.glsl";
-	mData.gridShader.PVMName = "pvm";
-	Shader* shader = new Shader(mData.gridShader);
-	OWActorDiscrete::DiscreteEntity sse;
-	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
-	sse.mesh = (new OWMeshComponent(this, "Grid"))->add(gridData);
-	sse.rend = new OWInstanceRenderer(shader);
-	sse.trans = new OWTransform(nullptr);
-	addComponents(sse);
+	{
+		MeshData gridData;
+		gridData.setVertices(createGrid(NMSSize, gridSizes, scaleNMStoWorld), GL_LINES, 0);
+		gridData.setPolygonMode(GL_FILL);
+		gridData.setColour({ 0, 1.0, 0.5, 1 }, "uColour");
+		mData.gridShader.shaderV = "Lines.v.glsl";
+		mData.gridShader.shaderF = "Lines.f.glsl";
+		mData.gridShader.PVMName = "pvm";
+		Shader* shader = new Shader(mData.gridShader);
+		OWActorDiscrete::DiscreteEntity sse;
+		sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
+		sse.mesh = (new OWMeshComponent(this, "Grid"))->add(gridData);
+		sse.rend = new OWMeshRenderer(shader);
+		sse.trans = new OWTransform(nullptr);
+		addComponents(sse);
+	}
 #endif
 
-#ifdef DEBUG_STARS
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
+#ifdef DEBUG_STARS
 	mStarRadius = mData.starRadius;
 	std::vector<glm::vec3> squareVertices =
 		OWGeometricShapes::star(mStarRadius.x / 5.0f, mStarRadius.x / 3.3f, 15);
-//		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
+	//		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
 	InstanceData starData;
 	starData.setVertices(squareVertices, GL_TRIANGLES, 0);
 
@@ -73,7 +74,7 @@ void NoMansSky::init(const std::string& fileName, const AABB& world)
 	starData.setPositions(mRandomMinorStars, 1, 1);
 
 	const int numColours = 4;
-	const int numColourIterations = static_cast<int>(ceil( numStars * 1.0 / numColours));
+	const int numColourIterations = static_cast<int>(ceil(numStars * 1.0 / numColours));
 	std::vector<glm::vec4> instanceColours;
 	for (int i = 0; i < numColourIterations; i++)
 	{
@@ -88,7 +89,7 @@ void NoMansSky::init(const std::string& fileName, const AABB& world)
 	Shader* starShader = new Shader("instanced.v.glsl", "glow.f.glsl", "");
 	starShader->setStandardUniformNames("VP");
 	starShader->setUniform(ShaderDataUniforms::UniformType::UFloat,
-		"cutoffRadius", OWUtils::to_string(mStarRadius.x));
+		"cutoffRadius", OWUtils::to_string(mStarRadius.x), true);
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),
@@ -108,12 +109,12 @@ void NoMansSky::init(const std::string& fileName, const AABB& world)
 	starShader->appendMutator(pointRender);
 	OWActorDiscrete::DiscreteEntity sse1;
 	sse1.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
-	throw NMSLogicException("Need to fix adding InstanceDAta to MeshComponent. Cannot recover.");
-	//sse1.mesh = (new OWMeshComponent(this, "Star Template"))->add(starData);
+	sse1.mesh = (new OWMeshComponent(this, "Star Template"))->add(starData);
 	sse1.rend = new OWInstanceRenderer(starShader);
 	sse1.trans = new OWTransform(nullptr);
 	addComponents(sse1);
 #endif
+	OWActorDiscrete::doSetup();
 }
 
 std::vector<glm::vec3> NoMansSky::createGrid(const AABB& nmsSpace,
@@ -156,6 +157,10 @@ void NoMansSky::loadStars(const std::string& fileName,
 {
 	const glm::vec2 niceFontSpacing = { 0.00625f, 2 * 0.00625f };
 	OWActorNCom1Ren* starLabels = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
+	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
+	shader->setStandardUniformNames("VP");
+	shader->appendMutator(OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType::Static));
+	starLabels->renderer(new OWMeshRenderer(shader, OWMeshRenderer::RenderType::DRAW_MULTI));
 	std::string line;
 	std::ifstream myfile(fileName);
 	if (myfile.is_open())
@@ -269,7 +274,6 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
-			OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
 			OWTextComponentData td;
 			td.tdt = OWTextComponentData::TextDisplayType::Static;
 			td.text = elms[0];
@@ -277,10 +281,9 @@ void NoMansSky::loadStars(const std::string& fileName,
 			td.fontSpacing = niceFontSpacing;
 			td.referencePos = OWTextComponentData::PositionType::Right;
 			OWActorNCom1Ren::NCom1RenElement elm;
-			elm.phys = new OWPhysics();
-			elm.mesh = new OWTextComponent(this, td.text, td);
-			elm.trans = new OWTransform(this->transform(), point);
-			elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
+			elm.mesh = new OWTextComponent(starLabels, td.text, td);
+			elm.trans = new OWTransform(nullptr, point, glm::vec3(0.5f, 0.5f, 0.5f));
+			elm.coll = new OWCollider(starLabels, OWCollider::CollisionType::Permeable);
 			starLabels->addComponents(elm);
 		}
 

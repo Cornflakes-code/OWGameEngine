@@ -4,31 +4,147 @@
 #include "../Renderers/InstanceRenderer.h"
 #include "../Renderers/MeshRenderer.h"
 
+#ifdef _DEBUG
+static std::string getActorDesc(OWActor* a)
+{
+	const OWActor& aref = *a;
+	return std::string(typeid(aref).name()) + "[" + a->name() + "]";
+}
+#endif
+
 OWActor::OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor)
 	: mScene(_scene), mName(_name), mHostActor(_hostActor)
 {
 	_scene->addActor(this);
+	if (_hostActor != nullptr)
+	{
+		if (_hostActor->transform() == nullptr)
+		{
+			throw NMSLogicException("OWActor [" + _hostActor->name()
+				+ "] must have a transform before creating sub Actors. Cannot recover.");
+		}
+		this->transform(new OWTransform(_hostActor->transform()));
+	}
+	else
+	{
+		this->transform(new OWTransform(nullptr));
+	}
+}
+
+void OWActor::setup()
+{
+	if (!mSetup)
+	{
+		doSetup();
+		mSetup = true;
+	}
+}
+
+void OWActor::render(const glm::mat4& proj,
+	const glm::mat4& view, const glm::mat4 model,
+	const glm::vec3& cameraPos)
+{
+	if (mSetup && active())
+	{
+		doRender(proj, view, model, cameraPos);
+	}
+}
+
+static void validateCollider(OWActor* a, const OWCollider* coll)
+{
+#ifdef _DEBUG
+	if (coll == nullptr)
+	{
+		throw NMSLogicException(getActorDesc(a) + " has no OWCollider.Cannot recover.");
+	}
+	if (coll->actor() != a)
+	{
+		throw NMSLogicException(getActorDesc(a) + " OWCollider has no owner. Cannot recover.");
+	}
+#endif
+}
+
+static void validatePhysics(OWActor* a, OWPhysics*& phys)
+{
+#ifdef _DEBUG
+	if (phys == nullptr)
+		phys = new OWPhysics(); // Physics is often the default.
+#endif
+}
+
+static void validateMeshComponent(OWActor* a, const OWMeshComponentBase* mesh)
+{
+#ifdef _DEBUG
+	if (mesh == nullptr)
+	{
+		throw NMSLogicException(getActorDesc(a) + " has no OWMeshComponentBase. Cannot recover.");
+	}
+	if (mesh->actor() == nullptr)
+	{
+		throw NMSLogicException(getActorDesc(a) + " OWMeshComponent has no owner. Cannot recover.");
+	}
+	if (mesh->actor() != a)
+	{
+		throw NMSLogicException(getActorDesc(a) + " OWMeshComponent has an invalid owner. Cannot recover.");
+	}
+#endif
+}
+
+static void validateTransform(OWActor* a, OWTransform*& trans)
+{
+#ifdef _DEBUG
+	if (trans == nullptr)
+		trans = new OWTransform(a->transform()); // Often just need default Transform
+	if (trans->hostTransform() == nullptr)
+		trans->hostTransform(a->transform());
+	if (trans->hostTransform() != a->transform())
+	{
+		throw NMSLogicException(getActorDesc(a) + " transform mismatch. Cannot recover.");
+	}
+	if (a->hostActor() != nullptr)
+	{
+		const OWTransform* parT1 = a->hostActor()->transform();
+		if (a->transform() == nullptr)
+		{
+			throw NMSLogicException(getActorDesc(a) + " has a hostActor() but it's transform does not have a host transform. Cannot recover.");
+		}
+		const OWTransform* parT2 = a->transform()->hostTransform();
+		if (parT1 != parT2)
+		{
+			throw NMSLogicException(getActorDesc(a) + " transform has an invalid hostTransform. Cannot recover.");
+		}
+	}
+#endif
+}
+
+static void validateSound(OWActor* a, OWSoundComponent*& sound)
+{
+#ifdef _DEBUG
+	if (sound == nullptr)
+		sound = new OWSoundComponent(); // Not all Actors have sound
+#endif
+}
+
+static void validateRenderer(OWActor* a, const OWRenderer* rend)
+{
+#ifdef _DEBUG
+	if (rend == nullptr)
+	{
+		throw NMSLogicException(getActorDesc(a) + " has no OWRenderer. Cannot recover.");
+	}
+#endif
 }
 
 size_t OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
 {
 	mElements.push_back(newElement);
 	DiscreteEntity& elm = mElements.back();
-	if (elm.coll == nullptr)
-		throw NMSLogicException("OWActorDiscrete [" + name() + "] has no OWCollider. Cannot recover.");
-	if (elm.phys == nullptr)
-		elm.phys = new OWPhysics(); // Physics may not be used.
-	if (elm.mesh == nullptr)
-		throw NMSLogicException("OWActorDiscrete [" + name() + "] has no OWMeshComponentBase. Cannot recover.");
-	if (elm.mesh->actor() == nullptr)
-		elm.mesh->actor(this);
-	if (elm.rend == nullptr)
-		throw NMSLogicException("OWActorDiscrete [" + name() + "] has no OWRenderer. Cannot recover.");
-	if (elm.trans == nullptr)
-		elm.trans = new OWTransform(transform()); // Often just need default Transform initially
-	elm.trans->hostTransform(transform());
-	if (elm.sound == nullptr)
-		elm.sound = new OWSoundComponent(); // Not all Actors have sound
+	validateCollider(this, elm.coll);
+	validatePhysics(this, elm.phys);
+	validateMeshComponent(this, elm.mesh);
+	validateRenderer(this, elm.rend);
+	validateTransform(this, elm.trans);
+	validateSound(this, elm.sound);
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
 	return retval;
@@ -68,19 +184,11 @@ size_t OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
 {
 	mElements.push_back(newElement);
 	NCom1RenElement& elm = mElements.back();
-	if (elm.coll == nullptr)
-		throw NMSLogicException("OWActorNCom1Ren [" + name() + "] has no OWCollider. Cannot recover.");
-	if (elm.phys == nullptr)
-		elm.phys = new OWPhysics(); // Physics may not be used.
-	if (elm.mesh == nullptr)
-		throw NMSLogicException("OWActorNCom1Ren [" + name() + "] has no OWMeshComponentBase. Cannot recover.");
-	if (elm.mesh->actor() == nullptr)
-		elm.mesh->actor(this);
-	if (elm.trans == nullptr)
-		elm.trans = new OWTransform(transform()); // Often just need default Transform
-	elm.trans->hostTransform(transform());
-	if (elm.sound == nullptr)
-		elm.sound = new OWSoundComponent(); // Not all Actors have sound
+	validateCollider(this, elm.coll);
+	validatePhysics(this, elm.phys);
+	validateMeshComponent(this, elm.mesh);
+	validateTransform(this, elm.trans);
+	validateSound(this, elm.sound);
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
 	return retval;
@@ -88,6 +196,7 @@ size_t OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
 
 void OWActorNCom1Ren::doSetup()
 {
+	validateRenderer(this, mRenderer);
 	// Each element of the SSO is position (glm::vec4) + colour (glm::vec4).
 	//unsigned int ssoSize = 2 * sizeof(glm::vec4);
 	unsigned int ssoSize = 1 * sizeof(glm::vec4) / sizeof(float);
@@ -145,14 +254,9 @@ size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newEl
 {
 	mElements.push_back(newElement);
 	MutableParticleElement& elm = mElements.back();
-	if (elm.coll == nullptr)
-		throw NMSLogicException("OWActorMutableParticle [" + name() + "] has no OWCollider. Cannot recover.");
-	if (elm.trans == nullptr)
-		throw NMSLogicException("OWActorMutableParticle [" + name() + "] has no OWTransform. Cannot recover.");
-	else
-		elm.trans->hostTransform(transform());
-	if (elm.phys == nullptr)
-		elm.phys = new OWPhysics(); // Physics may not be used.
+	validateCollider(this, elm.coll);
+	validatePhysics(this, elm.phys);
+	validateTransform(this, elm.trans);
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
 	return retval;
@@ -160,6 +264,9 @@ size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newEl
 
 void OWActorMutableParticle::doSetup()
 {
+	validateRenderer(this, mRenderer);
+	validateMeshComponent(this, mMeshTemplate);
+	validateSound(this, mSound);
 	AABB b = AABB(0);
 	OWRenderData rd = mMeshTemplate->renderData(b);
 	for (int i = 0; i < mElements.size(); i++)
@@ -210,6 +317,10 @@ OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene, const std::str
 
 void OWActorImmutableParticle::doSetup()
 {
+	validateRenderer(this, mRenderer);
+	validateMeshComponent(this, mMeshTemplate);
+	validatePhysics(this, mPhysics);
+	validateSound(this, mSound);
 	AABB b;
 	const OWRenderData rd = mMeshTemplate->renderData(b);
 	mRenderer->setup(rd);

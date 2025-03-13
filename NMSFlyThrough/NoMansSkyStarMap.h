@@ -55,7 +55,6 @@ protected:
 	void doSetup() override;
 public:
 	NoMansSky(Scene* _scene, const std::string& _name, const NoMansSkyData& _data);
-	void init(const std::string& fileName, const AABB& world);
 	void readSaveFile(const std::string& saveFileMeta, 
 			const std::string& saveFile);
 };

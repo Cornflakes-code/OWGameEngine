@@ -31,12 +31,10 @@ class NMSEndScene : public NMSScene
 public:
 	NMSEndScene(const Movie* movie);
 	std::string name() const { return "The End"; }
-	void doSetup(ScenePhysicsState* state) override;
-	virtual void render(const ScenePhysicsState* state,
-		const glm::mat4& proj, const glm::mat4& view,
-		const glm::vec3& cameraPos) override;
 	void activate(const std::string& previousScene, ScenePhysicsState* state, 
 				  Camera* camera, unsigned int callCount) override;
 	void deActivate(const Camera* camera, ScenePhysicsState* state) override;
+protected:
+	void doSetupScene(ScenePhysicsState* state) override;
 };
 

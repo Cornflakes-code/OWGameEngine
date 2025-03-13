@@ -80,7 +80,7 @@ NMSMainScene::NMSMainScene(const Movie* movie)
 {
 }
 
-void NMSMainScene::doSetup(ScenePhysicsState* state)
+void NMSMainScene::doSetupScene(ScenePhysicsState* state)
 {
 	NMSMainScenePhysics* sp = dynamic_cast<NMSMainScenePhysics*>(state);
 	sp->mCameraPosition = movie()->camera()->position();
@@ -92,30 +92,11 @@ void NMSMainScene::doSetup(ScenePhysicsState* state)
 	nmsd.starWorld = world();
 	nmsd.name = "grid";
 	nmsd.numberOfStars = 50000;
-	new NoMansSky(this, "NMS", nmsd);
+	//new NoMansSky(this, "NMS", nmsd);
 
 	OWThreeDAxisData threeDAxisData;
 	threeDAxisData.bounds = world();
 	new ThreeDAxis(this, "NMS Axis", threeDAxisData);
-
-	auto init = [](OWActor* a)
-		{
-			a->setup();
-		};
-	traverseSceneGraph(init);
-}
-
-void NMSMainScene::render(const ScenePhysicsState* OW_UNUSED(state),
-						  const glm::mat4& proj, const glm::mat4& view, 
-						const glm::vec3& cameraPos)
-{
-	glm::mat4 model(1.0);
-
-	auto rend = [proj, view, model, cameraPos](OWActor* a)
-	{
-		a->render(proj, view, model, cameraPos);
-	};
-	traverseSceneGraph(rend);
 }
 
 void NMSMainScene::activate(const std::string& OW_UNUSED(previousScene), 

@@ -488,7 +488,7 @@ NMSSplashScene::NMSSplashScene(const Movie* movie)
 {
 }
 
-void NMSSplashScene::doSetup(ScenePhysicsState* state)
+void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
 {
 	NMSSplashScenePhysics* sps 
 		= dynamic_cast<NMSSplashScenePhysics*>(state);
@@ -575,18 +575,12 @@ void NMSSplashScene::doSetup(ScenePhysicsState* state)
 	mButton = new OWButton();
 	mButton->setup(sps->mButtonData, glm::vec3(100));
 #endif
-	auto init = [](OWActor* a)
-		{
-			a->setup();
-		};
-	traverseSceneGraph(init);
 }
 
-void NMSSplashScene::render(const ScenePhysicsState* state,
+void NMSSplashScene::doRenderScene(const ScenePhysicsState* state,
 							const glm::mat4& proj, const glm::mat4& view,
 							const glm::vec3& cameraPos)
 {
-	glm::mat4 model(1.0);
 #ifdef INCLUDE_FULLSCREEN
 #endif
 
@@ -612,11 +606,6 @@ void NMSSplashScene::render(const ScenePhysicsState* state,
 	mStarRenderer->render(proj, view, model, cameraPos, nullptr, pointRender);
 	mButton->render(proj, view, model, cameraPos);
 #endif
-	auto rend = [proj, view, model, cameraPos](OWActor* a)
-		{
-			a->render(proj, view, model, cameraPos);
-		};
-	traverseSceneGraph(rend);
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 

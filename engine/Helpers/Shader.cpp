@@ -517,34 +517,34 @@ void Shader::setUniform(ShaderDataUniforms::UniformType ut,
 	{
 		float v;
 		ss >> v;
-		setFloat(name, v);
+		setFloat(name, v, useShader);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UInt:
 	{
 		int v;
 		ss >> v;
-		setInteger(name, v);
+		setInteger(name, v, useShader);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UV2F:
 	{
 		glm::vec2 v;
 		ss >> v;
-		setVector2f(name, v);
+		setVector2f(name, v, useShader);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UV3F:
 	{
 		glm::vec3 v;
 		ss >> v;
-		setVector3f(name, v);
+		setVector3f(name, v, useShader);
 		break;
 	}
 	case ShaderDataUniforms::UniformType::UV4F:
 		glm::vec4 v;
 		ss >> v;
-		setVector4f(name, v);
+		setVector4f(name, v, useShader);
 		break;
 	}
 }

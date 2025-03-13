@@ -27,6 +27,12 @@ OWMeshComponent* OWMeshComponent::add(const MeshData& meshData)
 	return this;
 }
 
+OWMeshComponent* OWMeshComponent::add(const InstanceData& instanceData)
+{
+	mData.instances.push_back(instanceData);
+	return this;
+}
+
 OWMeshComponent* OWMeshComponent::add(const std::vector<glm::vec3>& v)
 {
 	MeshData mdl;
@@ -54,5 +60,9 @@ void OWMeshComponent::doSetup()
 	for (int i = 0; i < mData.meshes.size(); i++)
 	{
 		validate(mData.meshes[i]);
+	}
+	for (int i = 0; i < mData.instances.size(); i++)
+	{
+		validate(mData.instances[i]);
 	}
 }

@@ -77,4 +77,23 @@ void OWMeshComponentBase::validate(const MeshData& md) const
 			+ "] invalid polygon mode mode [" + std::to_string(md.polygonMode_mode) + "]\n");
 
 }
+void OWMeshComponentBase::validate(const InstanceData& instanceData) const
+{
+	if (instanceData.v3.empty())
+		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
+			+ "] invalid InstanceData. Missing vertices");
+	if (instanceData.instancePositions.empty())
+		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
+			+ "] invalid InstanceData. Missing position");
+	if (instanceData.instanceColours.empty())
+		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
+			+ "] invalid InstanceData. Missing colours");
+	if (instanceData.positionDivisor == UINT_MAX)
+		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
+			+ "] invalid InstanceData. Missing position divisor");
+	if (instanceData.colourDivisor == UINT_MAX)
+		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
+			+ "] invalid InstanceData. Missing colour divisor");
+
+}
 

@@ -15,6 +15,7 @@ class OWENGINE_API OWMeshComponent: public OWMeshComponentBase
 public:
 	OWMeshComponent(OWActor* _owner, const std::string& _name);
 	OWMeshComponent* add(const MeshData& meshData);
+	OWMeshComponent* add(const InstanceData& instanceData);
 	OWMeshComponent* add(const std::vector<glm::vec3>& v);
 	OWMeshComponent* add(const std::vector<glm::vec4>& v);
 	virtual const OWRenderData renderData(AABB& bounds) const override;

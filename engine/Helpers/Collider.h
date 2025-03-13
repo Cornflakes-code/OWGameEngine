@@ -11,14 +11,14 @@ public:
 	{
 		Ovoid, Box, Plane, Point, Ray, Permeable
 	};
-	OWCollider(OWActor* _owner, CollisionType colliderType, unsigned int _componentIndex = 0)
-		: mOwner(_owner), mColliderType(colliderType), mComponentIndex(_componentIndex)
+	OWCollider(OWActor* _actor, CollisionType colliderType, unsigned int _componentIndex = 0)
+		: mActer(_actor), mColliderType(colliderType), mComponentIndex(_componentIndex)
 	{
 	}
 	CollisionType collisionType() const {
 		return mColliderType;
 	}
-
+	const OWActor* actor() const { return mActer; }
 	void componentIndex(size_t newValue) {
 		mComponentIndex = newValue;
 	}
@@ -72,7 +72,7 @@ private:
 	glm::vec3 mPt1 = glm::vec3(0);
 	glm::vec3 mPt2 = glm::vec3(0);
 	glm::vec3 mPt3 = glm::vec3(0);
-	OWActor* mOwner;
+	OWActor* mActer;
 	size_t mComponentIndex;
 	CollisionType mColliderType = CollisionType::Ovoid;
 };

@@ -12,6 +12,7 @@ out vec2 uv;
 out vec4 jfw_pos;
 out int jfw_draw_id;
 out int jfw_gl_VertexID;
+out int jfw_gl_InstanceID;
 //out vec4 jfw_ssb;
 //out int jfw_draw_id;
 
@@ -27,6 +28,7 @@ void main()
 	jfw_pos = BillboardPos_SSB[gl_DrawID];
 	jfw_draw_id = gl_DrawID;
 	jfw_gl_VertexID = gl_VertexID;
+	jfw_gl_InstanceID = gl_InstanceID;
 	vec3 vertexPosition_worldspace = 
 		particleCenter_wordspace
 		+ CameraRight_worldspace * coord.x * BillboardSize.x

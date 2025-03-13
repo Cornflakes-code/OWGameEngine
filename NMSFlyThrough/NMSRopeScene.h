@@ -21,7 +21,7 @@ struct NMSRopeScenePhysics : public ScenePhysicsState
 
 	void copy(ScenePhysicsState* source) override;
 	ScenePhysicsState* clone() override;
-	glm::vec3 mCameraFocus;
+	glm::vec3 mCameraFocus = glm::vec3(0);
 };
 
 class NMSRopeScene : public NMSScene
@@ -29,12 +29,10 @@ class NMSRopeScene : public NMSScene
 public:
 	NMSRopeScene(const Movie* movie);
 	std::string name() const { return "Rope"; }
-	void doSetup(ScenePhysicsState* state) override;
-	virtual void render(const ScenePhysicsState* state,
-		const glm::mat4& proj, const glm::mat4& view,
-		const glm::vec3& cameraPos) override;
 	void activate(const std::string& previousScene, ScenePhysicsState* state,
 		Camera* camera, unsigned int callCount) override;
 	void deActivate(const Camera* camera, ScenePhysicsState* state) override;
+protected:
+	void doSetupScene(ScenePhysicsState* state) override;
 };
 

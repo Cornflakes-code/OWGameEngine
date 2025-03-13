@@ -36,25 +36,17 @@ void OWInstanceRenderer::doSetup(const OWRenderData& rd)
 
 		for (const auto& m : rd.instances)
 		{
-			unsigned int vertexSize = 0;
-			validate(m);
 			if (!m.v3.empty())
 			{
 				mData.v3.insert(mData.v3.end(), m.v3.begin(), m.v3.end());
-				mVerticeCount = static_cast<GLsizei>(mData.v3.size());
-				vertexSize = 3;
 			}
 			else if (!m.v4.empty())
 			{
 				mData.v4.insert(mData.v4.end(), m.v4.begin(), m.v4.end());
-				mVerticeCount = static_cast<GLsizei>(m.v4.size());
-				vertexSize = 4;
 			}
 			mData.instancePositions.insert(mData.instancePositions.end(), m.instancePositions.begin(), m.instancePositions.end());
-			mPositionCount += static_cast<GLsizei>(mData.instancePositions.size());
 
 			mData.instanceColours.insert(mData.instanceColours.end(), m.instanceColours.begin(), m.instanceColours.end());
-			mColourCount += static_cast<GLsizei>(mData.instanceColours.size());
 
 			mData.vertexMode = m.vertexMode;
 			mData.vertexLocation = m.vertexLocation;
@@ -83,7 +75,26 @@ void OWInstanceRenderer::setupModel(const OWModelData& model)
 
 void OWInstanceRenderer::setupInstance()
 {
-	validateBase();
+	unsigned int vertexSize = 0;
+	const float* ff = nullptr;
+
+	if (mData.v3.size())
+	{
+		mVerticeCount = static_cast<GLsizei>(mData.v3.size());
+		vertexSize = 3;
+		const glm::vec3* p = mData.v3.data();
+		ff = glm::value_ptr(*p);
+	}
+	else
+	{
+		mVerticeCount = static_cast<GLsizei>(mData.v3.size());
+		vertexSize = 4;
+		const glm::vec4* p = mData.v4.data();
+		ff = glm::value_ptr(*p);
+	}
+
+	mPositionCount = static_cast<GLsizei>(mData.instancePositions.size());
+	mColourCount = static_cast<GLsizei>(mData.instanceColours.size());
 	glGenVertexArrays(1, &mVao);
 	glBindVertexArray(mVao);
 
@@ -92,23 +103,11 @@ void OWInstanceRenderer::setupInstance()
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(mData.vertexLocation,
-		mVerticeCount, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		vertexSize, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
 
-	const float* ff = nullptr;
-	if (mData.v3.size())
-	{
-		// Very clunky
-		const glm::vec3* p = mData.v3.data();
-		ff = glm::value_ptr(*p);
-	}
-	else
-	{
-		const glm::vec4* p = mData.v4.data();
-		ff = glm::value_ptr(*p);
-	}
 	glBufferData(GL_ARRAY_BUFFER,
-		mVerticeCount * mVerticeCount * sizeof(float), ff, GL_STATIC_DRAW);
+		mVerticeCount * vertexSize * sizeof(float), ff, GL_STATIC_DRAW);
 
 	// The positions
 	glEnableVertexAttribArray(1);
@@ -121,7 +120,6 @@ void OWInstanceRenderer::setupInstance()
 		0, // stride
 		(void*)0 // array buffer offset
 	);
-	mPositionCount = static_cast<GLsizei>(mData.instancePositions.size());
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * mPositionCount,
 		mData.instancePositions.data(), GL_STREAM_DRAW);
 	// The colours
@@ -188,20 +186,4 @@ void OWInstanceRenderer::doRender()
 	glDrawArraysInstanced(mData.vertexMode, 0,
 			static_cast<GLsizei>(mVerticeCount),
 			static_cast<GLsizei>(mPositionCount));
-}
-
-void OWInstanceRenderer::validate(const InstanceData& meshData) const
-{
-	validateBase();
-	if (meshData.v3.empty())
-		throw NMSLogicException("InstanceRenderer missing vertices");
-	if (meshData.instancePositions.empty())
-		throw NMSLogicException("InstanceRenderer missing positions");
-	if (meshData.instanceColours.empty())
-		throw NMSLogicException("InstanceRenderer missing colours");
-	if (meshData.positionDivisor == UINT_MAX)
-		throw NMSLogicException("InstanceRenderer missing position divisor");
-	if (meshData.colourDivisor == UINT_MAX)
-		throw NMSLogicException("InstanceRenderer missing colour divisor");
-
 }

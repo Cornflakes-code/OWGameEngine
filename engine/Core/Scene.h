@@ -48,17 +48,20 @@ public:
 	void cumulativeTime(const OWUtils::Time::duration& t) { mCumulativeTime = t; }
 	OWUtils::Time::duration cumulativeTime() const { return mCumulativeTime; }
 
-	virtual void render(const ScenePhysicsState* state,
-						const glm::mat4& proj, const glm::mat4& view,
-						const glm::vec3& cameraPos) = 0;
+	void render(const ScenePhysicsState* state,
+		const glm::mat4& proj, const glm::mat4& view,
+		const glm::vec3& cameraPos);
 	const Movie* movie() const { return mMovie; }
 	typedef std::function<void(OWActor* sc)> OWActorCallbackType;
 	void traverseSceneGraph(OWActorCallbackType cb) const;
 protected:
 	std::vector<OWActor*> mRootNode;
 	Scene(const Movie* movie);
-
-	virtual void doSetup(ScenePhysicsState* state) = 0;
+	virtual void doRenderScene(const ScenePhysicsState* state,
+		const glm::mat4& proj, const glm::mat4& view,
+		const glm::vec3& cameraPos) {
+	}
+	virtual void doSetupScene(ScenePhysicsState* state) = 0;
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )

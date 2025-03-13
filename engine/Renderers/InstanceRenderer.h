@@ -28,7 +28,6 @@ private:
 	void setupMesh(const MeshData& mesh);
 	void setupInstance();
 	void setupModel(const OWModelData& model);
-	void validate(const InstanceData& meshData) const;
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	InstanceData mData;

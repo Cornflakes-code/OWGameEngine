@@ -18,7 +18,7 @@ public:
 	OWComponent(OWActor* _owner, const std::string& _name)
 		:mOwner(_owner), mName(_name) {
 	}
-	void actor(OWActor* newValue) { mOwner = newValue; }
+	//void actor(OWActor* newValue) { mOwner = newValue; }
 	const OWActor* actor() const { return mOwner; }
 	bool active() const { return mActive; }
 	void active(bool newValue) { mActive = newValue; }
@@ -55,5 +55,6 @@ protected:
 	static bool validPolygonMode(GLenum mode);
 
 	void validate(const MeshData& md) const;
+	void validate(const InstanceData& instanceData) const;
 private:
 };
