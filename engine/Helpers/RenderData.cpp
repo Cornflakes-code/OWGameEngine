@@ -2,6 +2,12 @@
 
 void OWRenderData::add(const OWRenderData& toAdd, bool purgeTextures)
 {
+	if (ssbo.nodeSize != toAdd.ssbo.nodeSize)
+	{
+		throw NMSLogicException("OWRenderData::add(). SSBO node sizes must be the same.");
+	}
+	ssbo.data.insert(ssbo.data.end(), toAdd.ssbo.data.begin(), toAdd.ssbo.data.end());
+
 	meshes.insert(meshes.end(), toAdd.meshes.begin(), toAdd.meshes.end());
 	models.insert(models.end(), toAdd.models.begin(), toAdd.models.end());
 	instances.insert(instances.end(), toAdd.instances.begin(), toAdd.instances.end());

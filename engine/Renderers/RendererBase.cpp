@@ -99,7 +99,7 @@ GLenum BlendFuncRIAA::mSfactor;
 GLenum BlendFuncRIAA::mDfactor;
 
 OWRenderer::OWRenderer(const std::string& shaderFileName, RenderType rt)
-	: mShader(new Shader(shaderFileName))
+	: mShader(new Shader(shaderFileName)), mDrawType(rt)
 {
 }
 
@@ -109,8 +109,8 @@ void OWRenderer::validateBase() const
 		throw NMSLogicException("RendererBase::Shader must be set");
 }
 
-void OWRenderer::render(std::vector<glm::mat4> models, const glm::mat4& proj,
-	const glm::mat4& view, const glm::vec3& cameraPos)
+void OWRenderer::render(const glm::mat4& proj,
+	const glm::mat4& view, std::vector<glm::mat4> models, const glm::vec3& cameraPos)
 {
 	PolygonModeRIAA temp0(mPolygonFace, mPolygonMode);
 	PolygonModeRIAA temp1(mPolygonMode, mPolygonMode);

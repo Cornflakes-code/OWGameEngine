@@ -51,11 +51,6 @@ void to_json(json& j, const ShaderData& p)
 	};
 }
 
-static bool obj_exists(const json& j, const std::string& s)
-{
-	return j.find(s) != j.end();
-}
-
 void from_json(const json& j, ShaderData& p)
 {
 	if (j.find("colourName") != j.end()) j.at("colourName").get_to(p.colourName);

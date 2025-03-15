@@ -9,13 +9,14 @@
 #include <Core/Scene.h>
 #include <Renderers/MeshRenderer.h>
 
-ThreeDAxis::ThreeDAxis(Scene* _scene, const std::string& _name, const OWThreeDAxisData& _data)
-	: OWActorDiscrete(_scene, _name, nullptr), mData(_data) 
+ThreeDAxis::ThreeDAxis(Scene* _scene, const std::string& _name)
+	: OWActorDiscrete(_scene, _name, nullptr)
 {
 }
 
-void ThreeDAxis::doSetup()
+void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 {
+	mData = _data;
 	const AABB& bb = mData.bounds;
 	std::vector<glm::vec3> axisCoords = {
 		{ bb.center().x, bb.center().y, bb.center().z },
@@ -24,11 +25,9 @@ void ThreeDAxis::doSetup()
 		{ 0.0, 0.0, bb.maxPoint().z }
 	};
 
-	transform(new OWTransform(nullptr)); // Always do this before populating sse
-	
+	transform(new OWTransform(nullptr)); // Always do this before creating child transforms
 	OWActorDiscrete::DiscreteEntity sse;
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
-
 	MeshData md;
 	md.setColour(mData.axisColour, mData.axisColourName);
 	md.setVertices(axisCoords, GL_LINES);
@@ -56,8 +55,6 @@ void ThreeDAxis::doSetup()
 	//boxUnion |= box;
 	//axis->renderBoundingBox(false);
 	//boxUnion |= axis->constData()->boundingBox;
-
-//	OWActorDiscrete::doSetup();
 }
 
 OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b)
@@ -67,17 +64,21 @@ OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, con
 		fontHeight, globals->camera()->aspectRatio());
 
 	OWTextComponentData td;
-	OWActorDiscrete::DiscreteEntity sse;
-	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
 	td.fontSpacing = nice;
 	td.fontHeight = 12;
 	td.colour = mData.labelColour;
 	td.referencePos = refPos;
 	td.text = s;
 	td.tdt = OWTextComponentData::TextDisplayType::Static;
+
+	OWActorDiscrete::DiscreteEntity sse;
+	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
 	sse.mesh = new OWTextComponent(this, td.text, td);
-	sse.phys = new OWPhysics();
-	sse.rend = new OWMeshRenderer("StaticText.json");
-	sse.trans = new OWTransform(nullptr, pos);
+	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
+	shader->setStandardUniformNames("VP");
+	shader->appendMutator(OWTextComponent::shaderMutator(td.tdt));
+	sse.rend = new OWMeshRenderer(shader);
+	glm::vec3 p = glm::vec3(pos.x, pos.y, pos.z);
+	sse.trans = new OWTransform(this->transform(), p, {0.5f, 0.5f, 1.0f});
 	return sse;
 }

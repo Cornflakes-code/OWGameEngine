@@ -92,11 +92,12 @@ void NMSMainScene::doSetupScene(ScenePhysicsState* state)
 	nmsd.starWorld = world();
 	nmsd.name = "grid";
 	nmsd.numberOfStars = 50000;
-	//new NoMansSky(this, "NMS", nmsd);
-
+	NoMansSky* nms = new NoMansSky(this, "NMS");
+	nms->initialise(nmsd);
 	OWThreeDAxisData threeDAxisData;
 	threeDAxisData.bounds = world();
-	new ThreeDAxis(this, "NMS Axis", threeDAxisData);
+	ThreeDAxis* threeDAxis = new ThreeDAxis(this, "NMS Axis");
+	threeDAxis->initialise(threeDAxisData);
 }
 
 void NMSMainScene::activate(const std::string& OW_UNUSED(previousScene), 

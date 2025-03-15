@@ -26,14 +26,16 @@
 #define DEBUG_GRID
 #define DEBUG_STARS
 
-NoMansSky::NoMansSky(Scene* _scene, const std::string& _name, const NoMansSkyData& _data)
-: OWActorDiscrete(_scene, _name, nullptr), mData(_data)
+NoMansSky::NoMansSky(Scene* _scene, const std::string& _name)
+: OWActorDiscrete(_scene, _name, nullptr)
 {
-	mStarRadius = glm::vec2(0, 0);
 }
 
-void NoMansSky::doSetup()
+void NoMansSky::initialise(const NoMansSkyData& _data)
 {
+	mStarRadius = glm::vec2(0, 0);
+	mData = _data;
+
 	const std::string& fileName = mData.starFile;
 	const AABB& world = mData.starWorld;
 	this->transform(new OWTransform(nullptr));
@@ -114,7 +116,6 @@ void NoMansSky::doSetup()
 	sse1.trans = new OWTransform(nullptr);
 	addComponents(sse1);
 #endif
-	OWActorDiscrete::doSetup();
 }
 
 std::vector<glm::vec3> NoMansSky::createGrid(const AABB& nmsSpace,
@@ -160,7 +161,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("VP");
 	shader->appendMutator(OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType::Static));
-	starLabels->renderer(new OWMeshRenderer(shader, OWMeshRenderer::RenderType::DRAW_MULTI));
+	starLabels->renderer(new OWMeshRenderer(shader));
 	std::string line;
 	std::ifstream myfile(fileName);
 	if (myfile.is_open())

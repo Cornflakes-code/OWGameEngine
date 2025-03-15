@@ -3,18 +3,24 @@
 // textDynamicBillboard.v.glsl
 layout(location = 0) in vec4 coord;
 
+struct PosColour
+{
+	vec4 pos;
+	vec4 colour;
+};
+
 layout(binding = 1, std430) readonly buffer ssbo1 {
-	vec4 BillboardPos_SSB[];
+	PosColour ps[];
 };
 
 // Output data ; will be interpolated for each fragment.
 out vec2 uv;
 out vec4 jfw_pos;
-out int jfw_draw_id;
-out int jfw_gl_VertexID;
-out int jfw_gl_InstanceID;
-//out vec4 jfw_ssb;
-//out int jfw_draw_id;
+out vec4 ssb_colour;
+out vec3 jfw_CameraRight_worldspace;
+out vec3 jfw_CameraUp_worldspace;
+out vec2 jfw_BillboardSize;
+out mat4 jfw_VP;
 
 // Values that stay constant for the whole mesh.
 uniform vec3 CameraRight_worldspace;
@@ -24,11 +30,14 @@ uniform vec2 BillboardSize; // Size of the billboard, in world units (probably m
 
 void main()
 {
-	vec3 particleCenter_wordspace = vec3(BillboardPos_SSB[gl_DrawID].xyz);
-	jfw_pos = BillboardPos_SSB[gl_DrawID];
-	jfw_draw_id = gl_DrawID;
-	jfw_gl_VertexID = gl_VertexID;
-	jfw_gl_InstanceID = gl_InstanceID;
+	jfw_CameraRight_worldspace = CameraRight_worldspace;
+	jfw_CameraUp_worldspace = CameraUp_worldspace;
+	jfw_BillboardSize = BillboardSize;
+	jfw_VP = VP;
+
+	ssb_colour = ps[gl_DrawID].colour;
+	vec3 particleCenter_wordspace = vec3(ps[gl_DrawID].pos.xyz);
+	jfw_pos = ps[gl_DrawID].pos;
 	vec3 vertexPosition_worldspace = 
 		particleCenter_wordspace
 		+ CameraRight_worldspace * coord.x * BillboardSize.x

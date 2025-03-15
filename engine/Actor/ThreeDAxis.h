@@ -22,8 +22,8 @@ private:
 	OWThreeDAxisData mData;
 protected:
 public:
-	ThreeDAxis(Scene* _scene, const std::string& _name, const OWThreeDAxisData& _data = OWThreeDAxisData());
-	void doSetup() override;
+	ThreeDAxis(Scene* _scene, const std::string& _name);
+	void initialise(const OWThreeDAxisData& _data = OWThreeDAxisData());
 private:
 	OWActorDiscrete::DiscreteEntity createText(const glm::vec3& pos, const std::string& s, unsigned int refPos, AABB& b);
 };

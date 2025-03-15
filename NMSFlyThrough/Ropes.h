@@ -37,17 +37,22 @@ struct OWRopeData
 
 class Rope: public OWActorDiscrete
 {
-private:
-	bool initRopes();
-	OWRopeData mData;
-	PolygonBuilder* mPolyBuilder = nullptr;
-	
-protected:
-	void doSetup() override;
 public:
-	Rope(Scene* _scene, const std::string& _name, const OWRopeData& _data);
+	Rope(Scene* _scene, const std::string& _name);
+	void initialise(const OWRopeData& _data = OWRopeData());
 private:
+	OWRopeData mData;
 	AABB mBounds;
+	PolygonBuilder* mPolyBuilder = nullptr;
+	size_t mRopeEndsElementIndex = 0;
+	size_t mRopeLinesElementIndex = 0;
+	size_t mRopeSurfacesElementIndex = 0;
+	size_t mRopeBannerElementIndex = 0;
+	size_t mRopeLabelsElementIndex = 0;
+	bool mStrandLabels = false;
+	bool mBannerLabel = false;
+
+	bool initRopes();
 	bool prepare();
 	void prepareRope(int ropeNum, int width, int height, int numDepthLayers);
 	void makeVisible(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel);
@@ -59,11 +64,4 @@ private:
 	OWMeshComponent* createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	OWMeshComponent* createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	OWMeshComponent* createRopeSurfaces(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
-	bool mStrandLabels = false;
-	bool mBannerLabel = false;
-	size_t mRopeEndsElementIndex = 0;
-	size_t mRopeLinesElementIndex = 0;
-	size_t mRopeSurfacesElementIndex = 0;
-	size_t mRopeBannerElementIndex = 0;
-	size_t mRopeLabelsElementIndex = 0;
 };

@@ -35,7 +35,7 @@ void OWActor::setup()
 {
 	if (!mSetup)
 	{
-		doSetup();
+		doSetupActor();
 		mSetup = true;
 	}
 }
@@ -150,20 +150,24 @@ size_t OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
 	return retval;
 }
 
-void OWActorDiscrete::doSetup()
+void OWActorDiscrete::doSetupActor()
 {
-	OWRenderData rd;
 	AABB b;
 	for (int i = 0; i < mElements.size(); i++)
 	{
 		DiscreteEntity& elm = mElements[i];
 		elm.mesh->setup();
 		AABB b1;
-		elm.rend->setup(elm.mesh->renderData(b1));
 		elm.coll->points(b1);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 			CollisionSystem::addCollider(elm.coll, this, i);
+		OWRenderData rd = elm.mesh->renderData(b1);
 		b = b | b1;
+
+		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+		rd.ssbo.append(p);
+		elm.mesh->appendSSOData(rd.ssbo);
+		elm.rend->setup(rd);
 	}
 	bounds(b);
 }
@@ -174,9 +178,9 @@ void OWActorDiscrete::doRender(const glm::mat4& proj,
 {
 	for (auto& elm: mElements)
 	{
-		std::vector<glm::mat4> positions;
-		positions.push_back(model * elm.trans->modelMatrix());
-		elm.rend->render(positions, proj, view, cameraPos);
+		std::vector<glm::mat4> elmModel;
+		elmModel.push_back(model * elm.trans->modelMatrix());
+		elm.rend->render(proj, view, elmModel, cameraPos);
 	}
 }
 
@@ -194,15 +198,9 @@ size_t OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
 	return retval;
 }
 
-void OWActorNCom1Ren::doSetup()
+void OWActorNCom1Ren::doSetupActor()
 {
 	validateRenderer(this, mRenderer);
-	// Each element of the SSO is position (glm::vec4) + colour (glm::vec4).
-	//unsigned int ssoSize = 2 * sizeof(glm::vec4);
-	unsigned int ssoSize = 1 * sizeof(glm::vec4) / sizeof(float);
-
-	// mRenderer relies on the size not being changed
-	mSSBO.resize(ssoSize * mElements.size());
 
 	OWRenderData rd;
 	AABB b;
@@ -219,35 +217,25 @@ void OWActorNCom1Ren::doSetup()
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
 		b = b | b1;
-		const glm::vec3& p = elm.trans->worldPosition();
-		size_t offset = i * ssoSize;
-		mSSBO[offset + 0] = p.x;
-		mSSBO[offset + 1] = p.y;
-		mSSBO[offset + 2] = p.z;// 0.49308f;// p.z;
-		mSSBO[offset + 3] = 0;
-		/*
-		mSSBO[offset + 4] = elm.colour.x;
-		mSSBO[offset + 5] = elm.colour.y;
-		mSSBO[offset + 6] = elm.colour.z;
-		mSSBO[offset + 7] = elm.colour.w;
-		*/
+		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+		rd.ssbo.append(p);
+		elm.mesh->appendSSOData(rd.ssbo);
 	}
-	OWRenderer::SSBO ssbo(mSSBO);
-	mRenderer->ssbo(ssbo);
 	mRenderer->setup(rd);
 	bounds(b);
 }
+
 void OWActorNCom1Ren::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4 model,
 	const glm::vec3& cameraPos) 
 {
-	std::vector<glm::mat4> positions;
+	std::vector<glm::mat4> models;
 	for (auto& elm : mElements)
 	{
 		const glm::mat4 m = model * elm.trans->modelMatrix();
-		positions.push_back(m);
+		models.push_back(m);
 	}
-	mRenderer->render(positions, proj, view, cameraPos);
+	mRenderer->render(proj, view, models, cameraPos);
 }
 
 size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newElement)
@@ -262,7 +250,7 @@ size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newEl
 	return retval;
 }
 
-void OWActorMutableParticle::doSetup()
+void OWActorMutableParticle::doSetupActor()
 {
 	validateRenderer(this, mRenderer);
 	validateMeshComponent(this, mMeshTemplate);
@@ -289,13 +277,13 @@ void OWActorMutableParticle::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4 model,
 	const glm::vec3& cameraPos)
 {
-	std::vector<glm::mat4> positions;
+	std::vector<glm::mat4> models;
 	for (auto& elm : mElements)
 	{
 		const glm::mat4 m = model * elm.trans->modelMatrix();
-		positions.push_back(m);
+		models.push_back(m);
 	}
-	mRenderer->render(positions, proj, view, cameraPos);
+	mRenderer->render(proj, view, models, cameraPos);
 }
 
 void OWActorMutableParticle::renderer(OWRenderer* newValue)
@@ -315,7 +303,7 @@ OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene, const std::str
 
 }
 
-void OWActorImmutableParticle::doSetup()
+void OWActorImmutableParticle::doSetupActor()
 {
 	validateRenderer(this, mRenderer);
 	validateMeshComponent(this, mMeshTemplate);
@@ -331,8 +319,9 @@ void OWActorImmutableParticle::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::mat4 model,
 	const glm::vec3& cameraPos)
 {
-	std::vector<glm::mat4> positions;
-	mRenderer->render(positions, proj, view, cameraPos);
+	std::vector<glm::mat4> models;
+	models.push_back(model * transform()->modelMatrix());
+	mRenderer->render(proj, view, models, cameraPos);
 }
 
 void OWActorImmutableParticle::instanceMesh(const InstanceData& _data, std::string& _name)

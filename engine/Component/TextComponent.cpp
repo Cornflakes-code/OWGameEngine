@@ -123,6 +123,28 @@ const OWRenderData OWTextComponent::renderData(AABB& bounds) const
 	retval.textures.push_back(fd.texture());
 	return retval;
 }
+#include "../Core/CommonUtils.h"
+
+static int colCounter = 0;
+static std::vector<glm::vec4> instanceColours =
+{
+	OWUtils::colour(OWUtils::SolidColours::BLUE),
+	OWUtils::colour(OWUtils::SolidColours::GREEN),
+	OWUtils::colour(OWUtils::SolidColours::YELLOW),
+	OWUtils::colour(OWUtils::SolidColours::RED),
+	OWUtils::colour(OWUtils::SolidColours::MAGENTA),
+	OWUtils::colour(OWUtils::SolidColours::CYAN)
+};
+
+int OWTextComponent::appendSSOData(SSBO& ssbo) const
+{
+	glm::vec4 col = instanceColours[colCounter];
+	colCounter++;
+	if (colCounter > 5)
+		colCounter = 0;
+	ssbo.append(col);
+	return 4;
+}
 
 void OWTextComponent::doSetup()
 {

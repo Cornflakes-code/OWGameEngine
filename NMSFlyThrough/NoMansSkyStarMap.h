@@ -37,24 +37,25 @@ struct NoMansSkyData
 
 class NoMansSky: public OWActorDiscrete
 {
-	NoMansSkyData mData;
-	glm::vec2 mStarRadius;
-	std::vector<glm::vec3> mRandomMinorStars;
-	std::vector<glm::vec4> mStarPositions;
-	std::vector<glm::vec4> mStarColours;
-
-	void loadStars(const std::string& fileName, 
-				   const AABB& nmsSpace,
-				   float scaleToWorld);
-	std::vector<glm::vec3> createGrid(const AABB& nmsSpace,
-					const glm::u32vec3& gridSizes,
-					float scaleToWorld);
-	std::vector<glm::vec3> createRandomVectors(const AABB& world,
-					unsigned int count, float scaleToWorld);
-protected:
-	void doSetup() override;
 public:
-	NoMansSky(Scene* _scene, const std::string& _name, const NoMansSkyData& _data);
+	NoMansSky(Scene* _scene, const std::string& _name);
 	void readSaveFile(const std::string& saveFileMeta, 
 			const std::string& saveFile);
+	void initialise(const NoMansSkyData& _data = NoMansSkyData());
+protected:
+private:
+	NoMansSkyData mData;
+	std::vector<glm::vec4> mStarPositions;
+	std::vector<glm::vec4> mStarColours;
+	std::vector<glm::vec3> mRandomMinorStars;
+	glm::vec2 mStarRadius;
+
+	void loadStars(const std::string& fileName,
+		const AABB& nmsSpace,
+		float scaleToWorld);
+	std::vector<glm::vec3> createGrid(const AABB& nmsSpace,
+		const glm::u32vec3& gridSizes,
+		float scaleToWorld);
+	std::vector<glm::vec3> createRandomVectors(const AABB& world,
+		unsigned int count, float scaleToWorld);
 };

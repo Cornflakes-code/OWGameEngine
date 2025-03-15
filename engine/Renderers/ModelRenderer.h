@@ -24,7 +24,6 @@ public:
 	}
 protected:
 	void doRender() override;
-	void prepareOpenGL();
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )

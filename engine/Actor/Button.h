@@ -35,7 +35,7 @@ class OWButton: public OWActor
 {
 public:
 	OWButton(Scene* _scene, const std::string& _name);
-	void doSetup() override;
+	void initialise();
 	//void textures();
 	//void text();
 protected:

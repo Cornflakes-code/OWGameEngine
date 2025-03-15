@@ -70,7 +70,7 @@ void NMSMovie::preRun()
 	this->add(s, new NMSRopeScenePhysics(s), s->name() == activeScene);
 }
 
-void NMSMovie ::render(const ScenePhysicsState* state)
+void NMSMovie::render(const ScenePhysicsState* state)
 {
 	Movie::render(state);
 }

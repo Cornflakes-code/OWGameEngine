@@ -15,10 +15,6 @@ void OWModelRenderer::doSetup(const OWRenderData& renderData)
 			"Error. OWModelRenderer::doSetup cannot process multiple models\n");
 
 	mData = renderData.models[0];
-}
-
-void OWModelRenderer::prepareOpenGL()
-{
 	shader()->use();
 	const OWModelData& data = mData;
 	glGenVertexArrays(1, &mVao);

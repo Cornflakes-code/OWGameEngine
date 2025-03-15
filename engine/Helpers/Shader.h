@@ -22,6 +22,8 @@ struct ShaderDataUniforms
 
 struct OWENGINE_API ShaderData
 {
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	std::string colourName = "";
 	std::string shaderV = "";
 	std::string shaderF = "";
@@ -32,6 +34,7 @@ struct OWENGINE_API ShaderData
 	std::string modelName = "model";
 	std::vector<OWRenderTypes::ShaderMutator> mutatorCallbacks;
 	std::vector<ShaderDataUniforms> uniforms;
+#pragma warning( pop )
 };
 
 // A wrapper for Shaders. Based on the Shader class at https://learnopengl.com/

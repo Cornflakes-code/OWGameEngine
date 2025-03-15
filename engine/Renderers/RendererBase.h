@@ -17,12 +17,6 @@ class OWENGINE_API OWRenderer
 	bool mSetup = false;
 public:
 	enum RenderType { DRAW_NONE, DRAW_MULTI, DRAW_PRIMITIVE };
-	struct SSBO
-	{
-		std::vector<float> data;
-		//void* data = nullptr; // Owned by original creator of the SSBO
-		//size_t size = 0;
-	};
 	OWRenderer(const std::string& shaderFileName, RenderType rt);
 	OWRenderer(Shader* _shader, RenderType rt)
 		: mShader(_shader), mDrawType(rt)
@@ -36,8 +30,8 @@ public:
 			doSetup(renderData);
 		}
 	}
-	void render(std::vector<glm::mat4> models, const glm::mat4& proj,
-		const glm::mat4& view, const glm::vec3& cameraPos);
+	void render(const glm::mat4& proj,
+		const glm::mat4& view, std::vector<glm::mat4> models, const glm::vec3& cameraPos);
 
 	// OpenGL state functions
 	void drawModes(unsigned int indices, unsigned int vertices)
@@ -57,10 +51,6 @@ public:
 		mSfactor = sfactor;
 		mDfactor = dfactor;
 	}
-	void ssbo(const SSBO& _data)
-	{
-		mSSBO = _data;
-	}
 
 	virtual ~OWRenderer() {}
 protected:
@@ -70,7 +60,6 @@ protected:
 	Shader* shader() { return mShader; }
 	unsigned int indicesMode() const { return mIndicesMode; }
 	unsigned int vertexMode() const { return mVertexMode; }
-	SSBO mSSBO;
 	RenderType mDrawType = DRAW_NONE;
 private:
 	Shader* mShader = nullptr;

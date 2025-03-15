@@ -92,10 +92,9 @@ int ma_playSound(int ndx)
 
 void ma_close()
 {
-    std::vector<ma_sound> gSounds;
     for(ma_sound& var:  gSounds)
     {
-        //ma_sound_uninit(&var);
+        ma_sound_uninit(&var);
     }
     //ma_engine_uninit(&gEngine);
 }

@@ -50,6 +50,7 @@ public:
 		: OWComponent(_owner, _name) {
 	}
 	virtual const OWRenderData renderData(AABB& bounds) const = 0;
+	virtual int appendSSOData(SSBO& OW_UNUSED(ssbo)) const { return 0; }
 protected:
 	static bool validMode(GLenum mode);
 	static bool validPolygonMode(GLenum mode);

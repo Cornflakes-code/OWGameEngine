@@ -68,7 +68,7 @@ public:
 	}
 	bool setupCompleted() const { return mSetup; }
 protected:
-	virtual void doSetup() = 0;
+	virtual void doSetupActor() = 0;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) = 0;
@@ -101,7 +101,7 @@ public:
 	}
 	size_t addComponents(const DiscreteEntity& newElement);
 protected:
-	void doSetup() override;
+	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;
@@ -131,12 +131,11 @@ public:
 		mRenderer = newValue; 
 	}
 protected:
-	void doSetup() override;
+	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;
 private:
-	std::vector<float> mSSBO;
 	std::vector<NCom1RenElement> mElements;
 	OWRenderer* mRenderer = nullptr;
 };
@@ -163,7 +162,7 @@ public:
 	}
 
 protected:
-	void doSetup() override;
+	void doSetupActor() override final;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;
@@ -186,7 +185,7 @@ public:
 	void sound(OWSoundComponent* newValue);
 	void instanceMesh(const InstanceData& _data, std::string& _name);
 protected:
-	void doSetup() override;
+	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::mat4 model,
 		const glm::vec3& cameraPos) override;

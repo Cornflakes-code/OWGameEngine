@@ -3,9 +3,14 @@
 // textStaticBillboard.v.glsl
 layout(location = 0) in vec4 coord;
 
+struct PosColour
+{
+	vec4 pos;
+	vec4 colour;
+};
+
 layout(binding = 1, std430) readonly buffer ssbo1 {
-	vec4 SSB_pos[];
-	//vec4 SSB_colour;
+	PosColour ps[];
 };
 
 // Output data ; will be interpolated for each fragment.
@@ -13,8 +18,9 @@ out vec2 uv;
 out vec3 jfw_CameraRight_worldspace;
 out vec3 jfw_CameraUp_worldspace;
 out mat4 jfw_VP;
-out vec4 jfw_BillboardPos;
+out vec3 jfw_BillboardPos;
 out vec2 jfw_BillboardSize;
+out vec4 ssb_colour;
 
 // Values that stay constant for the whole mesh.
 uniform vec3 CameraRight_worldspace;
@@ -25,16 +31,15 @@ uniform vec2 BillboardSize; // Size of the billboard, in world units
 
 void main()
 {
-	vec3 particleCenter_wordspace = vec3(SSB_pos[gl_DrawID].xyz);
-		jfw_CameraRight_worldspace = CameraRight_worldspace;
+	ssb_colour = ps[gl_DrawID].colour;
+	vec3 BillboardPos = vec3(ps[gl_DrawID].pos.xyz);
+	jfw_BillboardPos = BillboardPos;
+	jfw_CameraRight_worldspace = CameraRight_worldspace;
 	jfw_CameraUp_worldspace = CameraUp_worldspace;
 	jfw_VP = VP;
-	jfw_BillboardPos = SSB_pos[gl_DrawID];
 	jfw_BillboardSize = BillboardSize;
-	//vec3 particleCenter_wordspace = BillboardPos;
 
-	// Output position of the vertex
-	gl_Position = VP * vec4(particleCenter_wordspace, 1.0f);
+	gl_Position = VP * vec4(BillboardPos, 1.0f);
 	gl_Position /= gl_Position.w;
 	gl_Position.xy += coord.xy * BillboardSize; 
 

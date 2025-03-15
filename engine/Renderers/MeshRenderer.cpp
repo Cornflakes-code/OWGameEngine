@@ -28,14 +28,103 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 	{
 		add(m);
 	}
-	prepareOpenGL();
+	mSSBO = renderData.ssbo;
+
+	// https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices
+	if (mData.v3.size() && mData.v4.size())
+		throw NMSLogicException("OWMeshRenderer::doSetup() cannot have both vec4 and vec3 arrays.");
+	if (mData.v3.size() == 0 && mData.v4.size() == 0)
+		return;
+	if (mData.polygonMode_mode == UINT_MAX)
+		mData.polygonMode_mode = GL_FILL;
+
+	// Check for common error
+	if (mData.polygonMode_mode == GL_LINES)
+		mData.polygonMode_mode = GL_LINE;
+
+	if (mVao != std::numeric_limits<unsigned int>::max())
+		throw NMSLogicException("OWMeshRenderer::doSetup(). VAO should not be initialised.\n");
+
+	glGenVertexArrays(1, &mVao);
+	glBindVertexArray(mVao);
+	if (mSSBO.data.size() > 0)
+	{
+		// This is good 
+		// https://www.khronos.org/opengl/wiki/Vertex_Shader/Defined_Inputs
+		// https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object
+		// https://ktstephano.github.io/rendering/opengl/ssbos
+		glCreateBuffers(1, &mSbo);
+		glNamedBufferStorage(mSbo,
+			mSSBO.data.size() * sizeof(float),
+			(const void*)mSSBO.data.data(),
+			GL_DYNAMIC_STORAGE_BIT);
+		// Note the 1 matches our binding = 1 in the vertex shader
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+	}
+	glGenBuffers(1, &mVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+	shader()->use();
+	if (!mData.shaderColourName.empty())
+	{
+		shader()->setVector4f(mData.shaderColourName, mData.colour);
+	}
+
+	if (!mData.indices.empty())
+	{
+		glGenBuffers(1, &mEbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(unsigned int) * static_cast<GLsizei>(mData.indices.size()),
+			mData.indices.data(), GL_STATIC_DRAW);
+	}
+	unsigned int vertexLoc = 0;// shader()->getAttributeLocation("coord");
+	if (mData.v4.size())
+	{
+		// Very nice explanation of glVertexAttribPointer and glEnableVertexAttribArray 
+		// // and how they tie into the shader
+		// https://ktstephano.github.io/rendering/opengl/prog_vtx_pulling
+		glVertexAttribPointer(vertexLoc, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glEnableVertexAttribArray(vertexLoc);
+		size_t sz = mData.v4.size() * 4 * sizeof(float);
+		glBufferData(GL_ARRAY_BUFFER, sz, mData.v4.data(), GL_STATIC_DRAW);
+	}
+	else
+	{
+		// Youtube video explaning glVertexAttribPointer
+		// https://www.youtube.com/watch?v=kQOwkG15dYo
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		// Positions
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(3 * sizeof(float)));
+		size_t sz = mData.v3.size() * 3 * sizeof(float);
+		glBufferData(GL_ARRAY_BUFFER, sz, mData.v3.data(), GL_STATIC_DRAW);
+	}
+	if (mDrawType == RenderType::DRAW_PRIMITIVE)
+	{
+		glGenBuffers(1, &mPrimitiveEbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mPrimitiveEbo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mPrimitiveIndices.size(),
+			mPrimitiveIndices.data(), GL_STATIC_DRAW);
+	}
+
+	glEnableVertexAttribArray(vertexLoc);
+
+	// You can unbind the VAO afterwards so other VAO calls won't 
+	// accidentally modify this VAO, but this rarely happens. Modifying other
+	// VAOs requires a call to glBindVertexArray anyways so we generally don't 
+	// unbind VAOs (nor VBOs) when it's not directly necessary.
+	glBindVertexArray(0);
+	blendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if (!mData.indices.empty())
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //Unbind the index buffer AFTER the vao has been unbound
+
 }
 
 void OWMeshRenderer::add(const Texture& texture)
 {
 	mTexture = texture;
 	mTexture.samplerName("textureImageId");
-
 }
 
 void OWMeshRenderer::add(const MeshData& meshData)
@@ -69,7 +158,7 @@ void OWMeshRenderer::add(const MeshData& meshData)
 	if (!meshData.indices.empty())
 	{
 		// https://stackoverflow.com/questions/24516993/is-it-possible-to-use-index-buffer-objects-ibo-with-the-function-glmultidrawe
-		GLsizei xx = mData.indices.size() * sizeof(GLsizei);
+		size_t xx = mData.indices.size() * sizeof(GLsizei);
 		mMultiElementStartIndexes.push_back(reinterpret_cast<void*>(xx));
 		mData.indices.insert(mData.indices.end(), meshData.indices.begin(), meshData.indices.end());
 		mMultiElementIndicesCounts.push_back(static_cast<GLsizei>(mData.indices.size() * sizeof(unsigned int)));
@@ -82,98 +171,6 @@ void OWMeshRenderer::add(const MeshData& meshData)
 	mData.polygonMode_mode = meshData.polygonMode_mode;
 }
 
-void OWMeshRenderer::prepareOpenGL()
-{
-	if (mData.v3.size() && mData.v4.size())
-		throw NMSLogicException("OWMeshRenderer::prepareOpenGL cannot have both vec4 and vec3 arrays.");
-	if (mData.v3.size() == 0 && mData.v4.size() == 0)
-		return;
-	if (mData.polygonMode_mode == UINT_MAX)
-		mData.polygonMode_mode = GL_FILL;
-
-	// Check for common error
-	if (mData.polygonMode_mode == GL_LINES)
-		mData.polygonMode_mode = GL_LINE;
-
-	if (mSSBO.data.size() > 0)
-	{
-		// This is good 
-		// https://www.khronos.org/opengl/wiki/Vertex_Shader/Defined_Inputs
-		// https://ktstephano.github.io/rendering/opengl/ssbos
-		glCreateBuffers(1, &mSbo);
-		glNamedBufferStorage(mSbo,
-			mSSBO.data.size() * sizeof(float),
-			(const void*)mSSBO.data.data(),
-			GL_DYNAMIC_STORAGE_BIT);
-		// Note the 1 matches our binding = 2 in the vertex shader
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
-	}
-	if (mVao == std::numeric_limits<unsigned int>::max())
-		glGenVertexArrays(1, &mVao);
-	glBindVertexArray(mVao);
-	if (mSSBO.data.size() > 0)
-	{
-		// Note the 1 matches our binding = 1 in the vertex shader
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
-	}
-	glGenBuffers(1, &mVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-	shader()->use();
-	if (!mData.shaderColourName.empty())
-	{
-		shader()->setVector4f(mData.shaderColourName, mData.colour);
-	}
-
-	if (!mData.indices.empty())
-	{
-		glGenBuffers(1, &mEbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(unsigned int) * static_cast<GLsizei>(mData.indices.size()),
-			mData.indices.data(), GL_STATIC_DRAW);
-	}
-	unsigned int vertexLoc = shader()->getAttributeLocation("coord");
-	if (mData.v4.size())
-	{
-		// Very nice explanation of glVertexAttribPointer and glEnableVertexAttribArray 
-		// // and how they tie into the shader
-		// https://ktstephano.github.io/rendering/opengl/prog_vtx_pulling
-		glVertexAttribPointer(vertexLoc, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexLoc);
-		unsigned int sz = mData.v4.size() * 4 * sizeof(float);
-		glBufferData(GL_ARRAY_BUFFER, mData.v4.size() * 4 * sizeof(float), mData.v4.data(), GL_STATIC_DRAW);
-	}
-	else
-	{
-		// Youtube video explaning glVertexAttribPointer
-		// https://www.youtube.com/watch?v=kQOwkG15dYo
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		// Positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(3 * sizeof(float)));
-		glBufferData(GL_ARRAY_BUFFER, mData.v3.size() * 3 * sizeof(float), mData.v3.data(), GL_STATIC_DRAW);
-	}
-	if (mDrawType == RenderType::DRAW_PRIMITIVE)
-	{
-		glGenBuffers(1, &mPrimitiveEbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mPrimitiveEbo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mPrimitiveIndices.size(), 
-			mPrimitiveIndices.data(), GL_STATIC_DRAW);
-	}
-
-	glEnableVertexAttribArray(0);
-
-	// You can unbind the VAO afterwards so other VAO calls won't 
-	// accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't 
-	// unbind VAOs (nor VBOs) when it's not directly necessary.
-	glBindVertexArray(0);
-	blendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (!mData.indices.empty())
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //Unbind the index buffer AFTER the vao has been unbound
-}
-
 void OWMeshRenderer::doRender() 
 {
 	if (!mData.shaderColourName.empty())
@@ -182,7 +179,14 @@ void OWMeshRenderer::doRender()
 	}
 
 	glBindVertexArray(mVao);
-	//glPolygonMode(GL_FRONT_AND_BACK, mData.polygonMode_mode);
+
+	if (mSbo != std::numeric_limits<unsigned int>::max())
+	{
+		// Does not appear to impact performance at all
+		// Note the 1 matches our binding = 1 in the vertex shader
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+	}
+	glPolygonMode(GL_FRONT_AND_BACK, mData.polygonMode_mode);
 	if (mTexture.samplerName().size() > 0)
 	{
 		glActiveTexture(mTexture.imageUnit());
@@ -212,7 +216,8 @@ void OWMeshRenderer::doRender()
 		}
 		else
 		{
-			glMultiDrawArrays(mData.vertexMode, mMultiArrayStartIndexes.data(), mMultiArrayVertexCount.data(), mNumMeshes);
+			glMultiDrawArrays(mData.vertexMode, mMultiArrayStartIndexes.data(),
+							mMultiArrayVertexCount.data(), mNumMeshes);
 		}
 	}
 	glBindVertexArray(0);

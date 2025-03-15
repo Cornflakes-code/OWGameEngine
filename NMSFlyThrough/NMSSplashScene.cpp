@@ -137,7 +137,7 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			OWMeshComponent* mc = new OWMeshComponent(gRay, "Ray Component");
 			mc->add(OWGeometricShapes::beam(cam_pos, dir, 1000));
 			sse.mesh = mc;
-			sse.rend = new OWMeshRenderer("", OWMeshRenderer::RenderType::DRAW_MULTI);
+			sse.rend = new OWMeshRenderer("");
 			sse.trans = new OWTransform(gRay->transform(), cam_pos);
 			gRay->addComponents(sse);
 #endif
@@ -497,7 +497,8 @@ void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
 	OWThreeDAxisData axisData;
 	axisData.bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
 	axisData.labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW);
-	ThreeDAxis* axis = new ThreeDAxis(this, "3D Axis", axisData);
+	ThreeDAxis* axis = new ThreeDAxis(this, "3D Axis");
+	axis->initialise(axisData);
 
 #endif
 #ifdef INCLUDE_FULLSCREEN

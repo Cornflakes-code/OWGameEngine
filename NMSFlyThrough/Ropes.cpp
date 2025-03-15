@@ -24,13 +24,14 @@ static std::string gRopeEnds = "RopeEnds";
 static std::string gRopeLines = "RopeLines";
 static std::string gRopeSurfaces = "RopeSurfaces";
 
-Rope::Rope(Scene* _scene, const std::string& _name, const OWRopeData& _data)
-	: OWActorDiscrete(_scene, _name), mData(_data)
+Rope::Rope(Scene* _scene, const std::string& _name)
+	: OWActorDiscrete(_scene, _name)
 {
 }
 
-void Rope::doSetup()
+void Rope::initialise(const OWRopeData& _data)
 {
+	mData = _data;
 	if (!prepare())
 		return; //fail to init DLL
 	transform(new OWTransform(nullptr));
@@ -41,7 +42,7 @@ void Rope::doSetup()
 	{
 		createLabels(tcd.fontSpacing, rd.labelTextScale);
 	}
-	if (false)
+	if (true)
 	{
 		createBanner(mData.bannerTextData.text, mData.bannerTextData.fontHeight, 
 			tcd.fontSpacing * 10.0f, mData.ropeData.bannerTextScale);
@@ -57,7 +58,7 @@ void Rope::doSetup()
 		sse.rend = new OWMeshRenderer(lineShader, OWMeshRenderer::DRAW_MULTI);
 		mRopeLinesElementIndex = this->addComponents(sse);
 	}
-	if (true) 
+	if (true)
 	{
 		Shader* wireShader = new Shader();
 		wireShader->loadShaders("Wires.v.glsl",
@@ -85,7 +86,7 @@ void Rope::doSetup()
 		sse.rend = new OWMeshRenderer(wireShader, OWMeshRenderer::DRAW_MULTI);
 		mRopeSurfacesElementIndex = this->addComponents(sse);
 	}
-	if (true) 
+	if (true)
 	{
 		Shader* lineShader = new Shader("");
 		lineShader->setStandardUniformNames("pvm");
@@ -97,7 +98,6 @@ void Rope::doSetup()
 	}
 	const OWRopeVisibilityData& vd = mData.ropeVisibility;
 	makeVisible(vd.ends, vd.lines, vd.surfaces, vd.strandLabels, vd.bannerLabel);
-	OWActorDiscrete::doSetup();
 }
 
 void Rope::makeVisible(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel)
@@ -141,13 +141,13 @@ void Rope::createBanner(const std::string& s, int height,
 	const std::string& _font,
 	const glm::vec4& colour)
 {
-	OWTextComponentData::TextDisplayType tdt = OWTextComponentData::TextDisplayType::Dynamic;
-	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Labels", this);
+	OWTextComponentData::TextDisplayType tdt = OWTextComponentData::TextDisplayType::Static;
+	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Banner", this);
 	multipleTexts->transform(new OWTransform(transform()));
-	Shader* shader = new Shader("textDynamicBillboard.v.glsl", "text.f.glsl", "");
+	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("VP");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->renderer(new OWMeshRenderer(shader, OWMeshRenderer::RenderType::DRAW_MULTI));
+	multipleTexts->renderer(new OWMeshRenderer(shader));
 	for(int i = 0; i < 1; i++) // could do many
 	{
 		OWTextComponentData td;
@@ -159,7 +159,7 @@ void Rope::createBanner(const std::string& s, int height,
 
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.mesh = new OWTextComponent(multipleTexts, "Rope Banner", td);
-		elm.trans = new OWTransform(multipleTexts->transform(), glm::vec3(0,0,0));
+		elm.trans = new OWTransform(multipleTexts->transform(), glm::vec3(9,8,7));
 		elm.colour = colour;
 		elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
 		multipleTexts->addComponents(elm);
@@ -181,7 +181,7 @@ void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale
 	multipleTexts->transform(new OWTransform(transform(), glm::vec3(0, 0, 0)));
 	Shader* shader = new Shader("DynamicText.json");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->renderer(new OWMeshRenderer(shader, OWMeshRenderer::RenderType::DRAW_MULTI));
+	multipleTexts->renderer(new OWMeshRenderer(shader));
 	for (int i = 0; i < mPolyBuilder->labels().size(); i++)
 	{ 
 		const PolygonBuilder::SliceId& si = mPolyBuilder->labels()[i];
@@ -191,7 +191,7 @@ void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale
 		td.fontHeight = mData.labelTextData.fontHeight;
 		td.fontSpacing = textSpacing * 10.0f;
 		OWActorNCom1Ren::NCom1RenElement elm;
-		elm.mesh = new OWTextComponent(nullptr, td.text, td);
+		elm.mesh = new OWTextComponent(multipleTexts, td.text, td);
 		elm.trans = new OWTransform(multipleTexts->transform(), si.pos, glm::vec3(textScale, 1));
 		elm.colour = OWUtils::colour(OWUtils::SolidColours::BLUE);
 		elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);

@@ -38,14 +38,15 @@ void NMSRopeScenePhysics::setup()
 #ifdef _DEBUG
 	rd.ropeData.numDepthLayers = 45;
 #else
-	rd.ropeData.numDepthLayers = 1000;
+	rd.ropeData.numDepthLayers = 45;// 1000;
 #endif
 	rd.ropeVisibility.ends = true;
-	rd.ropeVisibility.lines = false;
+	rd.ropeVisibility.lines = true;
 	rd.ropeVisibility.surfaces = true;
-	rd.ropeVisibility.strandLabels = false;
+	rd.ropeVisibility.strandLabels = true;
 	rd.ropeVisibility.bannerLabel = true;
-	gRope = new Rope(this->owner(), "Rope", rd);
+	gRope = new Rope(this->owner(), "Rope");
+	gRope->initialise(rd);
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(60.0f, 60.0f, -150.0f));

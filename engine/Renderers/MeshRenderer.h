@@ -27,12 +27,12 @@ protected:
 	void add(const MeshData& meshData);
 	void add(const Texture& texture);
 	void doRender() override;
-	void prepareOpenGL();
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 
-
+private:
 	MeshData mData;
+	SSBO mSSBO;
 	Texture mTexture;
 	size_t mPositionCount = 0;
 	size_t mColourCount = 0;

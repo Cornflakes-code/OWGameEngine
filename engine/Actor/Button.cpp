@@ -10,7 +10,7 @@ OWButton::OWButton(Scene* _scene, const std::string& _name)
 {
 }
 
-void OWButton::doSetup()
+void OWButton::initialise()
 {
 	throw NMSException("Incomplete function");
 	/*
