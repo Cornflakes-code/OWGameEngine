@@ -31,6 +31,7 @@ private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	InstanceData mData;
+	SSBO mSSBO;
 	// Keep the count seperate cos we could blow away mData.v3/v4
 	GLsizei mVerticeCount = 0;
 	GLsizei mPositionCount = 0;
@@ -38,8 +39,9 @@ private:
 	// mVbo[0] The VBO containing the triangles to draw
 	// mVbo[1] The VBO containing the positions of the particles
 	// mVbo[2] The VBO containing the colors of the particles
-	unsigned int mVao = 0;
 	unsigned int mVbo[3] = { 0, 0, 0 };
+	unsigned int mVao = 0;
 	unsigned int mEbo = 0;
+	unsigned int mSbo = std::numeric_limits<unsigned int>::max();
 #pragma warning( pop )
 };

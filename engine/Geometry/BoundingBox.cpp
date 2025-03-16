@@ -3,6 +3,7 @@
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+
 namespace Compass
 {
 	glm::vec4 Rose[NumDirections] = {

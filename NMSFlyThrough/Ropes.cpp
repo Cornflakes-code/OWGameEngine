@@ -55,7 +55,7 @@ void Rope::initialise(const OWRopeData& _data)
 		OWActorDiscrete::DiscreteEntity sse;
 		sse.mesh = createRopeLines(mPolyBuilder->slices());
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
-		sse.rend = new OWMeshRenderer(lineShader, OWMeshRenderer::DRAW_MULTI);
+		sse.rend = new OWMeshRenderer(lineShader);
 		mRopeLinesElementIndex = this->addComponents(sse);
 	}
 	if (true)
@@ -83,7 +83,7 @@ void Rope::initialise(const OWRopeData& _data)
 		OWActorDiscrete::DiscreteEntity sse;
 		sse.mesh = createRopeSurfaces(mPolyBuilder->slices());
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
-		sse.rend = new OWMeshRenderer(wireShader, OWMeshRenderer::DRAW_MULTI);
+		sse.rend = new OWMeshRenderer(wireShader);
 		mRopeSurfacesElementIndex = this->addComponents(sse);
 	}
 	if (true)
@@ -93,7 +93,7 @@ void Rope::initialise(const OWRopeData& _data)
 		OWActorDiscrete::DiscreteEntity sse;
 		sse.mesh = createRopeEnds(mPolyBuilder->slices());
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
-		sse.rend = new OWMeshRenderer(lineShader, OWMeshRenderer::DRAW_MULTI);
+		sse.rend = new OWMeshRenderer(lineShader);
 		mRopeEndsElementIndex = this->addComponents(sse);
 	}
 	const OWRopeVisibilityData& vd = mData.ropeVisibility;

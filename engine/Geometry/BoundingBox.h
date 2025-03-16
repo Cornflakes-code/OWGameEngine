@@ -137,6 +137,10 @@ public:
 		mMinPoint += delta;
 		mMaxPoint += delta;
 	}
+	void move(const glm::vec4& delta) override
+	{
+		move(glm::vec3(delta));
+	}
 
 	void moveTo(const glm::vec3& pt) override
 	{

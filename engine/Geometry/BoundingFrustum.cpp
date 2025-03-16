@@ -25,6 +25,11 @@ void BoundingFrustum::move(const glm::vec3& delta)
 	nearFace.move(delta);
 }
 
+void BoundingFrustum::move(const glm::vec4& delta)
+{
+	move(glm::vec3(delta));
+}
+
 void BoundingFrustum::moveTo(const glm::vec3& pt) 
 {
 	topFace.moveTo(pt);

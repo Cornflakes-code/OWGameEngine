@@ -11,6 +11,7 @@
 #include "../OWEngine/OWEngine.h"
 #include "../Geometry/BoundingBox.h"
 
+struct MeshData;
 struct InstanceData
 {
 	void setVertices(const std::vector<glm::vec3>& v,
@@ -45,6 +46,7 @@ struct InstanceData
 		colourDivisor = _colourDivisor;
 		colourLocation = _colourLocation;
 	}
+	void moveFrom(MeshData& id);
 	unsigned int vertexMode = UINT_MAX;
 	unsigned int vertexLocation = UINT_MAX;
 

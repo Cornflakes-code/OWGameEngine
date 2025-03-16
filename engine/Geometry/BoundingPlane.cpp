@@ -16,6 +16,14 @@ void BoundingPlane::move(const glm::vec3& delta)
 	//mDistance += delta;
 }
 
+void BoundingPlane::move(const glm::vec4& delta)
+{
+	if (!OWUtils::isZero(delta))
+		throw NMSNotYetImplementedException("Object [Bounding Plane::move] not implemented");
+	//mDistance += delta;
+}
+
+
 void BoundingPlane::moveTo(const glm::vec3& pt)
 {
 	if (!OWUtils::isZero(pt))

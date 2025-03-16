@@ -36,7 +36,7 @@ void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 	sse.mesh = (new OWMeshComponent(this, "XYZ Axis"))->add(md);
 	Shader* shader = new Shader("");
 	shader->setStandardUniformNames("pvm");
-	sse.rend = new OWMeshRenderer(shader, OWMeshRenderer::DRAW_MULTI);
+	sse.rend = new OWMeshRenderer(shader);
 	sse.rend->drawModes(GL_LINES, GL_LINES);
 	sse.trans = new OWTransform(transform());
 	addComponents(sse);

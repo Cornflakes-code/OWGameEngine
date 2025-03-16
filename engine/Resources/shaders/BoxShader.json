@@ -9,19 +9,19 @@
     "modelName": "model",
     "uniforms": [
         {
-            "ut": "UV4F",
+            "ut": 4,
             "name": "lightColor",
             "value": "WHITE"
         },
         {
-            "ut": "UV4F",
+            "ut": 4,
             "name": "objectColor",
             "value": "?colour??"
         },
         {
-            "ut": "UV3F",
+            "ut": 3,
             "name": "viewLightPos",
-            "value": glm::vec3(160.0f, 60.0f, 50.0f)
+            "value": "160.0f, 60.0f, 50.0f"
         }
     ]
 }

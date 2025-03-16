@@ -50,12 +50,13 @@ public:
 		: OWComponent(_owner, _name) {
 	}
 	virtual const OWRenderData renderData(AABB& bounds) const = 0;
-	virtual int appendSSOData(SSBO& OW_UNUSED(ssbo)) const { return 0; }
+	virtual int appendSSOData(glm::vec4& OW_UNUSED(x)) const { return 0; }
 protected:
 	static bool validMode(GLenum mode);
+	static bool validLocation(int location);
 	static bool validPolygonMode(GLenum mode);
 
 	void validate(const MeshData& md) const;
-	void validate(const InstanceData& instanceData) const;
+	void validate(const InstanceData& id) const;
 private:
 };

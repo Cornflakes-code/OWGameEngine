@@ -36,20 +36,21 @@ struct OWENGINE_API OWUtils
 	{
 		BLACK,
 		BLUE,
-		GREEN,
-		CYAN,
-		RED,
-		MAGENTA,
-		YELLOW,
-		WHITE,
 		BRIGHT_BLACK,
 		BRIGHT_BLUE,
-		BRIGHT_GREEN,
 		BRIGHT_CYAN,
+		BRIGHT_GREEN,
 		BRIGHT_RED,
 		BRIGHT_MAGENTA,
+		BRIGHT_WHITE,
 		BRIGHT_YELLOW,
-		BRIGHT_WHITE
+		CYAN,
+		GREEN,
+		MAGENTA,
+		RED,
+		WHITE,
+		YELLOW,
+		UNKNOWN
 	};
 
 	static constexpr float epsilon()
@@ -57,6 +58,7 @@ struct OWENGINE_API OWUtils
 		return 0.00001f;
 	} 
 
+	static OWUtils::SolidColours colour(const std::string& solidColourName);
 	static glm::vec4 colour(SolidColours colour);
 	static std::string nowAsString();
 	static std::vector<std::string> split1(const std::string &s, char delim);

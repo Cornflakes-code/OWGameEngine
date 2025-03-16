@@ -12,13 +12,14 @@ public:
 		Ovoid, Box, Plane, Point, Ray, Permeable
 	};
 	OWCollider(OWActor* _actor, CollisionType colliderType, unsigned int _componentIndex = 0)
-		: mActer(_actor), mColliderType(colliderType), mComponentIndex(_componentIndex)
+		: mActor(_actor), mColliderType(colliderType), mComponentIndex(_componentIndex)
 	{
 	}
 	CollisionType collisionType() const {
 		return mColliderType;
 	}
-	const OWActor* actor() const { return mActer; }
+	const OWActor* actor() const { return mActor; }
+	void actor(OWActor* newValue) { mActor = newValue; }
 	void componentIndex(size_t newValue) {
 		mComponentIndex = newValue;
 	}
@@ -29,32 +30,7 @@ public:
 	* If plane then p1 is minPoint and p2 is maxPoint and p3 
 	is a constant distance from the plane
 	*/
-	void points(const AABB& bounds)
-	{
-		switch (mColliderType)
-		{
-		case OWCollider::CollisionType::Ovoid:
-			mPt1 = bounds.center();
-			mPt2 = bounds.size();
-			break;
-		case OWCollider::CollisionType::Box:
-			mPt1 = bounds.minPoint();
-			mPt2 = bounds.maxPoint();
-			break;
-		case OWCollider::CollisionType::Plane:
-			throw NMSLogicException("Error: OWCollider(Plane) cannot infer pt3 from bounds.");
-			break;
-		case OWCollider::CollisionType::Point:
-			mPt1 = bounds.center();
-			mPt2 = glm::vec3(bounds.diagonal());
-			break;
-		case OWCollider::CollisionType::Ray:
-			throw NMSLogicException("Error: OWCollider(Ray) cannot infer pt3 from bounds.");
-			break;
-		default:
-			break;
-		}
-	}
+	void points(const AABB& bounds);
 	void points(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3)
 	{
 		mPt1 = p1;
@@ -72,7 +48,7 @@ private:
 	glm::vec3 mPt1 = glm::vec3(0);
 	glm::vec3 mPt2 = glm::vec3(0);
 	glm::vec3 mPt3 = glm::vec3(0);
-	OWActor* mActer;
+	OWActor* mActor;
 	size_t mComponentIndex;
 	CollisionType mColliderType = CollisionType::Ovoid;
 };

@@ -1,7 +1,9 @@
 #include "CommonUtils.h"
 
+#include <string>
 #include <ctime>
 #include <cctype>
+#include <algorithm>
 
 #include "ErrorHandling.h"
 
@@ -24,6 +26,31 @@ glm::vec4 gSolidColours[16] =
   {1.0f, 1.0f, 0.33f, 1.0f},    // BRIGHT YELLOW
   {1.0f, 1.0f, 1.0f, 1.0f}      // BRIGHT WHITE
 };
+
+OWUtils::SolidColours OWUtils::colour(const std::string& solidColourName)
+{
+	std::string upper = solidColourName;
+	std::transform(upper.begin(), upper.end(), upper.begin(),
+		[](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+
+	if (upper == "BLACK") return OWUtils::SolidColours::BLACK;
+	if (upper == "BLUE") return OWUtils::SolidColours::BLUE;
+	if (upper == "BRIGHT_BLACK") return OWUtils::SolidColours::BRIGHT_BLACK;
+	if (upper == "BRIGHT_BLUE") return OWUtils::SolidColours::BRIGHT_BLUE;
+	if (upper == "BRIGHT_CYAN") return OWUtils::SolidColours::BRIGHT_CYAN;
+	if (upper == "BRIGHT_GREEN") return OWUtils::SolidColours::BRIGHT_GREEN;
+	if (upper == "BRIGHT_RED") return OWUtils::SolidColours::BRIGHT_RED;
+	if (upper == "BRIGHT_MAGENTA") return OWUtils::SolidColours::BRIGHT_MAGENTA;
+	if (upper == "BRIGHT_WHITE") return OWUtils::SolidColours::BRIGHT_WHITE;
+	if (upper == "BRIGHT_YELLOW") return OWUtils::SolidColours::BRIGHT_YELLOW;
+	if (upper == "CYAN") return OWUtils::SolidColours::CYAN;
+	if (upper == "GREEN") return OWUtils::SolidColours::GREEN;
+	if (upper == "MAGENTA") return OWUtils::SolidColours::MAGENTA;
+	if (upper == "RED") return OWUtils::SolidColours::RED;
+	if (upper == "WHITE") return OWUtils::SolidColours::WHITE;
+	if (upper == "YELLOW") return OWUtils::SolidColours::YELLOW;
+	return OWUtils::SolidColours::UNKNOWN;
+}
 
 glm::vec4 OWUtils::colour(OWUtils::SolidColours colour)
 {

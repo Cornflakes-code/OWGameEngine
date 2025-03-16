@@ -37,16 +37,16 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-#define INCLUDE_RAY
-#define INCLUDE_PLANES
-#define INCLUDE_FULLSCREEN
-#define INCLUDE_WELCOME
-#define INCLUDE_ENJOY
+//#define INCLUDE_RAY
+//#define INCLUDE_PLANES
+//#define INCLUDE_FULLSCREEN
+//#define INCLUDE_WELCOME
+//#define INCLUDE_ENJOY
 int GDEBUG_PICKING = 4;
 //#define BOXES_CENTERED
-#define INCLUDE_XYZ_AXIS
+//#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
-#define INCLUDE_IMPORTED_MODEL
+//#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. 
@@ -286,10 +286,10 @@ void NMSSplashScenePhysics::setup()
 						1.2f * _world.size().y / globals->physicalWindowSize().y };
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
 
+#ifdef INCLUDE_WELCOME
 	OWActorNCom1Ren* dynamicTextActor = new OWActorNCom1Ren(this->owner(), "Dynamic Text Actor");
 	dynamicTextActor->transform(glm::vec3(0), glm::vec3(scale, 1.0));
 
-#ifdef INCLUDE_WELCOME
 	OWPhysicsData pd1;
 	pd1.velocity = Compass::Rose[Compass::North] +
 				Compass::Rose[Compass::East] +
@@ -349,6 +349,9 @@ void NMSSplashScenePhysics::setup()
 	boxActor->sound(new OWSoundComponent());
 	MeshData mds1;
 	mds1.v3 = OWGeometricShapes::cube();
+	mds1.vertexLocation = 0;
+	mds1.vertexMode = GL_TRIANGLES;
+	mds1.setPolygonMode(GL_FILL);
 	{
 		OWMeshComponent* mc1 = new OWMeshComponent(boxActor, "Box Template");
 		mc1->add(mds1);
@@ -461,7 +464,7 @@ void NMSSplashScenePhysics::setup()
 	mds2.v3[1].z += 0.01f;
 	mds2.setPolygonMode(GL_FILL);
 	{
-		OWMeshComponent* mc2 = new OWMeshComponent(boxActor, "Plane Template");
+		OWMeshComponent* mc2 = new OWMeshComponent(planeActor, "Plane Template");
 		mc2->add(mds2);
 		planeActor->meshComponent(mc2);
 	}

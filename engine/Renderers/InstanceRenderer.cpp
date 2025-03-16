@@ -20,7 +20,7 @@
 // One buffer for the particles’ centers.
 // One buffer for the particles’ colors.
 
-
+//#define SSBO_TEST
 void OWInstanceRenderer::doSetup(const OWRenderData& rd)
 {
 	if (rd.meshes.size())
@@ -58,6 +58,18 @@ void OWInstanceRenderer::doSetup(const OWRenderData& rd)
 			mData.colourLocation = m.colourLocation;
 
 		}
+		mSSBO = rd.ssbo;
+		mSSBO.data.clear();
+#ifdef SSBO_TEST
+		for (int i = 0; i < mData.instancePositions.size(); i++)
+		{
+			const glm::vec3& p = mData.instancePositions[i];
+			mSSBO.append(glm::vec4(p, 1.0f));
+			mSSBO.append(mData.instanceColours[i]);
+		}
+		mData.instancePositions.clear();
+		mData.instanceColours.clear();
+#endif
 		setupInstance();
 	}
 
@@ -92,7 +104,23 @@ void OWInstanceRenderer::setupInstance()
 		const glm::vec4* p = mData.v4.data();
 		ff = glm::value_ptr(*p);
 	}
-
+#ifdef SSBO_TEST
+	if (mSSBO.data.size() > 0)
+	{
+		// This is good 
+		// https://www.khronos.org/opengl/wiki/Vertex_Shader/Defined_Inputs
+		// https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object
+		// https://ktstephano.github.io/rendering/opengl/ssbos
+		glCreateBuffers(1, &mSbo);
+		glNamedBufferStorage(mSbo,
+			mSSBO.data.size() * sizeof(float),
+			(const void*)mSSBO.data.data(),
+			GL_DYNAMIC_STORAGE_BIT);
+		// Note the 1 matches our binding = 1 in the vertex shader
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+	}
+#else
+#endif
 	mPositionCount = static_cast<GLsizei>(mData.instancePositions.size());
 	mColourCount = static_cast<GLsizei>(mData.instanceColours.size());
 	glGenVertexArrays(1, &mVao);
@@ -125,17 +153,20 @@ void OWInstanceRenderer::setupInstance()
 	// The colours
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, mVbo[2]);
-	glVertexAttribPointer(
-		mData.colourLocation, // must match the layout in the shader.
-		4, // size : r + g + b + a => 4
-		GL_FLOAT, // type
-		GL_TRUE, // normalized? *** YES, this means that the 
-		// unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
-		0, // stride
-		(void*)0 // array buffer offset
-	);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mData.instanceColours.size(),
-		mData.instanceColours.data(), GL_STREAM_DRAW);
+	if (mData.instanceColours.size())
+	{
+		glVertexAttribPointer(
+			mData.colourLocation, // must match the layout in the shader.
+			4, // size : r + g + b + a => 4
+			GL_FLOAT, // type
+			GL_TRUE, // normalized? *** YES, this means that the 
+			// unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+			0, // stride
+			(void*)0 // array buffer offset
+		);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * mData.instanceColours.size(),
+			mData.instanceColours.data(), GL_STREAM_DRAW);
+	}
 
 	// These functions are specific to glDrawArrays*Instanced*.
 	// The first parameter is the attribute buffer we're talking about.
@@ -152,8 +183,10 @@ void OWInstanceRenderer::setupInstance()
 
 	// color : 
 	//glVertexAttribDivisor(mData.colourLocation, mData.colourDivisor);
-	glVertexAttribDivisor(mData.colourLocation, 1);
-
+	if (mData.instanceColours.size())
+	{
+		glVertexAttribDivisor(mData.colourLocation, 1);
+	}
 
 	// You can unbind the VAO afterwards so other VAO calls won't 
 	// accidentally modify this VAO, but this rarely happens. Modifying other
@@ -170,6 +203,12 @@ void OWInstanceRenderer::setupMesh(const MeshData& mesh)
 void OWInstanceRenderer::doRender() 
 {
 	glBindVertexArray(mVao);
+	if (mSbo != std::numeric_limits<unsigned int>::max())
+	{
+		// Does not appear to impact performance at all
+		// Note the 1 matches our binding = 1 in the vertex shader
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+	}
 
 	// Draw the particles !
 	// This draws many times a small triangle_strip (which looks like a quad).
@@ -185,5 +224,5 @@ void OWInstanceRenderer::doRender()
 	// https://www.reddit.com/r/opengl/comments/yi012y/best_practices_for_rendering_many_constantly/
 	glDrawArraysInstanced(mData.vertexMode, 0,
 			static_cast<GLsizei>(mVerticeCount),
-			static_cast<GLsizei>(mPositionCount));
+			static_cast<GLsizei>(50000/*mPositionCount*/));
 }

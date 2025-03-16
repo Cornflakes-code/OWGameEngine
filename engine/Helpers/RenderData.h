@@ -32,7 +32,8 @@ public:
 	std::vector<InstanceData> instances;
 	std::vector<Texture> textures;
 	SSBO ssbo;
-
+	
 	void add(const OWRenderData& toAdd, bool purgeTextures = false);
+	void convertMeshToInstance();
 	AABB bounds() const;
 };

@@ -33,6 +33,17 @@ void OWRenderData::add(const OWRenderData& toAdd, bool purgeTextures)
 	}
 }
 
+void OWRenderData::convertMeshToInstance()
+{
+	do
+	{
+		InstanceData id;
+		id.moveFrom(meshes[0]);
+		instances.push_back(id);
+		meshes.erase(meshes.begin());
+	} while (meshes.size());
+}
+
 AABB OWRenderData::bounds() const
 {
 	AABB retval = AABB(0);

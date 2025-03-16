@@ -91,7 +91,13 @@ void NMSMainScene::doSetupScene(ScenePhysicsState* state)
 		ResourcePathFactory::ResourceType::UnknownType).string();
 	nmsd.starWorld = world();
 	nmsd.name = "grid";
+#ifdef _DEBUG
+	// With VBO's about 1000 FPS
 	nmsd.numberOfStars = 50000;
+#else
+	// With VBO's about 3000 FPS
+	nmsd.numberOfStars = 50000;
+#endif
 	NoMansSky* nms = new NoMansSky(this, "NMS");
 	nms->initialise(nmsd);
 	OWThreeDAxisData threeDAxisData;

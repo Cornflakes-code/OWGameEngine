@@ -31,7 +31,7 @@ void OWButton::initialise()
 		shd->mutatorCallbacks.push_back(mut);
 	}
 	Shader* sh = new Shader(shd);
-	VAOBuffer* vao = new VAOBuffer(sh, VAOBuffer::DRAW_MULTI);
+	VAOBuffer* vao = new VAOBuffer(sh);
 	MeshDataLight lineData;
 	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
 	lineData.polygonMode(GL_FILL);

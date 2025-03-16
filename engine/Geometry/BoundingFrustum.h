@@ -46,6 +46,7 @@ public:
 	bool intersects(const OWBounding* other) const override;
 	bool intersects(const AABB& box) const;
 	void move(const glm::vec3& delta) override;
+	void move(const glm::vec4& delta) override;
 	void moveTo(const glm::vec3& pt) override;
 
 };

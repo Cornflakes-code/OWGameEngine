@@ -50,12 +50,16 @@ void OWActor::render(const glm::mat4& proj,
 	}
 }
 
-static void validateCollider(OWActor* a, const OWCollider* coll)
+static void validateCollider(OWActor* a, OWCollider* coll)
 {
 #ifdef _DEBUG
 	if (coll == nullptr)
 	{
 		throw NMSLogicException(getActorDesc(a) + " has no OWCollider.Cannot recover.");
+	}
+	if (coll->actor() == nullptr)
+	{
+		coll->actor(a);
 	}
 	if (coll->actor() != a)
 	{
@@ -166,7 +170,9 @@ void OWActorDiscrete::doSetupActor()
 
 		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
 		rd.ssbo.append(p);
-		elm.mesh->appendSSOData(rd.ssbo);
+		glm::vec4 x;
+		elm.mesh->appendSSOData(x);
+		rd.ssbo.append(x);
 		elm.rend->setup(rd);
 	}
 	bounds(b);
@@ -219,7 +225,9 @@ void OWActorNCom1Ren::doSetupActor()
 		b = b | b1;
 		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
 		rd.ssbo.append(p);
-		elm.mesh->appendSSOData(rd.ssbo);
+		glm::vec4 x;
+		elm.mesh->appendSSOData(x);
+		rd.ssbo.append(x);
 	}
 	mRenderer->setup(rd);
 	bounds(b);
@@ -255,20 +263,29 @@ void OWActorMutableParticle::doSetupActor()
 	validateRenderer(this, mRenderer);
 	validateMeshComponent(this, mMeshTemplate);
 	validateSound(this, mSound);
+	mMeshTemplate->setup();
 	AABB b = AABB(0);
 	OWRenderData rd = mMeshTemplate->renderData(b);
+	rd.convertMeshToInstance();
+	std::vector<glm::vec3> positions;
+	//std::vector<glm::vec4> colours;
 	for (int i = 0; i < mElements.size(); i++)
 	{
 		MutableParticleElement& elm = mElements[i];
 		AABB b_moved = b;
-		b_moved.move(elm.trans->worldPosition());
+		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+		b_moved.move(p);
 		elm.coll->points(b_moved);
+		positions.push_back(p);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
 		b = b | b_moved;;
+		//rd.ssbo.append(p);
+		//rd.ssbo.append(elm.colour);
 	}
+	rd.instances[0].setPositions(positions, 1, 0);
 	mRenderer->setup(rd);
 	bounds(b);
 }
@@ -297,7 +314,8 @@ void OWActorMutableParticle::sound(OWSoundComponent* newValue)
 }
 
 
-OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor)
+OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene, 
+	const std::string& _name, OWActor* _hostActor)
 : OWActor(_scene, _name, _hostActor) 
 {
 
@@ -309,6 +327,7 @@ void OWActorImmutableParticle::doSetupActor()
 	validateMeshComponent(this, mMeshTemplate);
 	validatePhysics(this, mPhysics);
 	validateSound(this, mSound);
+	mMeshTemplate->setup();
 	AABB b;
 	const OWRenderData rd = mMeshTemplate->renderData(b);
 	mRenderer->setup(rd);

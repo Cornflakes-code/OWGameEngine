@@ -64,6 +64,39 @@ void from_json(const json& j, ShaderData& p)
 	if (j.find("uniforms") != j.end()) j.at("uniforms").get_to(p.uniforms);
 }
 
+void repairUniforms(std::vector<ShaderDataUniforms>& uniforms)
+{
+	for (ShaderDataUniforms& u : uniforms)
+	{
+		if (u.ut == ShaderDataUniforms::UniformType::UV4F)
+		{
+			OWUtils::SolidColours found = OWUtils::colour(u.value);
+			if (found == OWUtils::SolidColours::UNKNOWN)
+			{
+				glm::vec4 col;
+				std::stringstream ss;
+				ss << u.value;
+				try
+				{
+					ss >> col;
+					if (glm::length(col) > 1000000)
+					{
+						// something wrong.
+						u.value = OWUtils::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE));
+					}
+				}
+				catch (const std::exception&)
+				{
+					u.value = OWUtils::to_string(OWUtils::colour(OWUtils::SolidColours::WHITE));
+				}
+			}
+			else
+			{
+				u.value = OWUtils::to_string(OWUtils::colour(found));
+			}
+		}
+	}
+}
 Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
 	const std::string& geometryPath)
 {
@@ -88,6 +121,8 @@ Shader::Shader(const std::string& fileName)
 			js = json::parse(ifs);
 		}
 		from_json(js, mData);
+		if (mData.uniforms.size())
+			repairUniforms(mData.uniforms);
 	}
 	create(
 		mData.shaderV.length() == 0 ? ShaderFactory::boilerPlateVertexShader()

@@ -4,8 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../Core/GlobalSettings.h"
-#include "../Helpers/Shader.h"
 #include "../Core/ErrorHandling.h"
+#include "../Core/CommonUtils.h" // for OWUtils::SolidColours
+#include "../Helpers/Shader.h"
 #include "../Helpers/FontFactory.h"
 
 OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
@@ -114,6 +115,7 @@ const OWRenderData OWTextComponent::renderData(AABB& bounds) const
 	bounds = adjustPosition(md.v4, mData.referencePos);
 	md.setColour(mData.colour, "textcolor");
 	md.indicesMode = md.vertexMode = GL_TRIANGLES;
+	md.vertexLocation = 0;
 	md.setPolygonMode(GL_FILL);
 	validate(md);
 	OWRenderData retval;
@@ -123,7 +125,6 @@ const OWRenderData OWTextComponent::renderData(AABB& bounds) const
 	retval.textures.push_back(fd.texture());
 	return retval;
 }
-#include "../Core/CommonUtils.h"
 
 static int colCounter = 0;
 static std::vector<glm::vec4> instanceColours =
@@ -136,13 +137,13 @@ static std::vector<glm::vec4> instanceColours =
 	OWUtils::colour(OWUtils::SolidColours::CYAN)
 };
 
-int OWTextComponent::appendSSOData(SSBO& ssbo) const
+int OWTextComponent::appendSSOData(glm::vec4& x) const
 {
 	glm::vec4 col = instanceColours[colCounter];
 	colCounter++;
 	if (colCounter > 5)
 		colCounter = 0;
-	ssbo.append(col);
+	x = col;
 	return 4;
 }
 
