@@ -1,16 +1,13 @@
 #include "OWActor.h"
 #include "../Core/Scene.h"
 #include "../Core/CollisionSystem.h"
-#include "../Renderers/InstanceRenderer.h"
 #include "../Renderers/MeshRenderer.h"
 
-#ifdef _DEBUG
 static std::string getActorDesc(OWActor* a)
 {
 	const OWActor& aref = *a;
 	return std::string(typeid(aref).name()) + "[" + a->name() + "]";
 }
-#endif
 
 OWActor::OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor)
 	: mScene(_scene), mName(_name), mHostActor(_hostActor)
@@ -52,7 +49,6 @@ void OWActor::render(const glm::mat4& proj,
 
 static void validateCollider(OWActor* a, OWCollider* coll)
 {
-#ifdef _DEBUG
 	if (coll == nullptr)
 	{
 		throw NMSLogicException(getActorDesc(a) + " has no OWCollider.Cannot recover.");
@@ -65,20 +61,16 @@ static void validateCollider(OWActor* a, OWCollider* coll)
 	{
 		throw NMSLogicException(getActorDesc(a) + " OWCollider has no owner. Cannot recover.");
 	}
-#endif
 }
 
 static void validatePhysics(OWActor* a, OWPhysics*& phys)
 {
-#ifdef _DEBUG
 	if (phys == nullptr)
 		phys = new OWPhysics(); // Physics is often the default.
-#endif
 }
 
 static void validateMeshComponent(OWActor* a, const OWMeshComponentBase* mesh)
 {
-#ifdef _DEBUG
 	if (mesh == nullptr)
 	{
 		throw NMSLogicException(getActorDesc(a) + " has no OWMeshComponentBase. Cannot recover.");
@@ -91,12 +83,10 @@ static void validateMeshComponent(OWActor* a, const OWMeshComponentBase* mesh)
 	{
 		throw NMSLogicException(getActorDesc(a) + " OWMeshComponent has an invalid owner. Cannot recover.");
 	}
-#endif
 }
 
 static void validateTransform(OWActor* a, OWTransform*& trans)
 {
-#ifdef _DEBUG
 	if (trans == nullptr)
 		trans = new OWTransform(a->transform()); // Often just need default Transform
 	if (trans->hostTransform() == nullptr)
@@ -118,25 +108,20 @@ static void validateTransform(OWActor* a, OWTransform*& trans)
 			throw NMSLogicException(getActorDesc(a) + " transform has an invalid hostTransform. Cannot recover.");
 		}
 	}
-#endif
 }
 
 static void validateSound(OWActor* a, OWSoundComponent*& sound)
 {
-#ifdef _DEBUG
 	if (sound == nullptr)
 		sound = new OWSoundComponent(); // Not all Actors have sound
-#endif
 }
 
 static void validateRenderer(OWActor* a, const OWRenderer* rend)
 {
-#ifdef _DEBUG
 	if (rend == nullptr)
 	{
 		throw NMSLogicException(getActorDesc(a) + " has no OWRenderer. Cannot recover.");
 	}
-#endif
 }
 
 size_t OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
@@ -168,11 +153,17 @@ void OWActorDiscrete::doSetupActor()
 		OWRenderData rd = elm.mesh->renderData(b1);
 		b = b | b1;
 
-		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
-		rd.ssbo.append(p);
-		glm::vec4 x;
-		elm.mesh->appendSSOData(x);
-		rd.ssbo.append(x);
+		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
+			elm.rend->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
+		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
+		{
+			const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+			elm.rend->mSSBO.append(p, GPUBufferObject::Position);
+		}
+		if (!elm.rend->mSSBO.locked(GPUBufferObject::Colour))
+		{
+			elm.rend->mSSBO.append(elm.colour, GPUBufferObject::Colour);
+		}
 		elm.rend->setup(rd);
 	}
 	bounds(b);
@@ -223,11 +214,15 @@ void OWActorNCom1Ren::doSetupActor()
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
 		b = b | b1;
-		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
-		rd.ssbo.append(p);
-		glm::vec4 x;
-		elm.mesh->appendSSOData(x);
-		rd.ssbo.append(x);
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
+		{
+			const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+			mRenderer->mSSBO.append(p, GPUBufferObject::Position);
+		}
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Colour))
+		{
+			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
+		}
 	}
 	mRenderer->setup(rd);
 	bounds(b);
@@ -261,14 +256,13 @@ size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newEl
 void OWActorMutableParticle::doSetupActor()
 {
 	validateRenderer(this, mRenderer);
+	if (mRenderer->mSSBO.bufferStyle() == GPUBufferObject::BufferStyle::Uniform)
+		throw NMSLogicException("OWActorMutableParticle::doSetupActor(). Renderer BufferStyle must be SSBO.\n");
 	validateMeshComponent(this, mMeshTemplate);
 	validateSound(this, mSound);
 	mMeshTemplate->setup();
 	AABB b = AABB(0);
 	OWRenderData rd = mMeshTemplate->renderData(b);
-	rd.convertMeshToInstance();
-	std::vector<glm::vec3> positions;
-	//std::vector<glm::vec4> colours;
 	for (int i = 0; i < mElements.size(); i++)
 	{
 		MutableParticleElement& elm = mElements[i];
@@ -276,16 +270,20 @@ void OWActorMutableParticle::doSetupActor()
 		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
 		b_moved.move(p);
 		elm.coll->points(b_moved);
-		positions.push_back(p);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
-		b = b | b_moved;;
-		//rd.ssbo.append(p);
-		//rd.ssbo.append(elm.colour);
+		b = b | b_moved;
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
+		{
+			mRenderer->mSSBO.append(p, GPUBufferObject::Position);
+		}
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Colour))
+		{
+			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
+		}
 	}
-	rd.instances[0].setPositions(positions, 1, 0);
 	mRenderer->setup(rd);
 	bounds(b);
 }
@@ -329,7 +327,7 @@ void OWActorImmutableParticle::doSetupActor()
 	validateSound(this, mSound);
 	mMeshTemplate->setup();
 	AABB b;
-	const OWRenderData rd = mMeshTemplate->renderData(b);
+	OWRenderData rd = mMeshTemplate->renderData(b);
 	mRenderer->setup(rd);
 	bounds(b);
 }
@@ -343,14 +341,7 @@ void OWActorImmutableParticle::doRender(const glm::mat4& proj,
 	mRenderer->render(proj, view, models, cameraPos);
 }
 
-void OWActorImmutableParticle::instanceMesh(const InstanceData& _data, std::string& _name)
-{
-	//mMeshTemplate = new OWMeshComponent(this, _name);
-	throw NMSLogicException("OWActorImmutableParticle [" + name() + "] incomplete. Cannot recover.");
-	//mMeshTemplate->add(_data);
-}
-
-void OWActorImmutableParticle::renderer(OWInstanceRenderer* newValue)
+void OWActorImmutableParticle::renderer(OWRenderer* newValue)
 {
 	mRenderer = newValue;
 }

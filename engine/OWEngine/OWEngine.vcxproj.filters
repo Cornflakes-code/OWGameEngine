@@ -201,9 +201,6 @@
     <ClInclude Include="..\Component\PhysicalComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderers\InstanceRenderer.h">
-      <Filter>Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Renderers\MeshRenderer.h">
       <Filter>Renderers</Filter>
     </ClInclude>
@@ -388,9 +385,6 @@
     </ClCompile>
     <ClCompile Include="..\Component\PhysicalComponent.cpp">
       <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Renderers\InstanceRenderer.cpp">
-      <Filter>Renderers</Filter>
     </ClCompile>
     <ClCompile Include="..\Renderers\MeshRenderer.cpp">
       <Filter>Renderers</Filter>

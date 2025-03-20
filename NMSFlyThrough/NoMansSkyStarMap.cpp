@@ -20,10 +20,10 @@
 #include <Geometry/GeometricShapes.h>
 #include <Component/TextComponent.h>
 
-#include <Renderers/InstanceRenderer.h>
 #include <Renderers/MeshRenderer.h>
 
 #define DEBUG_GRID
+#define DEBUG_STAR_LABELS
 #define DEBUG_STARS
 
 NoMansSky::NoMansSky(Scene* _scene, const std::string& _name)
@@ -45,49 +45,36 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 	float scaleNMStoWorld = world.size().x / NMSSize.size().x;
 #ifdef DEBUG_GRID
 	{
-		MeshData gridData;
-		gridData.setVertices(createGrid(NMSSize, gridSizes, scaleNMStoWorld), GL_LINES, 0);
-		gridData.setPolygonMode(GL_FILL);
-		gridData.setColour({ 0, 1.0, 0.5, 1 }, "uColour");
 		mData.gridShader.shaderV = "Lines.v.glsl";
 		mData.gridShader.shaderF = "Lines.f.glsl";
 		mData.gridShader.PVMName = "pvm";
-		Shader* shader = new Shader(mData.gridShader);
+		mData.gridShader.uniforms.push_back({ ShaderDataUniforms::UV4F, "uColour",
+					OWUtils::to_string(glm::vec4(0.90f, 0.91f, 0.98f, 1.0f)) }); // silver
+		Shader * shader = new Shader(mData.gridShader);
 		OWActorDiscrete::DiscreteEntity sse;
+		sse.colour = glm::vec4(0.90f, 0.91f, 0.98f, 1.0f); // silver;
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
-		sse.mesh = (new OWMeshComponent(this, "Grid"))->add(gridData);
-		sse.rend = new OWMeshRenderer(shader);
+		sse.mesh = (new OWMeshComponent(this, "Grid"))
+			->add(MeshData()
+			.addVertices(createGrid(NMSSize, gridSizes, scaleNMStoWorld))
+			.setModes(GL_LINES, GL_LINES, GL_FILL));
+		sse.rend = new OWMeshRenderer(shader, { GPUBufferObject::BufferType::Colour },
+			GPUBufferObject::BufferStyle::SSBO);
 		sse.trans = new OWTransform(nullptr);
 		addComponents(sse);
 	}
 #endif
-
 	loadStars(fileName, NMSSize, scaleNMStoWorld);
 #ifdef DEBUG_STARS
 	mStarRadius = mData.starRadius;
 	std::vector<glm::vec3> squareVertices =
 		OWGeometricShapes::star(mStarRadius.x / 5.0f, mStarRadius.x / 3.3f, 15);
 	//		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
-	InstanceData starData;
-	starData.setVertices(squareVertices, GL_TRIANGLES, 0);
-
-	const int numStars = mData.numberOfStars;
-	mRandomMinorStars = createRandomVectors(NMSSize, numStars, scaleNMStoWorld);
-	starData.setPositions(mRandomMinorStars, 1, 1);
-
-	const int numColours = 4;
-	const int numColourIterations = static_cast<int>(ceil(numStars * 1.0 / numColours));
 	std::vector<glm::vec4> instanceColours;
-	for (int i = 0; i < numColourIterations; i++)
+	while (instanceColours.size() < mData.numberOfStars)
 	{
-		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::BLUE));
-		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::GREEN));
-		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::YELLOW));
-		//instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::RED));
-		instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::MAGENTA));
-		//instanceColours.push_back(OWUtils::colour(OWUtils::SolidColours::CYAN));
+		instanceColours.push_back(OWUtils::randomSolidColour());
 	}
-	starData.setColours(instanceColours, static_cast<unsigned int>(instanceColours.size()), 2);
 	Shader* starShader = new Shader("instanced.v.glsl", "glow.f.glsl", "");
 	starShader->setStandardUniformNames("VP");
 	starShader->setUniform(ShaderDataUniforms::UniformType::UFloat,
@@ -111,8 +98,17 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 	starShader->appendMutator(pointRender);
 	OWActorDiscrete::DiscreteEntity sse1;
 	sse1.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
-	sse1.mesh = (new OWMeshComponent(this, "Star Template"))->add(starData);
-	sse1.rend = new OWInstanceRenderer(starShader);
+	sse1.mesh = (new OWMeshComponent(this, "Star Template"))
+		->add(MeshData()
+		.addVertices(squareVertices)
+		.setModes(GL_TRIANGLES));
+
+	sse1.rend = (new OWMeshRenderer(starShader, 
+			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+			GPUBufferObject::BufferStyle::SSBO))
+		->addToSSBO(createRandomVectors(NMSSize, mData.numberOfStars, scaleNMStoWorld), GPUBufferObject::BufferType::Position)
+		->addToSSBO(instanceColours, GPUBufferObject::BufferType::Colour)
+		->lockSSBO({ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour });
 	sse1.trans = new OWTransform(nullptr);
 	addComponents(sse1);
 #endif
@@ -157,11 +153,16 @@ void NoMansSky::loadStars(const std::string& fileName,
 						  float scaleToWorld)
 {
 	const glm::vec2 niceFontSpacing = { 0.00625f, 2 * 0.00625f };
+#ifdef DEBUG_STAR_LABELS
 	OWActorNCom1Ren* starLabels = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("VP");
 	shader->appendMutator(OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType::Static));
-	starLabels->renderer(new OWMeshRenderer(shader));
+
+	starLabels->renderer(new OWMeshRenderer(shader, 
+		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		GPUBufferObject::BufferStyle::SSBO));
+#endif
 	std::string line;
 	std::ifstream myfile(fileName);
 	if (myfile.is_open())
@@ -275,6 +276,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.y *= scaleToWorld;
 			point.z *= scaleToWorld;
 			point.w = 1.0;
+#ifdef DEBUG_STAR_LABELS
 			OWTextComponentData td;
 			td.tdt = OWTextComponentData::TextDisplayType::Static;
 			td.text = elms[0];
@@ -285,7 +287,9 @@ void NoMansSky::loadStars(const std::string& fileName,
 			elm.mesh = new OWTextComponent(starLabels, td.text, td);
 			elm.trans = new OWTransform(nullptr, point, glm::vec3(0.5f, 0.5f, 0.5f));
 			elm.coll = new OWCollider(starLabels, OWCollider::CollisionType::Permeable);
+			elm.colour = OWUtils::randomSolidColour();
 			starLabels->addComponents(elm);
+#endif
 		}
 
 		myfile.close();

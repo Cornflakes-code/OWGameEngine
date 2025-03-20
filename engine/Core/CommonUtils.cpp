@@ -51,6 +51,46 @@ OWUtils::SolidColours OWUtils::colour(const std::string& solidColourName)
 	if (upper == "YELLOW") return OWUtils::SolidColours::YELLOW;
 	return OWUtils::SolidColours::UNKNOWN;
 }
+#include<cstdlib>
+#include<ctime>
+
+static std::vector<glm::vec4> gAllSolidColours =
+{
+		OWUtils::colour(OWUtils::SolidColours::BLACK),
+		OWUtils::colour(OWUtils::SolidColours::BLUE),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLUE),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_GREEN),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_MAGENTA),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_WHITE),
+		OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW),
+		OWUtils::colour(OWUtils::SolidColours::CYAN),
+		OWUtils::colour(OWUtils::SolidColours::GREEN),
+		OWUtils::colour(OWUtils::SolidColours::MAGENTA),
+		OWUtils::colour(OWUtils::SolidColours::RED),
+		OWUtils::colour(OWUtils::SolidColours::WHITE),
+		OWUtils::colour(OWUtils::SolidColours::YELLOW)
+};
+
+
+std::vector<glm::vec4> OWUtils::allSolidColours()
+{
+	return gAllSolidColours;
+}
+
+glm::vec4 OWUtils::randomSolidColour()
+{
+	static bool gOnceOnly = true;
+	if (gOnceOnly)
+	{
+		gOnceOnly = false;
+		std::srand(std::time(0));
+	}
+	int r = std::rand() % gAllSolidColours.size();
+	return gAllSolidColours[r];
+}
 
 glm::vec4 OWUtils::colour(OWUtils::SolidColours colour)
 {

@@ -17,19 +17,19 @@ class OWENGINE_API OWRenderer
 	bool mSetup = false;
 public:
 	enum RenderType { DRAW_NONE, DRAW_MULTI, DRAW_PRIMITIVE };
-	OWRenderer(const std::string& shaderFileName, RenderType rt);
-	OWRenderer(Shader* _shader, RenderType rt)
-		: mShader(_shader), mDrawType(rt)
+	OWRenderer(const std::string& shaderFileName, const std::vector<GPUBufferObject::BufferType>& orderedTypes);
+	OWRenderer(Shader* _shader, const std::vector<GPUBufferObject::BufferType>& orderedTypes)
+		: mShader(_shader)
 	{
+		mSSBO.setAllowedTypes(orderedTypes);
 	}
-	void setup(const OWRenderData& renderData)
-	{
-		if (!mSetup)
-		{
-			mSetup = true;
-			doSetup(renderData);
-		}
-	}
+	void setup(const OWRenderData& renderData);
+	OWRenderer* setOrderedTypes(const std::vector<GPUBufferObject::BufferType>& orderedTypes);
+	OWRenderer* addToSSBO(const std::vector<glm::mat4>& _data, GPUBufferObject::BufferType t);
+	OWRenderer* addToSSBO(const std::vector<glm::vec4>& _data, GPUBufferObject::BufferType t);
+	OWRenderer* addToSSBO(const std::vector<glm::vec3>& _data, GPUBufferObject::BufferType t);
+	OWRenderer* addToSSBO(const std::vector<glm::vec2>& _data, GPUBufferObject::BufferType t);
+	OWRenderer* lockSSBO(const std::vector<GPUBufferObject::BufferType>& orderedTypes);
 	void render(const glm::mat4& proj,
 		const glm::mat4& view, std::vector<glm::mat4> models, const glm::vec3& cameraPos);
 
@@ -53,6 +53,7 @@ public:
 	}
 
 	virtual ~OWRenderer() {}
+	GPUBufferObject mSSBO;
 protected:
 	virtual void doSetup(const OWRenderData& renderData) = 0;
 	virtual void doRender() = 0;
@@ -60,7 +61,6 @@ protected:
 	Shader* shader() { return mShader; }
 	unsigned int indicesMode() const { return mIndicesMode; }
 	unsigned int vertexMode() const { return mVertexMode; }
-	RenderType mDrawType = DRAW_NONE;
 private:
 	Shader* mShader = nullptr;
 

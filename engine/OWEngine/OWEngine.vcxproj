@@ -242,7 +242,6 @@
     <ClInclude Include="..\Helpers\Texture.h" />
     <ClInclude Include="..\Helpers\TextureFactory.h" />
     <ClInclude Include="..\Helpers\Transform.h" />
-    <ClInclude Include="..\Renderers\InstanceRenderer.h" />
     <ClInclude Include="..\Renderers\MeshRenderer.h" />
     <ClInclude Include="..\Renderers\ModelRenderer.h" />
     <ClInclude Include="..\Renderers\RendererBase.h" />
@@ -308,7 +307,6 @@
     <ClCompile Include="..\Helpers\Texture.cpp" />
     <ClCompile Include="..\Helpers\TextureFactory.cpp" />
     <ClCompile Include="..\Helpers\Transform.cpp" />
-    <ClCompile Include="..\Renderers\InstanceRenderer.cpp" />
     <ClCompile Include="..\Renderers\MeshRenderer.cpp" />
     <ClCompile Include="..\Renderers\ModelRenderer.cpp" />
     <ClCompile Include="..\Renderers\RendererBase.cpp" />

@@ -14,13 +14,17 @@
 class OWENGINE_API OWMeshRenderer: public OWRenderer
 {
 public:
-	OWMeshRenderer(const std::string& shaderName, RenderType rt = DRAW_MULTI)
-	: OWRenderer(shaderName, rt)
+	OWMeshRenderer(const std::string& shaderName, const std::vector<GPUBufferObject::BufferType>& orderedTypes,
+		GPUBufferObject::BufferStyle bs)// = GPUBufferObject::BufferStyle::SSBO)
+	: OWRenderer(shaderName, orderedTypes)
 	{
+		mSSBO.bufferStyle(bs);
 	}
-	OWMeshRenderer(Shader* shader, RenderType rt = DRAW_MULTI)
-		: OWRenderer(shader, rt)
+	OWMeshRenderer(Shader* shader, const std::vector<GPUBufferObject::BufferType>& orderedTypes,
+		GPUBufferObject::BufferStyle bs)// = GPUBufferObject::BufferStyle::SSBO)
+		: OWRenderer(shader, orderedTypes)
 	{
+		mSSBO.bufferStyle(bs);
 	}
 	void doSetup(const OWRenderData& renderData) override;
 protected:
@@ -32,7 +36,6 @@ protected:
 
 private:
 	MeshData mData;
-	SSBO mSSBO;
 	Texture mTexture;
 	size_t mPositionCount = 0;
 	size_t mColourCount = 0;
@@ -49,7 +52,8 @@ private:
 	// mVbo[1] The VBO containing the positions of the particles
 	// mVbo[2] The VBO containing the colors of the particles
 	unsigned int mVao = std::numeric_limits<unsigned int>::max();
-	unsigned int mVbo = std::numeric_limits<unsigned int>::max();
+	//unsigned int mVbo = std::numeric_limits<unsigned int>::max();
+	unsigned int mVbo[10] = { 0, 0, 0 };
 	unsigned int mEbo = std::numeric_limits<unsigned int>::max();
 	unsigned int mPrimitiveEbo = std::numeric_limits<unsigned int>::max();
 	unsigned int mSbo = std::numeric_limits<unsigned int>::max();

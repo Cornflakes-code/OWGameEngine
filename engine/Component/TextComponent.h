@@ -42,6 +42,5 @@ public:
 	void doSetup() override;
 	const OWRenderData renderData(AABB& bounds) const override;
 	static OWRenderTypes::ShaderMutator shaderMutator(OWTextComponentData::TextDisplayType displayType);
-	int appendSSOData(glm::vec4& x) const override;
 private:
 };

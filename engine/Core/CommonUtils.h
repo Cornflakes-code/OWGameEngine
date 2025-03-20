@@ -60,6 +60,9 @@ struct OWENGINE_API OWUtils
 
 	static OWUtils::SolidColours colour(const std::string& solidColourName);
 	static glm::vec4 colour(SolidColours colour);
+	// A quick and dirty random generator though
+	static std::vector<glm::vec4> allSolidColours();
+	static glm::vec4 randomSolidColour();
 	static std::string nowAsString();
 	static std::vector<std::string> split1(const std::string &s, char delim);
 	static std::vector<std::string> split2(const std::string &text, char sep);

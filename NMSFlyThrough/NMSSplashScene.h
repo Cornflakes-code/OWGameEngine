@@ -41,13 +41,11 @@ struct NMSSplashScenePhysics: public NMSWorldPhysicsState
 };
 
 class Axis;
-class InstanceRenderer;
 class HeavyRenderer;
 class OLDButton;
 
 class NMSSplashScene : public NMSScene
 {
-	InstanceRenderer* mStarRenderer = nullptr;
 	OLDButton* mButton = nullptr;
 public:
 	NMSSplashScene(const Movie* movie);

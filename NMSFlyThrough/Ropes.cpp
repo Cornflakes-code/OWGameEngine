@@ -4,7 +4,6 @@
 #include <Helpers/ShaderFactory.h>
 #include <Helpers/Transform.h>
 #include <Renderers/MeshRenderer.h>
-#include <Renderers/InstanceRenderer.h>
 
 #include <Component/MeshComponent.h>
 #include "./../NMSFlyThrough/rope_interface_test.h"
@@ -38,27 +37,28 @@ void Rope::initialise(const OWRopeData& _data)
 	const OWTextComponentData& tcd = mData.labelTextData;
 	const OWRopeDataImp& rd = mData.ropeData;
 	prepareRope(rd.ropeDBId, rd.ropeZoom.x, rd.ropeZoom.y, rd.numDepthLayers);
-	if (true)
+	if (false)
 	{
 		createLabels(tcd.fontSpacing, rd.labelTextScale);
 	}
-	if (true)
+	if (false)
 	{
 		createBanner(mData.bannerTextData.text, mData.bannerTextData.fontHeight, 
 			tcd.fontSpacing * 10.0f, mData.ropeData.bannerTextScale);
 	}
-	if (true)
+	if (false)
 	{
 		Shader* lineShader = new Shader("");
 		lineShader->setStandardUniformNames("pvm");
 
 		OWActorDiscrete::DiscreteEntity sse;
+		sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 		sse.mesh = createRopeLines(mPolyBuilder->slices());
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
-		sse.rend = new OWMeshRenderer(lineShader);
+		sse.rend = new OWMeshRenderer(lineShader, {}, GPUBufferObject::BufferStyle::SSBO);
 		mRopeLinesElementIndex = this->addComponents(sse);
 	}
-	if (true)
+	if (false)
 	{
 		Shader* wireShader = new Shader();
 		wireShader->loadShaders("Wires.v.glsl",
@@ -81,9 +81,11 @@ void Rope::initialise(const OWRopeData& _data)
 		wireShader->appendMutator(pointRender);
 
 		OWActorDiscrete::DiscreteEntity sse;
+		sse.colour = OWUtils::colour(OWUtils::SolidColours::WHITE);
 		sse.mesh = createRopeSurfaces(mPolyBuilder->slices());
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
-		sse.rend = new OWMeshRenderer(wireShader);
+		sse.rend = new OWMeshRenderer(wireShader, { GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
+			GPUBufferObject::BufferStyle::Uniform);
 		mRopeSurfacesElementIndex = this->addComponents(sse);
 	}
 	if (true)
@@ -91,9 +93,10 @@ void Rope::initialise(const OWRopeData& _data)
 		Shader* lineShader = new Shader("");
 		lineShader->setStandardUniformNames("pvm");
 		OWActorDiscrete::DiscreteEntity sse;
+		sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 		sse.mesh = createRopeEnds(mPolyBuilder->slices());
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
-		sse.rend = new OWMeshRenderer(lineShader);
+		sse.rend = new OWMeshRenderer(lineShader, {}, GPUBufferObject::BufferStyle::SSBO);
 		mRopeEndsElementIndex = this->addComponents(sse);
 	}
 	const OWRopeVisibilityData& vd = mData.ropeVisibility;
@@ -147,7 +150,9 @@ void Rope::createBanner(const std::string& s, int height,
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("VP");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->renderer(new OWMeshRenderer(shader));
+	multipleTexts->renderer(new OWMeshRenderer(shader, 
+			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		GPUBufferObject::BufferStyle::SSBO));
 	for(int i = 0; i < 1; i++) // could do many
 	{
 		OWTextComponentData td;
@@ -181,7 +186,9 @@ void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale
 	multipleTexts->transform(new OWTransform(transform(), glm::vec3(0, 0, 0)));
 	Shader* shader = new Shader("DynamicText.json");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->renderer(new OWMeshRenderer(shader));
+	multipleTexts->renderer(new OWMeshRenderer(shader, 
+		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		GPUBufferObject::BufferStyle::SSBO));
 	for (int i = 0; i < mPolyBuilder->labels().size(); i++)
 	{ 
 		const PolygonBuilder::SliceId& si = mPolyBuilder->labels()[i];
@@ -229,10 +236,9 @@ OWMeshComponent* Rope::createRopeEnds(std::vector<std::vector<std::vector<glm::v
 	{
 		for (auto& polygon : slice)
 		{
-			MeshData lineData;
-			lineData.setVertices(polygon, GL_LINE_LOOP);
-			lineData.setPolygonMode(GL_FILL);
-			mvd->add(lineData);
+			mvd->add(MeshData()
+				.addVertices(polygon)
+				.setModes(GL_LINE_LOOP, GL_TRIANGLES, GL_FILL));
 		}
 		break;
 	}
@@ -285,11 +291,10 @@ OWMeshComponent* Rope::createRopeLines(std::vector<std::vector<std::vector<glm::
 	{
 		for (std::vector<glm::vec3>& aLine : ropeLines)
 		{
-			MeshData lineData;
-			lineData.setColour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED), "colour");
-			lineData.setVertices(aLine, GL_LINE_STRIP);
-			lineData.setPolygonMode(GL_LINE);
-			mc->add(lineData);
+			mc->add(MeshData()
+				.addVertices(aLine)
+				.setColour(OWUtils::colour(OWUtils::SolidColours::BRIGHT_RED), "colour")
+				.setModes(GL_LINE_STRIP, GL_TRIANGLES, GL_LINE));
 		}
 	}
 	return mc;
@@ -421,10 +426,9 @@ OWMeshComponent* Rope::createRopeSurfaces(std::vector<std::vector<std::vector<gl
 	}
 
 	rn.createNormals(triAnglePoints, 1, 2);
-	MeshData lineData;
-	lineData.setVertices(triAnglePoints, GL_TRIANGLES);
-	lineData.setIndices(rn.mIndexBuffer, GL_TRIANGLES);
-	lineData.setPolygonMode(GL_FILL);
-	mc->add(lineData);
+	mc->add(MeshData()
+		.addVertices(triAnglePoints)
+		.addIndices(rn.mIndexBuffer)
+		.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL));
 	return mc;
 }

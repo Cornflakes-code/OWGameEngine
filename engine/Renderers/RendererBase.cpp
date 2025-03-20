@@ -98,9 +98,10 @@ public:
 GLenum BlendFuncRIAA::mSfactor;
 GLenum BlendFuncRIAA::mDfactor;
 
-OWRenderer::OWRenderer(const std::string& shaderFileName, RenderType rt)
-	: mShader(new Shader(shaderFileName)), mDrawType(rt)
+OWRenderer::OWRenderer(const std::string& shaderFileName, const std::vector<GPUBufferObject::BufferType>& orderedTypes)
+	: mShader(new Shader(shaderFileName))
 {
+	mSSBO.setAllowedTypes(orderedTypes);
 }
 
 void OWRenderer::validateBase() const
@@ -123,3 +124,51 @@ void OWRenderer::render(const glm::mat4& proj,
 
 	doRender();
 }
+
+void OWRenderer::setup(const OWRenderData& renderData)
+{
+	if (!mSetup)
+	{
+		mSetup = true;
+		mSSBO.splice();
+		doSetup(renderData);
+	}
+}
+
+OWRenderer* OWRenderer::setOrderedTypes(const std::vector<GPUBufferObject::BufferType>& orderedTypes)
+{
+	mSSBO.setAllowedTypes(orderedTypes);
+	return this;
+}
+
+OWRenderer* OWRenderer::addToSSBO(const std::vector<glm::mat4>& _data, GPUBufferObject::BufferType t)
+{
+	mSSBO.append(_data, t);
+	return this;
+}
+
+OWRenderer* OWRenderer::addToSSBO(const std::vector<glm::vec4>& _data, GPUBufferObject::BufferType t)
+{
+	mSSBO.append(_data, t);
+	return this;
+}
+
+OWRenderer* OWRenderer::addToSSBO(const std::vector<glm::vec3>& _data, GPUBufferObject::BufferType t)
+{
+	mSSBO.append(_data, t);
+	return this;
+}
+
+OWRenderer* OWRenderer::addToSSBO(const std::vector<glm::vec2>& _data, GPUBufferObject::BufferType t)
+{
+	mSSBO.append(_data, t);
+	return this;
+}
+
+OWRenderer* OWRenderer::lockSSBO(const std::vector<GPUBufferObject::BufferType>& orderedTypes) 
+{ 
+	mSSBO.lock(orderedTypes);
+	return this; 
+}
+
+

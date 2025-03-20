@@ -102,6 +102,7 @@ void NMSMainScene::doSetupScene(ScenePhysicsState* state)
 	nms->initialise(nmsd);
 	OWThreeDAxisData threeDAxisData;
 	threeDAxisData.bounds = world();
+	threeDAxisData.labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_WHITE);
 	ThreeDAxis* threeDAxis = new ThreeDAxis(this, "NMS Axis");
 	threeDAxis->initialise(threeDAxisData);
 }

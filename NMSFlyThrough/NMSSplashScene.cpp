@@ -26,7 +26,6 @@
 #include <Geometry/GeometricShapes.h>
 #include <Renderers/MeshRenderer.h>
 #include <Renderers/ModelRenderer.h>
-#include <Renderers/InstanceRenderer.h>
 
 #include <Helpers/Collider.h>
 #include <Helpers/Transform.h>
@@ -42,7 +41,7 @@
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
-int GDEBUG_PICKING = 4;
+int GDEBUG_PICKING = 1;
 //#define BOXES_CENTERED
 //#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
@@ -133,11 +132,14 @@ bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userI
 			gRay = new OWActorDiscrete(this->owner(), "Ray Actor");
 			gRay->transform(new OWTransform(nullptr));
 			OWActorDiscrete::DiscreteEntity sse;
+			sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 			sse.coll = new OWCollider(gRay, OWCollider::CollisionType::Ray);
-			OWMeshComponent* mc = new OWMeshComponent(gRay, "Ray Component");
-			mc->add(OWGeometricShapes::beam(cam_pos, dir, 1000));
-			sse.mesh = mc;
-			sse.rend = new OWMeshRenderer("");
+			sse.mesh = (new OWMeshComponent(gRay, "Ray Component"))
+				->add(MeshData()
+					.addVertices(OWGeometricShapes::beam(cam_pos, dir, 1000)));
+			sse.rend = new OWMeshRenderer("", 
+				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+				GPUBufferObject::BufferStyle::SSBO);
 			sse.trans = new OWTransform(gRay->transform(), cam_pos);
 			gRay->addComponents(sse);
 #endif
@@ -243,6 +245,7 @@ OWActorMutableParticle::MutableParticleElement createBumperPlane(const std::stri
 	elm.trans->rotation(glm::radians(rotDegrees), rotAxis);
 	elm.trans->scale(glm::vec3(scale));
 	elm.trans->localPosition(pos);
+	elm.colour = OWUtils::randomSolidColour();
 	elm.phys = new OWPhysics();
 	return elm;
 }
@@ -309,7 +312,9 @@ void NMSSplashScenePhysics::setup()
 		elm.phys = new OWPhysics(pd1);
 		elm.sound = new OWSoundComponent();
 		elm.trans = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 2.0));
-		dynamicTextActor->renderer(new OWMeshRenderer("DynamicText.json"));
+		dynamicTextActor->renderer(new OWMeshRenderer("DynamicText.json", 
+			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+			GPUBufferObject::BufferStyle::SSBO));
 		dynamicTextActor->addComponents(elm);
 	}
 
@@ -338,7 +343,9 @@ void NMSSplashScenePhysics::setup()
 		elm.phys = new OWPhysics(pd2);
 		elm.sound = new OWSoundComponent();
 		elm.trans = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 3.0));
-		staticTextActor->renderer(new OWMeshRenderer("StaticText.json"));
+		staticTextActor->renderer(new OWMeshRenderer("StaticText.json",
+				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+			GPUBufferObject::BufferStyle::SSBO));
 		staticTextActor->addComponents(elm);
 	}
 #endif
@@ -348,16 +355,15 @@ void NMSSplashScenePhysics::setup()
 	boxActor->scriptor(new OWScriptComponent());
 	boxActor->sound(new OWSoundComponent());
 	MeshData mds1;
-	mds1.v3 = OWGeometricShapes::cube();
-	mds1.vertexLocation = 0;
-	mds1.vertexMode = GL_TRIANGLES;
-	mds1.setPolygonMode(GL_FILL);
-	{
-		OWMeshComponent* mc1 = new OWMeshComponent(boxActor, "Box Template");
-		mc1->add(mds1);
-		boxActor->meshComponent(mc1);
-	}
-	boxActor->renderer(new OWInstanceRenderer("BoxShader.json"));
+	boxActor->meshComponent(
+		(new OWMeshComponent(boxActor, "Box Template"))
+		->add(MeshData()
+			.addVertices(OWGeometricShapes::cube())
+			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)));
+
+	boxActor->renderer(new OWMeshRenderer("BoxShader.json", 
+				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		GPUBufferObject::BufferStyle::SSBO));
 
 	glm::vec3 scale1 = { 10, 10, 10 };
 	glm::vec3 scale2 = { 3, 3, 3 };
@@ -436,10 +442,11 @@ void NMSSplashScenePhysics::setup()
 #ifdef INCLUDE_IMPORTED_MODEL
 	OWActorDiscrete* singleModelActor = new OWActorDiscrete(this->owner(), "Dice");
 	OWActorDiscrete::DiscreteEntity sse;
+	sse.colour = sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 	sse.coll = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
 	sse.mesh = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
 	sse.phys = new OWPhysics();
-	sse.rend = new OWModelRenderer("DiceShader.json");
+	sse.rend = new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour });
 	sse.sound = new OWSoundComponent();
 	OWTransformData td;
 	td.position = glm::vec3(0);
@@ -458,17 +465,16 @@ void NMSSplashScenePhysics::setup()
 	planeActor->transform(new OWTransform(nullptr));
 	planeActor->scriptor(new OWScriptComponent());
 	planeActor->sound(new OWSoundComponent());
-	MeshData mds2;
-	mds2.v3 = OWGeometricShapes::rectangle(glm::vec2(1));
-	mds2.v3[0].z -= 0.01f;
-	mds2.v3[1].z += 0.01f;
-	mds2.setPolygonMode(GL_FILL);
-	{
-		OWMeshComponent* mc2 = new OWMeshComponent(planeActor, "Plane Template");
-		mc2->add(mds2);
-		planeActor->meshComponent(mc2);
-	}
-	planeActor->renderer(new OWInstanceRenderer("PlaneShader.json"));
+	std::vector<glm::vec3> v3 = OWGeometricShapes::rectangle(glm::vec2(1));
+	v3[0].z -= 0.01f;
+	v3[1].z += 0.01f;
+	planeActor->meshComponent((new OWMeshComponent(planeActor, "Plane Template"))
+		->add(MeshData()
+			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)
+			.addVertices(v3)));
+	planeActor->renderer(new OWMeshRenderer("PlaneShader.json",
+		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		GPUBufferObject::BufferStyle::SSBO));
 
 	planeActor->addComponents(createBumperPlane("Plane Front", 
 		glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
@@ -536,12 +542,13 @@ void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
 	mds.v4.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
 	mds.setPolygonMode(GL_FILL);
 	OWActorDiscrete::DiscreteEntity sse;
+	sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 	sse.coll = new OWCollider(fullScreenActor, OWCollider::CollisionType::Permeable);
 	OWMeshComponent* mc = new OWMeshComponent(fullScreenActor, "Fullscreen Component");
 	mc->add(mds);
 	sse.mesh = mc;
 	sse.phys = new OWPhysics();
-	sse.rend = new OWModelRenderer(shader);
+	sse.rend = new OWModelRenderer(shader, { GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour });
 	sse.sound = new OWSoundComponent();
 #endif
 

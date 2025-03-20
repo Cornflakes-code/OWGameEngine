@@ -60,7 +60,7 @@ bool OWMeshComponentBase::validPolygonMode(GLenum mode)
 
 void OWMeshComponentBase::validate(const MeshData& md) const
 {
-	if (md.v4.empty() == md.v3.empty())
+	if (md.v4.empty())
 	{
 		if (md.v4.empty())
 			throw NMSLogicException("OWMeshComponentBase::validate [" 
@@ -79,37 +79,18 @@ void OWMeshComponentBase::validate(const MeshData& md) const
 	if (!validMode(md.vertexMode))
 		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
 			+ "] MeshData invalid vertexMode [" + std::to_string(md.vertexMode) + "]\n");
-	if (!validLocation(md.vertexLocation))
-		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
-			+ "] MeshData invalid vertexLocation [" + std::to_string(md.vertexLocation) + "]\n");
 	if (!validPolygonMode(md.polygonMode_mode))
 		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
 			+ "] MeshData invalid polygon mode mode [" + std::to_string(md.polygonMode_mode) + "]\n");
-
 }
 
-void OWMeshComponentBase::validate(const InstanceData& id) const
+void OWMeshComponentBase::validate(const OWModelData& md) const
 {
-	if (id.v3.empty())
-		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
-			+ "] InstanceData invalid. Missing vertices");
-	if (id.instancePositions.empty())
-		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
-			+ "] InstanceData invalid. Missing position");
-	if (id.instanceColours.empty())
-		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
-			+ "] InstanceData invalid. Missing colours");
-	if (id.positionDivisor == UINT_MAX)
-		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
-			+ "] InstanceData invalid. Missing position divisor");
-	if (id.colourDivisor == UINT_MAX)
-		throw NMSLogicException("OWMeshComponentBase::validate[" + name()
-			+ "] InstanceData invalid. Missing colour divisor");
-	if (!validMode(id.vertexMode))
-		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
-			+ "] InstanceData invalid vertexMode [" + std::to_string(id.vertexMode) + "]\n");
-	if (!validLocation(id.vertexLocation))
-		throw NMSLogicException("OWMeshComponentBase::validate [" + name()
-			+ "] InstanceData invalid vertexLocation [" + std::to_string(id.vertexLocation) + "]\n");
+	throw NMSLogicException("OWMeshComponentBase::validate model [" + name()
+		+ "] not implemented \n");
 }
 
+void OWMeshComponentBase::validate(const GPUBufferObject& ss) const
+{
+	ss.validate(name());
+}

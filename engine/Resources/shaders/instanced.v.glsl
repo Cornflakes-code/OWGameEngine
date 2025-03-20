@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 // Input vertex data, different for all executions of this shader.
 // E:\Apps\OpenGL\ogl\tutorial18_billboards_and_particles
@@ -6,8 +6,16 @@
 // http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
 
 layout(location = 0) in vec3 squareVertices;
-layout(location = 1) in vec4 xyzs; // Position of the center of the particle
-layout(location = 2) in vec4 color;
+
+struct PosColour
+{
+	vec4 pos;
+	vec4 colour;
+};
+
+layout(binding = 1, std430) readonly buffer ssbo1 {
+	PosColour ps[];
+};
 
 // Output data will be interpolated for each fragment.
 out vec2 particleCenter;
@@ -21,6 +29,9 @@ uniform vec2 u_resolution;
 
 void main()
 {
+	vec4 xyzs = ps[gl_InstanceID ].pos; // Position of the center of the particle
+	vec4 color = ps[gl_InstanceID ].colour;
+
 	float particleSize = 1.0;
 	vec3 particleCenter_worldspace = xyzs.xyz;
 	

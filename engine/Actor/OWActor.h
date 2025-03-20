@@ -89,6 +89,7 @@ class OWENGINE_API OWActorDiscrete: public OWActor
 public:
 	struct DiscreteEntity
 	{
+		glm::vec4 colour = { 0,0,0,1.0 };
 		OWCollider* coll = nullptr;
 		OWPhysics* phys = nullptr;
 		OWMeshComponentBase* mesh = nullptr;
@@ -116,7 +117,7 @@ class OWENGINE_API OWActorNCom1Ren: public OWActor
 public:
 	struct NCom1RenElement
 	{
-		glm::vec4 colour = { 0,0,0,0 };
+		glm::vec4 colour = { 0,0,0,1.0 };
 		OWCollider* coll = nullptr;
 		OWMeshComponentBase* mesh = nullptr;
 		OWPhysics* phys = nullptr;
@@ -173,17 +174,18 @@ private:
 	OWSoundComponent* mSound = nullptr;
 };
 
-class OWInstanceRenderer;
-struct InstanceData;
+class OWMeshRenderer;
 // Use this class for aggregating immutable Particles 
 // (one Mesh, one Renderer, no movement, fixed positions, no interaction with anything)
 class OWENGINE_API OWActorImmutableParticle: public OWActor
 {
 public:
 	OWActorImmutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
-	void renderer(OWInstanceRenderer* newValue);
 	void sound(OWSoundComponent* newValue);
-	void instanceMesh(const InstanceData& _data, std::string& _name);
+	void renderer(OWRenderer* newValue);
+	void meshComponent(OWMeshComponent* mc) {
+		mMeshTemplate = mc;
+	}
 protected:
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
@@ -192,7 +194,7 @@ protected:
 private:
 	OWMeshComponent* mMeshTemplate = nullptr;
 	OWPhysics* mPhysics = nullptr;
-	OWInstanceRenderer* mRenderer = nullptr;
+	OWRenderer* mRenderer = nullptr;
 	OWSoundComponent* mSound = nullptr;
 };
 

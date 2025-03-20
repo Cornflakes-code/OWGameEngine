@@ -24,24 +24,19 @@ public:
 };
 #pragma warning( pop )
 
-class OWENGINE_API NMSOpenGlException : public NMSException
-{
-public:
-	NMSOpenGlException(const std::string& msg): NMSException(msg)
-	{}
-};
-
 class OWENGINE_API NMSLogicException: public NMSException
 {
 public:
-	NMSLogicException(std::stringstream ss) : NMSException(ss.str())
-	{}
+	NMSLogicException(std::stringstream ss): NMSException(ss.str())
+	{
+	}
 
 	NMSLogicException(const std::string& msg) : NMSException(msg)
-	{}
+	{
+	}
 };
 
-class OWENGINE_API NMSNotYetImplementedException : public NMSException
+class OWENGINE_API NMSNotYetImplementedException: public NMSException
 {
 public:
 	NMSNotYetImplementedException(std::stringstream ss) : NMSException(ss.str())

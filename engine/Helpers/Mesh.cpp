@@ -1,48 +1,55 @@
 #include "Mesh.h"
 #include "../Geometry/BoundingBox.h"
+#include <glm/gtc/type_ptr.hpp>
 
-void InstanceData::moveFrom(MeshData& md)
+MeshData& MeshData::addVertices(const std::vector<glm::vec3>& v)
 {
-	if (md.v3.size())
+	for (const glm::vec3& p3 : v)
 	{
-		setVertices(md.v3, md.vertexMode, md.vertexLocation);
-	} 
-	else if (md.v4.size())
-	{
-		setVertices(md.v4, md.vertexMode, md.vertexLocation);
+		const glm::vec4& p4 = glm::vec4(p3, 0);
+		v4.push_back(p4);
 	}
-	else
-	{
-		throw NMSLogicException("InstanceData::moveFrom() md must contain exactly a single mesh. Cannot recover.");
-	}
-	vertexLocation = md.vertexLocation;
-	vertexMode = md.vertexMode;
+	return *this;
 }
 
-
-AABB InstanceData::bounds() const
+MeshData& MeshData::addVertices(const std::vector<glm::vec4>& v)
 {
-	if (v3.size())
-	{
-		return AABB(v3);
-	}
-	else if (v4.size())
-	{
-		return AABB(v4);
-	}
-	else
-	{
-		throw NMSLogicException("No data for InstanceData.");
-	}
+	v4.insert(v4.begin(), v.begin(), v.end());
+	return *this;
+}
+
+MeshData& MeshData::addIndices(const std::vector<unsigned int> v)
+{
+	indices.insert(indices.begin(), v.begin(), v.end());
+	return *this;
+}
+
+MeshData& MeshData::setColour(const glm::vec4& _colour, const std::string& _shaderColourName)
+{
+	colour = _colour;
+	shaderColourName = _shaderColourName;
+	return *this;
+}
+
+MeshData& MeshData::setModes(unsigned int _vertexMode,
+	unsigned int _indicesMode, unsigned int _polygonMode)
+{
+	vertexMode = _vertexMode;
+	indicesMode = _indicesMode;
+	polygonMode_mode = _polygonMode;
+	return *this;
+}
+
+// Can be GL_POINT, GL_LINE or GL_FILL
+MeshData& MeshData::setPolygonMode(unsigned int _mode)
+{
+	polygonMode_mode = _mode;
+	return *this;
 }
 
 AABB MeshData::bounds() const
 {
-	if (v3.size())
-	{
-		return AABB(v3);
-	}
-	else if (v4.size())
+	if (v4.size())
 	{
 		return AABB(v4);
 	}

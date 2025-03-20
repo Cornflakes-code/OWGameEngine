@@ -27,16 +27,20 @@ void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 
 	transform(new OWTransform(nullptr)); // Always do this before creating child transforms
 	OWActorDiscrete::DiscreteEntity sse;
+	sse.colour = mData.axisColour;
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
-	MeshData md;
-	md.setColour(mData.axisColour, mData.axisColourName);
-	md.setVertices(axisCoords, GL_LINES);
-	md.setIndices({ 0,1, 0,2, 0,3 }, GL_LINES);
-	md.setPolygonMode(GL_FILL);
-	sse.mesh = (new OWMeshComponent(this, "XYZ Axis"))->add(md);
+	sse.mesh = (new OWMeshComponent(this, "XYZ Axis"))
+		->add(MeshData()
+		.addVertices(axisCoords)
+		.addIndices({ 0,1, 0,2, 0,3 })
+		.setModes(GL_LINES, GL_LINES, GL_FILL)
+		.setColour(mData.axisColour, mData.axisColourName));
+
 	Shader* shader = new Shader("");
 	shader->setStandardUniformNames("pvm");
-	sse.rend = new OWMeshRenderer(shader);
+	sse.rend = new OWMeshRenderer(shader, 
+			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		GPUBufferObject::BufferStyle::SSBO);
 	sse.rend->drawModes(GL_LINES, GL_LINES);
 	sse.trans = new OWTransform(transform());
 	addComponents(sse);
@@ -74,10 +78,13 @@ OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, con
 	OWActorDiscrete::DiscreteEntity sse;
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
 	sse.mesh = new OWTextComponent(this, td.text, td);
+	sse.colour = td.colour;
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("VP");
 	shader->appendMutator(OWTextComponent::shaderMutator(td.tdt));
-	sse.rend = new OWMeshRenderer(shader);
+	sse.rend = new OWMeshRenderer(shader, 
+		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		GPUBufferObject::BufferStyle::SSBO);
 	glm::vec3 p = glm::vec3(pos.x, pos.y, pos.z);
 	sse.trans = new OWTransform(this->transform(), p, {0.5f, 0.5f, 1.0f});
 	return sse;

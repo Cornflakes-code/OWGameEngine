@@ -47,7 +47,6 @@ private:
 	NoMansSkyData mData;
 	std::vector<glm::vec4> mStarPositions;
 	std::vector<glm::vec4> mStarColours;
-	std::vector<glm::vec3> mRandomMinorStars;
 	glm::vec2 mStarRadius;
 
 	void loadStars(const std::string& fileName,

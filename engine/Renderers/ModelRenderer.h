@@ -14,12 +14,12 @@ class OWENGINE_API OWModelRenderer: public OWRenderer
 {
 public:
 	void doSetup(const OWRenderData& renderData) override;
-	OWModelRenderer(const std::string& shaderFileName, RenderType rt = DRAW_MULTI)
-		: OWRenderer(shaderFileName, rt)
+	OWModelRenderer(const std::string& shaderFileName, const std::vector<GPUBufferObject::BufferType>& orderedTypes)
+		: OWRenderer(shaderFileName, orderedTypes)
 	{
 	}
-	OWModelRenderer(Shader* shader, RenderType rt = DRAW_MULTI)
-		: OWRenderer(shader, rt)
+	OWModelRenderer(Shader* shader, const std::vector<GPUBufferObject::BufferType>& orderedTypes)
+		: OWRenderer(shader, orderedTypes)
 	{
 	}
 protected:

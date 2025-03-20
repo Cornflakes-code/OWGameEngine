@@ -141,7 +141,8 @@ MeshData ComputeNormals::compute()
 		appendTriangle(trianglePoints, tempWireIndices[i], tempWireIndices[i + 1], tempWireIndices[i + 2]);
 	}
 	createNormals(trianglePoints, 1, 2);
-	data.setVertices(trianglePoints, GL_TRIANGLES);
-	data.setIndices(mIndexBuffer, GL_TRIANGLES);
+	data.addVertices(trianglePoints);
+	data.addIndices(mIndexBuffer);
+	data.setModes(GL_TRIANGLES, GL_TRIANGLES);
 	return data;
 }

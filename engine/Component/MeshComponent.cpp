@@ -21,48 +21,23 @@ OWMeshComponent::OWMeshComponent(OWActor* _owner, const std::string& _name)
 {
 }
 
-OWMeshComponent* OWMeshComponent::add(const MeshData& meshData)
-{
-	mData.meshes.push_back(meshData);
-	return this;
-}
-
-OWMeshComponent* OWMeshComponent::add(const InstanceData& instanceData)
-{
-	mData.instances.push_back(instanceData);
-	return this;
-}
-
-OWMeshComponent* OWMeshComponent::add(const std::vector<glm::vec3>& v)
-{
-	MeshData mdl;
-	mdl.v3 = v;
-	add(mdl);
-	return this;
-}
-
-OWMeshComponent* OWMeshComponent::add(const std::vector<glm::vec4>& v)
-{
-	MeshData mdl;
-	mdl.v4 = v;
-	add(mdl);
-	return this;
-}
-
 const OWRenderData OWMeshComponent::renderData(AABB& bounds) const
 {
-	bounds = mData.bounds();
-	return mData;
+	AABB b;
+	for (const auto& m : mData)
+	{
+		b = b | m.bounds();
+	}
+	bounds = b;
+	OWRenderData rd;
+	rd.meshes = mData;
+	return rd;
 }
 
 void OWMeshComponent::doSetup()
 {
-	for (int i = 0; i < mData.meshes.size(); i++)
+	for (const auto& m : mData)
 	{
-		validate(mData.meshes[i]);
-	}
-	for (int i = 0; i < mData.instances.size(); i++)
-	{
-		validate(mData.instances[i]);
+		validate(m);
 	}
 }

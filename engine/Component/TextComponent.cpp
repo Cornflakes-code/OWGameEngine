@@ -5,7 +5,6 @@
 
 #include "../Core/GlobalSettings.h"
 #include "../Core/ErrorHandling.h"
-#include "../Core/CommonUtils.h" // for OWUtils::SolidColours
 #include "../Helpers/Shader.h"
 #include "../Helpers/FontFactory.h"
 
@@ -14,7 +13,6 @@ OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
 	: OWMeshComponentBase(_owner, _name), mData(_data)
 {
 }
-
 
 OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
 	const std::string& textFileName)
@@ -115,7 +113,6 @@ const OWRenderData OWTextComponent::renderData(AABB& bounds) const
 	bounds = adjustPosition(md.v4, mData.referencePos);
 	md.setColour(mData.colour, "textcolor");
 	md.indicesMode = md.vertexMode = GL_TRIANGLES;
-	md.vertexLocation = 0;
 	md.setPolygonMode(GL_FILL);
 	validate(md);
 	OWRenderData retval;
@@ -124,27 +121,6 @@ const OWRenderData OWTextComponent::renderData(AABB& bounds) const
 		= FontFactory().loadFreeTypeFont(mData.fontName, mData.fontHeight);
 	retval.textures.push_back(fd.texture());
 	return retval;
-}
-
-static int colCounter = 0;
-static std::vector<glm::vec4> instanceColours =
-{
-	OWUtils::colour(OWUtils::SolidColours::BLUE),
-	OWUtils::colour(OWUtils::SolidColours::GREEN),
-	OWUtils::colour(OWUtils::SolidColours::YELLOW),
-	OWUtils::colour(OWUtils::SolidColours::RED),
-	OWUtils::colour(OWUtils::SolidColours::MAGENTA),
-	OWUtils::colour(OWUtils::SolidColours::CYAN)
-};
-
-int OWTextComponent::appendSSOData(glm::vec4& x) const
-{
-	glm::vec4 col = instanceColours[colCounter];
-	colCounter++;
-	if (colCounter > 5)
-		colCounter = 0;
-	x = col;
-	return 4;
 }
 
 void OWTextComponent::doSetup()

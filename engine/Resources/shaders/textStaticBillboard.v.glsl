@@ -32,6 +32,8 @@ uniform vec2 BillboardSize; // Size of the billboard, in world units
 void main()
 {
 	ssb_colour = ps[gl_DrawID].colour;
+	//if (all(equal(ssb_colour, vec4(0,0,0,0))))
+	//	ssb_colour = vec4(1.0, 1.0, 1.0, 1.0);
 	vec3 BillboardPos = vec3(ps[gl_DrawID].pos.xyz);
 	jfw_BillboardPos = BillboardPos;
 	jfw_CameraRight_worldspace = CameraRight_worldspace;
