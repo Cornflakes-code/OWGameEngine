@@ -49,11 +49,10 @@ void Scene::render(const ScenePhysicsState* state,
 	const glm::vec3& cameraPos)
 {
 	doRenderScene(state, proj, view, cameraPos);
-	glm::mat4 model(1.0);
 
-	auto rend = [proj, view, model, cameraPos](OWActor* a)
+	auto rend = [proj, view, cameraPos](OWActor* a)
 		{
-			a->render(proj, view, model, cameraPos);
+			a->render(proj, view, cameraPos);
 		};
 	traverseSceneGraph(rend);
 }

@@ -46,7 +46,6 @@ void to_json(json& j, const ShaderData& p)
 		{ "PVMName", p.PVMName },
 		{ "projectionName", p.projectionName },
 		{ "viewName", p.viewName },
-		{ "modelName", p.modelName},
 		{"uniforms", {p.uniforms}}
 	};
 }
@@ -60,7 +59,6 @@ void from_json(const json& j, ShaderData& p)
 	if (j.find("PVMName") != j.end()) j.at("PVMName").get_to(p.PVMName);
 	if (j.find("projectionName") != j.end()) j.at("projectionName").get_to(p.projectionName);
 	if (j.find("viewName") != j.end()) j.at("viewName").get_to(p.viewName);
-	if (j.find("modelName") != j.end()) j.at("modelName").get_to(p.modelName);
 	if (j.find("uniforms") != j.end()) j.at("uniforms").get_to(p.uniforms);
 }
 
@@ -132,7 +130,7 @@ Shader::Shader(const std::string& fileName)
 		mData.shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
 		: mData.shaderG);
 		
-	setStandardUniformNames(mData.PVMName, mData.projectionName, mData.viewName, mData.modelName);
+	setStandardUniformNames(mData.PVMName, mData.projectionName, mData.viewName);
 	use();
 	for (ShaderDataUniforms& a : mData.uniforms)
 	{
@@ -151,7 +149,7 @@ Shader::Shader(const ShaderData& sd)
 		mData.shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
 		: mData.shaderG);
 
-	setStandardUniformNames(mData.PVMName, mData.projectionName, mData.viewName, mData.modelName);
+	setStandardUniformNames(mData.PVMName, mData.projectionName, mData.viewName);
 	use();
 	for (ShaderDataUniforms& a : mData.uniforms)
 	{
@@ -174,16 +172,17 @@ void Shader::appendMutator(OWRenderTypes::ShaderMutator pfunc)
 }
 
 void Shader::callMutators(const glm::mat4& proj, const glm::mat4& view,
-	const glm::mat4& model, const glm::vec3& cameraPos, OWRenderTypes::ShaderMutator renderCb) const
+	const glm::vec3& cameraPos, OWRenderTypes::ShaderMutator renderCb) const
 {
 	use();
 	if (renderCb)
 	{
-		renderCb(proj, view, model, cameraPos, this);
+		renderCb(proj, view, cameraPos, this);
 	}
 	for (auto& cb : mData.mutatorCallbacks)
 	{
-		cb(proj, view, model, cameraPos, this);
+		if (cb)
+			cb(proj, view, cameraPos, this);
 	}
 }
 
@@ -193,7 +192,6 @@ float Shader::aspectRatio() const
 		(globals->physicalWindowSize().y * 1.0f);
 
 }
-
 
 glm::vec2 Shader::scaleByAspectRatio(const glm::vec2& toScale) const
 {
@@ -356,39 +354,29 @@ void Shader::loadShaders(const std::string& vertexShader,
 
 }
 
-void Shader::setStandardUniformNames(const std::string& pvm,
+void Shader::setStandardUniformNames(const std::string& pv,
 	const std::string& projection,
 	const std::string& view,
-	const std::string& model,
 	const std::string& cameraPos)
 {
-	if (pvm != "")
-		mUniforms[StandardUniforms::PVM] = pvm;
+	if (pv != "")
+		mUniforms[StandardUniforms::PVM] = pv;
 	if (projection != "")
 		mUniforms[StandardUniforms::Projection] = projection;
 	if (view != "")
 		mUniforms[StandardUniforms::View] = view;
-	if (model != "")
-		mUniforms[StandardUniforms::Model] = model;
 	if (cameraPos != "")
 		mUniforms[StandardUniforms::CameraPosition] = cameraPos;
 }
 
 void Shader::setStandardUniformValues(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4& model,
-	const glm::vec3& cameraPos)
+	const glm::mat4& view, const glm::vec3& cameraPos)
 {
 	if (mUniforms.find(StandardUniforms::PVM) != mUniforms.end())
 	{
-		std::string pvm = mUniforms[StandardUniforms::PVM];
-		if (pvm.size() < 3)
+		std::string pv = mUniforms[StandardUniforms::PVM];
 		{
-			glm::mat4 vp = proj * view;
-			setMatrix4(pvm, vp);
-		}
-		else
-		{
-			setMatrix4(pvm, proj * view * model);
+			setMatrix4(pv, proj * view);
 		}
 	}
 	if (mUniforms.find(StandardUniforms::Projection) != mUniforms.end())
@@ -396,11 +384,6 @@ void Shader::setStandardUniformValues(const glm::mat4& proj,
 
 	if (mUniforms.find(StandardUniforms::View) != mUniforms.end())
 		setMatrix4(mUniforms[StandardUniforms::View], view);
-
-	if (mUniforms.find(StandardUniforms::Model) != mUniforms.end())
-	{
-		setMatrix4(mUniforms[StandardUniforms::Model], model);
-	}
 
 	if (mUniforms.find(StandardUniforms::CameraPosition) != mUniforms.end())
 		setVector3f(mUniforms[StandardUniforms::CameraPosition], cameraPos);

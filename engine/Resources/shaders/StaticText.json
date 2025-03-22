@@ -3,7 +3,7 @@
     "shaderV": "textStaticBillboard.v.glsl",
     "shaderF": "text.f.glsl",
     "shaderG": "",
-    "PVMName": "VP",
+    "PVMName": "pv",
     "projectionName": "",
     "viewName": "view",
     "modelName": "model"

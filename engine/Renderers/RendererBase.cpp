@@ -111,7 +111,7 @@ void OWRenderer::validateBase() const
 }
 
 void OWRenderer::render(const glm::mat4& proj,
-	const glm::mat4& view, std::vector<glm::mat4> models, const glm::vec3& cameraPos)
+	const glm::mat4& view, const glm::vec3& cameraPos)
 {
 	PolygonModeRIAA temp0(mPolygonFace, mPolygonMode);
 	PolygonModeRIAA temp1(mPolygonMode, mPolygonMode);
@@ -119,8 +119,8 @@ void OWRenderer::render(const glm::mat4& proj,
 	BlendFuncRIAA temp3(mSfactor, mDfactor);
 
 	shader()->use();
-	shader()->setStandardUniformValues(proj, view, models[0], cameraPos);
-	shader()->callMutators(proj, view, models[0], cameraPos, nullptr);
+	shader()->setStandardUniformValues(proj, view, cameraPos);
+	shader()->callMutators(proj, view, cameraPos, nullptr);
 
 	doRender();
 }

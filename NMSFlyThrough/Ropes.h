@@ -59,7 +59,7 @@ private:
 	void createBanner(const std::string& s, int height,
 		const glm::vec2& _spacing, const glm::vec2& scale,
 		const std::string& _font = "arial.ttf",
-		const glm::vec4& colour = { 0.0, 0.0, 0.0, 1.0f });
+		const glm::vec4& colour = { 0.0, 0.0, 0.67, 1.0f });
 	void createLabels(const glm::vec2& textSpacing = { 0,0 }, const glm::vec2& textScale = { 0,0 });
 	OWMeshComponent* createRopeEnds(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);
 	OWMeshComponent* createRopeLines(std::vector<std::vector<std::vector<glm::vec3>>>& threeDWires);

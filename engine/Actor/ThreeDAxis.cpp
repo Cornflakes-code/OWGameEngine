@@ -37,7 +37,7 @@ void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 		.setColour(mData.axisColour, mData.axisColourName));
 
 	Shader* shader = new Shader("");
-	shader->setStandardUniformNames("pvm");
+	shader->setStandardUniformNames("pv");
 	sse.rend = new OWMeshRenderer(shader, 
 			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO);
@@ -80,10 +80,13 @@ OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, con
 	sse.mesh = new OWTextComponent(this, td.text, td);
 	sse.colour = td.colour;
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
-	shader->setStandardUniformNames("VP");
+	shader->setStandardUniformNames("pv");
 	shader->appendMutator(OWTextComponent::shaderMutator(td.tdt));
-	sse.rend = new OWMeshRenderer(shader, 
-		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+	this->appendMutator(OWTextComponent::actorMutator(td.tdt));
+	sse.rend = new OWMeshRenderer(shader,
+		{ GPUBufferObject::BufferType::Position, 
+			GPUBufferObject::BufferType::Colour,
+			GPUBufferObject::BufferType::BillboardSize},
 		GPUBufferObject::BufferStyle::SSBO);
 	glm::vec3 p = glm::vec3(pos.x, pos.y, pos.z);
 	sse.trans = new OWTransform(this->transform(), p, {0.5f, 0.5f, 1.0f});

@@ -28,8 +28,7 @@ public:
 		// create a background thread to do stuff while render is happenening.
 	}
 	void render(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos);
+		const glm::mat4& view, const glm::vec3& cameraPos);
 
 	virtual void postRender()
 	{
@@ -67,12 +66,15 @@ public:
 		mScriptor = newValue;
 	}
 	bool setupCompleted() const { return mSetup; }
+	void appendMutator(OWRenderTypes::ActorSetupMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
 protected:
+	void callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
+		const OWPhysics* phys, OWTransform* trans, OWRenderer* rend);
 	virtual void doSetupActor() = 0;
 	virtual void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos) = 0;
+		const glm::mat4& view, const glm::vec3& cameraPos) = 0;
 private:
+	std::vector<OWRenderTypes::ActorSetupMutator> mMutatorCallbacks;
 	std::string mName;
 	AABB mBounds;
 	Scene* mScene;
@@ -104,8 +106,7 @@ public:
 protected:
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos) override;
+		const glm::mat4& view, const glm::vec3& cameraPos) override;
 	std::vector<DiscreteEntity> mElements;
 };
 
@@ -134,8 +135,7 @@ public:
 protected:
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos) override;
+		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
 	std::vector<NCom1RenElement> mElements;
 	OWRenderer* mRenderer = nullptr;
@@ -165,8 +165,7 @@ public:
 protected:
 	void doSetupActor() override final;
 	virtual void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos) override;
+		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
 	std::vector<MutableParticleElement> mElements;
 	OWMeshComponent* mMeshTemplate = nullptr;
@@ -189,8 +188,7 @@ public:
 protected:
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4 model,
-		const glm::vec3& cameraPos) override;
+		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
 	OWMeshComponent* mMeshTemplate = nullptr;
 	OWPhysics* mPhysics = nullptr;

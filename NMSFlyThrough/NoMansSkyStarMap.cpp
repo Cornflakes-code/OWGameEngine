@@ -47,7 +47,7 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 	{
 		mData.gridShader.shaderV = "Lines.v.glsl";
 		mData.gridShader.shaderF = "Lines.f.glsl";
-		mData.gridShader.PVMName = "pvm";
+		mData.gridShader.PVMName = "pv";
 		mData.gridShader.uniforms.push_back({ ShaderDataUniforms::UV4F, "uColour",
 					OWUtils::to_string(glm::vec4(0.90f, 0.91f, 0.98f, 1.0f)) }); // silver
 		Shader * shader = new Shader(mData.gridShader);
@@ -76,14 +76,13 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 		instanceColours.push_back(OWUtils::randomSolidColour());
 	}
 	Shader* starShader = new Shader("instanced.v.glsl", "glow.f.glsl", "");
-	starShader->setStandardUniformNames("VP");
+	starShader->setStandardUniformNames("pv");
 	starShader->setUniform(ShaderDataUniforms::UniformType::UFloat,
 		"cutoffRadius", OWUtils::to_string(mStarRadius.x), true);
 	glm::vec2 w = globals->physicalWindowSize();
 	auto pointRender = [w](
 		const glm::mat4& OW_UNUSED(proj),
 		const glm::mat4& view,
-		const glm::mat4& OW_UNUSED(model),
 		const glm::vec3& OW_UNUSED(cameraPos),
 		const Shader* shader)
 		{
@@ -156,11 +155,13 @@ void NoMansSky::loadStars(const std::string& fileName,
 #ifdef DEBUG_STAR_LABELS
 	OWActorNCom1Ren* starLabels = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
-	shader->setStandardUniformNames("VP");
+	shader->setStandardUniformNames("pv");
 	shader->appendMutator(OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType::Static));
+	starLabels->appendMutator(OWTextComponent::actorMutator(OWTextComponentData::TextDisplayType::Static));
 
 	starLabels->renderer(new OWMeshRenderer(shader, 
-		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
+				GPUBufferObject::BufferType::BillboardSize },
 		GPUBufferObject::BufferStyle::SSBO));
 #endif
 	std::string line;

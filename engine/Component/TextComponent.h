@@ -26,12 +26,13 @@ struct OWENGINE_API OWTextComponentData
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK);
 	glm::vec2 fontSpacing;
 	int fontHeight = 12;
+	glm::vec2 magicTextScaleFactor = { 1.0f, 1.0f };
 	unsigned int referencePos = PositionType(PositionType::Center & 0xC);
 	TextDisplayType tdt = Dynamic;
 };
 
 class Texture;
-class OWENGINE_API OWTextComponent : public OWMeshComponentBase
+class OWENGINE_API OWTextComponent: public OWMeshComponentBase
 {
 	OWTextComponentData mData;
 public:
@@ -41,6 +42,7 @@ public:
 		const std::string& textFileName);
 	void doSetup() override;
 	const OWRenderData renderData(AABB& bounds) const override;
+	static OWRenderTypes::ActorSetupMutator actorMutator(OWTextComponentData::TextDisplayType displayType);
 	static OWRenderTypes::ShaderMutator shaderMutator(OWTextComponentData::TextDisplayType displayType);
 private:
 };

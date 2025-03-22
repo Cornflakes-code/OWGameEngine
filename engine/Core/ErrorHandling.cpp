@@ -8,8 +8,33 @@
 
 #include "LogStream.h"
 
+NMSException::NMSException(std::stringstream ss) 
+	: NMSException(ss.str())
+{
+}
+
 NMSException::NMSException(const std::string& msg)
 	: std::exception(msg.c_str())
+{
+}
+
+NMSLogicException::NMSLogicException(std::stringstream ss) 
+	: NMSException(ss.str())
+{
+}
+
+NMSLogicException::NMSLogicException(const std::string& msg) 
+	: NMSException(msg)
+{
+}
+
+NMSNotYetImplementedException::NMSNotYetImplementedException(std::stringstream ss) 
+	: NMSException(ss.str())
+{
+}
+
+NMSNotYetImplementedException::NMSNotYetImplementedException(const std::string& msg) 
+	: NMSException(msg)
 {
 }
 

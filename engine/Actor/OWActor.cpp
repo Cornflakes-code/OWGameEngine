@@ -37,13 +37,21 @@ void OWActor::setup()
 	}
 }
 
+void OWActor::callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
+	const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)
+{
+	for (auto& cb : mMutatorCallbacks)
+	{
+		cb(coll, mesh, phys, trans, rend);
+	}
+}
+
 void OWActor::render(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4 model,
-	const glm::vec3& cameraPos)
+	const glm::mat4& view, const glm::vec3& cameraPos)
 {
 	if (mSetup && active())
 	{
-		doRender(proj, view, model, cameraPos);
+		doRender(proj, view, cameraPos);
 	}
 }
 
@@ -154,7 +162,9 @@ void OWActorDiscrete::doSetupActor()
 		b = b | b1;
 
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
+		{
 			elm.rend->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
+		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
 		{
 			const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
@@ -164,20 +174,18 @@ void OWActorDiscrete::doSetupActor()
 		{
 			elm.rend->mSSBO.append(elm.colour, GPUBufferObject::Colour);
 		}
+		callMutators(elm.coll, elm.mesh, elm.phys, elm.trans, elm.rend);
 		elm.rend->setup(rd);
 	}
 	bounds(b);
 }
 
 void OWActorDiscrete::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4 model,
-	const glm::vec3& cameraPos) 
+	const glm::mat4& view, const glm::vec3& cameraPos) 
 {
 	for (auto& elm: mElements)
 	{
-		std::vector<glm::mat4> elmModel;
-		elmModel.push_back(model * elm.trans->modelMatrix());
-		elm.rend->render(proj, view, elmModel, cameraPos);
+		elm.rend->render(proj, view, cameraPos);
 	}
 }
 
@@ -214,6 +222,12 @@ void OWActorNCom1Ren::doSetupActor()
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
 		b = b | b1;
+		glm::vec3 jfw3 = elm.trans->worldPosition();
+		glm::mat4 jfw4 = elm.trans->modelMatrix();
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
+		{
+			mRenderer->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
+		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
 			const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
@@ -223,22 +237,16 @@ void OWActorNCom1Ren::doSetupActor()
 		{
 			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
 		}
+		callMutators(elm.coll, elm.mesh, elm.phys, elm.trans, mRenderer);
 	}
 	mRenderer->setup(rd);
 	bounds(b);
 }
 
 void OWActorNCom1Ren::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4 model,
-	const glm::vec3& cameraPos) 
+	const glm::mat4& view, const glm::vec3& cameraPos) 
 {
-	std::vector<glm::mat4> models;
-	for (auto& elm : mElements)
-	{
-		const glm::mat4 m = model * elm.trans->modelMatrix();
-		models.push_back(m);
-	}
-	mRenderer->render(proj, view, models, cameraPos);
+	mRenderer->render(proj, view, cameraPos);
 }
 
 size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newElement)
@@ -275,6 +283,10 @@ void OWActorMutableParticle::doSetupActor()
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
 		b = b | b_moved;
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
+		{
+			mRenderer->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
+		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
 			mRenderer->mSSBO.append(p, GPUBufferObject::Position);
@@ -283,22 +295,16 @@ void OWActorMutableParticle::doSetupActor()
 		{
 			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
 		}
+		callMutators(elm.coll, mMeshTemplate, elm.phys, elm.trans, mRenderer);
 	}
 	mRenderer->setup(rd);
 	bounds(b);
 }
 
 void OWActorMutableParticle::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4 model,
-	const glm::vec3& cameraPos)
+	const glm::mat4& view, const glm::vec3& cameraPos)
 {
-	std::vector<glm::mat4> models;
-	for (auto& elm : mElements)
-	{
-		const glm::mat4 m = model * elm.trans->modelMatrix();
-		models.push_back(m);
-	}
-	mRenderer->render(proj, view, models, cameraPos);
+	mRenderer->render(proj, view, cameraPos);
 }
 
 void OWActorMutableParticle::renderer(OWRenderer* newValue)
@@ -333,12 +339,9 @@ void OWActorImmutableParticle::doSetupActor()
 }
 
 void OWActorImmutableParticle::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::mat4 model,
-	const glm::vec3& cameraPos)
+	const glm::mat4& view, const glm::vec3& cameraPos)
 {
-	std::vector<glm::mat4> models;
-	models.push_back(model * transform()->modelMatrix());
-	mRenderer->render(proj, view, models, cameraPos);
+	mRenderer->render(proj, view, cameraPos);
 }
 
 void OWActorImmutableParticle::renderer(OWRenderer* newValue)

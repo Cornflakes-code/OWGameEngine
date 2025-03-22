@@ -31,7 +31,7 @@ public:
 	OWRenderer* addToSSBO(const std::vector<glm::vec2>& _data, GPUBufferObject::BufferType t);
 	OWRenderer* lockSSBO(const std::vector<GPUBufferObject::BufferType>& orderedTypes);
 	void render(const glm::mat4& proj,
-		const glm::mat4& view, std::vector<glm::mat4> models, const glm::vec3& cameraPos);
+		const glm::mat4& view, const glm::vec3& cameraPos);
 
 	// OpenGL state functions
 	void drawModes(unsigned int indices, unsigned int vertices)
@@ -53,12 +53,12 @@ public:
 	}
 
 	virtual ~OWRenderer() {}
+	Shader* shader() { return mShader; }
 	GPUBufferObject mSSBO;
 protected:
 	virtual void doSetup(const OWRenderData& renderData) = 0;
 	virtual void doRender() = 0;
 	virtual void validateBase() const;
-	Shader* shader() { return mShader; }
 	unsigned int indicesMode() const { return mIndicesMode; }
 	unsigned int vertexMode() const { return mVertexMode; }
 private:

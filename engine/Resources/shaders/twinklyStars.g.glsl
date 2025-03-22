@@ -16,7 +16,7 @@ out vec4 particlecolor;
 // Values that stay constant for the whole mesh.
 uniform vec3 CameraRight_worldspace;
 uniform vec3 CameraUp_worldspace;
-uniform mat4 VP; // Model-View-Projection matrix, but without the Model (the position is in BillboardPos; the orientation depends on the camera)
+uniform mat4 pv; // Model-View-Projection matrix, but without the Model (the position is in BillboardPos; the orientation depends on the camera)
 uniform vec2 u_resolution;
 
 float circle(vec2 coord, vec2 center, float radius, float blur) {
@@ -76,12 +76,12 @@ void main()
 		+ CameraUp_worldspace * squareVertices.y * particleSize;
 
 	// Output position of the vertex
-	gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
+	gl_Position = pv * vec4(vertexPosition_worldspace, 1.0f);
 
     //vec2 ndcPos = gl_Position.xy / gl_Position.w;
     //UV = u_resolution * (ndcPos * 0.5 + 0.5);
 
-	vec4 temp = VP * vec4(xyzs.xyz, 1.0f);
+	vec4 temp = pv * vec4(xyzs.xyz, 1.0f);
 	vec2 tempPos = temp.xy / temp.w;
 	particleCenter = u_resolution * (tempPos * 0.5 + 0.5);
 	particlecolor = color;

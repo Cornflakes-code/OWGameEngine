@@ -35,6 +35,7 @@ struct GPUBufferObject
 	void append(const glm::mat4& p, BufferType t);
 	void append(const glm::vec4& p, BufferType t);
 	void append(const glm::vec3& p, BufferType t);
+	void append(const glm::vec2& p, BufferType t);
 	void append(float f, BufferType t);
 	void setAllowedTypes(const std::vector<GPUBufferObject::BufferType>& _allowedTypes);
 
@@ -49,6 +50,7 @@ struct GPUBufferObject
 	bool locked(GPUBufferObject::BufferType t) const;
 	void bufferStyle(BufferStyle newValue) { mBufferStyle = newValue; }
 	BufferStyle bufferStyle() const { return mBufferStyle; }
+	bool dataExists(BufferStyle bs) const;
 private:
 	bool mLocked = false;
 	bool mSplicedCalled = false;

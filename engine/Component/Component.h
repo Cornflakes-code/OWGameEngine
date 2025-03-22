@@ -43,7 +43,7 @@ private:
 
 struct OWModelData;
 
-class OWENGINE_API OWMeshComponentBase: public OWComponent
+class OWENGINE_API OWMeshComponentBase : public OWComponent
 {
 public:
 	OWMeshComponentBase(OWActor* _owner, const std::string& _name)
@@ -58,5 +58,6 @@ protected:
 	void validate(const MeshData& md) const;
 	void validate(const OWModelData& md) const;
 	void validate(const GPUBufferObject& ss) const;
+
 private:
 };

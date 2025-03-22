@@ -3,10 +3,9 @@
     "shaderV": "meshTest.v.glsl",
     "shaderF": "meshTest.f.glsl",
     "shaderG": "",
-    "PVMName": "pvm",
+    "PVMName": "pv",
     "projectionName": "projection",
     "viewName": "view",
-    "modelName": "model",
     "uniforms": [
         {
             "ut": 4,

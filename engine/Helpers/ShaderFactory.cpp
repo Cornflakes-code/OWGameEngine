@@ -68,10 +68,10 @@ const std::string& ShaderFactory::boilerPlateVertexShader()
 {
 	static std::string s =
 		GLSL(layout(location = 0) in vec3 aPos;
-	uniform mat4 pvm;
+	uniform mat4 pv;
 	void main()
 	{
-		gl_Position = pvm * vec4(aPos, 1.0);
+		gl_Position = pv * vec4(aPos, 1.0);
 	});
 	return s;
 }

@@ -17,9 +17,7 @@ enum class NMSErrorLevel
 class OWENGINE_API NMSException: public std::exception
 {
 public:
-	NMSException(std::stringstream ss): NMSException(ss.str())
-	{}
-
+	NMSException(std::stringstream ss);
 	NMSException(const std::string& msg);
 };
 #pragma warning( pop )
@@ -27,23 +25,15 @@ public:
 class OWENGINE_API NMSLogicException: public NMSException
 {
 public:
-	NMSLogicException(std::stringstream ss): NMSException(ss.str())
-	{
-	}
-
-	NMSLogicException(const std::string& msg) : NMSException(msg)
-	{
-	}
+	NMSLogicException(std::stringstream ss);
+	NMSLogicException(const std::string& msg);
 };
 
 class OWENGINE_API NMSNotYetImplementedException: public NMSException
 {
 public:
-	NMSNotYetImplementedException(std::stringstream ss) : NMSException(ss.str())
-	{}
-
-	NMSNotYetImplementedException(const std::string& msg) : NMSException(msg)
-	{}
+	NMSNotYetImplementedException(std::stringstream ss);
+	NMSNotYetImplementedException(const std::string& msg);
 };
 
 #define DEBUG_OPENGL

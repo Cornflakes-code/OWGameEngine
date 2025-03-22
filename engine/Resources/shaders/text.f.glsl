@@ -1,8 +1,9 @@
 #version 330 core
 // text.f.glsl
-in vec2 uv;
+
 uniform sampler2D textureImageId;
-uniform vec4 textcolor;
+
+in vec2 uv;
 in vec4 ssb_colour;
 
 void main(void) {

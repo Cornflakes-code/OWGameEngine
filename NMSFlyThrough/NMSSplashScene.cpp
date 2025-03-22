@@ -41,11 +41,11 @@
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
-int GDEBUG_PICKING = 1;
+int GDEBUG_PICKING = 0;
 //#define BOXES_CENTERED
 //#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
-//#define INCLUDE_IMPORTED_MODEL
+#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScenePhysics::mWindowBounds;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. 
@@ -291,7 +291,7 @@ void NMSSplashScenePhysics::setup()
 
 #ifdef INCLUDE_WELCOME
 	OWActorNCom1Ren* dynamicTextActor = new OWActorNCom1Ren(this->owner(), "Dynamic Text Actor");
-	dynamicTextActor->transform(glm::vec3(0), glm::vec3(scale, 1.0));
+	dynamicTextActor->transform();
 
 	OWPhysicsData pd1;
 	pd1.velocity = Compass::Rose[Compass::North] +
@@ -302,9 +302,10 @@ void NMSSplashScenePhysics::setup()
 	welcomeData.tdt = OWTextComponentData::TextDisplayType::Dynamic;
 	welcomeData.fontName = "arial.ttf";
 	welcomeData.fontHeight = fontHeight;
-	welcomeData.colour = { 0.0, 0.0, 0.0, 1.0f };
+	welcomeData.colour = OWUtils::colour(OWUtils::SolidColours::GREEN);
 	welcomeData.fontSpacing = { 10 * nice.x, 10 * nice.y };
 	welcomeData.text = "Welcome to reality.";
+	dynamicTextActor->appendMutator(OWTextComponent::actorMutator(welcomeData.tdt));
 	{
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.coll = new OWCollider(dynamicTextActor, OWCollider::CollisionType::Box);
@@ -312,9 +313,12 @@ void NMSSplashScenePhysics::setup()
 		elm.phys = new OWPhysics(pd1);
 		elm.sound = new OWSoundComponent();
 		elm.trans = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 2.0));
-		dynamicTextActor->renderer(new OWMeshRenderer("DynamicText.json", 
-			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
-			GPUBufferObject::BufferStyle::SSBO));
+		OWMeshRenderer* r = new OWMeshRenderer("DynamicText.json",
+			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
+			GPUBufferObject::BufferType::BillboardSize },
+			GPUBufferObject::BufferStyle::SSBO);
+		r->shader()->appendMutator(OWTextComponent::shaderMutator(welcomeData.tdt));
+		dynamicTextActor->renderer(r);
 		dynamicTextActor->addComponents(elm);
 	}
 
@@ -322,30 +326,34 @@ void NMSSplashScenePhysics::setup()
 	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
 	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
 #ifdef INCLUDE_ENJOY
-	OWActorNCom1Ren* staticTextActor = new OWActorNCom1Ren(this->owner(), "Static Text Actor");
-	staticTextActor->transform(glm::vec3(0), glm::vec3(scale, 1.0));
-	OWPhysicsData pd2;
-	pd2.velocity = Compass::Rose[Compass::South] +
+	{
+		OWActorNCom1Ren* staticTextActor = new OWActorNCom1Ren(this->owner(), "Static Text Actor");
+		staticTextActor->transform();
+		OWPhysicsData pd2;
+		pd2.velocity = Compass::Rose[Compass::South] +
 		Compass::Rose[Compass::West] * mSpeed / 20.0f;
 
-	OWTextComponentData enjoyData;
-	enjoyData.tdt = OWTextComponentData::TextDisplayType::Static;
-	enjoyData.fontName = "arial.ttf";
-	enjoyData.fontHeight = fontHeight;
-	enjoyData.colour = { 0.1, 0.9, 0.1, 1.0 };
-	enjoyData.fontSpacing = { nice.x, nice.y };
-	enjoyData.text = "Enjoy it while you can.";
-
-	{
+		OWTextComponentData enjoyData;
+		enjoyData.tdt = OWTextComponentData::TextDisplayType::Static;
+		enjoyData.fontName = "arial.ttf";
+		enjoyData.fontHeight = fontHeight;
+		enjoyData.colour = { 0.1, 0.9, 0.1, 1.0 };
+		enjoyData.fontSpacing = { nice.x, nice.y };
+		enjoyData.text = "Enjoy it while you can.";
+		staticTextActor->appendMutator(OWTextComponent::actorMutator(enjoyData.tdt));
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.coll = new OWCollider(staticTextActor, OWCollider::CollisionType::Box);
 		elm.mesh = new OWTextComponent(staticTextActor, "Enjoy", enjoyData);
 		elm.phys = new OWPhysics(pd2);
 		elm.sound = new OWSoundComponent();
 		elm.trans = new OWTransform(nullptr, glm::vec3(0), glm::vec3(scale, 3.0));
-		staticTextActor->renderer(new OWMeshRenderer("StaticText.json",
-				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
-			GPUBufferObject::BufferStyle::SSBO));
+		OWMeshRenderer* r = new OWMeshRenderer("StaticText.json",
+			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
+			GPUBufferObject::BufferType::BillboardSize },
+			GPUBufferObject::BufferStyle::SSBO);
+		r->shader()->appendMutator(OWTextComponent::shaderMutator(enjoyData.tdt));
+		staticTextActor->renderer(r);
+		
 		staticTextActor->addComponents(elm);
 	}
 #endif
@@ -362,7 +370,7 @@ void NMSSplashScenePhysics::setup()
 			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)));
 
 	boxActor->renderer(new OWMeshRenderer("BoxShader.json", 
-				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+				{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO));
 
 	glm::vec3 scale1 = { 10, 10, 10 };
@@ -446,7 +454,7 @@ void NMSSplashScenePhysics::setup()
 	sse.coll = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
 	sse.mesh = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
 	sse.phys = new OWPhysics();
-	sse.rend = new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour });
+	sse.rend = new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Position });
 	sse.sound = new OWSoundComponent();
 	OWTransformData td;
 	td.position = glm::vec3(0);
@@ -473,7 +481,7 @@ void NMSSplashScenePhysics::setup()
 			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)
 			.addVertices(v3)));
 	planeActor->renderer(new OWMeshRenderer("PlaneShader.json",
-		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+		{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO));
 
 	planeActor->addComponents(createBumperPlane("Plane Front", 
@@ -505,7 +513,7 @@ void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
 #ifdef INCLUDE_XYZ_AXIS
 	OWThreeDAxisData axisData;
 	axisData.bounds = AABB(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
-	axisData.labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_YELLOW);
+	axisData.labelColour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_WHITE);
 	ThreeDAxis* axis = new ThreeDAxis(this, "3D Axis");
 	axis->initialise(axisData);
 
@@ -514,42 +522,33 @@ void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
 	Shader* shader = new Shader("thebookofshaders.v.glsl",
 		"thebookofshaders.f.glsl",
 		"thebookofshaders_square.g.glsl");
-	shader->setStandardUniformNames("pvm");
+	shader->setStandardUniformNames("pv");
 	auto fullScreenRender = [](
 		const glm::mat4& OW_UNUSED(proj),
 		const glm::mat4& OW_UNUSED(view),
-		const glm::mat4& OW_UNUSED(model),
 		const glm::vec3& OW_UNUSED(cameraPos),
 		const Shader* shader)
 		{
 			//shader->setVector2f("u_mouse", globals->pointingDevicePosition());
 			shader->setFloat("u_time", globals->secondsSinceLoad());
-		};
-		auto fullScreenResize = [](
-			const glm::mat4& OW_UNUSED(proj),
-			const glm::mat4& OW_UNUSED(view),
-			const glm::mat4& OW_UNUSED(model),
-			const glm::vec3& OW_UNUSED(cameraPos),
-			const Shader* shader)
-		{
 			glm::vec2 vv = globals->physicalWindowSize();
 			shader->setVector2f("u_resolution", vv);
 		};
 	shader->appendMutator(fullScreenRender);
-	shader->appendMutator(fullScreenResize);
 	OWActorDiscrete* fullScreenActor = new OWActorDiscrete(this, "Fullscreen");
 	MeshData mds;
 	mds.v4.push_back({ 0.0f, 0.0f, 0.0f, 0.0f });
-	mds.setPolygonMode(GL_FILL);
+	mds.setModes(GL_POINTS, GL_POINTS);
+	//mds.setPolygonMode(GL_FILL);
 	OWActorDiscrete::DiscreteEntity sse;
 	sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 	sse.coll = new OWCollider(fullScreenActor, OWCollider::CollisionType::Permeable);
-	OWMeshComponent* mc = new OWMeshComponent(fullScreenActor, "Fullscreen Component");
-	mc->add(mds);
-	sse.mesh = mc;
+	sse.mesh = (new OWMeshComponent(fullScreenActor, "Fullscreen Component"))->add(mds);
 	sse.phys = new OWPhysics();
-	sse.rend = new OWModelRenderer(shader, { GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour });
+	sse.rend = new OWMeshRenderer(shader, { GPUBufferObject::BufferType::Model }, 
+		GPUBufferObject::BufferStyle::SSBO);
 	sse.sound = new OWSoundComponent();
+	fullScreenActor->addComponents(sse);
 #endif
 
 #ifdef INCLUDE_STAR_RENDER
@@ -561,7 +560,7 @@ void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
 		//"instanced.f.glsl",
 		""// instanced.g.glsl
 	);
-	starShader->setStandardUniformNames("VP");
+	starShader->setStandardUniformNames("pv");
 	glm::vec2 w = sps->mStarRadius;
 	mStarRenderer = new InstanceRenderer(starShader);
 
@@ -626,7 +625,7 @@ void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene),
 {
 	//globals->application()->backgroundColour(glm::vec4(0, 0, 0, 1));
 	//camera->position({ -39.9999f, 40, 240 });
-	camera->position({ 0, 0, 200 });
+	camera->position({ 200, 200, 200 });
 	//camera->lookAt({ -39.758, 40, 239.029 });
 	camera->lookAt({ 0,0,0 });
 	float speed = camera->moveScale();

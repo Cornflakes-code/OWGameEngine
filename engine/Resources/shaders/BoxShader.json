@@ -3,10 +3,9 @@
     "shaderV": "Wires.v.glsl",
     "shaderF": "Wires.f.glsl",
     "shaderG": "",
-    "PVMName": "",
+    "PVMName": "pv",
     "projectionName": "projection",
     "viewName": "view",
-    "modelName": "model",
     "uniforms": [
         {
             "ut": 4,

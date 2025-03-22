@@ -7,6 +7,8 @@
 #include "../Core/ErrorHandling.h"
 #include "../Helpers/Shader.h"
 #include "../Helpers/FontFactory.h"
+#include "../Renderers/MeshRenderer.h"
+#include "../Helpers/Transform.h"
 
 OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
 	const OWTextComponentData& _data)
@@ -58,37 +60,73 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	return bounds;
 }
 
+OWRenderTypes::ActorSetupMutator OWTextComponent::actorMutator(OWTextComponentData::TextDisplayType displayType)
+{
+	if (displayType == OWTextComponentData::TextDisplayType::Dynamic)
+	{
+		return 
+		[](const OWCollider* coll, const OWMeshComponentBase* mesh,
+			const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)
+			{
+				if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
+				{
+					const glm::vec2& magic = { 5.4f, 3.6f };
+					glm::vec2 bbSize({ magic.x * glm::length(glm::vec3(trans->modelMatrix()[0])),
+						magic.y * glm::length(glm::vec3(trans->modelMatrix()[1])) });
+					rend->mSSBO.append(bbSize, GPUBufferObject::BillboardSize);
+				}
+			};
+	}
+	else if (displayType == OWTextComponentData::TextDisplayType::Static)
+	{
+		return
+		[](const OWCollider* coll, const OWMeshComponentBase* mesh,
+			const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)
+			{
+				if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
+				{
+					glm::vec2 bbSize = { glm::length(glm::vec3(trans->modelMatrix()[0])),
+									glm::length(glm::vec3(trans->modelMatrix()[1]))};
+					// This seems to work best (trial and error) when resizing the window.
+					float _aspectRatio = globals->physicalWindowSize().x /
+						(globals->physicalWindowSize().y * 1.0f);
+					if (_aspectRatio < 1)
+					{
+						bbSize.x /= _aspectRatio;
+						bbSize.y *= _aspectRatio;
+					}
+					else
+					{
+						bbSize.x /= _aspectRatio;
+						//retval.y *= _aspectRatio ;
+					}
+					rend->mSSBO.append(bbSize, GPUBufferObject::BillboardSize);
+				}
+			};
+	}
+	else
+	{
+		throw NMSLogicException("OWTextComponent::shaderMutator. Unknown RenderType");
+	}
+}
+
 OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType displayType)
 {
 	if (displayType == OWTextComponentData::TextDisplayType::Dynamic)
 	{
 		return
 			[](const glm::mat4& proj, const glm::mat4& view,
-				const glm::mat4& model, const glm::vec3& cameraPos,
-				const Shader* shader)
+				const glm::vec3& cameraPos, const Shader* shader)
 			{
 				glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
 				shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
 				glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
 				shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
-
-				// 5.4 and 3.6 are magic numbers that seem to cause a nice look
-				glm::vec2 bbSize({ 5.4 * glm::length(glm::vec3(model[0])), 
-									3.6 * glm::length(glm::vec3(model[1])) });
-				shader->setVector2f("BillboardSize", bbSize);
 			};
 	}
 	else if (displayType == OWTextComponentData::TextDisplayType::Static)
 	{
-		return
-			[](const glm::mat4& proj, const glm::mat4& view,
-				const glm::mat4& model, const glm::vec3& cameraPos, const Shader* shader)
-			{
-				const glm::vec2 scale = shader->scaleByAspectRatioIfNeeded(
-					{ glm::length(glm::vec3(model[0])),
-					glm::length(glm::vec3(model[1])) });
-				shader->setVector2f("BillboardSize", scale);
-			};
+		return nullptr;
 	}
 	else
 	{
@@ -138,7 +176,6 @@ void OWTextComponent::doSetup()
 	{
 		mData.referencePos = OWTextComponentData::PositionType(mData.referencePos & 0x3);
 	}
-	
 }
 
 AABB calcOrthogonalAABB(const glm::vec3& right, const glm::vec3& up,

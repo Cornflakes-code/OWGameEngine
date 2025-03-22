@@ -3,8 +3,7 @@
     "shaderV": "Lines.v.glsl",
     "shaderF": "Lines.f.glsl",
     "shaderG": "",
-    "PVMName": "",
-    "projectionName": "pvm",
-    "viewName": "view",
-    "modelName": "model"
+    "PVMName": "pv",
+    "projectionName": "",
+    "viewName": "view"
 }

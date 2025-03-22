@@ -6,7 +6,7 @@ void GPUBufferObject::splice()
 	if (!unsplicedData.size())
 		return;
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::splice splicedData should be empty.\n");
+		throw NMSLogicException("GPUBufferObject::splice splicedData should be empty.\n");
 	if (bufferStyle() == BufferStyle::Uniform)
 	{
 		return;
@@ -36,7 +36,7 @@ unsigned int GPUBufferObject::instanceCount() const
 	if (!mSplicedCalled)
 	{
 		// splice() has been not been called. We do not know if all the calls to populate the unspliced have been done.
-		throw NMSLogicException("SSBO::instanceCount() Splice has not been called. No way to determine instanceCount.\n");
+		throw NMSLogicException("GPUBufferObject::instanceCount() Splice has not been called. No way to determine instanceCount.\n");
 	}
 	if (mBufferStyle == BufferStyle::SSBO)
 	{
@@ -54,7 +54,7 @@ unsigned int GPUBufferObject::instanceCount() const
 	{
 		if (splicedData.size())
 		{
-			throw NMSLogicException("SSBO::instanceCount(). Uniforms do not need to splice data.\n");
+			throw NMSLogicException("GPUBufferObject::instanceCount(). Uniforms do not need to splice data.\n");
 		}
 		else
 		{
@@ -80,7 +80,7 @@ unsigned int GPUBufferObject::instanceCount() const
 	}
 	else
 	{
-		throw NMSLogicException("SSBO::instanceCount() Unknown BufferStyle.\n");
+		throw NMSLogicException("GPUBufferObject::instanceCount() Unknown BufferStyle.\n");
 	}
 }
 
@@ -99,7 +99,7 @@ unsigned int GPUBufferObject::typeSize(BufferType t) const
 	if (t == BufferType::Padding1)
 		return 1;
 	else
-		throw NMSLogicException("SSBO typeSize Error. Unknown type ["
+		throw NMSLogicException("GPUBufferObject::typeSize Error. Unknown type ["
 			+ std::to_string(static_cast<unsigned int>(t))
 			+ "]\n");
 }
@@ -107,7 +107,7 @@ unsigned int GPUBufferObject::typeSize(BufferType t) const
 void GPUBufferObject::setAllowedTypes(const std::vector<GPUBufferObject::BufferType>& _allowedTypes)
 {
 	if (unsplicedData.size())
-		throw NMSLogicException("SSBO::unspliced must be empty before setting types\n");
+		throw NMSLogicException("GPUBufferObject::unspliced must be empty before setting types\n");
 
 	for (GPUBufferObject::BufferType t : _allowedTypes)
 	{
@@ -125,14 +125,14 @@ GPUBufferObject::UnSplicedData& GPUBufferObject::findUnspliced(BufferType t)
 		if (ut.dataType == t)
 			return ut;
 	}
-	throw NMSLogicException("SSBO::findUnspliced() unsplicedData not found for ["
+	throw NMSLogicException("GPUBufferObject::findUnspliced() unsplicedData not found for ["
 		+ std::to_string(static_cast<int>(t)) + "].\n");
 }
 
 void GPUBufferObject::append(const std::vector<glm::mat4>& _data, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(vector<mat4>) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(vector<mat4>) splicedData must be empty.\n");
 	UnSplicedData& usd = findUnspliced(t);
 	if (usd.locked)
 		return;
@@ -145,7 +145,7 @@ void GPUBufferObject::append(const std::vector<glm::mat4>& _data, BufferType t)
 void GPUBufferObject::append(const std::vector<glm::vec4>& _data, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(vector<vec4>) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(vector<vec4>) splicedData must be empty.\n");
 	UnSplicedData& usd = findUnspliced(t);
 	if (usd.locked)
 		return;
@@ -157,7 +157,7 @@ void GPUBufferObject::append(const std::vector<glm::vec4>& _data, BufferType t)
 void GPUBufferObject::append(const std::vector<glm::vec3>& _data, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(vector<vec3>) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(vector<vec3>) splicedData must be empty.\n");
 	std::vector<glm::vec4> v4;
 	for (const glm::vec3& v3 : _data)
 	{
@@ -169,7 +169,7 @@ void GPUBufferObject::append(const std::vector<glm::vec3>& _data, BufferType t)
 void GPUBufferObject::append(const std::vector<glm::vec2>& _data, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(vector<vec2>) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(vector<vec2>) splicedData must be empty.\n");
 	UnSplicedData& usd = findUnspliced(t);
 	if (usd.locked)
 		return;
@@ -181,10 +181,10 @@ void GPUBufferObject::append(const std::vector<glm::vec2>& _data, BufferType t)
 void GPUBufferObject::append(const glm::mat4& p, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(mat4) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(mat4) splicedData must be empty.\n");
 	for (int i = 0; i < 4; i++)
 	{
-		const glm::vec4& v = p[0];
+		const glm::vec4& v = p[i];
 		append(v, t);
 	}
 }
@@ -192,7 +192,7 @@ void GPUBufferObject::append(const glm::mat4& p, BufferType t)
 void GPUBufferObject::append(const glm::vec4& p, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(vec4) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(vec4) splicedData must be empty.\n");
 	UnSplicedData& usd = findUnspliced(t);
 	if (usd.locked)
 		return;
@@ -203,15 +203,23 @@ void GPUBufferObject::append(const glm::vec4& p, BufferType t)
 void GPUBufferObject::append(const glm::vec3& p, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(vec3) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(vec3) splicedData must be empty.\n");
 	glm::vec4 p4 = glm::vec4(p, 0);
+	append(p4, t);
+}
+
+void GPUBufferObject::append(const glm::vec2& p, BufferType t)
+{
+	if (splicedData.size())
+		throw NMSLogicException("GPUBufferObject::append(vec2) splicedData must be empty.\n");
+	glm::vec4 p4 = glm::vec4(p, 0, 0);
 	append(p4, t);
 }
 
 void GPUBufferObject::append(float f, BufferType t)
 {
 	if (splicedData.size())
-		throw NMSLogicException("SSBO::append(float) splicedData must be empty.\n");
+		throw NMSLogicException("GPUBufferObject::append(float) splicedData must be empty.\n");
 	UnSplicedData& usd = findUnspliced(t);
 	usd.data.push_back(f);
 }
@@ -272,7 +280,7 @@ void GPUBufferObject::validate(const std::string& ownerName) const
 	* should have stuff. After setup then the reverse
 	*/
 	if (splicedData.size() && unsplicedData.size())
-		throw NMSLogicException("SSBO::validate failed\n");
+		throw NMSLogicException("GPUBufferObject::validate failed\n");
 }
 
 unsigned int GPUBufferObject::instanceSpan() const
@@ -315,6 +323,20 @@ bool GPUBufferObject::locked(GPUBufferObject::BufferType t) const
 	// Also could be treates as an error
 	return true;
 }
+
+bool GPUBufferObject::dataExists(BufferStyle bs) const
+{
+	if (bs == BufferStyle::SSBO)
+		return splicedData.size() > 0;
+	else if (bs == BufferStyle::Uniform)
+		return (unsplicedData.size() > 0 && unsplicedData[0].data.size() > 0);
+	else
+	{
+		throw NMSLogicException("GPUBufferObject::gotRenderableData() Unknown BufferStyle.\n");
+	}
+
+}
+
 
 bool GPUBufferObject::exists(GPUBufferObject::BufferType ss) const
 {

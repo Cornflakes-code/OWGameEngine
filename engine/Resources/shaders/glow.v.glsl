@@ -8,7 +8,7 @@
 //  * Generate more complex shapes
 // https://www.shadertoy.com/view/3s3GDn
 
-layout(location = 0) in vec3 fragCoord;
+layout(location = 0) in vec3 in_vertex;
 
 uniform vec3 iResolution;
 uniform vec4 colour;
@@ -21,7 +21,7 @@ void main()
     //***********    Basic setup    **********
     
     // Normalized pixel coordinates (from 0 to 1)
-    vec2 uv = fragCoord.xy/iResolution.xy;
+    vec2 uv = in_vertex.xy/iResolution.xy;
     // The ratio of the width and height of the screen
     float widthHeightRatio = iResolution.x/iResolution.y;
     vec2 pos = uv;

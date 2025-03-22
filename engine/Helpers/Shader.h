@@ -28,10 +28,9 @@ struct OWENGINE_API ShaderData
 	std::string shaderV = "";
 	std::string shaderF = "";
 	std::string shaderG = "";
-	std::string PVMName = "pvm";
+	std::string PVMName = "pv";
 	std::string projectionName = "projection";
 	std::string viewName = "view";
-	std::string modelName = "model";
 	std::vector<OWRenderTypes::ShaderMutator> mutatorCallbacks;
 	std::vector<ShaderDataUniforms> uniforms;
 #pragma warning( pop )
@@ -47,7 +46,6 @@ class OWENGINE_API Shader //: public ResourceSource
 		PVM,
 		Projection,
 		View,
-		Model,
 		CameraPosition
 	};
 	std::map<StandardUniforms, std::string> mUniforms;
@@ -69,19 +67,17 @@ public:
 	Shader(const ShaderData& sd);
 	~Shader();
 	void appendMutator(OWRenderTypes::ShaderMutator pfunc);
-	void callMutators(const glm::mat4& proj, const glm::mat4& view,
-		const glm::mat4& model, const glm::vec3& cameraPos, 
+	void callMutators(const glm::mat4& proj, 
+		const glm::mat4& view, const glm::vec3& cameraPos, 
 		OWRenderTypes::ShaderMutator renderCb) const;
 	glm::vec2 scaleByAspectRatioIfNeeded(const glm::vec2& toScale) const;
 
-	void setStandardUniformNames(const std::string& pvm,
+	void setStandardUniformNames(const std::string& pv,
 		const std::string& projection = "",
 		const std::string& view = "",
-		const std::string& model = "",
 		const std::string& cameraPos = "");
 	void setStandardUniformValues(const glm::mat4& proj,
-		const glm::mat4& view, const glm::mat4& model,
-		const glm::vec3& cameraPos);
+		const glm::mat4& view, const glm::vec3& cameraPos);
 	void create(const std::string& vertexPath, const std::string& fragPath,
 			const std::string& geometryPath);
 	void loadBoilerPlates();

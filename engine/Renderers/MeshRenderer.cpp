@@ -70,7 +70,7 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 	glBindVertexArray(mVao);
 	// Add one for the vertex array 
 	glGenBuffers(mSSBO.populatedUnSplicedArrayCount() + 1, &mVbo[0]);
-	if (mSSBO.bufferStyle() == GPUBufferObject::BufferStyle::SSBO)
+	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
 	{
 		// This link is good 
 		// https://www.khronos.org/opengl/wiki/Vertex_Shader/Defined_Inputs
@@ -110,7 +110,7 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 		glVertexAttribDivisor(vertexLocation, 0);
 	}
 
-	if (mSSBO.bufferStyle() == GPUBufferObject::BufferStyle::Uniform)
+	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::Uniform))
 	{
 		for (int i = 0; i < mSSBO.unsplicedData.size(); i++)
 		{
@@ -136,7 +136,7 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 	// unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
 	blendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (!mData.indices.empty())
+	if (mData.indices.size())
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //Unbind the index buffer AFTER the vao has been unbound
 }
 
@@ -168,7 +168,7 @@ void OWMeshRenderer::add(const MeshData& meshData)
 void OWMeshRenderer::doRender() 
 {
 	glBindVertexArray(mVao);
-	if (mSSBO.bufferStyle() == GPUBufferObject::BufferStyle::SSBO)
+	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
 	{
 		// Does not appear to impact performance at all
 		// Note the 1 matches our binding = 1 in the vertex shader

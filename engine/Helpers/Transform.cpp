@@ -28,7 +28,7 @@ const glm::vec3 OWTransform::worldPosition() const
 
 const glm::mat4 OWTransform::modelMatrix() const
 {
-	glm::mat4 local = glm::mat4(rotation()) * glm::scale(glm::mat4(1), scale());
+	glm::mat4 local = glm::translate(glm::mat4(1.0f), mData.position) * glm::mat4(rotation()) * glm::scale(glm::mat4(1), scale());
 	const OWTransform* grandPa = mParent != nullptr ? mParent : nullptr;
 	if (grandPa == nullptr)
 	{
