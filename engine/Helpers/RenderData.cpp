@@ -295,13 +295,7 @@ unsigned int GPUBufferObject::instanceSpan() const
 
 unsigned int GPUBufferObject::populatedUnSplicedArrayCount() const
 {
-	unsigned int retval = 0;
-	for (const auto& elm : unsplicedData)
-	{
-		if (elm.data.size() > 0)
-			retval++;
-	}
-	return retval;
+	return unsplicedData.size();
 }
 
 void GPUBufferObject::lock(const std::vector<GPUBufferObject::BufferType>& orderedTypes)

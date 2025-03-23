@@ -37,25 +37,22 @@ protected:
 private:
 	MeshData mData;
 	Texture mTexture;
-	size_t mPositionCount = 0;
-	size_t mColourCount = 0;
-	std::vector<unsigned int> mPrimitiveIndices;
-	static unsigned int mPrimitiveRestart;
 
 	// Draw multi vars
 	std::vector<GLsizei> mMultiArrayStartIndexes;
 	std::vector<GLsizei> mMultiArrayVertexCount;
 	std::vector<void*> mMultiElementStartIndexes;
 	std::vector<GLsizei> mMultiElementIndicesCounts;
-	GLsizei mNumMeshes = 0;
-	// mVbo[0] The VBO containing the triangles to draw
 	// mVbo[1] The VBO containing the positions of the particles
 	// mVbo[2] The VBO containing the colors of the particles
 	unsigned int mVao = std::numeric_limits<unsigned int>::max();
-	//unsigned int mVbo = std::numeric_limits<unsigned int>::max();
-	unsigned int mVbo[10] = { 0, 0, 0 };
+
+	// mVbo[0] The VBO containing the vertexes
+	// Cannot use more VBP's than what there are Buffer Objects (plus one for the vertexes)
+	unsigned int mVbo[static_cast<int>(GPUBufferObject::BufferType::NoType) + 2] = { std::numeric_limits<unsigned int>::max() };
 	unsigned int mEbo = std::numeric_limits<unsigned int>::max();
 	unsigned int mPrimitiveEbo = std::numeric_limits<unsigned int>::max();
 	unsigned int mSbo = std::numeric_limits<unsigned int>::max();
 #pragma warning( pop )
+	void continueSetup();
 };

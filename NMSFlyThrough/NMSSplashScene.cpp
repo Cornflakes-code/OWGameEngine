@@ -41,7 +41,8 @@
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
-int GDEBUG_PICKING = 0;
+//#define INCLUDE_BOXES
+//int GDEBUG_PICKING = 0;
 //#define BOXES_CENTERED
 //#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
@@ -357,7 +358,7 @@ void NMSSplashScenePhysics::setup()
 		staticTextActor->addComponents(elm);
 	}
 #endif
-
+#ifdef INCLUDE_BOXES
 	OWActorMutableParticle* boxActor = new OWActorMutableParticle(this->owner(), "All Boxes");
 	boxActor->transform(new OWTransform(nullptr));
 	boxActor->scriptor(new OWScriptComponent());
@@ -446,20 +447,27 @@ void NMSSplashScenePhysics::setup()
 		boxActor->addComponents(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
 							ro, { rs }, mSpeed * 0.8f, scale2));
 	}
+#endif
 
 #ifdef INCLUDE_IMPORTED_MODEL
-	OWActorDiscrete* singleModelActor = new OWActorDiscrete(this->owner(), "Dice");
-	OWActorDiscrete::DiscreteEntity sse;
-	sse.colour = sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
-	sse.coll = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
-	sse.mesh = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
-	sse.phys = new OWPhysics();
-	sse.rend = new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Position });
-	sse.sound = new OWSoundComponent();
-	OWTransformData td;
-	td.position = glm::vec3(0);
-	td.scale = glm::vec3(10.0, 10.0, 10.0);
-	sse.trans = new OWTransform(nullptr, td);
+	glm::vec3 position = glm::vec3(50, 50, 50);
+	for (int i = 0; i < 2; i++)
+	{
+	
+		OWActorDiscrete* singleModelActor = new OWActorDiscrete(this->owner(), "Dice");
+		OWActorDiscrete::DiscreteEntity sse;
+		sse.colour = sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
+		sse.coll = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
+		sse.mesh = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
+		sse.phys = new OWPhysics();
+		sse.rend = new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model });
+		sse.sound = new OWSoundComponent();
+		OWTransformData td;
+		td.position = position * glm::vec3(i * 2, 0, 0);
+		td.scale = glm::vec3(10.0, 10.0, 10.0);
+		sse.trans = new OWTransform(nullptr, td);
+		singleModelActor->addComponents(sse);
+	}
 #endif
 #ifdef INCLUDE_STAR_RENDER
 	mButtonData.mButtonShape = GeometricShapes::goldenRectangle(10);

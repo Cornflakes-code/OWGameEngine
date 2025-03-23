@@ -1,9 +1,13 @@
 #include "ModelComponent.h"
 
+#include <Helpers/ModelFactory.h>
+
 OWModelComponent::OWModelComponent(OWActor* _owner,
 	const std::string& _name, const std::string& _modelName)
 	: OWMeshComponentBase(_owner, _name) 
 {
+	OWModelData md = ModelFactory().create(_modelName, false).children[0].meshes[0];
+	mData.push_back(md);
 }
 
 void OWModelComponent::add(const OWModelData& md) 

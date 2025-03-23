@@ -9,9 +9,6 @@
 
 #include "../Helpers/Shader.h"
 
-unsigned int OWMeshRenderer::mPrimitiveRestart = 0xFFFF;
-
-#define ARRAY_BUFFER_NOT_SSBO
 void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 {
 	if (renderData.models.size())
@@ -35,14 +32,13 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 #ifdef _DEBUG
 		for (int i = 1; i < renderData.meshes.size(); i++)
 		{
-			const MeshData& m = renderData.meshes[i];
-			if (m.vertexMode != mData.vertexMode)
+			if (renderData.meshes[i].vertexMode != renderData.meshes[i - 1].vertexMode)
 				throw NMSLogicException(
 					"OWMeshRenderer::doSetup Error. All meshes must have the same vertex mode. \n");
-			if (m.indicesMode != mData.indicesMode)
+			if (renderData.meshes[i].indicesMode != renderData.meshes[i - 1].indicesMode)
 				throw NMSLogicException(
 					"OWMeshRenderer::doSetup Error. All meshes must have the same indices mode. \n");
-			if (m.polygonMode_mode != mData.polygonMode_mode)
+			if (renderData.meshes[i].polygonMode_mode != renderData.meshes[i - 1].polygonMode_mode)
 				throw NMSLogicException(
 					"OWMeshRenderer::doSetup Error. All meshes must have the same polygon mode. \n");
 		}
@@ -55,16 +51,29 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 
 	// https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices
 	if (mData.v4.size() == 0)
+	{
 		return;
+	}
 	if (mData.polygonMode_mode == UINT_MAX)
-		mData.polygonMode_mode = GL_FILL;
+	{
+		// mMeshData.polygonMode_mode = GL_FILL;
+		throw NMSLogicException("OWMeshRenderer::doSetup(). Invalid polygonMode_mode.\n");
+	}
 
-	// Check for common error
 	if (mData.polygonMode_mode == GL_LINES)
+	{
+		// Check for common error
 		mData.polygonMode_mode = GL_LINE;
+	}
 
 	if (mVao != std::numeric_limits<unsigned int>::max())
 		throw NMSLogicException("OWMeshRenderer::doSetup(). VAO should not be initialised.\n");
+	continueSetup();
+}
+
+void OWMeshRenderer::continueSetup()
+{
+	shader()->use();
 
 	glGenVertexArrays(1, &mVao);
 	glBindVertexArray(mVao);
@@ -87,7 +96,6 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 		// Note the 1 matches our binding = 1 in the vertex shader
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
 	}
-	shader()->use();
 
 	if (!mData.indices.empty())
 	{
@@ -148,7 +156,6 @@ void OWMeshRenderer::add(const Texture& texture)
 
 void OWMeshRenderer::add(const MeshData& meshData)
 {
-	mNumMeshes++;
 	if (!meshData.v4.empty())
 	{
 		mMultiArrayStartIndexes.push_back(static_cast<GLsizei>(mData.v4.size()));
@@ -189,9 +196,9 @@ void OWMeshRenderer::doRender()
 		// If says that glMultiDrawElements is obsolete and instead use glMultiDrawElementsIndirect
 
 		glMultiDrawElements(mData.vertexMode, mMultiElementIndicesCounts.data(), GL_UNSIGNED_INT, 
-			(const void**)mMultiElementStartIndexes.data(), mNumMeshes);
+			(const void**)mMultiElementStartIndexes.data(), static_cast<GLsizei>(mMultiArrayStartIndexes.size()));
 	}
-	else if (mNumMeshes == 1)
+	else if (mMultiArrayStartIndexes.size() == 1)
 	{
 		GLsizei numInstances = static_cast<GLsizei>(mSSBO.instanceCount());
 		glDrawArraysInstanced(mData.vertexMode, 0,
@@ -201,7 +208,7 @@ void OWMeshRenderer::doRender()
 	else
 	{
 		glMultiDrawArrays(mData.vertexMode, mMultiArrayStartIndexes.data(),
-						mMultiArrayVertexCount.data(), mNumMeshes);
+						mMultiArrayVertexCount.data(), static_cast<GLsizei>(mMultiArrayStartIndexes.size()));
 	}
 	glBindVertexArray(0);
 }

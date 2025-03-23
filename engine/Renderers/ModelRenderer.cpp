@@ -4,6 +4,14 @@
 #include "../Core/ErrorHandling.h"
 
 #include "../Helpers/Shader.h"
+void OWModelRenderer::add(const Texture& texture)
+{
+}
+
+void OWModelRenderer::add(const OWModelData& modelData)
+{
+	mData = modelData;
+}
 
 void OWModelRenderer::doSetup(const OWRenderData& renderData)
 {
@@ -13,60 +21,123 @@ void OWModelRenderer::doSetup(const OWRenderData& renderData)
 	if (renderData.models.size() > 1)
 		throw NMSLogicException(
 			"Error. OWModelRenderer::doSetup cannot process multiple models\n");
+	if (renderData.textures.size() == 1)
+	{
+		add(renderData.textures[0]);
+	}
+	if (renderData.meshes.size() > 0)
+	{
+		throw NMSLogicException(
+			"Error. OWModelRender cannot draw Meshes \n");
+	}
+	for (const auto& m : renderData.models)
+	{
+		add(m);
+	}
+	continueSetup();
+}
 
-	mData = renderData.models[0];
+void OWModelRenderer::continueSetup()
+{
 	shader()->use();
-	const OWModelData& data = mData;
 	glGenVertexArrays(1, &mVao);
-	glGenBuffers(1, &mVbo);
-	if (!data.indices.empty())
+	glBindVertexArray(mVao);
+
+	// Add one for the vertex array 
+	glGenBuffers(mSSBO.populatedUnSplicedArrayCount() + 1, &mVbo[0]);
+	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
+	{
+		// This link is good 
+		// https://www.khronos.org/opengl/wiki/Vertex_Shader/Defined_Inputs
+		// https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object
+		// https://ktstephano.github.io/rendering/opengl/ssbos
+		glCreateBuffers(1, &mSbo);
+		size_t sf = sizeof(float);
+		size_t sf1 = sizeof(void*);
+		size_t sz = mSSBO.splicedData.size() * sizeof(float);
+		glNamedBufferStorage(mSbo,
+			sz,
+			(const void*)mSSBO.splicedData.data(),
+			GL_DYNAMIC_STORAGE_BIT);
+		// Note the 1 matches our binding = 1 in the vertex shader
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+	}
+	else if (mSSBO.dataExists(GPUBufferObject::BufferStyle::Uniform))
+	{
+		for (int i = 0; i < mSSBO.unsplicedData.size(); i++)
+		{
+			unsigned int location = i + 1;
+			glEnableVertexAttribArray(location);
+			glBindBuffer(GL_ARRAY_BUFFER, mVbo[i + 1]);
+			glVertexAttribPointer(
+				location, // must match the layout in the shader.
+				mSSBO.unsplicedData[i].span, // glm::vec4
+				GL_FLOAT, // type
+				GL_FALSE, // normalized?
+				0, // stride
+				(void*)0 // array buffer offset
+			);
+			glBufferData(GL_ARRAY_BUFFER, mSSBO.unsplicedData[i].span * sizeof(float) * mSSBO.instanceCount(),
+				mSSBO.unsplicedData[i].data.data(), GL_STREAM_DRAW);
+			glVertexAttribDivisor(location, 1);
+		}
+	}
+
+	if (!mData.indices.empty())
 	{
 		glGenBuffers(1, &mEbo);
-	}
-	glBindVertexArray(mVao);
-	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-
-	constexpr GLsizei vertexSize = sizeof(OWModelData::Vertex);
-	constexpr GLsizei glmv3Size = glm::vec3::length();
-	constexpr GLsizei glmv2Size = glm::vec2::length();
-
-	glBufferData(GL_ARRAY_BUFFER, vertexSize * data.vertices.size(),
-		data.vertices.data(), GL_STATIC_DRAW);
-
-	if (data.indices.size())
-	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			data.indices.size() * sizeof(unsigned int),
-			data.indices.data(), GL_STATIC_DRAW);
+		size_t sz = sizeof(unsigned int) * static_cast<GLsizei>(mData.indices.size());
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sz, mData.indices.data(), GL_STATIC_DRAW);
 	}
 
-	// vertex Positions first
-	GLint xx = shader()->getAttributeLocation("aPos");
-	glEnableVertexAttribArray(xx);
-	glVertexAttribPointer(xx, glmv3Size, GL_FLOAT, GL_FALSE, vertexSize, 0);
+	if (mData.vertices.size())
+	{
+		constexpr GLsizei vertexSize = sizeof(OWModelData::Vertex);
+		constexpr GLsizei glmv3Size = glm::vec3::length();
+		constexpr GLsizei glmv2Size = glm::vec2::length();
+		glBindBuffer(GL_ARRAY_BUFFER, mVbo[0]);
 
-	xx = shader()->getAttributeLocation("aTexCoords");
-	// vertex texture coords
-	glEnableVertexAttribArray(xx);
-	glVertexAttribPointer(xx, glmv2Size, GL_FLOAT, GL_FALSE, vertexSize,
-		(GLvoid*)(glmv3Size * sizeof(float)));
+		// vertex Positions first
+		GLint location = shader()->getAttributeLocation("in_vertex");
+		glEnableVertexAttribArray(location);
+		glBufferData(GL_ARRAY_BUFFER, vertexSize * mData.vertices.size(),
+			mData.vertices.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(location, glmv3Size, GL_FLOAT, GL_FALSE, vertexSize, 0);
+
+		location = shader()->getAttributeLocation("aTexCoords");
+		if (location != -1)
+		{
+			// vertex texture coords
+			glEnableVertexAttribArray(location);
+			glVertexAttribPointer(location, glmv2Size, GL_FLOAT, GL_FALSE, vertexSize,
+				(GLvoid*)(glmv3Size * sizeof(float)));
+		}
+		location = shader()->getAttributeLocation("normal");
+		if (location != -1)
+		{
+			glEnableVertexAttribArray(location);
+			glVertexAttribPointer(location, glmv3Size, GL_FLOAT, GL_FALSE, vertexSize,
+				(GLvoid*)(sizeof(float) * (glmv3Size + glmv2Size)));
+		}
+	}
 
 	// vertex normals
-	xx = shader()->getAttributeLocation("normal");
-	if (xx != -1)
-	{
-		glEnableVertexAttribArray(xx);
-		glVertexAttribPointer(xx, glmv3Size, GL_FLOAT, GL_FALSE, vertexSize,
-			(GLvoid*)(sizeof(float) * (glmv3Size + glmv2Size)));
-	}
 	glBindVertexArray(0);
-	if (data.indices.size())
+	if (mData.indices.size())
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //Unbind the index buffer AFTER the vao has been unbound
 }
 
 void OWModelRenderer::doRender() 
 {
+	glBindVertexArray(mVao);
+	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
+	{
+		// Does not appear to impact performance at all
+		// Note the 1 matches our binding = 1 in the vertex shader
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+	}
+
 	if (mData.textures.size())
 	{
 		// A nice explanation
@@ -81,10 +152,10 @@ void OWModelRenderer::doRender()
 			shader()->setInteger(tex.samplerName(), tex.imageUnit() - GL_TEXTURE0);
 		}
 	}
-	glBindVertexArray(mVao);
 
 	if (mData.indices.size())
 	{
+		unsigned int im = indicesMode();
 		glDrawElements(indicesMode(),
 			static_cast<GLsizei>(mData.indices.size()), GL_UNSIGNED_INT, 0);
 	}

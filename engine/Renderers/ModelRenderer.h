@@ -24,13 +24,19 @@ public:
 	}
 protected:
 	void doRender() override;
+	void add(const Texture& texture);
+	void add(const OWModelData& modelData);
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 	OWModelData mData;
 	unsigned int mVertexLocation = GL_INVALID_ENUM;
 	unsigned int mVao = 0;
-	unsigned int mVbo = 0;
+	// mVbo[0] The VBO containing the vertexes
+	// Cannot use more VBP's than what there are Buffer Objects (plus one for the vertexes)
+	unsigned int mVbo[static_cast<int>(GPUBufferObject::BufferType::NoType) + 2] = { std::numeric_limits<unsigned int>::max() };
+	unsigned int mSbo = std::numeric_limits<unsigned int>::max();
 	unsigned int mEbo = 0;
 #pragma warning( pop )
+	void continueSetup();
 };

@@ -5,8 +5,7 @@ layout (location = 2) in vec3 aNormal;
 
 struct SSBO
 {
-	vec4 model;
-	vec4 pos;
+	mat4 model;
 };
 
 layout(binding = 1, std430) readonly buffer SSBOBuffer {
@@ -21,10 +20,16 @@ int SSBOIndex()
 uniform mat4 pv;
 
 out vec2 TexCoords;
+out int jfw_ndx;
+out mat4 jfw_model;
+out mat4 jfw_pv;
 
 void main()
 {
 	int ndx = SSBOIndex();
-    TexCoords = ssbo[ndx].pos.xy;
+	jfw_ndx = ndx;
+	jfw_model = ssbo[ndx].model;
+	jfw_pv = pv;
+    TexCoords = aTexCoords;
     gl_Position = pv * ssbo[ndx].model * vec4(in_vertex, 1.0);
 }
