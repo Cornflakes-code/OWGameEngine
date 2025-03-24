@@ -8,9 +8,22 @@ void OWModelRenderer::add(const Texture& texture)
 {
 }
 
-void OWModelRenderer::add(const OWModelData& modelData)
+void OWModelRenderer::add(const OWModelData& md)
 {
-	mData = modelData;
+	if (!md.vertices.empty())
+	{
+		mMultiArrayStartIndexes.push_back(static_cast<GLsizei>(mData.vertices.size()));
+		mData.vertices.insert(mData.vertices.end(), md.vertices.begin(), md.vertices.end());
+		mMultiArrayVertexCount.push_back(static_cast<GLsizei>(md.vertices.size()));
+	}
+	if (!md.indices.empty())
+	{
+		// https://stackoverflow.com/questions/24516993/is-it-possible-to-use-index-buffer-objects-ibo-with-the-function-glmultidrawe
+		size_t xx = mData.indices.size() * sizeof(GLsizei);
+		mMultiElementStartIndexes.push_back(reinterpret_cast<void*>(xx));
+		mData.indices.insert(mData.indices.end(), md.indices.begin(), md.indices.end());
+		mMultiElementIndicesCounts.push_back(static_cast<GLsizei>(mData.indices.size() * sizeof(unsigned int)));
+	}
 }
 
 void OWModelRenderer::doSetup(const OWRenderData& renderData)
@@ -130,6 +143,7 @@ void OWModelRenderer::continueSetup()
 
 void OWModelRenderer::doRender() 
 {
+	// https://www.jointaro.com/interview-insights/apple/describe-the-opengl-pipeline-stages-and-shader-roles/
 	glBindVertexArray(mVao);
 	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
 	{
@@ -155,23 +169,18 @@ void OWModelRenderer::doRender()
 
 	if (mData.indices.size())
 	{
-		unsigned int im = indicesMode();
-		glDrawElements(indicesMode(),
-			static_cast<GLsizei>(mData.indices.size()), GL_UNSIGNED_INT, 0);
+		// https://www.khronos.org/opengl/wiki/Buffer_Object
+		// Look at:
+		// https://www.reddit.com/r/opengl/comments/19bgtcb/is_the_effort_of_glmultidrawelements_worth_it/
+		// If says that glMultiDrawElements is obsolete and instead use glMultiDrawElementsIndirect
+
+		glMultiDrawElements(vertexMode(), mMultiElementIndicesCounts.data(), GL_UNSIGNED_INT,
+			(const void**)mMultiElementStartIndexes.data(), static_cast<GLsizei>(mMultiArrayStartIndexes.size()));
 	}
 	else if (mData.vertices.size())
 	{
-		glDrawArrays(vertexMode(), 0,
-			static_cast<GLsizei>(mData.vertices.size()));
-	}
-	if (mData.textures.size())
-	{
-		// clean up.
-		for (auto t : mData.textures)
-		{
-			glActiveTexture(t.imageUnit());
-			glBindTexture(t.target(), 0);
-		}
+		glMultiDrawArrays(vertexMode(), mMultiArrayStartIndexes.data(),
+			mMultiArrayVertexCount.data(), static_cast<GLsizei>(mMultiArrayStartIndexes.size()));
 	}
 	glBindVertexArray(0);
 }

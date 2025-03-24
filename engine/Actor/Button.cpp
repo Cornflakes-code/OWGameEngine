@@ -2,43 +2,78 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "../Helpers/Shader.h"
-#include "../Component/TextComponent.h"
+#include <Helpers/Shader.h>
+#include <Component/TextComponent.h>
+#include <Renderers/MeshRenderer.h>
+#include <Renderers/RenderTypes.h>
+#include <Geometry/GeometricShapes.h>
 
 OWButton::OWButton(Scene* _scene, const std::string& _name)
-	: OWActor(_scene, _name, nullptr)
+	: OWActorDiscrete(_scene, _name, nullptr)
 {
 }
 
-void OWButton::initialise()
+OWActorDiscrete::DiscreteEntity OWButton::makeShape(const std::string& s, const glm::vec4& colour, const glm::vec3& size)
 {
-	throw NMSException("Incomplete function");
-	/*
-	ShaderData* shd = new ShaderData("button.v.glsl", "button.f.glsl", "", "pvm");
-	if (false)
-	{
-		auto mut = [position](const glm::mat4& proj, const glm::mat4& view,
-			const glm::mat4& model, const glm::vec3& cameraPos,
-			const Shader* shader)
-			{
-				glm::vec3 CameraRight_worldspace = { view[0][0], view[1][0], view[2][0] };
-				shader->setVector3f("CameraRight_worldspace", CameraRight_worldspace);
-				glm::vec3 CameraUp_worldspace = { view[0][1], view[1][1], view[2][1] };
-				shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
-				glm::mat4 newModel = glm::translate(model, position);
-				shader->setVector3f("BillboardPos", newModel[3]);
-			};
-		shd->mutatorCallbacks.push_back(mut);
-	}
-	Shader* sh = new Shader(shd);
-	VAOBuffer* vao = new VAOBuffer(sh);
-	MeshDataLight lineData;
-	lineData.vertices(data.mButtonShape, GL_TRIANGLES);
-	lineData.polygonMode(GL_FILL);
-	vao->add(&lineData);
-	TextComponentData* tdc = new TextComponentData();
-	tdc->textData.tdt = TextData::TextDisplayType::Static;
-	//tdc->physics.localMatrix += glm::vec4(10, 0);
-	TextComponent* td = new TextComponent(this, tdc);
-	*/
+	std::vector<glm::vec3> rectCoords = {
+		{ -0.5f, 0.5f, 0.0f },
+		{ 0.5f, 0.5f, 0.0f },
+		{ 0.5f, -0.5f, 0.0f },
+		{ -0.5f, -0.5f, 0.0f }
+	};
+	OWActorDiscrete::DiscreteEntity sse;
+	sse.colour = colour;
+	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
+	sse.mesh = (new OWMeshComponent(this, s))
+		->add(MeshData()
+			//.addVertices(triangles)
+			.addVertices(OWGeometricShapes::goldenRectangle())
+			.addIndices({ 0, 1, 2, 2, 3, 0 })
+			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL));
+	sse.mesh->drawType(OWRenderTypes::DrawType::TwoDStatic);
+
+	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text_1.f.glsl", "");
+	shader->setStandardUniformNames("pv");
+	sse.rend = new OWMeshRenderer(shader,
+		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
+				GPUBufferObject::BufferType::BillboardSize },
+		GPUBufferObject::BufferStyle::SSBO);
+	sse.rend->drawModes(GL_TRIANGLES, GL_TRIANGLES);
+	sse.trans = new OWTransform(transform(), glm::vec3(0), size);
+	return sse;
+}
+
+void OWButton::initialise(const OWButtonData& _data)
+{
+	std::vector<glm::vec3> triangles = {
+		{ -0.5f, 0.5f, 0.0f },
+		{ 0.5f, 0.5f, 0.0f },
+		{ -0.5f, -0.5f, 0.0f },
+		{ -0.5f, -0.5f, 0.0f },
+		{ 0.5f, 0.5f, 0.0f },
+		{ 0.5f, -0.5f, 0.0f }
+	};
+	this->transform(new OWTransform(nullptr)); // Always do this before creating child transforms
+
+	glm::vec3 sz = glm::vec3(0.4, 0.1, 0);
+	addComponents(makeShape("Unclicked Button", OWUtils::colour(OWUtils::SolidColours::BLUE), sz));
+	addComponents(makeShape("Clicked Button", OWUtils::colour(OWUtils::SolidColours::RED), sz * glm::vec3(0.7f, 0.7f, 1.0f)));
+
+	OWTextComponentData td;
+	td.tdt = OWRenderTypes::DrawType::TwoDStatic;;
+	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
+	shader->setStandardUniformNames("pv");
+	shader->appendMutator(OWTextComponent::shaderMutator(td.tdt));
+	OWActorDiscrete::DiscreteEntity sse;
+	sse.rend = (new OWMeshRenderer(shader,
+		{ GPUBufferObject::BufferType::Position,
+			GPUBufferObject::BufferType::Colour,
+			GPUBufferObject::BufferType::BillboardSize },
+		GPUBufferObject::BufferStyle::SSBO));
+	td.text = "Click Me";
+	sse.mesh = new OWTextComponent(this, "Rope Banner", td);
+	sse.trans = new OWTransform(transform(), glm::vec3(0, 0, 0), { 0.05f, 0.05f, 1.0f });
+	sse.colour = OWUtils::colour(OWUtils::SolidColours::GREEN);
+	sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
+	addComponents(sse);
 }

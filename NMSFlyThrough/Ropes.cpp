@@ -143,13 +143,12 @@ void Rope::createBanner(const std::string& s, int height,
 	const std::string& _font,
 	const glm::vec4& colour)
 {
-	OWTextComponentData::TextDisplayType tdt = OWTextComponentData::TextDisplayType::Static;
+	OWRenderTypes::DrawType tdt = OWRenderTypes::DrawType::TwoDStatic;
 	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Banner", this);
 	multipleTexts->transform(new OWTransform(transform()));
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("pv");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->appendMutator(OWTextComponent::actorMutator(tdt));
 	multipleTexts->renderer(new OWMeshRenderer(shader,
 			{ GPUBufferObject::BufferType::Position, 
 				GPUBufferObject::BufferType::Colour, 
@@ -165,7 +164,7 @@ void Rope::createBanner(const std::string& s, int height,
 		td.fontSpacing = _spacing;
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.mesh = new OWTextComponent(multipleTexts, "Rope Banner", td);
-		elm.trans = new OWTransform(multipleTexts->transform(), glm::vec3(9,8,7));
+		elm.trans = new OWTransform(multipleTexts->transform(), glm::vec3(0,0,0), glm::vec3(0.02, 0.02, 1));
 		elm.colour = colour;
 		elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
 		multipleTexts->addComponents(elm);
@@ -182,12 +181,11 @@ void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale
 		+ "with text rendering and I'm able to render text, but drawing more than 200 string using "
 		+ "200 draw call lead in a performance issue.";
 
-	OWTextComponentData::TextDisplayType tdt = OWTextComponentData::TextDisplayType::Dynamic;
+	OWRenderTypes::DrawType tdt = OWRenderTypes::DrawType::TwoDDynamic;
 	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Labels", this);
 	multipleTexts->transform(new OWTransform(transform(), glm::vec3(0, 0, 0)));
 	Shader* shader = new Shader("DynamicText.json");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->appendMutator(OWTextComponent::actorMutator(tdt));
 	multipleTexts->renderer(new OWMeshRenderer(shader,
 		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour, GPUBufferObject::BufferType::BillboardSize },
 		GPUBufferObject::BufferStyle::SSBO)); 

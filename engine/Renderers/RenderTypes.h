@@ -23,5 +23,9 @@ namespace OWRenderTypes
 
 	typedef std::function<void(const OWCollider* coll, const OWMeshComponentBase* mesh,
 		const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)> ActorSetupMutator;
+	enum DrawType
+	{
+		ThreeD, TwoDStatic, TwoDDynamic, Unknown
+	};
 
 };

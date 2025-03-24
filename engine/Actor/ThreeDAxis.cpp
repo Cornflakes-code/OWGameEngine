@@ -73,7 +73,7 @@ OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, con
 	td.colour = mData.labelColour;
 	td.referencePos = refPos;
 	td.text = s;
-	td.tdt = OWTextComponentData::TextDisplayType::Static;
+	td.tdt = OWRenderTypes::DrawType::TwoDStatic;
 
 	OWActorDiscrete::DiscreteEntity sse;
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
@@ -82,7 +82,6 @@ OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, con
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("pv");
 	shader->appendMutator(OWTextComponent::shaderMutator(td.tdt));
-	this->appendMutator(OWTextComponent::actorMutator(td.tdt));
 	sse.rend = new OWMeshRenderer(shader,
 		{ GPUBufferObject::BufferType::Position, 
 			GPUBufferObject::BufferType::Colour,

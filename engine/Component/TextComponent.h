@@ -5,6 +5,7 @@
 
 #include <Component/Component.h>
 #include <Core/CommonUtils.h>
+#include "../Renderers/RenderTypes.h"
 
 struct OWENGINE_API OWTextComponentData
 {
@@ -16,19 +17,14 @@ struct OWENGINE_API OWTextComponentData
 		Top = 0x4,
 		Bottom = 0x8
 	};
-	enum TextDisplayType
-	{
-		Dynamic,
-		Static
-	};
 	std::string text;
 	std::string fontName = "arial.ttf";
 	glm::vec4 colour = OWUtils::colour(OWUtils::SolidColours::BRIGHT_BLACK);
-	glm::vec2 fontSpacing;
+	glm::vec2 fontSpacing = { 0.0625, 0.125 };
 	int fontHeight = 12;
 	glm::vec2 magicTextScaleFactor = { 1.0f, 1.0f };
 	unsigned int referencePos = PositionType(PositionType::Center & 0xC);
-	TextDisplayType tdt = Dynamic;
+	OWRenderTypes::DrawType tdt = OWRenderTypes::DrawType::TwoDDynamic;
 };
 
 class Texture;
@@ -42,7 +38,6 @@ public:
 		const std::string& textFileName);
 	void doSetup() override;
 	const OWRenderData renderData(AABB& bounds) const override;
-	static OWRenderTypes::ActorSetupMutator actorMutator(OWTextComponentData::TextDisplayType displayType);
-	static OWRenderTypes::ShaderMutator shaderMutator(OWTextComponentData::TextDisplayType displayType);
+	static OWRenderTypes::ShaderMutator shaderMutator(OWRenderTypes::DrawType _drawType);
 private:
 };

@@ -4,7 +4,7 @@
 
 OWModelComponent::OWModelComponent(OWActor* _owner,
 	const std::string& _name, const std::string& _modelName)
-	: OWMeshComponentBase(_owner, _name) 
+	: OWMeshComponentBase(_owner, _name, OWRenderTypes::DrawType::ThreeD)
 {
 	OWModelData md = ModelFactory().create(_modelName, false).children[0].meshes[0];
 	mData.push_back(md);

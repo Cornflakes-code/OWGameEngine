@@ -1,5 +1,9 @@
 #include "Transform.h"
+
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <Core/GlobalSettings.h>
+#include <Core/ErrorHandling.h>
 
 OWTransform::OWTransform(const OWTransform* _owner, const OWTransformData& _data)
 	: mData(_data), mParent(_owner)
@@ -58,4 +62,43 @@ const glm::vec3 OWTransform::right() const
 {
 	const glm::vec4 v = modelMatrix() * glm::vec4(1, 0, 0, 0);
 	return glm::normalize(glm::vec3(v.x, v.y, v.z));
+}
+
+glm::vec2 OWTransform::drawSize(OWRenderTypes::DrawType _drawType) const
+{
+	if (_drawType == OWRenderTypes::DrawType::TwoDStatic)
+	{
+		glm::vec2 bbSize = { glm::length(glm::vec3(modelMatrix()[0])),
+						glm::length(glm::vec3(modelMatrix()[1])) };
+		// This seems to work best (trial and error) when resizing the window.
+		float _aspectRatio = globals->physicalWindowSize().x /
+			(globals->physicalWindowSize().y * 1.0f);
+		if (_aspectRatio < 1)
+		{
+			bbSize.x /= _aspectRatio;
+			bbSize.y *= _aspectRatio;
+		}
+		else
+		{
+			bbSize.x /= _aspectRatio;
+			//retval.y *= _aspectRatio ;
+		}
+		return bbSize;
+	}
+	else if (_drawType == OWRenderTypes::DrawType::TwoDDynamic)
+	{
+		const glm::vec2& magic = { 5.4f, 3.6f };
+		glm::vec2 bbSize({ magic.x * glm::length(glm::vec3(modelMatrix()[0])),
+			magic.y * glm::length(glm::vec3(modelMatrix()[1])) });
+		return bbSize;
+	}
+	else if (_drawType == OWRenderTypes::DrawType::ThreeD)
+	{
+		throw NMSNotYetImplementedException("OWTransform::drawSize not implemented for OWRenderTypes::DrawType::ThreeD. Cannot recover.");
+	}
+	else
+	{
+		throw NMSLogicException("OWTransform::drawSize(), Unknown DrawType[" + std::to_string(static_cast<int>(_drawType))
+			+ "]. Cannot recover.");
+	}
 }

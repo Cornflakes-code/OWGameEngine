@@ -37,14 +37,15 @@
 #include "NMSRopeScene.h"
 
 //#define INCLUDE_RAY
-//#define INCLUDE_PLANES
-//#define INCLUDE_FULLSCREEN
-//#define INCLUDE_WELCOME
-//#define INCLUDE_ENJOY
-//#define INCLUDE_BOXES
-//int GDEBUG_PICKING = 0;
-//#define BOXES_CENTERED
-//#define INCLUDE_XYZ_AXIS
+#define INCLUDE_BUTTONS
+#define INCLUDE_PLANES
+#define INCLUDE_FULLSCREEN
+#define INCLUDE_WELCOME
+#define INCLUDE_ENJOY
+#define INCLUDE_BOXES
+int GDEBUG_PICKING = 5;
+#define BOXES_CENTERED
+#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 #define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
@@ -256,7 +257,10 @@ void NMSSplashScenePhysics::setup()
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 100.0f;
-
+#ifdef INCLUDE_BUTTONS
+#endif
+	OWButton* button = new OWButton(this->owner(), "Button");
+	button->initialise();
 #ifdef INCLUDE_FULLSCREEN
 #endif
 #ifdef INCLUDE_STAR_RENDER
@@ -300,13 +304,12 @@ void NMSSplashScenePhysics::setup()
 				Compass::Rose[Compass::In] * mSpeed;
 
 	OWTextComponentData welcomeData;
-	welcomeData.tdt = OWTextComponentData::TextDisplayType::Dynamic;
+	welcomeData.tdt = OWRenderTypes::DrawType::TwoDDynamic;
 	welcomeData.fontName = "arial.ttf";
 	welcomeData.fontHeight = fontHeight;
 	welcomeData.colour = OWUtils::colour(OWUtils::SolidColours::GREEN);
 	welcomeData.fontSpacing = { 10 * nice.x, 10 * nice.y };
 	welcomeData.text = "Welcome to reality.";
-	dynamicTextActor->appendMutator(OWTextComponent::actorMutator(welcomeData.tdt));
 	{
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.coll = new OWCollider(dynamicTextActor, OWCollider::CollisionType::Box);
@@ -335,13 +338,12 @@ void NMSSplashScenePhysics::setup()
 		Compass::Rose[Compass::West] * mSpeed / 20.0f;
 
 		OWTextComponentData enjoyData;
-		enjoyData.tdt = OWTextComponentData::TextDisplayType::Static;
+		enjoyData.tdt = OWRenderTypes::DrawType::TwoDStatic;
 		enjoyData.fontName = "arial.ttf";
 		enjoyData.fontHeight = fontHeight;
 		enjoyData.colour = { 0.1, 0.9, 0.1, 1.0 };
 		enjoyData.fontSpacing = { nice.x, nice.y };
 		enjoyData.text = "Enjoy it while you can.";
-		staticTextActor->appendMutator(OWTextComponent::actorMutator(enjoyData.tdt));
 		OWActorNCom1Ren::NCom1RenElement elm;
 		elm.coll = new OWCollider(staticTextActor, OWCollider::CollisionType::Box);
 		elm.mesh = new OWTextComponent(staticTextActor, "Enjoy", enjoyData);
@@ -363,7 +365,6 @@ void NMSSplashScenePhysics::setup()
 	boxActor->transform(new OWTransform(nullptr));
 	boxActor->scriptor(new OWScriptComponent());
 	boxActor->sound(new OWSoundComponent());
-	MeshData mds1;
 	boxActor->meshComponent(
 		(new OWMeshComponent(boxActor, "Box Template"))
 		->add(MeshData()
@@ -450,17 +451,45 @@ void NMSSplashScenePhysics::setup()
 #endif
 
 #ifdef INCLUDE_IMPORTED_MODEL
+#define MULTI_MODEL
+#ifdef MULTI_MODEL
+
+	OWActorMutableParticle* diceActor = new OWActorMutableParticle(this->owner(), "All Dice");
+	diceActor->scriptor(new OWScriptComponent());
+	diceActor->sound(new OWSoundComponent());
+	diceActor->meshComponent(new OWModelComponent(diceActor, "Dice Component", "Dice2.obj"));
+
+	diceActor->renderer(new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model },
+		GPUBufferObject::BufferStyle::SSBO));
+
 	glm::vec3 position = glm::vec3(50, 50, 50);
 	for (int i = 0; i < 2; i++)
 	{
-	
+		OWActorMutableParticle::MutableParticleElement elm;
+		elm.colour = OWUtils::colour(OWUtils::SolidColours::RED);
+		elm.coll = new OWCollider(nullptr, OWCollider::CollisionType::Box);
+		OWTransformData td;
+		td.position = position * glm::vec3(i * 2, 0, 0);
+		td.scale = glm::vec3(10.0, 10.0, 10.0);
+		elm.trans = new OWTransform(nullptr, td);
+		elm.trans->rotation(glm::radians(45.0f), glm::vec3(1, 0, 0));
+		elm.phys = new OWPhysics();
+		diceActor->addComponents(elm);
+	}
+#else
+	// A better alternative is glMultiDrawElementsIndirect. Test it here
+	glm::vec3 position = glm::vec3(50, 50, 50);
+	for (int i = 0; i < 2; i++)
+	{
+
 		OWActorDiscrete* singleModelActor = new OWActorDiscrete(this->owner(), "Dice");
 		OWActorDiscrete::DiscreteEntity sse;
 		sse.colour = sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 		sse.coll = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
 		sse.mesh = new OWModelComponent(singleModelActor, "Dice Component", "Dice2.obj");
 		sse.phys = new OWPhysics();
-		sse.rend = new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model });
+		sse.rend = new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model },
+			GPUBufferObject::BufferStyle::SSBO);
 		sse.sound = new OWSoundComponent();
 		OWTransformData td;
 		td.position = position * glm::vec3(i * 2, 0, 0);
@@ -468,6 +497,7 @@ void NMSSplashScenePhysics::setup()
 		sse.trans = new OWTransform(nullptr, td);
 		singleModelActor->addComponents(sse);
 	}
+#endif
 #endif
 #ifdef INCLUDE_STAR_RENDER
 	mButtonData.mButtonShape = GeometricShapes::goldenRectangle(10);

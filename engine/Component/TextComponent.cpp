@@ -12,13 +12,13 @@
 
 OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
 	const OWTextComponentData& _data)
-	: OWMeshComponentBase(_owner, _name), mData(_data)
+	: OWMeshComponentBase(_owner, _name, _data.tdt), mData(_data)
 {
 }
 
 OWTextComponent::OWTextComponent(OWActor* _owner, const std::string& _name,
 	const std::string& textFileName)
-	: OWMeshComponentBase(_owner, _name)
+	: OWMeshComponentBase(_owner, _name, OWRenderTypes::DrawType::Unknown)
 {
 	// Load mData from textFileName;
 }
@@ -60,59 +60,9 @@ AABB adjustPosition(std::vector<glm::vec4>& v4, unsigned int mReferencePos)
 	return bounds;
 }
 
-OWRenderTypes::ActorSetupMutator OWTextComponent::actorMutator(OWTextComponentData::TextDisplayType displayType)
+OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWRenderTypes::DrawType _drawType)
 {
-	if (displayType == OWTextComponentData::TextDisplayType::Dynamic)
-	{
-		return 
-		[](const OWCollider* coll, const OWMeshComponentBase* mesh,
-			const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)
-			{
-				if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
-				{
-					const glm::vec2& magic = { 5.4f, 3.6f };
-					glm::vec2 bbSize({ magic.x * glm::length(glm::vec3(trans->modelMatrix()[0])),
-						magic.y * glm::length(glm::vec3(trans->modelMatrix()[1])) });
-					rend->mSSBO.append(bbSize, GPUBufferObject::BillboardSize);
-				}
-			};
-	}
-	else if (displayType == OWTextComponentData::TextDisplayType::Static)
-	{
-		return
-		[](const OWCollider* coll, const OWMeshComponentBase* mesh,
-			const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)
-			{
-				if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
-				{
-					glm::vec2 bbSize = { glm::length(glm::vec3(trans->modelMatrix()[0])),
-									glm::length(glm::vec3(trans->modelMatrix()[1]))};
-					// This seems to work best (trial and error) when resizing the window.
-					float _aspectRatio = globals->physicalWindowSize().x /
-						(globals->physicalWindowSize().y * 1.0f);
-					if (_aspectRatio < 1)
-					{
-						bbSize.x /= _aspectRatio;
-						bbSize.y *= _aspectRatio;
-					}
-					else
-					{
-						bbSize.x /= _aspectRatio;
-						//retval.y *= _aspectRatio ;
-					}
-					rend->mSSBO.append(bbSize, GPUBufferObject::BillboardSize);
-				}
-			};
-	}
-	else
-	{
-		throw NMSLogicException("OWTextComponent::shaderMutator. Unknown RenderType");
-	}
-}
-
-OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType displayType)
-{
-	if (displayType == OWTextComponentData::TextDisplayType::Dynamic)
+	if (_drawType == OWRenderTypes::DrawType::TwoDDynamic)
 	{
 		return
 			[](const glm::mat4& proj, const glm::mat4& view,
@@ -124,7 +74,7 @@ OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWTextComponentData:
 				shader->setVector3f("CameraUp_worldspace", CameraUp_worldspace);
 			};
 	}
-	else if (displayType == OWTextComponentData::TextDisplayType::Static)
+	else if (_drawType == OWRenderTypes::DrawType::TwoDStatic)
 	{
 		return nullptr;
 	}

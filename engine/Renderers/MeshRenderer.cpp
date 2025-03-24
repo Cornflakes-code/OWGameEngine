@@ -154,20 +154,20 @@ void OWMeshRenderer::add(const Texture& texture)
 	mTexture.samplerName("textureImageId");
 }
 
-void OWMeshRenderer::add(const MeshData& meshData)
+void OWMeshRenderer::add(const MeshData& md)
 {
-	if (!meshData.v4.empty())
+	if (!md.v4.empty())
 	{
 		mMultiArrayStartIndexes.push_back(static_cast<GLsizei>(mData.v4.size()));
-		mData.v4.insert(mData.v4.end(), meshData.v4.begin(), meshData.v4.end());
-		mMultiArrayVertexCount.push_back(static_cast<GLsizei>(meshData.v4.size()));
+		mData.v4.insert(mData.v4.end(), md.v4.begin(), md.v4.end());
+		mMultiArrayVertexCount.push_back(static_cast<GLsizei>(md.v4.size()));
 	}
-	if (!meshData.indices.empty())
+	if (!md.indices.empty())
 	{
 		// https://stackoverflow.com/questions/24516993/is-it-possible-to-use-index-buffer-objects-ibo-with-the-function-glmultidrawe
 		size_t xx = mData.indices.size() * sizeof(GLsizei);
 		mMultiElementStartIndexes.push_back(reinterpret_cast<void*>(xx));
-		mData.indices.insert(mData.indices.end(), meshData.indices.begin(), meshData.indices.end());
+		mData.indices.insert(mData.indices.end(), md.indices.begin(), md.indices.end());
 		mMultiElementIndicesCounts.push_back(static_cast<GLsizei>(mData.indices.size() * sizeof(unsigned int)));
 	}
 }

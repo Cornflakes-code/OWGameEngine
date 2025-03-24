@@ -15,8 +15,9 @@ class OWActor;
 class OWENGINE_API OWComponent
 {
 public:
-	OWComponent(OWActor* _owner, const std::string& _name)
-		:mOwner(_owner), mName(_name) {
+	OWComponent(OWActor* _owner, const std::string& _name, 
+		OWRenderTypes::DrawType _drawType = OWRenderTypes::DrawType::ThreeD)
+		:mOwner(_owner), mName(_name), mDrawType(_drawType) {		
 	}
 	//void actor(OWActor* newValue) { mOwner = newValue; }
 	const OWActor* actor() const { return mOwner; }
@@ -32,9 +33,12 @@ public:
 			mSetup = true;
 		}
 	}
+	void drawType(OWRenderTypes::DrawType _drawType) { mDrawType = _drawType; }
+	OWRenderTypes::DrawType drawType() const { return mDrawType; }
 protected:
 	virtual void doSetup() = 0;
 private:
+	OWRenderTypes::DrawType mDrawType = OWRenderTypes::DrawType::ThreeD;
 	OWActor* mOwner;
 	bool mSetup = false;
 	bool mActive = false;
@@ -46,8 +50,8 @@ struct OWModelData;
 class OWENGINE_API OWMeshComponentBase : public OWComponent
 {
 public:
-	OWMeshComponentBase(OWActor* _owner, const std::string& _name)
-		: OWComponent(_owner, _name) {
+	OWMeshComponentBase(OWActor* _owner, const std::string& _name, OWRenderTypes::DrawType _drawType)
+		: OWComponent(_owner, _name, _drawType) {
 	}
 	virtual const OWRenderData renderData(AABB& bounds) const = 0;
 protected:

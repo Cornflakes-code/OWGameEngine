@@ -5,6 +5,7 @@
 #include "../OWEngine/OWEngine.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "../Renderers/RenderTypes.h"
 
 struct OWTransformData
 {
@@ -51,4 +52,5 @@ public:
 	// inward is also known as forward
 	const glm::vec3 inward() const;
 	const glm::vec3 right() const;
+	glm::vec2 drawSize(OWRenderTypes::DrawType _drawType) const;
 };

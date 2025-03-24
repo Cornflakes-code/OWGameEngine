@@ -17,7 +17,7 @@ https://fgiesen.wordpress.com/2011/07/01/a-trip-through-the-graphics-pipeline-20
 */
 
 OWMeshComponent::OWMeshComponent(OWActor* _owner, const std::string& _name)
-	: OWMeshComponentBase(_owner, _name)
+	: OWMeshComponentBase(_owner, _name, OWRenderTypes::DrawType::ThreeD)
 {
 }
 

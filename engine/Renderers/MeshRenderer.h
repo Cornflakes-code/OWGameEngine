@@ -28,7 +28,7 @@ public:
 	}
 	void doSetup(const OWRenderData& renderData) override;
 protected:
-	void add(const MeshData& meshData);
+	void add(const MeshData& md);
 	void add(const Texture& texture);
 	void doRender() override;
 #pragma warning( push )

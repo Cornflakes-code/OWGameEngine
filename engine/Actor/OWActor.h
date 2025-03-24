@@ -66,15 +66,15 @@ public:
 		mScriptor = newValue;
 	}
 	bool setupCompleted() const { return mSetup; }
-	void appendMutator(OWRenderTypes::ActorSetupMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
+	//void appendMutator(OWRenderTypes::ActorSetupMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
 protected:
-	void callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
-		const OWPhysics* phys, OWTransform* trans, OWRenderer* rend);
+	//void callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
+	//	const OWPhysics* phys, OWTransform* trans, OWRenderer* rend);
 	virtual void doSetupActor() = 0;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) = 0;
 private:
-	std::vector<OWRenderTypes::ActorSetupMutator> mMutatorCallbacks;
+	//std::vector<OWRenderTypes::ActorSetupMutator> mMutatorCallbacks;
 	std::string mName;
 	AABB mBounds;
 	Scene* mScene;
@@ -158,7 +158,7 @@ public:
 	size_t addComponents(const MutableParticleElement& newElement);
 	void renderer(OWRenderer* newValue);
 	void sound(OWSoundComponent* newValue);
-	void meshComponent(OWMeshComponent* mc) {
+	void meshComponent(OWMeshComponentBase* mc) {
 		mMeshTemplate = mc;
 	}
 
@@ -168,7 +168,7 @@ protected:
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
 	std::vector<MutableParticleElement> mElements;
-	OWMeshComponent* mMeshTemplate = nullptr;
+	OWMeshComponentBase* mMeshTemplate = nullptr;
 	OWRenderer* mRenderer = nullptr;
 	OWSoundComponent* mSound = nullptr;
 };
@@ -182,7 +182,7 @@ public:
 	OWActorImmutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	void sound(OWSoundComponent* newValue);
 	void renderer(OWRenderer* newValue);
-	void meshComponent(OWMeshComponent* mc) {
+	void meshComponent(OWMeshComponentBase* mc) {
 		mMeshTemplate = mc;
 	}
 protected:
@@ -190,7 +190,7 @@ protected:
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
-	OWMeshComponent* mMeshTemplate = nullptr;
+	OWMeshComponentBase* mMeshTemplate = nullptr;
 	OWPhysics* mPhysics = nullptr;
 	OWRenderer* mRenderer = nullptr;
 	OWSoundComponent* mSound = nullptr;

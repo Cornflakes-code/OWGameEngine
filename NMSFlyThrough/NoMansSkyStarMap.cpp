@@ -58,7 +58,7 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 			->add(MeshData()
 			.addVertices(createGrid(NMSSize, gridSizes, scaleNMStoWorld))
 			.setModes(GL_LINES, GL_LINES, GL_FILL));
-		sse.rend = new OWMeshRenderer(shader, { GPUBufferObject::BufferType::Colour },
+		sse.rend = new OWMeshRenderer(shader, { GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 			GPUBufferObject::BufferStyle::SSBO);
 		sse.trans = new OWTransform(nullptr);
 		addComponents(sse);
@@ -156,8 +156,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 	OWActorNCom1Ren* starLabels = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("pv");
-	shader->appendMutator(OWTextComponent::shaderMutator(OWTextComponentData::TextDisplayType::Static));
-	starLabels->appendMutator(OWTextComponent::actorMutator(OWTextComponentData::TextDisplayType::Static));
+	shader->appendMutator(OWTextComponent::shaderMutator(OWRenderTypes::DrawType::TwoDStatic));
 
 	starLabels->renderer(new OWMeshRenderer(shader, 
 		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
@@ -279,7 +278,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 			point.w = 1.0;
 #ifdef DEBUG_STAR_LABELS
 			OWTextComponentData td;
-			td.tdt = OWTextComponentData::TextDisplayType::Static;
+			td.tdt = OWRenderTypes::DrawType::TwoDStatic;
 			td.text = elms[0];
 			td.colour = { 0.0, 0.0, 0.0, 1.0f };
 			td.fontSpacing = niceFontSpacing;

@@ -60,17 +60,16 @@ std::vector<glm::vec3> OWGeometricShapes::rectangle(const glm::vec2& dims)
 	return retval;
 }
 
-std::vector<glm::vec3> OWGeometricShapes::goldenRectangle(float scale,
-	const glm::vec2& bottomLeft)
+std::vector<glm::vec3> OWGeometricShapes::goldenRectangle()
 {
 	// Create at {0,0}, scale then move.
-	float magicGoldenNumber = (scale * 89.0f) / 55.0f + bottomLeft.x;
-	float ydim = 1.0f * scale + bottomLeft.y;
+	float magicGoldenNumber = (89.0f / 55.0f) / 2.0f;
+	float ydim = 0.5f;
 	std::vector<glm::vec3> retval;
-	retval.push_back(glm::vec3(0.0f, 0.0f, 0));
-	retval.push_back(glm::vec3(0.0f, ydim, 0));
+	retval.push_back(glm::vec3(-magicGoldenNumber, -ydim, 0));
+	retval.push_back(glm::vec3(-magicGoldenNumber, ydim, 0));
 	retval.push_back(glm::vec3(magicGoldenNumber, ydim, 0));
-	retval.push_back(glm::vec3(magicGoldenNumber, 0.0f, 0));
+	retval.push_back(glm::vec3(magicGoldenNumber, -ydim, 0));
 	return retval;
 }
 
@@ -148,11 +147,12 @@ std::vector<glm::vec3> OWGeometricShapes::star(float innerRadius, float outerRad
 	return retval;
 }
 
-std::vector<glm::vec3> OWGeometricShapes::cube(const glm::vec3& scale)
+std::vector<glm::vec3> OWGeometricShapes::cube()
 {
+	const glm::vec3& scale = { 1.0f, 1.0f, 1.0f };
 	float dx = scale.x;
 	float dy = scale.y;
-	float dz = scale.z;
+	float dz = scale.z;	
 	std::vector<glm::vec3> vertices = {
 		{-0.5f * dx, -0.5f * dy, -0.5f * dz}, { 0.5f * dx, -0.5f * dy, -0.5f * dz}, { 0.5f * dx,  0.5f * dy, -0.5f * dz},
 		{ 0.5f * dx,  0.5f * dy, -0.5f * dz}, {-0.5f * dx,  0.5f * dy, -0.5f * dz}, {-0.5f * dx, -0.5f * dy, -0.5f * dz},

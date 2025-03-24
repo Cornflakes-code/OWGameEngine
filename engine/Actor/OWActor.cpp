@@ -37,6 +37,7 @@ void OWActor::setup()
 	}
 }
 
+/*
 void OWActor::callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
 	const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)
 {
@@ -45,6 +46,7 @@ void OWActor::callMutators(const OWCollider* coll, const OWMeshComponentBase* me
 		cb(coll, mesh, phys, trans, rend);
 	}
 }
+*/
 
 void OWActor::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos)
@@ -161,6 +163,10 @@ void OWActorDiscrete::doSetupActor()
 		OWRenderData rd = elm.mesh->renderData(b1);
 		b = b | b1;
 
+		if (!elm.rend->mSSBO.locked(GPUBufferObject::BillboardSize))
+		{
+			elm.rend->mSSBO.append(elm.trans->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
+		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
 		{
 			elm.rend->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
@@ -174,7 +180,6 @@ void OWActorDiscrete::doSetupActor()
 		{
 			elm.rend->mSSBO.append(elm.colour, GPUBufferObject::Colour);
 		}
-		callMutators(elm.coll, elm.mesh, elm.phys, elm.trans, elm.rend);
 		elm.rend->setup(rd);
 	}
 	bounds(b);
@@ -224,6 +229,11 @@ void OWActorNCom1Ren::doSetupActor()
 		b = b | b1;
 		glm::vec3 jfw3 = elm.trans->worldPosition();
 		glm::mat4 jfw4 = elm.trans->modelMatrix();
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
+		{
+			mRenderer->mSSBO.append(elm.trans->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
+
+		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
 		{
 			mRenderer->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
@@ -237,7 +247,6 @@ void OWActorNCom1Ren::doSetupActor()
 		{
 			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
 		}
-		callMutators(elm.coll, elm.mesh, elm.phys, elm.trans, mRenderer);
 	}
 	mRenderer->setup(rd);
 	bounds(b);
@@ -283,6 +292,11 @@ void OWActorMutableParticle::doSetupActor()
 			CollisionSystem::addCollider(elm.coll, this, i);
 		}
 		b = b | b_moved;
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
+		{
+			mRenderer->mSSBO.append(elm.trans->drawSize(mMeshTemplate->drawType()), GPUBufferObject::BillboardSize);
+
+		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
 		{
 			mRenderer->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
@@ -295,7 +309,6 @@ void OWActorMutableParticle::doSetupActor()
 		{
 			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
 		}
-		callMutators(elm.coll, mMeshTemplate, elm.phys, elm.trans, mRenderer);
 	}
 	mRenderer->setup(rd);
 	bounds(b);

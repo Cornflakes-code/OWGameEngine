@@ -9,8 +9,9 @@
 
 class TextComponent;
 
-struct OWENGINE_API ButtonData
+struct OWENGINE_API OWButtonData
 {
+/*
 	enum ClickState
 	{
 		MouseInside,
@@ -21,23 +22,17 @@ struct OWENGINE_API ButtonData
 	TextComponent* mText = nullptr;
 	bool intersectArea(const glm::vec3& pt);
 	ClickState mClickState;
+*/
 };
 
-class OWENGINE_API ButtonScript
-{
-protected:
-public:
-	ButtonScript(ButtonData* _data)
-	{}
-};
-
-class OWButton: public OWActor
+class OWENGINE_API OWButton: public OWActorDiscrete
 {
 public:
 	OWButton(Scene* _scene, const std::string& _name);
-	void initialise();
+	void initialise(const OWButtonData& _data = OWButtonData());
 	//void textures();
 	//void text();
 protected:
+	OWActorDiscrete::DiscreteEntity makeShape(const std::string& s, const glm::vec4& colour, const glm::vec3& size);
 private:
 };
