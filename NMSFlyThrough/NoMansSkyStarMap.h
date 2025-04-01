@@ -39,8 +39,6 @@ class NoMansSky: public OWActorDiscrete
 {
 public:
 	NoMansSky(Scene* _scene, const std::string& _name);
-	void readSaveFile(const std::string& saveFileMeta, 
-			const std::string& saveFile);
 	void initialise(const NoMansSkyData& _data = NoMansSkyData());
 protected:
 private:

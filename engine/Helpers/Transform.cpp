@@ -23,6 +23,8 @@ void OWTransform::rotation(float radians, const glm::vec3& axis)
 
 const glm::vec3 OWTransform::worldPosition() const
 {
+	// Order of transform calcs
+	// https://gamedev.stackexchange.com/questions/196745/keeping-two-triangles-with-different-scale-attached-during-rotation?noredirect=1&lq=1
 	const OWTransform* grandPa = mParent != nullptr ? mParent : nullptr;
 	if (grandPa == nullptr)
 		return mParent ? mParent->localPosition() + mData.position : mData.position;

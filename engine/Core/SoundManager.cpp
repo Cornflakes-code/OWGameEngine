@@ -23,7 +23,7 @@ SoundManager::SoundManager()
 
 void SoundManager::registerSound(SoundType soundType, const std::string& s)
 {
-	int ndx = ma_initSound(getSound(s).data(), mUniqueSounds.size());
+	int ndx = ma_initSound(getSound(s).data(), static_cast<int>(mUniqueSounds.size()));
 	mUniqueSounds[ndx] = soundType;
 }
 

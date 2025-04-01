@@ -15,13 +15,23 @@ public:
 		: mActor(_actor), mColliderType(colliderType), mComponentIndex(_componentIndex)
 	{
 	}
+	
 	CollisionType collisionType() const {
 		return mColliderType;
 	}
+
+	glm::vec2 bounds(bool min) const;
+	bool collides(const OWCollider& other) const;
 	const OWActor* actor() const { return mActor; }
+	OWActor* actor() { return mActor; }
 	void actor(OWActor* newValue) { mActor = newValue; }
-	void componentIndex(size_t newValue) {
-		mComponentIndex = newValue;
+	void componentIndex(size_t newValue)
+	{
+		mComponentIndex = static_cast<unsigned int>(newValue);
+	}
+	size_t componentIndex() const
+	{
+		return mComponentIndex;
 	}
 	/*
 	* If Ovoid then p1 is center, p2 is radius
@@ -49,6 +59,6 @@ private:
 	glm::vec3 mPt2 = glm::vec3(0);
 	glm::vec3 mPt3 = glm::vec3(0);
 	OWActor* mActor;
-	size_t mComponentIndex;
+	unsigned int mComponentIndex;
 	CollisionType mColliderType = CollisionType::Ovoid;
 };

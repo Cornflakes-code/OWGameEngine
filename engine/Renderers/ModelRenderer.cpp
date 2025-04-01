@@ -65,8 +65,6 @@ void OWModelRenderer::continueSetup()
 		// https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object
 		// https://ktstephano.github.io/rendering/opengl/ssbos
 		glCreateBuffers(1, &mSbo);
-		size_t sf = sizeof(float);
-		size_t sf1 = sizeof(void*);
 		size_t sz = mSSBO.splicedData.size() * sizeof(float);
 		glNamedBufferStorage(mSbo,
 			sz,

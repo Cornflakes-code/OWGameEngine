@@ -1,9 +1,10 @@
-#include "CollisionSystem.h"
+﻿#include "CollisionSystem.h"
 
 #include <set>
 #include <algorithm>
+
 #include "../Actor/OWActor.h"
-#include "../Component/PhysicalComponent.h"
+#include "../Helpers/Collider.h"
 #include "../Core/LogStream.h"
 
 // spring mass system hookes law
@@ -17,7 +18,7 @@
 // Runge - Kutta 4
 
 
-//#define SWEEP_AND_PRUNE
+#define SWEEP_AND_PRUNE
 //#define SWEEP_AND_PRUNE_EX
 //#define BASIC_COLLISIONS
 //#define FIXED_SIZED_VOLUMES //  this was a misplaced post by the authot
@@ -27,6 +28,8 @@
 // https://www.reddit.com/r/gameenginedevs/comments/jp30c6/efficient_and_well_explained_implementation_of_a/
 // This looks very good
 // https://github.com/loosegrid/DragonSpace-Demo
+
+// https://github.com/bepu/bepuphysics2/blob/master/Documentation/ContinuousCollisionDetection.md
 namespace CollisionSystem
 {
 #ifdef SWEEP_AND_PRUNE
@@ -35,56 +38,75 @@ namespace CollisionSystem
 	// https://leanrada.com/notes/sweep-and-prune-2/#final-code
 	struct Edge
 	{
-		Edge(OLDMovableComponent* _o, unsigned int _ndx, bool _isLeft)
-			:o(_o), ndx(_ndx), isLeft(_isLeft)
+		Edge(const OWCollider& _o, bool _isLeft)
+			:o(_o), isLeft(_isLeft)
 		{ }
-		OLDMovableComponent* o;
-		mutable float jfw;
-		unsigned int ndx;
+        OWCollider o;
 		bool isLeft;
-		float val() const
+		float position(int dim) const
 		{
-			jfw = isLeft ? o->bounds().minPoint()[ndx] : o->bounds().maxPoint()[ndx];
-			return jfw;
+			return o.bounds(isLeft)[dim];
 		}
-	};
+        /*
+        * also need to define operator==
+        * see https://stackoverflow.com/questions/47466358/what-is-the-spaceship-three-way-comparison-operator-in-c
+        friend auto operator<=>(const Edge& lhs, const Edge& rhs)
+        {
+            if (lhs.o.actor() == rhs.o.actor())
+            {
+                if (lhs.o.componentIndex() == rhs.o.componentIndex())
+                    return 0;
+                return lhs.o.componentIndex() < rhs.o.componentIndex() ? -1 : 1;
+            }
+            return lhs.o.actor() < rhs.o.actor() ? -1 : 1;
+        }
+*/
+        friend bool operator==(const Edge& lhs, const Edge& rhs)
+        {
+            return lhs.o.actor() == rhs.o.actor() && lhs.o.componentIndex() == rhs.o.componentIndex();
+        }
+        friend bool operator<(const Edge& lhs, const Edge& rhs)
+        {
+            if (lhs.o.actor() == rhs.o.actor())
+                return lhs.o.componentIndex() < rhs.o.componentIndex();
+            return lhs.o.actor() < rhs.o.actor();
+        }
+    };
 
 	struct EdgePair
 	{
-		const Edge e1;
-		const Edge e2;
+		Edge e1;
+		Edge e2;
 		EdgePair(const Edge& _e1, const Edge& _e2)
 			:e1(_e1), e2(_e2)
 		{
 		}
-	};
-	struct EdgePairSorter
-	{
-		bool operator()(const EdgePair& lhs, const EdgePair& rhs) const
-		{
-			if (lhs.e1.o == rhs.e1.o)
-				return lhs.e2.o < rhs.e2.o;
-			return lhs.e1.o < rhs.e1.o;
-		}
-	};
-	typedef std::set<EdgePair, EdgePairSorter> OverlappingEdges;
-	std::vector<Edge> gEdgesX;
-	std::vector<Edge> gEdgesY;
-	std::vector<Edge> gEdgesZ;
+        friend bool operator<(const EdgePair& lhs, const EdgePair& rhs) 
+        {
+            if (lhs.e1 == rhs.e1)
+                return lhs.e2 < rhs.e2;
+            return lhs.e1 < rhs.e1;
+        }
+    };
+    typedef std::vector<Edge> EdgeCollection;
+	typedef std::set<EdgePair> OverlappingEdges;
+    EdgeCollection gEdgesX;
+    EdgeCollection gEdgesY;
+    EdgeCollection gEdgesZ;
 	// https://github.com/bepu/bepuphysics2/blob/master/Documentation/ContinuousCollisionDetection.md
 
 	// https://gamedev.stackexchange.com/questions/211322/sweep-and-prune-algorithm-performance
 	// https://github.com/YulyaLesheva/Sweep-And-Prune-algorithm/blob/main/SAP_algorithm.cpp
 	// https://github.com/grynca/SAP/blob/master/include/SAP/SAP_internal.h
 
-	void doInsertionSort(std::vector<Edge>& edges)
+	void doInsertionSort(EdgeCollection& edges, unsigned int dimension)
 	{
 		// Plain Insertion sort
 		for (int i = 1; i < edges.size(); i++)
 		{
 			for (int j = i - 1; j >= 0; j--)
 			{
-				if (edges[j].val() <= edges[j + 1].val())
+				if (edges[j].position(dimension) <= edges[j + 1].position(dimension))
 					break;
 
 				// Swap
@@ -93,93 +115,66 @@ namespace CollisionSystem
 		}
 	}
 
-	void doSweepAndPrune(std::vector<Edge>& edges, OverlappingEdges& overlapping, bool firstTimeCalled)
+	void doSweepAndPrune(EdgeCollection& edges, OverlappingEdges& overlapping, unsigned int dimension)
+    {
+        // Insertion sort
+        for (int i = 1; i < edges.size(); i++) 
+        {
+            for (int j = i - 1; j >= 0; j--) 
+            {
+                if (edges[j].position(dimension) < edges[j + 1].position(dimension))
+                    break;
+                std::swap(edges[j], edges[j + 1]);
+
+                // --- Code up until this point is plain insertion sort ---
+
+                // These two edges have just swapped places, process it...
+                const Edge& edge1 = edges[j];
+                const Edge& edge2 = edges[j + 1];
+
+                if (edge1.isLeft && !edge2.isLeft) { // case R-L → L-R
+                    // Mark as overlapping
+                    overlapping.insert(EdgePair(edge1, edge2));
+                }
+                else if (!edge1.isLeft && edge2.isLeft) { // case L-R → R-L
+                    // Unmark as overlapping
+                    overlapping.erase(EdgePair(edge1, edge2));
+                }
+            }
+        }
+    }
+	void buildSweepAndPrune()
 	{
-		for (int j = 0; j < edges.size()-1; j++)
-		{
-			const Edge& edge1 = edges[j];
-			const Edge& edge2 = edges[j + 1];
-			if (edge1.o == edge2.o)
-				continue;
-
-			if (edge1.isLeft && (!edge2.isLeft)) // case R-L ? L-R
-			{ 
-				// Mark as overlapping
-				if (true)
-				{
-					if (edge1.o->canCollide() && edge2.o->canCollide())
-					{
-						const Edge* e1 = edge1.o < edge2.o ? &edge1 : &edge2;
-						const Edge* e2 = edge1.o < edge2.o ? &edge2 : &edge1;
-						EdgePair overlap(*e1, *e2);
-						//EdgePair overlap(edge1, edge2);
-						overlapping.insert(overlap);
-					}
-				}
-				else
-				{
-					// do nothing. If it is not already in there then it is not a candidate for a collision.
-				}
-			}
-			else if ((!edge1.isLeft) && edge2.isLeft) // case L-R ? R-L
-			{ 
-				// Unmark as overlapping
-				const Edge* e1 = edge1.o < edge2.o ? &edge1 : &edge2;
-				const Edge* e2 = edge1.o < edge2.o ? &edge2 : &edge1;
-				EdgePair unlap(*e1, *e2);
-				overlapping.erase(unlap);
-			}
-		}
-	}
-
-	auto comp = [](const Edge& a, const Edge& b)
-		{
-			//				if (a.val() == b.val())
-			//					return a.o->name() < b.o->name();
-			return a.val() < b.val();
-		};
-	void buildSweepAndPrune(std::vector<OLDMovableComponent*>& objects)
-	{
-		for (OLDMovableComponent* o : objects)
-		{
-			gEdgesX.push_back({ o, 0, true });
-			gEdgesX.push_back({ o, 0, false });
-
-			gEdgesY.push_back({ o, 1, true });
-			gEdgesY.push_back({ o, 1, false });
-
-			gEdgesZ.push_back({ o, 2, true });
-			gEdgesZ.push_back({ o, 2, false });
-		}
-		std::sort(gEdgesX.begin(), gEdgesX.end(), comp);
-		std::sort(gEdgesY.begin(), gEdgesY.end(), comp);
-		std::sort(gEdgesZ.begin(), gEdgesZ.end(), comp);
+		std::sort(gEdgesX.begin(), gEdgesX.end());
+		std::sort(gEdgesY.begin(), gEdgesY.end());
+		std::sort(gEdgesZ.begin(), gEdgesZ.end());
 	}
 
 	void collideSweepAndPrune()
 	{
 		OverlappingEdges colliding;
-		doSweepAndPrune(gEdgesX, colliding, true);
-		doSweepAndPrune(gEdgesY, colliding, false);
-		doSweepAndPrune(gEdgesZ, colliding, false);
+		doSweepAndPrune(gEdgesX, colliding, 0);
+		doSweepAndPrune(gEdgesY, colliding, 1);
+		doSweepAndPrune(gEdgesZ, colliding, 2);
 		if (colliding.size() > 0)
 		{
-			char s = 'p';
+			char jfw = 'p';
 		}
-		for (const EdgePair& const_pr : colliding)
+
+        for (OverlappingEdges::iterator it = colliding.begin(); it != colliding.end(); ++it)
 		{
-			OLDMovableComponent* a1 = const_cast<EdgePair&>(const_pr).e1.o;
-			OLDMovableComponent* a2 = const_cast<EdgePair&>(const_pr).e2.o;
-			if (a1->collides(a2))
+            OWCollider a1 = it->e1.o;
+            OWCollider a2 = it->e2.o;
+			if (a1.collides(a2))
 			{
-				//LogStream(LogStreamLevel::Info) << "collided [" + a1->name() + "] [" + a2->name() + "].\n";
-				a1->collided(a2);
-				a2->collided(a1);
-			}
+
+                a1.actor()->collided(a1, a2);
+                a2.actor()->collided(a2, a1);
+            }
 		}
-		std::sort(gEdgesX.begin(), gEdgesX.end(), comp);
-		std::sort(gEdgesY.begin(), gEdgesY.end(), comp);
-		std::sort(gEdgesZ.begin(), gEdgesZ.end(), comp);
+//		std::sort(gEdgesX.begin(), gEdgesX.end());
+//		std::sort(gEdgesY.begin(), gEdgesY.end());
+//		std::sort(gEdgesZ.begin(), gEdgesZ.end());
 //		doInsertionSort(gEdgesX);
 //		doInsertionSort(gEdgesY);
 //		doInsertionSort(gEdgesZ);
@@ -291,23 +286,19 @@ namespace CollisionSystem
 	}
 
 #endif
-	void build(std::vector<OWCollider*>& objects)
-	{
-#ifdef BASIC_COLLISIONS
-		buildBasic(objects);
-#endif
-#ifdef SWEEP_AND_PRUNE
-		buildSweepAndPrune(objects);
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-		buildSweepAndPruneEx(objects);
-#endif
-	}
     void addCollider(OWCollider* coll, OWActor* a, int componentId)
     {
 #ifdef BASIC_COLLISIONS
 #endif
 #ifdef SWEEP_AND_PRUNE
+        gEdgesX.push_back(Edge(*coll, true));
+        gEdgesX.push_back(Edge(*coll, false));
+
+        gEdgesY.push_back(Edge(*coll, true));
+        gEdgesY.push_back(Edge(*coll, false));
+
+        gEdgesY.push_back(Edge(*coll, true));
+        gEdgesY.push_back(Edge(*coll, false));
 #endif
 #ifdef SWEEP_AND_PRUNE_EX
 #endif
@@ -345,14 +336,42 @@ namespace CollisionSystem
 		collideSweepAndPruneEx();
 #endif
 	}
-    void preRender()
+    void OWENGINE_API preTick()
     {
+#ifdef BASIC_COLLISIONS
+        throw NMSNotYetImplementedException("CollionSystem::preTick()");
+#endif
+#ifdef SWEEP_AND_PRUNE
+        throw NMSNotYetImplementedException("CollionSystem::preTick()");
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+        throw NMSNotYetImplementedException("CollionSystem::preTick()");
+#endif
     }
-
-    void postRender()
+    void OWENGINE_API postTick()
     {
+#ifdef BASIC_COLLISIONS
+        throw NMSNotYetImplementedException("CollionSystem::postTick()");
+#endif
+#ifdef SWEEP_AND_PRUNE
+        throw NMSNotYetImplementedException("CollionSystem::postTick()");
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+        throw NMSNotYetImplementedException("CollionSystem::postTick()");
+#endif
     }
-
+    void OWENGINE_API tick()
+    {
+#ifdef BASIC_COLLISIONS
+        throw NMSNotYetImplementedException("CollionSystem::tick()");
+#endif
+#ifdef SWEEP_AND_PRUNE
+        throw NMSNotYetImplementedException("CollionSystem::tick()");
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+        throw NMSNotYetImplementedException("CollionSystem::tick()");
+#endif
+    }
 }
 
 #ifdef FIXED_SIZED_VOLUMES

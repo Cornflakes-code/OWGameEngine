@@ -129,7 +129,8 @@ Shader::Shader(const std::string& fileName)
 		: mData.shaderF,
 		mData.shaderG.length() == 0 ? ShaderFactory::boilerPlateGeometryShader()
 		: mData.shaderG);
-		
+	// Fragment shaders
+	// https://ogldev.org/www/tutorial27/tutorial27.html
 	setStandardUniformNames(mData.PVMName, mData.projectionName, mData.viewName);
 	use();
 	for (ShaderDataUniforms& a : mData.uniforms)

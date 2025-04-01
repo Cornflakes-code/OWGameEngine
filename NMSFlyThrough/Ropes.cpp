@@ -104,7 +104,6 @@ void Rope::initialise(const OWRopeData& _data)
 
 void Rope::makeVisible(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel)
 {
-	return;
 	mElements[mRopeEndsElementIndex].mesh->active(_ends);
 	mElements[mRopeLinesElementIndex].mesh->active(_lines);
 	mElements[mRopeSurfacesElementIndex].mesh->active(_surfaces);

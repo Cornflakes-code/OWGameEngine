@@ -55,20 +55,18 @@ public:
 	void transform(OWTransform* newValue) {
 		mActorTransform = newValue;
 	}
-	void transform(OWTransformData& td) {
-		transform(new OWTransform(mActorTransform, td));
-	}
-	void transform(const glm::vec3& pos, 
-			const glm::vec3& scale, const glm::quat& rot = glm::quat()) {
-		transform(new OWTransform(mActorTransform, pos, scale, rot));
-	}
 	void scriptor(OWScriptComponent* newValue) {
 		mScriptor = newValue;
 	}
 	bool setupCompleted() const { return mSetup; }
+	void collided(const OWCollider& component, const OWCollider& otherComponent)
+	{
+		doCollided(component, otherComponent);
+	}
 	//void appendMutator(OWRenderTypes::ActorSetupMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
 protected:
-	//void callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
+	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) = 0;
+		//void callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
 	//	const OWPhysics* phys, OWTransform* trans, OWRenderer* rend);
 	virtual void doSetupActor() = 0;
 	virtual void doRender(const glm::mat4& proj,
@@ -104,6 +102,7 @@ public:
 	}
 	size_t addComponents(const DiscreteEntity& newElement);
 protected:
+	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
@@ -133,6 +132,7 @@ public:
 		mRenderer = newValue; 
 	}
 protected:
+	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
@@ -163,6 +163,7 @@ public:
 	}
 
 protected:
+	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
@@ -173,7 +174,6 @@ private:
 	OWSoundComponent* mSound = nullptr;
 };
 
-class OWMeshRenderer;
 // Use this class for aggregating immutable Particles 
 // (one Mesh, one Renderer, no movement, fixed positions, no interaction with anything)
 class OWENGINE_API OWActorImmutableParticle: public OWActor
@@ -186,6 +186,7 @@ public:
 		mMeshTemplate = mc;
 	}
 protected:
+	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;

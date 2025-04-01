@@ -14,6 +14,7 @@ namespace CollisionSystem
 	void OWENGINE_API deleteRay(OWActor* r);
 
 	void OWENGINE_API collide();
-	void OWENGINE_API preRender();
-	void OWENGINE_API postRender();
+	void OWENGINE_API preTick();
+	void OWENGINE_API postTick();
+	void OWENGINE_API tick();
 };

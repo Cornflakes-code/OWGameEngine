@@ -13,7 +13,6 @@ void GPUBufferObject::splice()
 	}
 	// Splice the individual elements data into one long array
 	size_t instances = unsplicedData[0].data.size() / unsplicedData[0].span;
-	size_t span = instanceSpan();
 	for (int i = 0; i < instances; i++)
 	{
 		for (int f = 0; f < unsplicedData.size(); f++)
@@ -42,7 +41,7 @@ unsigned int GPUBufferObject::instanceCount() const
 	{
 		if (splicedData.size())
 		{
-			return splicedData.size() / instanceSpan();
+			return static_cast<unsigned int>(splicedData.size() / instanceSpan());
 		}
 		else
 		{
@@ -68,7 +67,7 @@ unsigned int GPUBufferObject::instanceCount() const
 				else
 				{
 					// Nothing special about the first index;
-					return unsplicedData[0].data.size() / unsplicedData[0].span;
+					return static_cast<unsigned int>(unsplicedData[0].data.size() / unsplicedData[0].span);
 				}
 			}
 			else
@@ -137,7 +136,6 @@ void GPUBufferObject::append(const std::vector<glm::mat4>& _data, BufferType t)
 	if (usd.locked)
 		return;
 	const float* ff_start = reinterpret_cast<const float*> (_data.data());
-	constexpr int jfw = glm::mat4::length();
 	const float* ff_end = ff_start + _data.size() * glm::mat4::length();
 	usd.data.insert(usd.data.end(), ff_start, ff_end);
 }
@@ -295,7 +293,7 @@ unsigned int GPUBufferObject::instanceSpan() const
 
 unsigned int GPUBufferObject::populatedUnSplicedArrayCount() const
 {
-	return unsplicedData.size();
+	return static_cast<unsigned int>(unsplicedData.size());
 }
 
 void GPUBufferObject::lock(const std::vector<GPUBufferObject::BufferType>& orderedTypes)

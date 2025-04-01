@@ -86,7 +86,7 @@ glm::vec4 OWUtils::randomSolidColour()
 	if (gOnceOnly)
 	{
 		gOnceOnly = false;
-		std::srand(std::time(0));
+		std::srand(static_cast<unsigned int>(std::time(nullptr)));
 	}
 	int r = std::rand() % gAllSolidColours.size();
 	return gAllSolidColours[r];

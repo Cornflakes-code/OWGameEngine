@@ -331,7 +331,3 @@ std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
 	return retval;
 }
 
-void NoMansSky::readSaveFile(const std::string& saveFileMeta, const std::string& saveFile)
-{
-
-}

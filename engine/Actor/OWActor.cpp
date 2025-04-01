@@ -63,14 +63,6 @@ static void validateCollider(OWActor* a, OWCollider* coll)
 	{
 		throw NMSLogicException(getActorDesc(a) + " has no OWCollider.Cannot recover.");
 	}
-	if (coll->actor() == nullptr)
-	{
-		coll->actor(a);
-	}
-	if (coll->actor() != a)
-	{
-		throw NMSLogicException(getActorDesc(a) + " OWCollider has no owner. Cannot recover.");
-	}
 }
 
 static void validatePhysics(OWActor* a, OWPhysics*& phys)
@@ -194,6 +186,11 @@ void OWActorDiscrete::doRender(const glm::mat4& proj,
 	}
 }
 
+void OWActorDiscrete::doCollided(const OWCollider& component, const OWCollider& otherComponent)
+{
+	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
+}
+
 size_t OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
 {
 	mElements.push_back(newElement);
@@ -256,6 +253,11 @@ void OWActorNCom1Ren::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos) 
 {
 	mRenderer->render(proj, view, cameraPos);
+}
+
+void OWActorNCom1Ren::doCollided(const OWCollider& component, const OWCollider& otherComponent)
+{
+	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
 }
 
 size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newElement)
@@ -330,8 +332,12 @@ void OWActorMutableParticle::sound(OWSoundComponent* newValue)
 	mSound = newValue;
 }
 
+void OWActorMutableParticle::doCollided(const OWCollider& component, const OWCollider& otherComponent)
+{
+	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
+}
 
-OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene, 
+OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene,
 	const std::string& _name, OWActor* _hostActor)
 : OWActor(_scene, _name, _hostActor) 
 {
@@ -365,5 +371,10 @@ void OWActorImmutableParticle::renderer(OWRenderer* newValue)
 void OWActorImmutableParticle::sound(OWSoundComponent* newValue)
 {
 	mSound = newValue;
+}
+
+void OWActorImmutableParticle::doCollided(const OWCollider& component, const OWCollider& otherComponent)
+{
+	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
 }
 
