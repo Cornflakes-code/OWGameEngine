@@ -193,6 +193,10 @@ void OWMeshRenderer::doRender()
 		// https://www.reddit.com/r/opengl/comments/19bgtcb/is_the_effort_of_glmultidrawelements_worth_it/
 		// If says that glMultiDrawElements is obsolete and instead use glMultiDrawElementsIndirect
 
+
+		// https://github.com/max-maag/OldScalaGlStuff/blob/13eb2b9730f669a24cbbd1957443bb82f1b5e362/src/gui/scenes/MdiScene.scala
+		// https://www.reddit.com/r/opengl/comments/3m9u36/how_to_render_using_glmultidrawarraysindirect/
+		// https://www.reddit.com/r/opengl/comments/9q8t05/instancing_vs_glmultidrawelements/
 		glMultiDrawElements(mData.vertexMode, mMultiElementIndicesCounts.data(), GL_UNSIGNED_INT, 
 			(const void**)mMultiElementStartIndexes.data(), static_cast<GLsizei>(mMultiArrayStartIndexes.size()));
 	}

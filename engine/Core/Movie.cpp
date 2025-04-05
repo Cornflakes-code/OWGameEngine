@@ -30,7 +30,7 @@ Movie::Movie(const std::string& _windowTitle,
 void Movie::preRun()
 {
 	Scene* s = new QuitScene(this);
-	this->add(s, new QuitScenePhysics(s), false);
+	this->add(s, false);
 }
 
 void Movie::init(GLApplication* OW_UNUSED(app), UserInput* ui, 
@@ -103,6 +103,7 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 
 	//processTimeStep(lcs, currentScene()->logic()->current, t, std::chrono::milliseconds(0));
 	std::string nextSceneName;
+	const float fixedTimeStep = std::chrono::duration<float>(dt).count();
 
 	while (!glfwWindowShouldClose(glfwWindow))
 	{
@@ -117,35 +118,40 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 		globals->application()->clearBuffers();
 		while (accumulator >= dt)
 		{
-			mCurrent->logic.copyCurrentToPrevious();
 			t += dt;
 			processUserInput(nextSceneName, dt); 
 			if (nextSceneName.empty())
 			{
-				mCurrent->logic.fixedUpdate(nextSceneName, dt);
+				mCurrent->scene->timeStep(nextSceneName, dt);
 			}
 			else
 			{
 				mCurrent->scene->cumulativeTime(t);
-				makeCurrent(nextSceneName);
+				if (!nextSceneName.empty())
+					makeCurrent(nextSceneName);
 				t = mCurrent->scene->cumulativeTime();
 				nextSceneName = "";
 				LogStream(LogStreamLevel::ImportantInfo) << "processTimeStep++";
-				mCurrent->logic.fixedUpdate(nextSceneName, dt);
+				mCurrent->scene->timeStep(nextSceneName, dt);
 			}
 			accumulator -= dt;
 		}
+		float totalTime = std::chrono::duration<float>(t).count();
+		float alpha = accumulator / dt;
 
-		// logic()->interpolateRenderTarget will never change currentScene
-		mCurrent->logic.interpolateRenderTarget(t, accumulator, dt);
+		mCurrent->scene->preRender(totalTime, alpha, fixedTimeStep);
 		//OWUtils::Time::time_point beforeRender = OWUtils::HighTime::now();
-		render(mCurrent->logic.renderTarget());
+	// https://en.wikibooks.org/wiki/OpenGL_Programming
+		mCamera->update();
+		glm::mat4 projection = mCamera->projection();
+		glm::mat4 view = mCamera->view();
+		glm::vec3 pos = mCamera->position();
+		mCurrent->scene->render(projection, view, pos);
 		globals->clearAspectRatioChangedFlag();
 		//OWUtils::Time::time_point afterRender = OWUtils::HighTime::now();
 		//OWUtils::Time::duration durr = afterRender - beforeRender;
 		//LogStream(LogStreamLevel::Info) << "Render Time [" << durr.count() << "]";
 
-		mCurrent->logic.clear();
 		// https://discourse.glfw.org/t/newbie-questions-trying-to-understand-glfwswapinterval/1287
 		// Best practice is to default glfwSwapInterval to '1'
 			// 0: do not wait for vsync(may be overridden by driver / driver settings)
@@ -188,39 +194,26 @@ void Movie::makeCurrent(const std::string& newSceneName)
 			<< "] passed to makeCurrent()\n";
 	}
 	makeCurrent(&(mScenes[safeSceneName]));
-
 }
 
 void Movie::makeCurrent(LoopControlStruct* lcs)
 {
 	if (mCurrent)
 	{
-		mCurrent->scene->deActivate(camera(), mCurrent->logic.current);
+		mCurrent->scene->deActivate(camera());
 	}
 	mPrevious = mCurrent;
 	mCurrent = lcs;
 	if (!mCurrent->setupCalled)
 	{
-		mCurrent->scene->setup(mCurrent->logic.current);
+		mCurrent->scene->setup();
 		mCurrent->setupCalled = true;
 	}
-	mCurrent->logic.copyCurrentToPrevious();
 	mCurrent->scene->activate(mPrevious ? mPrevious->scene->name() : "", 
-			mCurrent->logic.current,
 			mCamera, mCurrent->countActivateCalled++);
 }
 
-void Movie::render(const ScenePhysicsState* state)
-{
-	// https://en.wikibooks.org/wiki/OpenGL_Programming
-	mCamera->update();
-	glm::mat4 projection = mCamera->projection();
-	glm::mat4 view = mCamera->view();
-	glm::vec3 pos = mCamera->position();
-	mCurrent->scene->render(state, projection, view, pos);
-}
-
-void Movie::add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent)
+void Movie::add(Scene* toAdd, bool makeThisSceneCurrent)
 {
 	if (mScenes.find(toAdd->name()) != mScenes.end())
 	{
@@ -231,9 +224,6 @@ void Movie::add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent)
 	else
 	{
 		LoopControlStruct lcs;
-		lcs.logic.current = sps;
-		lcs.logic.previous = sps->clone();
-		lcs.logic.tempRenderTarget = sps->clone();
 		lcs.scene = toAdd;
 		mScenes[toAdd->name()] = lcs;
 		if (makeThisSceneCurrent)
@@ -254,7 +244,7 @@ void Movie::processUserInput(std::string& nextScene, OWUtils::Time::duration dt)
 	{
 		UserInput::AnyInput& input = mUserInput.front();
 		//LogStream(LogStreamLevel::Info) << "User Input [" << input.keyInput.userCommand << "]\n";
-		if (!mCurrent->logic.current->processUserCommands(input, nextScene, mCamera))
+		if (!mCurrent->scene->processUserCommands(input, nextScene, mCamera))
 		{
 			mCamera->processInput(input, timeStep);
 		}

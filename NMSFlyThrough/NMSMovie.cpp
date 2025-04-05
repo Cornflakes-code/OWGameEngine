@@ -55,22 +55,17 @@ void NMSMovie::preRun()
 	std::string activeScene = globals->saveAndRestore()->activeScene();
 	NMSScene* s = new NMSSplashScene(this);
 
-	this->add(s, new NMSSplashScenePhysics(s), s->name() == activeScene);
+	this->add(s, s->name() == activeScene);
 
 	s = new NMSMainScene(this);
 
-	this->add(s, new NMSMainScenePhysics(s), s->name() == activeScene);
+	this->add(s, s->name() == activeScene);
 
 	s = new NMSEndScene(this);
 
-	this->add(s, new NMSEndScenePhysics(s), s->name() == activeScene);
+	this->add(s, s->name() == activeScene);
 
 	s = new NMSRopeScene(this);
 
-	this->add(s, new NMSRopeScenePhysics(s), s->name() == activeScene);
-}
-
-void NMSMovie::render(const ScenePhysicsState* state)
-{
-	Movie::render(state);
+	this->add(s, s->name() == activeScene);
 }

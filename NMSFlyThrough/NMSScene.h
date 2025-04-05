@@ -4,12 +4,6 @@
 
 #include <Geometry/BoundingBox.h>
 
-struct NMSWorldPhysicsState: public ScenePhysicsState
-{
-	NMSWorldPhysicsState(Scene* owner)
-		: ScenePhysicsState(owner) {}
-};
-
 /*
 	Intermediate Base class for implementation of a Scene for the NMS game. 
 	Will be moved out of the engine to a different repo

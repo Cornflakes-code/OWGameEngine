@@ -63,9 +63,6 @@
     <ClInclude Include="..\Core\Scene.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Core\ScenePhysicsState.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\UserInput.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -163,9 +160,6 @@
       <Filter>Global</Filter>
     </ClInclude>
     <ClInclude Include="..\Scripting\OWActorScript.h">
-      <Filter>Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Scripting\OWScript.h">
       <Filter>Scripting</Filter>
     </ClInclude>
     <ClInclude Include="..\Sound\miniAud.h">
@@ -272,9 +266,6 @@
     <ClCompile Include="..\Core\Scene.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\ScenePhysicsState.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Core\UserInput.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -339,9 +330,6 @@
       <Filter>Helpers</Filter>
     </ClCompile>
     <ClCompile Include="..\Scripting\OWActorScript.cpp">
-      <Filter>Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Scripting\OWScript.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">

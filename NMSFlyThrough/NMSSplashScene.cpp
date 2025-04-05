@@ -16,7 +16,6 @@
 #include <Core/ResourcePathFactory.h>
 #include <Core/LogStream.h>
 
-#include <Core/CollisionSystem.h>
 #include <Actor/ThreeDAxis.h>
 #include <Actor/Button.h>
 #include <Component/PhysicalComponent.h>
@@ -49,172 +48,15 @@ int GDEBUG_PICKING = 5;
 //#define INCLUDE_STAR_RENDER
 #define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
-AABB NMSSplashScenePhysics::mWindowBounds;
+AABB NMSSplashScene::mWindowBounds;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. 
 // So 2 in 5 seconds 
 // is a velocity of 0.4 per second
-OWUtils::Float NMSSplashScenePhysics::mSpeed;
+OWUtils::Float NMSSplashScene::mSpeed;
 OWActorDiscrete* gRay = nullptr;
 
-NMSSplashScenePhysics::NMSSplashScenePhysics(Scene* owner)
-	: NMSWorldPhysicsState(owner)
-{
-}
-
-void NMSSplashScenePhysics::clear() 
-{
-}
-
-void NMSSplashScenePhysics::variableTimeStep(OWUtils::Time::duration dt)
-{
-	std::string dummy;
-	fixedTimeStep(dummy, dt);
-	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
-	//CollisionSystem::tick(timeStep);
-	CollisionSystem::collide();
-}
 
 static constexpr float off = 500;
-void NMSSplashScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
-	OWUtils::Time::duration dt)
-{
-	// Make the bounds a bit bigger than where the planes are.
-	float bf = 1.2f;
-	AABB planeBounds(glm::vec3(-off * bf), glm::vec3(off * bf));
-	OWUtils::Float timeStep = std::chrono::duration<float>(dt).count();
-	//CollisionSystem::tick(timeStep);
-	CollisionSystem::collide();
-#ifdef INCLUDE_WELCOME
-#endif
-#ifdef INCLUDE_ENJOY
-#endif
-}
-
-void NMSSplashScenePhysics::interpolateRatio(
-					const ScenePhysicsState* OW_UNUSED(previousState), 
-					double OW_UNUSED(multPrev),
-					const ScenePhysicsState* OW_UNUSED(currentState), 
-					double OW_UNUSED(multCurr))
-{}
-
-void NMSSplashScenePhysics::copy(ScenePhysicsState* source)
-{
-	//*this = *(dynamic_cast<const NMSSplashScenePhysics*>(source));
-}
-
-ScenePhysicsState* NMSSplashScenePhysics::clone()
-{
-	return new NMSSplashScenePhysics(owner());
-}
-
-bool NMSSplashScenePhysics::processUserCommands(const UserInput::AnyInput& userInput,
-	std::string& nextScene,
-	Camera* camera)
-{
-	if (userInput.inputType == UserInput::AnyInputType::Pointing)
-	{
-		//		glm::ivec2 v2 = 
-			//	glfwGetWindowSize(win, &screen_w, &screen_h); // better use the callback and cache the values 
-				//glfwGetFramebufferSize(win, &pixel_w, &pixel_h); // better use the callback and cache the values 
-		if (userInput.mouseInput.action == UserInput::PointingDeviceAction::LeftMouseButtonClick)
-		{
-			glm::vec3 mousePos = globals->mouseToWorld(userInput.mouseInput.pos, false);
-			LogStream(LogStreamLevel::Info) << "userInput.mouseInput Position " << userInput.mouseInput.pos << "\n";
-			LogStream(LogStreamLevel::Info) << "MouseToWorld Position " << mousePos << "\n";
-			glm::vec3 normMouse = glm::normalize(mousePos);
-			glm::vec3 cam_pos = camera->position();
-			glm::vec3 dir = cam_pos - mousePos;
-#ifdef INCLUDE_RAY
-			if (gRay != nullptr)
-			{
-				// this will crash
-				// need to deactivate, remove from scene and remove from Collissions
-				delete gRay;
-			}
-			gRay = new OWActorDiscrete(this->owner(), "Ray Actor");
-			gRay->transform(new OWTransform(nullptr));
-			OWActorDiscrete::DiscreteEntity sse;
-			sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
-			sse.coll = new OWCollider(gRay, OWCollider::CollisionType::Ray);
-			sse.mesh = (new OWMeshComponent(gRay, "Ray Component"))
-				->add(MeshData()
-					.addVertices(OWGeometricShapes::beam(cam_pos, dir, 1000)));
-			sse.rend = new OWMeshRenderer("", 
-				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
-				GPUBufferObject::BufferStyle::SSBO);
-			sse.trans = new OWTransform(gRay->transform(), cam_pos);
-			gRay->addComponents(sse);
-#endif
-			gRay->transform()->localPosition(cam_pos);
-			//gRay->colour({ 0.7, 0.7, 0.0, 1.0f });
-			//gRay->direction(normMouse);
-			glm::vec3 normal;
-			float distance;
-			bool intersects = false;
-			glm::vec3 intersectPoint(0);
-			/*
-			for (auto& a : this->owner()->traverseSceneGraph
-			{
-				intersects = r->intersects(a->constData()->boundingBox, normal, distance);
-				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "ray intersects [" << a->name() << "] position ["
-					<< a->constData()->physics.mTranslate << "] ["
-					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
-			}
-			if (gWelcome != nullptr)
-			{
-				const AABB& bb = gWelcome->constData()->boundingBox;
-				intersects = r->intersects(bb, normal, distance);
-				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "Welcome intersects ["
-					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
-					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
-			}
-			if (gEnjoy != nullptr)
-			{
-				const AABB& bb = gEnjoy->constData()->boundingBox;
-				intersects = r->intersects(bb, normal, distance);
-				intersectPoint = cam_pos + normMouse * distance;
-				LogStream(LogStreamLevel::Info) << "Enjoy intersects ["
-					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
-					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
-			}
-			*/
-		}
-	}
-	if (userInput.mouseInput.action == UserInput::PointingDeviceAction::RightMouseButtonClick)
-	{
-		globals->application()->setWindowSize(glm::vec2(-1, 0));
-	}
-	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
-	{
-		// Keyboard
-		NMSUserInput::LogicalOperator input = userInput.keyInput.userCommand;
-		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
-		{
-			nextScene = Scene::finalSceneName();
-			return true;
-		}
-		if (input == NMSUserInput::LogicalOperator::RopeScreen)
-		{
-			nextScene = NMSRopeScene(nullptr).name();
-			return true;
-		}
-		if (input == NMSUserInput::LogicalOperator::Accept)
-		{
-			if ((userInput.keyInput.mods | UserInput::InputMod::Shift) != 0)
-			{
-				nextScene = NMSScene::finalSceneName();
-			}
-			else
-			{
-				nextScene = NMSScene::finalSceneName();
-			}
-			return true;
-		}
-	}
-	return false;
-}
 
 OWActorMutableParticle::MutableParticleElement createBox(const std::string& _name, const glm::vec4& colour,
 	const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
@@ -252,22 +94,27 @@ OWActorMutableParticle::MutableParticleElement createBumperPlane(const std::stri
 	return elm;
 }
 
-void NMSSplashScenePhysics::setup()
+NMSSplashScene::NMSSplashScene(const Movie* movie)
+	: NMSScene(movie)
+{
+}
+
+void NMSSplashScene::doSetupScene()
 {
 	const AABB& _world = NMSScene::world();
 	mWindowBounds = _world;
 	mSpeed = _world.size().x / 100.0f;
 #ifdef INCLUDE_BUTTONS
 #endif
-	OWButton* button = new OWButton(this->owner(), "Button");
+	OWButton* button = new OWButton(this, "Button");
 	button->initialise();
 #ifdef INCLUDE_FULLSCREEN
 #endif
 #ifdef INCLUDE_STAR_RENDER
 	mStarRadius = { 40.0, 40.0 };
-	std::vector<glm::vec3> vertices = 
-//		GeometricShapes::star(mStarRadius.x/5.0f, mStarRadius.x/3.3f, 15);
-	GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
+	std::vector<glm::vec3> vertices =
+		//		GeometricShapes::star(mStarRadius.x/5.0f, mStarRadius.x/3.3f, 15);
+		GeometricShapes::rectangle(mStarRadius * 2.0f, -mStarRadius);
 	mStarData.vertices(vertices, GL_TRIANGLES, 0);
 
 	std::vector<glm::vec3> starPositions;
@@ -295,13 +142,13 @@ void NMSSplashScenePhysics::setup()
 	const glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
 
 #ifdef INCLUDE_WELCOME
-	OWActorNCom1Ren* dynamicTextActor = new OWActorNCom1Ren(this->owner(), "Dynamic Text Actor");
+	OWActorNCom1Ren* dynamicTextActor = new OWActorNCom1Ren(this, "Dynamic Text Actor");
 	dynamicTextActor->transform();
 
 	OWPhysicsData pd1;
 	pd1.velocity = Compass::Rose[Compass::North] +
-				Compass::Rose[Compass::East] +
-				Compass::Rose[Compass::In] * mSpeed;
+		Compass::Rose[Compass::East] +
+		Compass::Rose[Compass::In] * mSpeed;
 
 	OWTextComponentData welcomeData;
 	welcomeData.tdt = OWRenderTypes::DrawType::TwoDDynamic;
@@ -331,11 +178,11 @@ void NMSSplashScenePhysics::setup()
 	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
 #ifdef INCLUDE_ENJOY
 	{
-		OWActorNCom1Ren* staticTextActor = new OWActorNCom1Ren(this->owner(), "Static Text Actor");
+		OWActorNCom1Ren* staticTextActor = new OWActorNCom1Ren(this, "Static Text Actor");
 		staticTextActor->transform();
 		OWPhysicsData pd2;
 		pd2.velocity = Compass::Rose[Compass::South] +
-		Compass::Rose[Compass::West] * mSpeed / 20.0f;
+			Compass::Rose[Compass::West] * mSpeed / 20.0f;
 
 		OWTextComponentData enjoyData;
 		enjoyData.tdt = OWRenderTypes::DrawType::TwoDStatic;
@@ -356,12 +203,12 @@ void NMSSplashScenePhysics::setup()
 			GPUBufferObject::BufferStyle::SSBO);
 		r->shader()->appendMutator(OWTextComponent::shaderMutator(enjoyData.tdt));
 		staticTextActor->renderer(r);
-		
+
 		staticTextActor->addComponents(elm);
 	}
 #endif
 #ifdef INCLUDE_BOXES
-	OWActorMutableParticle* boxActor = new OWActorMutableParticle(this->owner(), "All Boxes");
+	OWActorMutableParticle* boxActor = new OWActorMutableParticle(this, "All Boxes");
 	boxActor->transform(new OWTransform(nullptr));
 	boxActor->scriptor(new OWScriptComponent());
 	boxActor->sound(new OWSoundComponent());
@@ -371,8 +218,8 @@ void NMSSplashScenePhysics::setup()
 			.addVertices(OWGeometricShapes::cube())
 			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)));
 
-	boxActor->renderer(new OWMeshRenderer("BoxShader.json", 
-				{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
+	boxActor->renderer(new OWMeshRenderer("BoxShader.json",
+		{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO));
 
 	glm::vec3 scale1 = { 10, 10, 10 };
@@ -386,67 +233,67 @@ void NMSSplashScenePhysics::setup()
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(100, 0, 0);
 #endif
-		boxActor->addComponents(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED), 
-							ro, rs, mSpeed * 0.0f, scale2));
+		boxActor->addComponents(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED),
+			ro, rs, mSpeed * 0.0f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 100, 0);
 #endif
-		boxActor->addComponents(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE), 
-							ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addComponents(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE),
+			ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 100);
 #endif
-		boxActor->addComponents(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE), 
-							ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addComponents(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE),
+			ro, rs, mSpeed * 0.8f, scale1));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED
 		ro = glm::vec3(0, 0, 0);
 #endif
-		boxActor->addComponents(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
-							ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addComponents(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN),
+			ro, rs, mSpeed * 0.8f, scale1));
 #ifdef BOXES_CENTERED
 		break;
 #endif
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addComponents(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
-							ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addComponents(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA),
+			ro, rs, mSpeed * 0.8f, scale1));
 
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addComponents(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
-							ro, rs, mSpeed * 0.8f, scale1));
+		boxActor->addComponents(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW),
+			ro, rs, mSpeed * 0.8f, scale1));
 
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 		boxActor->addComponents(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED),
-							ro, { rs }, mSpeed * 1.8f, scale2));
+			ro, { rs }, mSpeed * 1.8f, scale2));
 
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addComponents(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE), 
-							ro, { rs }, mSpeed * 3.8f, scale2));
+		boxActor->addComponents(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE),
+			ro, { rs }, mSpeed * 3.8f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addComponents(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE), 
-							ro, { rs }, mSpeed * 0.1f, scale3));
+		boxActor->addComponents(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE),
+			ro, { rs }, mSpeed * 0.1f, scale3));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addComponents(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN), 
-							ro, { rs }, mSpeed * 0.3f, scale3));
+		boxActor->addComponents(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN),
+			ro, { rs }, mSpeed * 0.3f, scale3));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addComponents(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA), 
-							ro, { rs }, mSpeed * 0.5f, scale3));
+		boxActor->addComponents(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA),
+			ro, { rs }, mSpeed * 0.5f, scale3));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-		boxActor->addComponents(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW), 
-							ro, { rs }, mSpeed * 0.8f, scale2));
+		boxActor->addComponents(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW),
+			ro, { rs }, mSpeed * 0.8f, scale2));
 	}
 #endif
 
@@ -454,7 +301,7 @@ void NMSSplashScenePhysics::setup()
 #define MULTI_MODEL
 #ifdef MULTI_MODEL
 
-	OWActorMutableParticle* diceActor = new OWActorMutableParticle(this->owner(), "All Dice");
+	OWActorMutableParticle* diceActor = new OWActorMutableParticle(this, "All Dice");
 	diceActor->scriptor(new OWScriptComponent());
 	diceActor->sound(new OWSoundComponent());
 	diceActor->meshComponent(new OWModelComponent(diceActor, "Dice Component", "Dice2.obj"));
@@ -482,7 +329,7 @@ void NMSSplashScenePhysics::setup()
 	for (int i = 0; i < 2; i++)
 	{
 
-		OWActorDiscrete* singleModelActor = new OWActorDiscrete(this->owner(), "Dice");
+		OWActorDiscrete* singleModelActor = new OWActorDiscrete(this, "Dice");
 		OWActorDiscrete::DiscreteEntity sse;
 		sse.colour = sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 		sse.coll = new OWCollider(singleModelActor, OWCollider::CollisionType::Box);
@@ -507,7 +354,7 @@ void NMSSplashScenePhysics::setup()
 	const float pos = off / 2.0f;
 	// Create a box of planes for the objects to bounce off
 #ifdef INCLUDE_PLANES
-	OWActorMutableParticle* planeActor = new OWActorMutableParticle(this->owner(), "All Planes");
+	OWActorMutableParticle* planeActor = new OWActorMutableParticle(this, "All Planes");
 	planeActor->transform(new OWTransform(nullptr));
 	planeActor->scriptor(new OWScriptComponent());
 	planeActor->sound(new OWSoundComponent());
@@ -522,31 +369,19 @@ void NMSSplashScenePhysics::setup()
 		{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO));
 
-	planeActor->addComponents(createBumperPlane("Plane Front", 
+	planeActor->addComponents(createBumperPlane("Plane Front",
 		glm::vec3(0, 0, pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::In
-	planeActor->addComponents(createBumperPlane("Plane Back", 
+	planeActor->addComponents(createBumperPlane("Plane Back",
 		glm::vec3(0, 0, -pos), off, 0.0f, glm::vec3(1, 0, 0))); // Compass::Out
-	planeActor->addComponents(createBumperPlane("Plane East", 
+	planeActor->addComponents(createBumperPlane("Plane East",
 		glm::vec3(pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::East
-	planeActor->addComponents(createBumperPlane("Plane West", 
+	planeActor->addComponents(createBumperPlane("Plane West",
 		glm::vec3(-pos, 0, 0), off, 90.0f, glm::vec3(0, 1, 0))); // Compass::West
-	planeActor->addComponents(createBumperPlane("Plane North", 
+	planeActor->addComponents(createBumperPlane("Plane North",
 		glm::vec3(0, pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::North
-	planeActor->addComponents(createBumperPlane("Plane South", 
+	planeActor->addComponents(createBumperPlane("Plane South",
 		glm::vec3(0, -pos, 0), off, 90.0f, glm::vec3(1, 0, 0))); // Compass::Bottom
 #endif
-}
-
-////////////////////////////////////// NMSSplashScene /////////////////////////////////////////////
-NMSSplashScene::NMSSplashScene(const Movie* movie)
-	: NMSScene(movie)
-{
-}
-
-void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
-{
-	NMSSplashScenePhysics* sps 
-		= dynamic_cast<NMSSplashScenePhysics*>(state);
 
 #ifdef INCLUDE_XYZ_AXIS
 	OWThreeDAxisData axisData;
@@ -625,7 +460,114 @@ void NMSSplashScene::doSetupScene(ScenePhysicsState* state)
 #endif
 }
 
-void NMSSplashScene::doRenderScene(const ScenePhysicsState* state,
+bool NMSSplashScene::processUserCommands(const UserInput::AnyInput& userInput, std::string& nextScene, Camera* camera)
+{
+	if (userInput.inputType == UserInput::AnyInputType::Pointing)
+	{
+		//		glm::ivec2 v2 = 
+			//	glfwGetWindowSize(win, &screen_w, &screen_h); // better use the callback and cache the values 
+				//glfwGetFramebufferSize(win, &pixel_w, &pixel_h); // better use the callback and cache the values 
+		if (userInput.mouseInput.action == UserInput::PointingDeviceAction::LeftMouseButtonClick)
+		{
+			glm::vec3 mousePos = globals->mouseToWorld(userInput.mouseInput.pos, false);
+			LogStream(LogStreamLevel::Info) << "userInput.mouseInput Position " << userInput.mouseInput.pos << "\n";
+			LogStream(LogStreamLevel::Info) << "MouseToWorld Position " << mousePos << "\n";
+			glm::vec3 normMouse = glm::normalize(mousePos);
+			glm::vec3 cam_pos = camera->position();
+			glm::vec3 dir = cam_pos - mousePos;
+#ifdef INCLUDE_RAY
+			if (gRay != nullptr)
+			{
+				// this will crash
+				// need to deactivate, remove from scene and remove from Collissions
+				delete gRay;
+			}
+			gRay = new OWActorDiscrete(this, "Ray Actor");
+			gRay->transform(new OWTransform(nullptr));
+			OWActorDiscrete::DiscreteEntity sse;
+			sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
+			sse.coll = new OWCollider(gRay, OWCollider::CollisionType::Ray);
+			sse.mesh = (new OWMeshComponent(gRay, "Ray Component"))
+				->add(MeshData()
+					.addVertices(OWGeometricShapes::beam(cam_pos, dir, 1000)));
+			sse.rend = new OWMeshRenderer("",
+				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+				GPUBufferObject::BufferStyle::SSBO);
+			sse.trans = new OWTransform(gRay->transform(), cam_pos);
+			gRay->addComponents(sse);
+#endif
+			gRay->transform()->localPosition(cam_pos);
+			//gRay->colour({ 0.7, 0.7, 0.0, 1.0f });
+			//gRay->direction(normMouse);
+			glm::vec3 normal;
+			float distance;
+			bool intersects = false;
+			glm::vec3 intersectPoint(0);
+			/*
+			for (auto& a : this->traverseSceneGraph
+			{
+				intersects = r->intersects(a->constData()->boundingBox, normal, distance);
+				intersectPoint = cam_pos + normMouse * distance;
+				LogStream(LogStreamLevel::Info) << "ray intersects [" << a->name() << "] position ["
+					<< a->constData()->physics.mTranslate << "] ["
+					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "]\n";
+			}
+			if (gWelcome != nullptr)
+			{
+				const AABB& bb = gWelcome->constData()->boundingBox;
+				intersects = r->intersects(bb, normal, distance);
+				intersectPoint = cam_pos + normMouse * distance;
+				LogStream(LogStreamLevel::Info) << "Welcome intersects ["
+					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
+					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
+			}
+			if (gEnjoy != nullptr)
+			{
+				const AABB& bb = gEnjoy->constData()->boundingBox;
+				intersects = r->intersects(bb, normal, distance);
+				intersectPoint = cam_pos + normMouse * distance;
+				LogStream(LogStreamLevel::Info) << "Enjoy intersects ["
+					<< (intersects ? "true" : "false") << "] at [" << intersectPoint << "] BB ["
+					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
+			}
+			*/
+		}
+	}
+	if (userInput.mouseInput.action == UserInput::PointingDeviceAction::RightMouseButtonClick)
+	{
+		globals->application()->setWindowSize(glm::vec2(-1, 0));
+	}
+	else if (userInput.inputType == UserInput::AnyInputType::KeyPress)
+	{
+		// Keyboard
+		NMSUserInput::LogicalOperator input = userInput.keyInput.userCommand;
+		if (input == NMSUserInput::LogicalOperator::OptionsScreen)
+		{
+			nextScene = Scene::finalSceneName();
+			return true;
+		}
+		if (input == NMSUserInput::LogicalOperator::RopeScreen)
+		{
+			nextScene = NMSRopeScene(nullptr).name();
+			return true;
+		}
+		if (input == NMSUserInput::LogicalOperator::Accept)
+		{
+			if ((userInput.keyInput.mods | UserInput::InputMod::Shift) != 0)
+			{
+				nextScene = NMSScene::finalSceneName();
+			}
+			else
+			{
+				nextScene = NMSScene::finalSceneName();
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+void NMSSplashScene::doRenderScene(
 							const glm::mat4& proj, const glm::mat4& view,
 							const glm::vec3& cameraPos)
 {
@@ -657,7 +599,6 @@ void NMSSplashScene::doRenderScene(const ScenePhysicsState* state,
 }
 
 void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene), 
-							  ScenePhysicsState* OW_UNUSED(state),
 							  Camera* camera,
 							  unsigned int OW_UNUSED(callCount))
 {
@@ -671,8 +612,7 @@ void NMSSplashScene::activate(const std::string& OW_UNUSED(previousScene),
 		camera->moveScale(speed * 5.0f);
 }
 
-void NMSSplashScene::deActivate(const Camera* OW_UNUSED(camera), 
-								ScenePhysicsState* OW_UNUSED(state))
+void NMSSplashScene::deActivate(const Camera* OW_UNUSED(camera))
 {
 	globals->application()->restoreBackgroundColour();
 }

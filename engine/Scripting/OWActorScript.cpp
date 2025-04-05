@@ -1,21 +1,11 @@
 #include "OWActorScript.h"
 
-void OLDScript::tick(float deltaSecods)
-{
-}
+#include "../Actor/OWActor.h"
 
-void OLDScript::begin()
+void OWScriptComponent::tick(float dt)
 {
-}
-
-void OLDScript::end()
-{
-}
-
-void OLDScript::destroy()
-{
-}
-
-void OLDScript::doInit()
-{
+	// Interate through the script, getting ndx
+	RequiredComponents required;
+	int ndx = 42;
+	mActor->getScriptingComponents(ndx, required);
 }

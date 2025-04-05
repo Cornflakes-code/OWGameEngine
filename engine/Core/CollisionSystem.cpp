@@ -36,6 +36,7 @@ namespace CollisionSystem
 	// Good discussion about different types of collision optimisations
 	// https://www.gamedev.net/forums/topic/328022-what-collision-method-is-better/
 	// https://leanrada.com/notes/sweep-and-prune-2/#final-code
+    // http://www.codercorner.com/SAP.pdf
 	struct Edge
 	{
 		Edge(const OWCollider& _o, bool _isLeft)

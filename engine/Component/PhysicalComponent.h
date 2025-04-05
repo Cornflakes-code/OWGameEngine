@@ -20,20 +20,50 @@ struct OWPhysicsData
 	glm::vec3 velocity = glm::vec3(0);
 	glm::vec3 rotationalVelocity = glm::vec3(0);
 	glm::vec3 acceleration = glm::vec3(0);
-	// 0(invisibility -> 1 (fully opaque)
-	float visibility = 1.0f;
-	float mass = 1.0f;
-	float hardness = 0.5f;
-//	glm::vec3 steerForce = glm::vec3(0); // These are all of the forces acting on the object accelleration (thrust, gravity, drag, etc) 
+//	glm::vec3 steerForce = glm::vec3(0); // These are all of the forces acting on the object's acceleration (thrust, gravity, drag, etc) 
 };
 
+// See https://gafferongames.com/post/fix_your_timestep/
+// Always 
+// 1. write to mCurrentState
+// 2. read from mScratch AFTER interpolate called
+// Also see run loop in Movie.cpp
 class OWPhysics
 {
-	OWPhysicsData mData;
+	OWPhysicsData mPreviousData;
+	OWPhysicsData mCurrentData;
+	OWPhysicsData mScratchData;
+
+	// 0(invisibility -> 1 (fully opaque)
+	float mVisibility = 1.0f;
+	float mMass = 1.0f;
+	float mHardness = 0.5f;
 public:
 	OWPhysics(const OWPhysicsData& _data = OWPhysicsData())
-		: mData(_data)
+		: mPreviousData(_data), mCurrentData(_data), mScratchData(_data)
 	{
+	}
+
+	void tick(float dt)
+	{
+		// Only update mCurrentState
+	}
+
+	void copyCurrentToPrevious()
+	{
+		mPreviousData = mCurrentData;
+	}
+
+	void interpolate(float OW_UNUSED(totalTime), float alpha, float OW_UNUSED(fixedTimeStep))
+	{
+		float oneMinusAlpha = 1.0f - alpha;
+		mScratchData.acceleration = mCurrentData.acceleration * alpha + mPreviousData.acceleration * oneMinusAlpha;
+		mScratchData.velocity = mCurrentData.velocity * alpha + mPreviousData.velocity * oneMinusAlpha;
+		mScratchData.rotationalVelocity = mCurrentData.rotationalVelocity * alpha + mPreviousData.rotationalVelocity * oneMinusAlpha;
+	}
+
+	glm::vec3 velocity() const {
+		return mScratchData.velocity;
 	}
 	void visibility(float newValue)
 	{
@@ -41,6 +71,6 @@ public:
 			newValue = 0.0f;
 		else if (newValue > 1.0f)
 			newValue = 1.0f;
-		mData.visibility = newValue;
+		mVisibility = newValue;
 	}
 };

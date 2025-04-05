@@ -1,6 +1,5 @@
 #include "OWActor.h"
 #include "../Core/Scene.h"
-#include "../Core/CollisionSystem.h"
 #include "../Renderers/MeshRenderer.h"
 
 static std::string getActorDesc(OWActor* a)
@@ -10,7 +9,7 @@ static std::string getActorDesc(OWActor* a)
 }
 
 OWActor::OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor)
-	: mScene(_scene), mName(_name), mHostActor(_hostActor)
+	: mScene(_scene), mName(_name), mHostActor(_hostActor), mScriptor(this)
 {
 	_scene->addActor(this);
 	if (_hostActor != nullptr)
@@ -151,7 +150,7 @@ void OWActorDiscrete::doSetupActor()
 		AABB b1;
 		elm.coll->points(b1);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
-			CollisionSystem::addCollider(elm.coll, this, i);
+			scene()->addCollider(elm.coll, this, i);
 		OWRenderData rd = elm.mesh->renderData(b1);
 		b = b | b1;
 
@@ -183,6 +182,18 @@ void OWActorDiscrete::doRender(const glm::mat4& proj,
 	for (auto& elm: mElements)
 	{
 		elm.rend->render(proj, view, cameraPos);
+	}
+}
+
+void OWActorDiscrete::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
+{
+	if (ndx < mElements.size())
+	{
+		DiscreteEntity& elm = mElements[ndx];
+		required.phys = elm.phys;
+		required.mesh = elm.mesh;
+		required.sound = elm.sound;
+		required.trans = elm.trans;
 	}
 }
 
@@ -221,7 +232,7 @@ void OWActorNCom1Ren::doSetupActor()
 		elm.coll->points(b1);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
-			CollisionSystem::addCollider(elm.coll, this, i);
+			scene()->addCollider(elm.coll, this, i);
 		}
 		b = b | b1;
 		glm::vec3 jfw3 = elm.trans->worldPosition();
@@ -253,6 +264,18 @@ void OWActorNCom1Ren::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos) 
 {
 	mRenderer->render(proj, view, cameraPos);
+}
+
+void OWActorNCom1Ren::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
+{
+	if (ndx < mElements.size())
+	{
+		NCom1RenElement& elm = mElements[ndx];
+		required.phys = elm.phys;
+		required.mesh = elm.mesh;
+		required.sound = elm.sound;
+		required.trans = elm.trans;
+	}
 }
 
 void OWActorNCom1Ren::doCollided(const OWCollider& component, const OWCollider& otherComponent)
@@ -291,7 +314,7 @@ void OWActorMutableParticle::doSetupActor()
 		elm.coll->points(b_moved);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
-			CollisionSystem::addCollider(elm.coll, this, i);
+			scene()->addCollider(elm.coll, this, i);
 		}
 		b = b | b_moved;
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
@@ -320,6 +343,18 @@ void OWActorMutableParticle::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos)
 {
 	mRenderer->render(proj, view, cameraPos);
+}
+
+void OWActorMutableParticle::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
+{
+	if (ndx < mElements.size())
+	{
+		MutableParticleElement& elm = mElements[ndx];
+		required.phys = elm.phys;
+		required.mesh = mMeshTemplate;
+		required.sound = mSound;
+		required.trans = elm.trans;
+	}
 }
 
 void OWActorMutableParticle::renderer(OWRenderer* newValue)
@@ -371,6 +406,16 @@ void OWActorImmutableParticle::renderer(OWRenderer* newValue)
 void OWActorImmutableParticle::sound(OWSoundComponent* newValue)
 {
 	mSound = newValue;
+}
+
+void OWActorImmutableParticle::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
+{
+	if (ndx == 0)
+	{
+		required.mesh = mMeshTemplate;
+		required.phys = mPhysics;
+		required.sound = mSound;
+	}
 }
 
 void OWActorImmutableParticle::doCollided(const OWCollider& component, const OWCollider& otherComponent)

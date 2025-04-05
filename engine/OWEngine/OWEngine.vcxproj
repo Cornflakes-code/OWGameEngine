@@ -216,7 +216,6 @@
     <ClInclude Include="..\Core\ResourcePathFactory.h" />
     <ClInclude Include="..\Core\SaveAndRestore.h" />
     <ClInclude Include="..\Core\Scene.h" />
-    <ClInclude Include="..\Core\ScenePhysicsState.h" />
     <ClInclude Include="..\Core\SoundManager.h" />
     <ClInclude Include="..\Core\UserInput.h" />
     <ClInclude Include="..\Geometry\BoundingBox.h" />
@@ -247,7 +246,6 @@
     <ClInclude Include="..\Renderers\RendererBase.h" />
     <ClInclude Include="..\Renderers\RenderTypes.h" />
     <ClInclude Include="..\Scripting\OWActorScript.h" />
-    <ClInclude Include="..\Scripting\OWScript.h" />
     <ClInclude Include="..\Sound\miniAud.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OWEngine.h" />
@@ -279,7 +277,6 @@
     <ClCompile Include="..\Core\ResourcePathFactory.cpp" />
     <ClCompile Include="..\Core\SaveAndRestore.cpp" />
     <ClCompile Include="..\Core\Scene.cpp" />
-    <ClCompile Include="..\Core\ScenePhysicsState.cpp" />
     <ClCompile Include="..\Core\SoundManager.cpp" />
     <ClCompile Include="..\Core\UserInput.cpp" />
     <ClCompile Include="..\Geometry\BoundingBox.cpp" />
@@ -311,7 +308,6 @@
     <ClCompile Include="..\Renderers\ModelRenderer.cpp" />
     <ClCompile Include="..\Renderers\RendererBase.cpp" />
     <ClCompile Include="..\Scripting\OWActorScript.cpp" />
-    <ClCompile Include="..\Scripting\OWScript.cpp" />
     <ClCompile Include="..\Sound\miniAud.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>

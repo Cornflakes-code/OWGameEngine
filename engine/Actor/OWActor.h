@@ -11,7 +11,6 @@
 #include "../Helpers/Transform.h"
 #include "../Core/SoundManager.h"
 #include "../Helpers/Collider.h"
-#include "../Scripting/OWScript.h"
 
 class Scene;
 
@@ -21,7 +20,24 @@ public:
 	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
 
+	OWCollider* coll = nullptr;
+	OWPhysics* phys = nullptr;
+	OWMeshComponentBase* mesh = nullptr;
+	OWRenderer* rend = nullptr;
+	OWTransform* trans = nullptr;
+	OWSoundComponent* sound = nullptr;
+	void getScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
+	{
+		doGetScriptingComponents(ndx, required);
+	}
+
 	void setup();
+	virtual void preTick()
+	{
+		copyCurrentToPrevious();
+		// Placeholder called on the main thread. OWActor should quickly 
+		// create a background thread to do stuff while render is happenening.
+	}
 	virtual void preRender()
 	{
 		// Placeholder called on the main thread. OWActor should quickly 
@@ -55,16 +71,26 @@ public:
 	void transform(OWTransform* newValue) {
 		mActorTransform = newValue;
 	}
-	void scriptor(OWScriptComponent* newValue) {
-		mScriptor = newValue;
-	}
 	bool setupCompleted() const { return mSetup; }
 	void collided(const OWCollider& component, const OWCollider& otherComponent)
 	{
 		doCollided(component, otherComponent);
 	}
+	void copyCurrentToPrevious() {
+		doCopyCurrentToPrevious();
+	}
+	void tick(float dt) {
+		mScriptor.tick(dt);
+	}
+	void interpolatePhysics(float totalTime, float alpha, float fixedTimeStep) {
+		doInterpolatePhysics(totalTime, alpha, fixedTimeStep);
+	}
+
 	//void appendMutator(OWRenderTypes::ActorSetupMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
 protected:
+	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) = 0;
+	virtual void doCopyCurrentToPrevious() = 0;
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) = 0;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) = 0;
 		//void callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
 	//	const OWPhysics* phys, OWTransform* trans, OWRenderer* rend);
@@ -77,7 +103,7 @@ private:
 	AABB mBounds;
 	Scene* mScene;
 	OWTransform* mActorTransform = nullptr;
-	OWScriptComponent* mScriptor = nullptr;
+	OWScriptComponent mScriptor = nullptr;
 	OWActor* mHostActor = nullptr;
 	bool mIsActive = true;
 	bool mSetup = false;
@@ -102,6 +128,21 @@ public:
 	}
 	size_t addComponents(const DiscreteEntity& newElement);
 protected:
+	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
+	virtual void doCopyCurrentToPrevious() override final
+	{
+		for (auto& elm : mElements)
+		{
+			elm.phys->copyCurrentToPrevious();
+		}
+	}
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
+	{
+		for (auto& elm : mElements)
+		{
+			elm.phys->interpolate(totalTime, alpha, fixedTimeStep);
+		}
+	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
@@ -132,6 +173,23 @@ public:
 		mRenderer = newValue; 
 	}
 protected:
+	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
+	virtual void doCopyCurrentToPrevious() override final
+	{
+		for (auto& elm : mElements)
+		{
+			elm.phys->copyCurrentToPrevious();
+		}
+	}
+
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
+	{
+		for (auto& elm : mElements)
+		{
+			elm.phys->interpolate(totalTime, alpha, fixedTimeStep);
+		}
+	}
+
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
@@ -163,6 +221,21 @@ public:
 	}
 
 protected:
+	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
+	virtual void doCopyCurrentToPrevious() override final
+	{
+		for (auto& elm : mElements)
+		{
+			elm.phys->copyCurrentToPrevious();
+		}
+	}
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
+	{
+		for (auto& elm : mElements)
+		{
+			elm.phys->interpolate(totalTime, alpha, fixedTimeStep);
+		}
+	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	virtual void doRender(const glm::mat4& proj,
@@ -186,6 +259,15 @@ public:
 		mMeshTemplate = mc;
 	}
 protected:
+	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
+	virtual void doCopyCurrentToPrevious() override final
+	{
+		mPhysics->copyCurrentToPrevious();
+	}
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
+	{
+		mPhysics->interpolate(totalTime, alpha, fixedTimeStep);
+	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,

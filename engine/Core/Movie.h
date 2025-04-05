@@ -6,11 +6,9 @@
 #include <string>
 #include <queue>
 
-#include "ScenePhysicsState.h"
-
 #include "../OWEngine/OWEngine.h"
 #include "../Geometry/BoundingBox.h"
-
+#include "UserInput.h"
 
 class Scene;
 class Camera;
@@ -20,8 +18,7 @@ class UserInput;
 class GLApplication;
 class MacroRecorder;
 /*
-	Core class providing the main Game loop. Tightly bound to the Scene and
-	ScenePhysicsState classes
+	Core class providing the main Game loop. Tightly bound to the Scene classes
 */
 class OWENGINE_API Movie
 {
@@ -36,9 +33,7 @@ public:
 	void swapInterval(int newValue) { mSwapInterval = newValue; }
 protected:
 	Movie(const std::string& _windowTitle, Camera* _camera, Logger* logger);
-
-	void add(Scene* toAdd, ScenePhysicsState* sps, bool makeThisSceneCurrent = false);
-	virtual void render(const ScenePhysicsState* state);
+	void add(Scene* toAdd, bool makeThisSceneCurrent = false);
 	void pushUserInput(const UserInput::AnyInput& anyInput);
 private:
 #pragma warning( push )
@@ -46,7 +41,6 @@ private:
 	struct LoopControlStruct
 	{
 		Scene* scene = nullptr;
-		SceneLogic logic;
 		unsigned int countActivateCalled = 0;
 		bool setupCalled = false;
 	};

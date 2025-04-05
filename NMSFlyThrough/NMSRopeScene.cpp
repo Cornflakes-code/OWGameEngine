@@ -12,7 +12,14 @@
 #include "ropes.h"
 
 Rope* gRope = nullptr;
-void NMSRopeScenePhysics::setup()
+
+NMSRopeScene::NMSRopeScene(const Movie* _movie)
+	: NMSScene(_movie)
+{
+	//	const glm::uvec2& screen = globals->physicalWindowSize();
+}
+
+void NMSRopeScene::doSetupScene()
 {
 	const AABB& _world = NMSScene::world();
 	OWRopeData rd;
@@ -45,7 +52,7 @@ void NMSRopeScenePhysics::setup()
 	rd.ropeVisibility.surfaces = true;
 	rd.ropeVisibility.strandLabels = true;
 	rd.ropeVisibility.bannerLabel = true;
-	gRope = new Rope(this->owner(), "Rope");
+	gRope = new Rope(this, "Rope");
 	gRope->initialise(rd);
 	//LightSource* ls = new LightSource(new Physical({ 160.0f, 60.0f, 50.0f }), nullptr);
 	//RendererBase* lightSource = NMS::createLightSource(glm::vec3(160.0f, 60.0f, 50.0f));
@@ -54,33 +61,26 @@ void NMSRopeScenePhysics::setup()
 	//mRootNode->addChild(ls);
 }
 
-void NMSRopeScenePhysics::variableTimeStep(OWUtils::Time::duration OW_UNUSED(dt))
+void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
+	Camera* camera, unsigned int callCount)
 {
+	if (!callCount)
+	{
+		mCameraFocus = { 62.5595f, 62.5297, 0 };// gRope->bounds().center();
+		mCameraFocus.z = -200;
+		camera->position(mCameraFocus);
+		mCameraFocus.z = 0;
+		camera->lookAt(mCameraFocus);
+		float speed = camera->moveScale();
+		camera->moveScale(speed * 5.0f);
+		//camera->FOV(glm::radians(45.0f));
+		glm::mat4 view = camera->view();
+		view = view;
+
+	}
 }
 
-void NMSRopeScenePhysics::fixedTimeStep(std::string& OW_UNUSED(nextSceneName),
-	OWUtils::Time::duration OW_UNUSED(dt))
-{
-}
-
-void NMSRopeScenePhysics::interpolateRatio(const ScenePhysicsState* OW_UNUSED(previousState),
-	double OW_UNUSED(multPrev),
-	const ScenePhysicsState* OW_UNUSED(currentState),
-	double OW_UNUSED(multCurr))
-{
-}
-
-void NMSRopeScenePhysics::copy(ScenePhysicsState* source)
-{
-	*this = *(dynamic_cast<const NMSRopeScenePhysics*>(source));
-}
-
-ScenePhysicsState* NMSRopeScenePhysics::clone()
-{
-	return new NMSRopeScenePhysics(owner());
-}
-
-bool NMSRopeScenePhysics::processUserCommands(const UserInput::AnyInput& userInput,
+bool NMSRopeScene::processUserCommands(const UserInput::AnyInput& userInput,
 	std::string& nextScene, Camera* OW_UNUSED(camera))
 {
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
@@ -88,7 +88,7 @@ bool NMSRopeScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 		// Mouse
 	}
 	else if ((userInput.inputType == UserInput::AnyInputType::KeyPress) &&
-			(userInput.keyInput.action == UserInput::InputAction::Press))
+		(userInput.keyInput.action == UserInput::InputAction::Press))
 	{
 		// Keyboard
 		if (userInput.keyInput.userCommand == NMSUserInput::LogicalOperator::OptionsScreen)
@@ -116,39 +116,7 @@ bool NMSRopeScenePhysics::processUserCommands(const UserInput::AnyInput& userInp
 	return false;
 }
 
-NMSRopeScene::NMSRopeScene(const Movie* _movie)
-	: NMSScene(_movie)
-{
-	//	const glm::uvec2& screen = globals->physicalWindowSize();
-}
-
-void NMSRopeScene::doSetupScene(ScenePhysicsState* state)
-{
-}
-
-void NMSRopeScene::activate(const std::string& OW_UNUSED(previousScene),
-	ScenePhysicsState* state,
-	Camera* camera, unsigned int callCount)
-{
-	NMSRopeScenePhysics* sp = dynamic_cast<NMSRopeScenePhysics*>(state);
-	if (!callCount)
-	{
-		sp->mCameraFocus = { 62.5595f, 62.5297, 0 };// gRope->bounds().center();
-		sp->mCameraFocus.z = -200;
-		camera->position(sp->mCameraFocus);
-		sp->mCameraFocus.z = 0;
-		camera->lookAt(sp->mCameraFocus);
-		float speed = camera->moveScale();
-		camera->moveScale(speed * 5.0f);
-		//camera->FOV(glm::radians(45.0f));
-		glm::mat4 view = camera->view();
-		view = view;
-
-	}
-}
-
-void NMSRopeScene::deActivate(const Camera* OW_UNUSED(camera),
-	ScenePhysicsState* OW_UNUSED(state))
+void NMSRopeScene::deActivate(const Camera* OW_UNUSED(camera))
 {
 }
 /*
