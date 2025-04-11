@@ -153,6 +153,8 @@ namespace CollisionSystem
 
 	void collideSweepAndPrune()
 	{
+        // jfw fix me
+        return;
 		OverlappingEdges colliding;
 		doSweepAndPrune(gEdgesX, colliding, 0);
 		doSweepAndPrune(gEdgesY, colliding, 1);

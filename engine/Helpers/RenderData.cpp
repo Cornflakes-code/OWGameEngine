@@ -128,6 +128,32 @@ GPUBufferObject::UnSplicedData& GPUBufferObject::findUnspliced(BufferType t)
 		+ std::to_string(static_cast<int>(t)) + "].\n");
 }
 
+void GPUBufferObject::updateSplicedData(float* data, BufferType bt, unsigned int ndx)
+{
+	// Find the start of the required datatype
+	unsigned int offset = 0;
+	for (int i = 0; i < unsplicedData.size(); i++)
+	{
+		UnSplicedData& un = unsplicedData[i];
+		if (un.dataType == bt)
+			break;
+		offset += un.span;
+	}
+	float* ff = reinterpret_cast<float*>(mWriteBuffer);
+	unsigned int span = instanceSpan();
+	unsigned int pos = offset + span * ndx;
+	unsigned int _typeSize = typeSize(bt);
+	for (unsigned int i = 0; i < _typeSize; i++)
+	{
+		ff[i + pos] = data[i];
+	}
+}
+
+void GPUBufferObject::updateUnsplicedData(float* data, BufferType bt, unsigned int ndx)
+{
+	throw NMSNotYetImplementedException("GPUBufferObject::updateUnsplicedData()");
+}
+
 void GPUBufferObject::append(const std::vector<glm::mat4>& _data, BufferType t)
 {
 	if (splicedData.size())

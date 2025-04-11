@@ -87,12 +87,17 @@ void OWMeshRenderer::continueSetup()
 		// https://ktstephano.github.io/rendering/opengl/ssbos
 		glCreateBuffers(1, &mSbo);
 		size_t sz = mSSBO.splicedData.size() * sizeof(float);
-		glNamedBufferStorage(mSbo,
-			sz,
+		glNamedBufferStorage(mSbo, sz,
 			(const void*)mSSBO.splicedData.data(),
-			GL_DYNAMIC_STORAGE_BIT);
+			GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
 		// Note the 1 matches our binding = 1 in the vertex shader
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+		void* buf = glMapNamedBuffer(mSbo, GL_WRITE_ONLY);
+		if (buf == nullptr)
+		{
+			throw NMSException("OWMeshRenderer.glMapNamedBuffer returned null. Unknown error.\n");
+		}
+		mSSBO.setWriteBuffer(buf);
 	}
 
 	if (!mData.indices.empty())

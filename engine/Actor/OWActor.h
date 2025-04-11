@@ -218,13 +218,7 @@ protected:
 			elm.physics->copyCurrentToPrevious();
 		}
 	}
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
-	{
-		for (auto& elm : mElements)
-		{
-			elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
-		}
-	}
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	virtual void doRender(const glm::mat4& proj,

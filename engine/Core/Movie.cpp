@@ -104,9 +104,12 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 	//processTimeStep(lcs, currentScene()->logic()->current, t, std::chrono::milliseconds(0));
 	std::string nextSceneName;
 	const float fixedTimeStep = std::chrono::duration<float>(dt).count();
-
+//#define DEBUG_RUN_LOOP
 	while (!glfwWindowShouldClose(glfwWindow))
 	{
+#ifdef DEBUG_RUN_LOOP
+		LogStream(LogStreamLevel::ImportantInfo) << "!glfwWindowShouldClose(glfwWindow)\n";
+#endif
 		mLogger->update_fps_counter(glfwWindow);
 
 		OWUtils::Time::time_point newTime = OWUtils::Time::now();
@@ -118,6 +121,9 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 		globals->application()->clearBuffers();
 		while (accumulator >= dt)
 		{
+#ifdef DEBUG_RUN_LOOP
+			LogStream(LogStreamLevel::ImportantInfo) << "while (accumulator >= dt)\n";
+#endif
 			t += dt;
 			processUserInput(nextSceneName, dt); 
 			if (nextSceneName.empty())
@@ -131,7 +137,9 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 					makeCurrent(nextSceneName);
 				t = mCurrent->scene->cumulativeTime();
 				nextSceneName = "";
-				LogStream(LogStreamLevel::ImportantInfo) << "processTimeStep++";
+#ifdef DEBUG_RUN_LOOP
+				LogStream(LogStreamLevel::ImportantInfo) << "processTimeStep++\n";
+#endif
 				mCurrent->scene->timeStep(nextSceneName, dt);
 			}
 			accumulator -= dt;
@@ -163,6 +171,9 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 			glfwPollEvents();
 			if (globals->minimised())
 				std::this_thread::sleep_for(clamp);
+#ifdef DEBUG_RUN_LOOP
+			LogStream(LogStreamLevel::ImportantInfo) << "while (globals->minimised())\n";
+#endif
 		} while (globals->minimised());
 		if (!mIsRunning)
 		{ 

@@ -20,6 +20,7 @@ struct OWENGINE_API OWPhysicsData
 {
 	glm::vec3 velocity = glm::vec3(0);
 	glm::vec3 rotationalVelocity = glm::vec3(0);
+	glm::vec3 rotationalAccelearation = glm::vec3(0);
 	glm::vec3 acceleration = glm::vec3(0);
 //	glm::vec3 steerForce = glm::vec3(0); // These are all of the forces acting on the object's acceleration (thrust, gravity, drag, etc) 
 };
@@ -37,7 +38,7 @@ class OWENGINE_API OWPhysics
 		OWPhysicsData pd;
 	};
 	OWPhysicalDataMaximums mMaximums;
-	OWPhysicsData mPreviousData;
+	OWPhysicsElement mPreviousData;
 	OWPhysicsElement mCurrentData;
 	OWPhysicsElement mScratchData;
 
@@ -47,7 +48,7 @@ class OWENGINE_API OWPhysics
 	float mHardness = 0.5f;
 public:
 	OWPhysics(OWTransform* _tr, const OWPhysicsData& _data = OWPhysicsData())
-		: mPreviousData(_data), mCurrentData({ _tr, _data }), mScratchData({ _tr, _data })
+		: mPreviousData({ _tr, _data }), mCurrentData({ _tr, _data }), mScratchData({ _tr, _data })
 	{
 		if (_tr == nullptr)
 		{
@@ -59,24 +60,13 @@ public:
 
 	const OWTransform* renderTransform() const { return mScratchData.t; }
 
-	void tick(float dt)
-	{
-		// Only update mCurrentState
-	}
-
+	void tick(float timeStep);
 	void copyCurrentToPrevious()
 	{
-		mPreviousData = mCurrentData.pd;
+		mPreviousData.pd = mCurrentData.pd;
 	}
 
-	void interpolate(float OW_UNUSED(totalTime), float alpha, float OW_UNUSED(fixedTimeStep))
-	{
-		float oneMinusAlpha = 1.0f - alpha;
-		mScratchData.pd.acceleration = mCurrentData.pd.acceleration * alpha + mPreviousData.acceleration * oneMinusAlpha;
-		mScratchData.pd.velocity = mCurrentData.pd.velocity * alpha + mPreviousData.velocity * oneMinusAlpha;
-		mScratchData.pd.rotationalVelocity = mCurrentData.pd.rotationalVelocity * alpha + mPreviousData.rotationalVelocity * oneMinusAlpha;
-	}
-
+	void interpolate(float totalTime, float alpha, float timeStep);
 	void visibility(float newValue)
 	{
 		if (newValue < 0.0f)

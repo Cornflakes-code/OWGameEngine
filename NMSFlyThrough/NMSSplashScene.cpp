@@ -36,17 +36,21 @@
 #include "NMSRopeScene.h"
 
 //#define INCLUDE_RAY
-#define INCLUDE_BUTTONS
-#define INCLUDE_PLANES
-#define INCLUDE_FULLSCREEN
-#define INCLUDE_WELCOME
-#define INCLUDE_ENJOY
+//#define INCLUDE_BUTTONS
+//#define INCLUDE_PLANES
+//#define INCLUDE_FULLSCREEN
+//#define INCLUDE_WELCOME
+//#define INCLUDE_ENJOY
 #define INCLUDE_BOXES
-int GDEBUG_PICKING = 5;
+#ifdef _DEBUG
+int GDEBUG_PICKING = 50;
+#else
+int GDEBUG_PICKING = 10000;
+#endif
 //#define BOXES_CENTERED
-#define INCLUDE_XYZ_AXIS
+//#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
-#define INCLUDE_IMPORTED_MODEL
+//#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScene::mWindowBounds;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. 
@@ -231,7 +235,7 @@ void NMSSplashScene::doSetupScene()
 		ro = glm::vec3(100, 0, 0);
 #endif
 		boxActor->addComponents(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED),
-			ro, rs, mSpeed * 0.0f, scale2));
+			ro, rs, mSpeed * 0.1f, scale2));
 		ro = { rand() % denom, rand() % denom , rand() % denom };
 		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 #ifdef BOXES_CENTERED

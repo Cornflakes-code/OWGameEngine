@@ -45,13 +45,20 @@ struct GPUBufferObject
 	unsigned int instanceSpan() const;
 	unsigned int populatedUnSplicedArrayCount() const;
 	unsigned int instanceCount() const;
+
 	// Do not allow any more additions for these types
 	void lock(const std::vector<GPUBufferObject::BufferType>& orderedTypes);
 	bool locked(GPUBufferObject::BufferType t) const;
 	void bufferStyle(BufferStyle newValue) { mBufferStyle = newValue; }
 	BufferStyle bufferStyle() const { return mBufferStyle; }
 	bool dataExists(BufferStyle bs) const;
+	void updateSplicedData(float* data, BufferType bt, unsigned int ndx);
+	void setWriteBuffer(void* buf)
+	{
+		mWriteBuffer = static_cast<char8_t*>(buf);
+	}
 private:
+	char8_t* mWriteBuffer = nullptr;
 	bool mLocked = false;
 	bool mSplicedCalled = false;
 	BufferStyle mBufferStyle = BufferStyle::SSBO;
@@ -64,6 +71,7 @@ private:
 	};
 	unsigned int typeSize(BufferType t) const;
 	UnSplicedData& findUnspliced(BufferType t);
+	void updateUnsplicedData(float* data, BufferType bt, unsigned int ndx);
 public:
 	std::vector<UnSplicedData> unsplicedData;
 	std::vector<float> splicedData;

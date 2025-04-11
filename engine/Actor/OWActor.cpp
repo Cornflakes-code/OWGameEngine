@@ -339,7 +339,6 @@ void OWActorMutableParticle::doSetupActor()
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
 			mRenderer->mSSBO.append(elm.physics->transform()->drawSize(mMeshTemplate->drawType()), GPUBufferObject::BillboardSize);
-
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
 		{
@@ -383,6 +382,27 @@ void OWActorMutableParticle::renderer(OWRenderer* newValue)
 void OWActorMutableParticle::sound(OWSoundComponent* newValue)
 {
 	mSound = newValue;
+}
+
+void OWActorMutableParticle::doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) 
+{
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		MutableParticleElement& elm = mElements[i];
+		elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
+		{
+			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
+			float* f = glm::value_ptr(m);
+			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Model, i);
+		}
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
+		{
+			glm::vec3 m = elm.physics->renderTransform()->localPosition();
+			float* f = glm::value_ptr(m);
+			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Position, i);
+		}
+	}
 }
 
 void OWActorMutableParticle::doCollided(const OWCollider& component, const OWCollider& otherComponent)
