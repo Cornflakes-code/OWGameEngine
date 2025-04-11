@@ -38,7 +38,7 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 
 	const std::string& fileName = mData.starFile;
 	const AABB& world = mData.starWorld;
-	this->transform(new OWTransform(nullptr));
+	this->transform(new OWTransform());
 	glm::u32vec3 gridSizes({ 0xAA, 0xAA, 0xAA });
 	AABB NMSSize(glm::vec3(-0x7FF, -0x7F, -0x7FF),
 		glm::vec3(0x7FF, 0x7F, 0x7FF));
@@ -60,7 +60,7 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 			.setModes(GL_LINES, GL_LINES, GL_FILL));
 		sse.rend = new OWMeshRenderer(shader, { GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 			GPUBufferObject::BufferStyle::SSBO);
-		sse.trans = new OWTransform(nullptr);
+		sse.physics = new OWPhysics(new OWTransform());
 		addComponents(sse);
 	}
 #endif
@@ -108,7 +108,7 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 		->addToSSBO(createRandomVectors(NMSSize, mData.numberOfStars, scaleNMStoWorld), GPUBufferObject::BufferType::Position)
 		->addToSSBO(instanceColours, GPUBufferObject::BufferType::Colour)
 		->lockSSBO({ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour });
-	sse1.trans = new OWTransform(nullptr);
+	sse1.physics = new OWPhysics(new OWTransform());
 	addComponents(sse1);
 #endif
 }
@@ -154,6 +154,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 	const glm::vec2 niceFontSpacing = { 0.00625f, 2 * 0.00625f };
 #ifdef DEBUG_STAR_LABELS
 	OWActorNCom1Ren* starLabels = new OWActorNCom1Ren(this->scene(), "Star Labels", this);
+	starLabels->transform(new OWTransform());
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("pv");
 	shader->appendMutator(OWTextComponent::shaderMutator(OWRenderTypes::DrawType::TwoDStatic));
@@ -285,7 +286,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 			td.referencePos = OWTextComponentData::PositionType::Right;
 			OWActorNCom1Ren::NCom1RenElement elm;
 			elm.mesh = new OWTextComponent(starLabels, td.text, td);
-			elm.trans = new OWTransform(nullptr, point, glm::vec3(0.5f, 0.5f, 0.5f));
+			elm.physics = new OWPhysics(new OWTransform({ point, glm::vec3(0.5f, 0.5f, 0.5f) }));
 			elm.coll = new OWCollider(starLabels, OWCollider::CollisionType::Permeable);
 			elm.colour = OWUtils::randomSolidColour();
 			starLabels->addComponents(elm);

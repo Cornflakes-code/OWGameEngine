@@ -5,15 +5,16 @@
 #include <Core/GlobalSettings.h>
 #include <Core/ErrorHandling.h>
 
-OWTransform::OWTransform(const OWTransform* _owner, const OWTransformData& _data)
-	: mData(_data), mParent(_owner)
+OWTransform::OWTransform(const OWTransformData& _data)
+	: mData(_data)
 {
 }
 
-OWTransform::OWTransform(const OWTransform* _owner, const glm::vec3& pos,
-	const glm::vec3& scale, const glm::quat& rot)
-	: OWTransform(_owner, OWTransformData({ rot, pos, scale }))
+void OWTransform::parentTransform(const OWTransform* newValue) 
 {
+	mParent = newValue;
+	if (mParent == this)
+		throw NMSLogicException("OWTransform::parentTransform(). Recursion");
 }
 
 void OWTransform::rotation(float radians, const glm::vec3& axis)

@@ -9,21 +9,40 @@ static std::string getActorDesc(OWActor* a)
 }
 
 OWActor::OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor)
-	: mScene(_scene), mName(_name), mHostActor(_hostActor), mScriptor(this)
+	: mScene(_scene), mName(_name), mHostActor(_hostActor)
 {
 	_scene->addActor(this);
-	if (_hostActor != nullptr)
+	if (_hostActor == nullptr)
+	{
+		if (this->transform() != nullptr)
+		{
+			// jfw can this be ever true?
+			throw NMSLogicException(getActorDesc(this) + " already has a transform.");
+		}
+	}
+	else
 	{
 		if (_hostActor->transform() == nullptr)
 		{
 			throw NMSLogicException("OWActor [" + _hostActor->name()
 				+ "] must have a transform before creating sub Actors. Cannot recover.");
 		}
-		this->transform(new OWTransform(_hostActor->transform()));
+		// jfw Does this overwrite an existing transform?
+		//OWTransform* trans = new OWTransform();
+		//trans->parentTransform(_hostActor->transform());
 	}
-	else
+}
+
+void OWActor::transform(OWTransform* newValue) 
+{
+	if (mActorTransform != nullptr)
 	{
-		this->transform(new OWTransform(nullptr));
+		throw NMSLogicException(getActorDesc(this) + " already has a transform.");
+	}
+	mActorTransform = newValue;
+	if (mHostActor != nullptr)
+	{
+		mActorTransform->parentTransform(mHostActor->transform());
 	}
 }
 
@@ -31,6 +50,12 @@ void OWActor::setup()
 {
 	if (!mSetup)
 	{
+		if (mScriptor.actor() == nullptr)
+			mScriptor.actor(this);
+		if (this->transform() == nullptr)
+		{
+			throw NMSLogicException(getActorDesc(this) + " must have a transform before setup is called.");
+		}
 		doSetupActor();
 		mSetup = true;
 	}
@@ -64,12 +89,6 @@ static void validateCollider(OWActor* a, OWCollider* coll)
 	}
 }
 
-static void validatePhysics(OWActor* a, OWPhysics*& phys)
-{
-	if (phys == nullptr)
-		phys = new OWPhysics(); // Physics is often the default.
-}
-
 static void validateMeshComponent(OWActor* a, const OWMeshComponentBase* mesh)
 {
 	if (mesh == nullptr)
@@ -86,13 +105,9 @@ static void validateMeshComponent(OWActor* a, const OWMeshComponentBase* mesh)
 	}
 }
 
-static void validateTransform(OWActor* a, OWTransform*& trans)
+static void validateTransform(OWActor* a, OWTransform* trans)
 {
-	if (trans == nullptr)
-		trans = new OWTransform(a->transform()); // Often just need default Transform
-	if (trans->hostTransform() == nullptr)
-		trans->hostTransform(a->transform());
-	if (trans->hostTransform() != a->transform())
+	if ((trans->parentTransform() != nullptr) && (trans->parentTransform() != a->transform()))
 	{
 		throw NMSLogicException(getActorDesc(a) + " transform mismatch. Cannot recover.");
 	}
@@ -103,12 +118,21 @@ static void validateTransform(OWActor* a, OWTransform*& trans)
 		{
 			throw NMSLogicException(getActorDesc(a) + " has a hostActor() but it's transform does not have a host transform. Cannot recover.");
 		}
-		const OWTransform* parT2 = a->transform()->hostTransform();
+		const OWTransform* parT2 = a->transform()->parentTransform();
 		if (parT1 != parT2)
 		{
 			throw NMSLogicException(getActorDesc(a) + " transform has an invalid hostTransform. Cannot recover.");
 		}
 	}
+}
+
+static void validatePhysics(OWActor* a, OWPhysics*& phys)
+{
+	if (phys == nullptr)
+	{
+		phys = new OWPhysics(a->transform()); // Physics is often the default.
+	}
+	validateTransform(a, phys->transform());
 }
 
 static void validateSound(OWActor* a, OWSoundComponent*& sound)
@@ -130,10 +154,9 @@ size_t OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
 	mElements.push_back(newElement);
 	DiscreteEntity& elm = mElements.back();
 	validateCollider(this, elm.coll);
-	validatePhysics(this, elm.phys);
+	validatePhysics(this, elm.physics);
 	validateMeshComponent(this, elm.mesh);
 	validateRenderer(this, elm.rend);
-	validateTransform(this, elm.trans);
 	validateSound(this, elm.sound);
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
@@ -156,15 +179,15 @@ void OWActorDiscrete::doSetupActor()
 
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
-			elm.rend->mSSBO.append(elm.trans->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
+			elm.rend->mSSBO.append(elm.physics->transform()->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
 		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
 		{
-			elm.rend->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
+			elm.rend->mSSBO.append(elm.physics->transform()->modelMatrix(), GPUBufferObject::Model);
 		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
 		{
-			const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+			const glm::vec4& p = glm::vec4(elm.physics->transform()->worldPosition(), 0);
 			elm.rend->mSSBO.append(p, GPUBufferObject::Position);
 		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Colour))
@@ -190,10 +213,9 @@ void OWActorDiscrete::doGetScriptingComponents(int ndx, OWScriptComponent::Requi
 	if (ndx < mElements.size())
 	{
 		DiscreteEntity& elm = mElements[ndx];
-		required.phys = elm.phys;
+		required.phys = elm.physics;
 		required.mesh = elm.mesh;
 		required.sound = elm.sound;
-		required.trans = elm.trans;
 	}
 }
 
@@ -207,9 +229,8 @@ size_t OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
 	mElements.push_back(newElement);
 	NCom1RenElement& elm = mElements.back();
 	validateCollider(this, elm.coll);
-	validatePhysics(this, elm.phys);
+	validatePhysics(this, elm.physics);
 	validateMeshComponent(this, elm.mesh);
-	validateTransform(this, elm.trans);
 	validateSound(this, elm.sound);
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
@@ -235,20 +256,20 @@ void OWActorNCom1Ren::doSetupActor()
 			scene()->addCollider(elm.coll, this, i);
 		}
 		b = b | b1;
-		glm::vec3 jfw3 = elm.trans->worldPosition();
-		glm::mat4 jfw4 = elm.trans->modelMatrix();
+		glm::vec3 jfw3 = elm.physics->transform()->worldPosition();
+		glm::mat4 jfw4 = elm.physics->transform()->modelMatrix();
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
-			mRenderer->mSSBO.append(elm.trans->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
+			mRenderer->mSSBO.append(elm.physics->transform()->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
 
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
 		{
-			mRenderer->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
+			mRenderer->mSSBO.append(elm.physics->transform()->modelMatrix(), GPUBufferObject::Model);
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
-			const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+			const glm::vec4& p = glm::vec4(elm.physics->transform()->worldPosition(), 0);
 			mRenderer->mSSBO.append(p, GPUBufferObject::Position);
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Colour))
@@ -271,10 +292,9 @@ void OWActorNCom1Ren::doGetScriptingComponents(int ndx, OWScriptComponent::Requi
 	if (ndx < mElements.size())
 	{
 		NCom1RenElement& elm = mElements[ndx];
-		required.phys = elm.phys;
+		required.phys = elm.physics;
 		required.mesh = elm.mesh;
 		required.sound = elm.sound;
-		required.trans = elm.trans;
 	}
 }
 
@@ -288,8 +308,7 @@ size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newEl
 	mElements.push_back(newElement);
 	MutableParticleElement& elm = mElements.back();
 	validateCollider(this, elm.coll);
-	validatePhysics(this, elm.phys);
-	validateTransform(this, elm.trans);
+	validatePhysics(this, elm.physics);
 	size_t retval = mElements.size() - 1;
 	elm.coll->componentIndex(retval);
 	return retval;
@@ -309,7 +328,7 @@ void OWActorMutableParticle::doSetupActor()
 	{
 		MutableParticleElement& elm = mElements[i];
 		AABB b_moved = b;
-		const glm::vec4& p = glm::vec4(elm.trans->worldPosition(), 0);
+		const glm::vec4& p = glm::vec4(elm.physics->transform()->worldPosition(), 0);
 		b_moved.move(p);
 		elm.coll->points(b_moved);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
@@ -319,12 +338,12 @@ void OWActorMutableParticle::doSetupActor()
 		b = b | b_moved;
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
-			mRenderer->mSSBO.append(elm.trans->drawSize(mMeshTemplate->drawType()), GPUBufferObject::BillboardSize);
+			mRenderer->mSSBO.append(elm.physics->transform()->drawSize(mMeshTemplate->drawType()), GPUBufferObject::BillboardSize);
 
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
 		{
-			mRenderer->mSSBO.append(elm.trans->modelMatrix(), GPUBufferObject::Model);
+			mRenderer->mSSBO.append(elm.physics->transform()->modelMatrix(), GPUBufferObject::Model);
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
@@ -350,10 +369,9 @@ void OWActorMutableParticle::doGetScriptingComponents(int ndx, OWScriptComponent
 	if (ndx < mElements.size())
 	{
 		MutableParticleElement& elm = mElements[ndx];
-		required.phys = elm.phys;
+		required.phys = elm.physics;
 		required.mesh = mMeshTemplate;
 		required.sound = mSound;
-		required.trans = elm.trans;
 	}
 }
 

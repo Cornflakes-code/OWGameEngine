@@ -12,6 +12,15 @@ struct OWTransformData
 	glm::quat rotation = {};
 	glm::vec3 position = { 0, 0, 0 };
 	glm::vec3 scale = { 1,1,1 };
+	OWTransformData() {}
+	OWTransformData(const glm::vec3& _position, const glm::vec3& _scale = { 1,1,1 })
+		: position(_position), scale(_scale)
+	{
+	}
+	OWTransformData(const glm::vec3& _position, const glm::vec3& _scale, const glm::quat& _rotation)
+		: position(_position), scale(_scale), rotation(_rotation)
+	{
+	}
 };
 
 class OWENGINE_API OWTransform final
@@ -21,15 +30,11 @@ class OWENGINE_API OWTransform final
 	// The actor containing the entity that this transform is linked to
 	const OWTransform* mParent = nullptr;
 public:
-	OWTransform(const OWTransform* _owner, const OWTransformData& _data);
-	OWTransform(const OWTransform* _owner, const glm::vec3& pos = glm::vec3(0),
-		const glm::vec3& scale = glm::vec3(1), const glm::quat& rot = glm::quat());
+	OWTransform(const OWTransformData& _data = OWTransformData());
 	~OWTransform() {}
 
-	const OWTransform* hostTransform() const { return mParent;  }
-	void hostTransform(const OWTransform* newValue) {
-		mParent = newValue;
-	}
+	const OWTransform* parentTransform() const { return mParent;  }
+	void parentTransform(const OWTransform* newValue);
 	void rotation(float radians, const glm::vec3& axis);
 	glm::quat rotation() const {
 		return mData.rotation;

@@ -39,7 +39,9 @@ OWActorDiscrete::DiscreteEntity OWButton::makeShape(const std::string& s, const 
 				GPUBufferObject::BufferType::BillboardSize },
 		GPUBufferObject::BufferStyle::SSBO);
 	sse.rend->drawModes(GL_TRIANGLES, GL_TRIANGLES);
-	sse.trans = new OWTransform(transform(), glm::vec3(0), size);
+	OWTransform* trans = (new OWTransform({ glm::vec3(0), size }));
+	trans->parentTransform(transform());
+	sse.physics = new OWPhysics(trans);
 	return sse;
 }
 
@@ -53,7 +55,7 @@ void OWButton::initialise(const OWButtonData& _data)
 		{ 0.5f, 0.5f, 0.0f },
 		{ 0.5f, -0.5f, 0.0f }
 	};
-	this->transform(new OWTransform(nullptr)); // Always do this before creating child transforms
+	this->transform(new OWTransform()); // Always do this before creating child transforms
 
 	glm::vec3 sz = glm::vec3(0.4, 0.1, 0);
 	addComponents(makeShape("Unclicked Button", OWUtils::colour(OWUtils::SolidColours::BLUE), sz));
@@ -72,7 +74,11 @@ void OWButton::initialise(const OWButtonData& _data)
 		GPUBufferObject::BufferStyle::SSBO));
 	td.text = "Click Me";
 	sse.mesh = new OWTextComponent(this, "Rope Banner", td);
-	sse.trans = new OWTransform(transform(), glm::vec3(0, 0, 0), { 0.05f, 0.05f, 1.0f });
+	OWTransform* trans = new OWTransform(OWTransformData(glm::vec3(0, 0, 0), { 0.05f, 0.05f, 1.0f }));
+	trans->parentTransform(transform());
+	sse.physics = new OWPhysics(trans);
+
+	sse.physics = new OWPhysics(new OWTransform({ glm::vec3(0, 0, 0), { 0.05f, 0.05f, 1.0f } }));
 	sse.colour = OWUtils::colour(OWUtils::SolidColours::GREEN);
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
 	addComponents(sse);

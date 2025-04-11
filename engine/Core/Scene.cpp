@@ -52,6 +52,7 @@ void Scene::setup()
 
 void Scene::timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep)
 {
+	CollisionSystem::testCollide();
 	traverseSceneGraph([](OWActor* a)
 		{
 			a->preTick();

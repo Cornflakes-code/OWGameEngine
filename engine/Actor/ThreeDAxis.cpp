@@ -25,7 +25,7 @@ void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 		{ 0.0, 0.0, bb.maxPoint().z }
 	};
 
-	transform(new OWTransform(nullptr)); // Always do this before creating child transforms
+	transform(new OWTransform()); // Always do this before creating child transforms
 	OWActorDiscrete::DiscreteEntity sse;
 	sse.colour = mData.axisColour;
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
@@ -42,7 +42,9 @@ void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO);
 	sse.rend->drawModes(GL_LINES, GL_LINES);
-	sse.trans = new OWTransform(transform());
+	OWTransform* trans = new OWTransform();
+	trans->parentTransform(transform());
+	sse.physics = new OWPhysics(trans);
 	addComponents(sse);
 
 	AABB boxUnion;
@@ -88,6 +90,8 @@ OWActorDiscrete::DiscreteEntity ThreeDAxis::createText(const glm::vec3& pos, con
 			GPUBufferObject::BufferType::BillboardSize},
 		GPUBufferObject::BufferStyle::SSBO);
 	glm::vec3 p = glm::vec3(pos.x, pos.y, pos.z);
-	sse.trans = new OWTransform(this->transform(), p, {0.5f, 0.5f, 1.0f});
+	OWTransform* trans = new OWTransform({ p, { 0.5f, 0.5f, 1.0f } });
+	trans->parentTransform(this->transform());
+	sse.physics = new OWPhysics(trans);
 	return sse;
 }

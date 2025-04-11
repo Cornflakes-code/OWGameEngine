@@ -2,7 +2,8 @@
 
 glm::vec2 OWCollider::bounds(bool min) const
 {
-	throw NMSNotYetImplementedException("CollionSystem::preTick()");
+	// jfw todo
+	//throw NMSNotYetImplementedException("CollionSystem::preTick()");
 	return glm::vec3(0);
 }
 
@@ -10,7 +11,8 @@ bool OWCollider::collides(const OWCollider& other) const
 {
 	if (actor() == other.actor())
 		return false;
-	return true;
+	// jfw fix me
+	return false;
 }
 
 void OWCollider::points(const AABB& bounds)

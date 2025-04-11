@@ -291,6 +291,7 @@ namespace CollisionSystem
     {
 #ifdef BASIC_COLLISIONS
 #endif
+
 #ifdef SWEEP_AND_PRUNE
         gEdgesX.push_back(Edge(*coll, true));
         gEdgesX.push_back(Edge(*coll, false));
@@ -325,7 +326,7 @@ namespace CollisionSystem
 #endif
     }
 
-	void collide()
+	void testCollide()
 	{
 #ifdef BASIC_COLLISIONS
 		collidBasic();

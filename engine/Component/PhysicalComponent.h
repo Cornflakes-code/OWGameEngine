@@ -5,17 +5,18 @@
 #include "../OWEngine/OWEngine.h"
 #include "Component.h"
 #include "../Geometry/BoundingBox.h"
+#include "../Helpers/Transform.h"
 
-namespace OWPhysicalDataMaximums
+struct OWENGINE_API OWPhysicalDataMaximums
 {
-	extern glm::vec3 gravity;
-	extern glm::vec3 elocity;
-	extern glm::vec3 acceleration;
-	extern float mass;
-	extern float hardness;
+	glm::vec3 gravity = glm::vec3(0.0f, 9.8f, 0.0f);
+	glm::vec3 velocity = glm::vec3(1000.0f);
+	glm::vec3 acceleration = glm::vec3(100.0f);
+	float mass = 1.0f;
+	float hardness = 1.0f;
 };
 
-struct OWPhysicsData
+struct OWENGINE_API OWPhysicsData
 {
 	glm::vec3 velocity = glm::vec3(0);
 	glm::vec3 rotationalVelocity = glm::vec3(0);
@@ -28,21 +29,35 @@ struct OWPhysicsData
 // 1. write to mCurrentState
 // 2. read from mScratch AFTER interpolate called
 // Also see run loop in Movie.cpp
-class OWPhysics
+class OWENGINE_API OWPhysics
 {
+	struct OWPhysicsElement
+	{
+		OWTransform* t;
+		OWPhysicsData pd;
+	};
+	OWPhysicalDataMaximums mMaximums;
 	OWPhysicsData mPreviousData;
-	OWPhysicsData mCurrentData;
-	OWPhysicsData mScratchData;
+	OWPhysicsElement mCurrentData;
+	OWPhysicsElement mScratchData;
 
 	// 0(invisibility -> 1 (fully opaque)
 	float mVisibility = 1.0f;
 	float mMass = 1.0f;
 	float mHardness = 0.5f;
 public:
-	OWPhysics(const OWPhysicsData& _data = OWPhysicsData())
-		: mPreviousData(_data), mCurrentData(_data), mScratchData(_data)
+	OWPhysics(OWTransform* _tr, const OWPhysicsData& _data = OWPhysicsData())
+		: mPreviousData(_data), mCurrentData({ _tr, _data }), mScratchData({ _tr, _data })
 	{
+		if (_tr == nullptr)
+		{
+			mCurrentData.t = mScratchData.t = new OWTransform();
+		}
 	}
+	const OWTransform* transform() const { return mCurrentData.t; }
+	OWTransform* transform() { return mCurrentData.t; }
+
+	const OWTransform* renderTransform() const { return mScratchData.t; }
 
 	void tick(float dt)
 	{
@@ -51,20 +66,17 @@ public:
 
 	void copyCurrentToPrevious()
 	{
-		mPreviousData = mCurrentData;
+		mPreviousData = mCurrentData.pd;
 	}
 
 	void interpolate(float OW_UNUSED(totalTime), float alpha, float OW_UNUSED(fixedTimeStep))
 	{
 		float oneMinusAlpha = 1.0f - alpha;
-		mScratchData.acceleration = mCurrentData.acceleration * alpha + mPreviousData.acceleration * oneMinusAlpha;
-		mScratchData.velocity = mCurrentData.velocity * alpha + mPreviousData.velocity * oneMinusAlpha;
-		mScratchData.rotationalVelocity = mCurrentData.rotationalVelocity * alpha + mPreviousData.rotationalVelocity * oneMinusAlpha;
+		mScratchData.pd.acceleration = mCurrentData.pd.acceleration * alpha + mPreviousData.acceleration * oneMinusAlpha;
+		mScratchData.pd.velocity = mCurrentData.pd.velocity * alpha + mPreviousData.velocity * oneMinusAlpha;
+		mScratchData.pd.rotationalVelocity = mCurrentData.pd.rotationalVelocity * alpha + mPreviousData.rotationalVelocity * oneMinusAlpha;
 	}
 
-	glm::vec3 velocity() const {
-		return mScratchData.velocity;
-	}
 	void visibility(float newValue)
 	{
 		if (newValue < 0.0f)

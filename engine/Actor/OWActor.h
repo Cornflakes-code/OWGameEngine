@@ -20,17 +20,13 @@ public:
 	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
 
-	OWCollider* coll = nullptr;
-	OWPhysics* phys = nullptr;
-	OWMeshComponentBase* mesh = nullptr;
-	OWRenderer* rend = nullptr;
-	OWTransform* trans = nullptr;
-	OWSoundComponent* sound = nullptr;
 	void getScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
 	{
 		doGetScriptingComponents(ndx, required);
 	}
-
+	void scriptor(const OWScriptComponent& newValue) {
+		mScriptor = newValue;
+	}
 	void setup();
 	virtual void preTick()
 	{
@@ -68,9 +64,7 @@ public:
 	OWTransform* transform() {
 		return mActorTransform;
 	}
-	void transform(OWTransform* newValue) {
-		mActorTransform = newValue;
-	}
+	void transform(OWTransform* newValue);
 	bool setupCompleted() const { return mSetup; }
 	void collided(const OWCollider& component, const OWCollider& otherComponent)
 	{
@@ -92,8 +86,6 @@ protected:
 	virtual void doCopyCurrentToPrevious() = 0;
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) = 0;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) = 0;
-		//void callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
-	//	const OWPhysics* phys, OWTransform* trans, OWRenderer* rend);
 	virtual void doSetupActor() = 0;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) = 0;
@@ -102,8 +94,8 @@ private:
 	std::string mName;
 	AABB mBounds;
 	Scene* mScene;
+	OWScriptComponent mScriptor;
 	OWTransform* mActorTransform = nullptr;
-	OWScriptComponent mScriptor = nullptr;
 	OWActor* mHostActor = nullptr;
 	bool mIsActive = true;
 	bool mSetup = false;
@@ -117,10 +109,9 @@ public:
 	{
 		glm::vec4 colour = { 0,0,0,1.0 };
 		OWCollider* coll = nullptr;
-		OWPhysics* phys = nullptr;
+		OWPhysics* physics = nullptr;
 		OWMeshComponentBase* mesh = nullptr;
 		OWRenderer* rend = nullptr;
-		OWTransform* trans = nullptr;
 		OWSoundComponent* sound = nullptr;
 	};
 	OWActorDiscrete(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
@@ -133,14 +124,14 @@ protected:
 	{
 		for (auto& elm : mElements)
 		{
-			elm.phys->copyCurrentToPrevious();
+			elm.physics->copyCurrentToPrevious();
 		}
 	}
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
 	{
 		for (auto& elm : mElements)
 		{
-			elm.phys->interpolate(totalTime, alpha, fixedTimeStep);
+			elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
 		}
 	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
@@ -161,9 +152,8 @@ public:
 		glm::vec4 colour = { 0,0,0,1.0 };
 		OWCollider* coll = nullptr;
 		OWMeshComponentBase* mesh = nullptr;
-		OWPhysics* phys = nullptr;
+		OWPhysics* physics = nullptr;
 		OWSoundComponent* sound = nullptr;
-		OWTransform* trans = nullptr;
 	};
 	OWActorNCom1Ren(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
 		: OWActor(_scene, _name, _hostActor) {
@@ -178,7 +168,7 @@ protected:
 	{
 		for (auto& elm : mElements)
 		{
-			elm.phys->copyCurrentToPrevious();
+			elm.physics->copyCurrentToPrevious();
 		}
 	}
 
@@ -186,7 +176,7 @@ protected:
 	{
 		for (auto& elm : mElements)
 		{
-			elm.phys->interpolate(totalTime, alpha, fixedTimeStep);
+			elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
 		}
 	}
 
@@ -207,8 +197,7 @@ public:
 	{
 		glm::vec4 colour = { 0,0,0,0 };
 		OWCollider* coll = nullptr;
-		OWTransform* trans = nullptr;
-		OWPhysics* phys = nullptr;
+		OWPhysics* physics = nullptr;
 	};
 	OWActorMutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
 		: OWActor(_scene, _name, _hostActor) {
@@ -226,14 +215,14 @@ protected:
 	{
 		for (auto& elm : mElements)
 		{
-			elm.phys->copyCurrentToPrevious();
+			elm.physics->copyCurrentToPrevious();
 		}
 	}
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
 	{
 		for (auto& elm : mElements)
 		{
-			elm.phys->interpolate(totalTime, alpha, fixedTimeStep);
+			elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
 		}
 	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
