@@ -212,25 +212,6 @@ void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale
 		elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
 		multipleTexts->addComponents(elm);
 	}
-	/*
-	OWActorNCom1Ren* multipleTexts = new OWActorNCom1Ren(this->scene(), "Rope Labels", this);
-	multipleTexts->renderer(new OWMeshRenderer("DynamicText.json"));
-	for (const PolygonBuilder::SliceId& si : mPolyBuilder->labels())
-	{
-		OWTextComponentData td;
-		td.tdt = OWTextComponentData::TextDisplayType::Dynamic;
-		td.text = std::to_string(si.id);
-		td.fontHeight = mData.labelTextData.fontHeight;
-		td.fontSpacing = textSpacing * 10.0f;
-		OWActorNCom1Ren::NCom1RenElement elm;
-		elm.mesh = new OWTextComponent(this, td.text, td);
-		elm.phys = new OWPhysics();
-		elm.trans = new OWTransform(this->transform(), si.pos);
-		elm.coll = new OWCollider(multipleTexts, OWCollider::CollisionType::Box);
-
-		multipleTexts->addComponents(elm);
-	}
-	*/
 }
 
 

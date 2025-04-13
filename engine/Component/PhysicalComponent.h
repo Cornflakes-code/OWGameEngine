@@ -52,7 +52,7 @@ public:
 	{
 		if (_tr == nullptr)
 		{
-			mCurrentData.t = mScratchData.t = new OWTransform();
+			mPreviousData.t = mCurrentData.t = mScratchData.t = new OWTransform();
 		}
 	}
 	const OWTransform* transform() const { return mCurrentData.t; }

@@ -37,20 +37,20 @@
 
 //#define INCLUDE_RAY
 //#define INCLUDE_BUTTONS
-//#define INCLUDE_PLANES
+#define INCLUDE_PLANES
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
 #define INCLUDE_BOXES
 #ifdef _DEBUG
-int GDEBUG_PICKING = 50;
+int GDEBUG_PICKING = 5;
 #else
 int GDEBUG_PICKING = 10000;
 #endif
 //#define BOXES_CENTERED
-//#define INCLUDE_XYZ_AXIS
+#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
-//#define INCLUDE_IMPORTED_MODEL
+#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScene::mWindowBounds;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. 
@@ -418,7 +418,7 @@ void NMSSplashScene::doSetupScene()
 	sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
 	sse.coll = new OWCollider(fullScreenActor, OWCollider::CollisionType::Permeable);
 	sse.mesh = (new OWMeshComponent(fullScreenActor, "Fullscreen Component"))->add(mds);
-	sse.physics = new OWPhysics(nullptr);
+	//sse.physics = new OWPhysics(nullptr);
 	sse.rend = new OWMeshRenderer(shader, { GPUBufferObject::BufferType::Model }, 
 		GPUBufferObject::BufferStyle::SSBO);
 	sse.sound = new OWSoundComponent();

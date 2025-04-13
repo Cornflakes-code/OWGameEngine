@@ -53,6 +53,6 @@ private:
 	std::vector<glm::vec3> createGrid(const AABB& nmsSpace,
 		const glm::u32vec3& gridSizes,
 		float scaleToWorld);
-	std::vector<glm::vec3> createRandomVectors(const AABB& world,
+	std::vector<glm::vec4> createRandomVectors(const AABB& world,
 		unsigned int count, float scaleToWorld);
 };

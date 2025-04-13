@@ -27,8 +27,6 @@ public:
 	OWRenderer* setOrderedTypes(const std::vector<GPUBufferObject::BufferType>& orderedTypes);
 	OWRenderer* addToSSBO(const std::vector<glm::mat4>& _data, GPUBufferObject::BufferType t);
 	OWRenderer* addToSSBO(const std::vector<glm::vec4>& _data, GPUBufferObject::BufferType t);
-	OWRenderer* addToSSBO(const std::vector<glm::vec3>& _data, GPUBufferObject::BufferType t);
-	OWRenderer* addToSSBO(const std::vector<glm::vec2>& _data, GPUBufferObject::BufferType t);
 	OWRenderer* lockSSBO(const std::vector<GPUBufferObject::BufferType>& orderedTypes);
 	void render(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos);

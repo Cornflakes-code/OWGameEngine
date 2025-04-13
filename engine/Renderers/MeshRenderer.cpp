@@ -89,9 +89,8 @@ void OWMeshRenderer::continueSetup()
 		size_t sz = mSSBO.splicedData.size() * sizeof(float);
 		glNamedBufferStorage(mSbo, sz,
 			(const void*)mSSBO.splicedData.data(),
-			GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
-		// Note the 1 matches our binding = 1 in the vertex shader
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+			GL_MAP_WRITE_BIT);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, mSSBO.shaderBinding(), mSbo);
 		void* buf = glMapNamedBuffer(mSbo, GL_WRITE_ONLY);
 		if (buf == nullptr)
 		{
@@ -181,8 +180,7 @@ void OWMeshRenderer::doRender()
 	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
 	{
 		// Does not appear to impact performance at all
-		// Note the 1 matches our binding = 1 in the vertex shader
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, mSSBO.shaderBinding(), mSbo);
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, mData.polygonMode_mode);
 	if (mTexture.samplerName().size() > 0)

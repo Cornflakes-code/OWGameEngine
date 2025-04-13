@@ -76,10 +76,10 @@ public:
 	void tick(float dt) {
 		mScriptor.tick(dt);
 	}
-	void interpolatePhysics(float totalTime, float alpha, float fixedTimeStep) {
-		doInterpolatePhysics(totalTime, alpha, fixedTimeStep);
-	}
-
+	void interpolatePhysics(float totalTime, float alpha, float fixedTimeStep);
+#ifdef _DEBUG
+	bool debugInclude() const;
+#endif
 	//void appendMutator(OWRenderTypes::ActorSetupMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
 protected:
 	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) = 0;
@@ -127,13 +127,7 @@ protected:
 			elm.physics->copyCurrentToPrevious();
 		}
 	}
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
-	{
-		for (auto& elm : mElements)
-		{
-			elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
-		}
-	}
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
@@ -171,15 +165,7 @@ protected:
 			elm.physics->copyCurrentToPrevious();
 		}
 	}
-
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
-	{
-		for (auto& elm : mElements)
-		{
-			elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
-		}
-	}
-
+	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
 	void doRender(const glm::mat4& proj,
@@ -245,11 +231,11 @@ protected:
 	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
 	virtual void doCopyCurrentToPrevious() override final
 	{
-		mPhysics->copyCurrentToPrevious();
+		// Nothing changes, do nothing
 	}
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
 	{
-		mPhysics->interpolate(totalTime, alpha, fixedTimeStep);
+		// Nothing changes, do nothing
 	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;

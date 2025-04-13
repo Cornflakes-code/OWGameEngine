@@ -41,7 +41,7 @@ private:
 	OWRenderTypes::DrawType mDrawType = OWRenderTypes::DrawType::ThreeD;
 	OWActor* mOwner;
 	bool mSetup = false;
-	bool mActive = false;
+	bool mActive = true;
 	std::string mName;
 };
 

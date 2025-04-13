@@ -22,20 +22,19 @@ struct GPUBufferObject
 		Model, // mat4 
 		Position, // vec4
 		Colour, // vec4
-		BillboardSize, // vec2
-		Padding2,
-		Padding1,
+		BillboardSize, // vec4
 		NoType
 	};
 
 	void append(const std::vector<glm::mat4>& _data, BufferType t);
 	void append(const std::vector<glm::vec4>& _data, BufferType t);
-	void append(const std::vector<glm::vec3>& _data, BufferType t);
-	void append(const std::vector<glm::vec2>& _data, BufferType t);
 	void append(const glm::mat4& p, BufferType t);
 	void append(const glm::vec4& p, BufferType t);
+	// Padded to four bytes
 	void append(const glm::vec3& p, BufferType t);
+	// Padded to four bytes
 	void append(const glm::vec2& p, BufferType t);
+	// Padded to four bytes
 	void append(float f, BufferType t);
 	void setAllowedTypes(const std::vector<GPUBufferObject::BufferType>& _allowedTypes);
 
@@ -56,8 +55,21 @@ struct GPUBufferObject
 	void setWriteBuffer(void* buf)
 	{
 		mWriteBuffer = static_cast<char8_t*>(buf);
+#ifdef _DEBUG
+		ff = reinterpret_cast<float*>(mWriteBuffer);
+#endif
+	}
+#ifdef _DEBUG
+	float* ff = nullptr;
+#endif
+	void shaderBinding(unsigned int newValue) {
+		mShaderBinding = newValue;
+	}
+	unsigned int shaderBinding() const {
+		return mShaderBinding;
 	}
 private:
+	unsigned int mShaderBinding = 1;
 	char8_t* mWriteBuffer = nullptr;
 	bool mLocked = false;
 	bool mSplicedCalled = false;

@@ -17,6 +17,7 @@ layout(binding = 1, std430) readonly buffer SSBOBuffer {
 	SSBO ssbo[];
 };
 
+out int jfw_ndx;
 out vec3 FragPos;
 out vec3 Normal;
 out vec3 LightPos;
@@ -41,6 +42,7 @@ void main()
 	jfw_in_vertex = in_vertex;
 	jfw_model = model;
 	jfw_view = view;
+	jfw_ndx = ndx;
 	jfw_projection = projection;
 	objectColor = ssbo[ndx].colour;
     gl_Position = projection * view * model * vec4(in_vertex, 1.0);

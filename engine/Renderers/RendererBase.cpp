@@ -153,18 +153,6 @@ OWRenderer* OWRenderer::addToSSBO(const std::vector<glm::vec4>& _data, GPUBuffer
 	return this;
 }
 
-OWRenderer* OWRenderer::addToSSBO(const std::vector<glm::vec3>& _data, GPUBufferObject::BufferType t)
-{
-	mSSBO.append(_data, t);
-	return this;
-}
-
-OWRenderer* OWRenderer::addToSSBO(const std::vector<glm::vec2>& _data, GPUBufferObject::BufferType t)
-{
-	mSSBO.append(_data, t);
-	return this;
-}
-
 OWRenderer* OWRenderer::lockSSBO(const std::vector<GPUBufferObject::BufferType>& orderedTypes) 
 { 
 	mSSBO.lock(orderedTypes);

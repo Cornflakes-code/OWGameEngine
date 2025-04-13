@@ -33,6 +33,15 @@ OWActor::OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor)
 	}
 }
 
+#ifdef _DEBUG
+bool OWActor::debugInclude() const
+{
+	//return name() == "All Dice";
+	//return name() == "Fullscreen";
+	return true;
+}
+#endif
+
 void OWActor::transform(OWTransform* newValue) 
 {
 	if (mActorTransform != nullptr)
@@ -56,25 +65,34 @@ void OWActor::setup()
 		{
 			throw NMSLogicException(getActorDesc(this) + " must have a transform before setup is called.");
 		}
-		doSetupActor();
-		mSetup = true;
+#ifdef _DEBUG
+		if (debugInclude())
+		{
+#endif
+			doSetupActor();
+#ifdef _DEBUG
+		}
+#endif
+			mSetup = true;
 	}
 }
 
-/*
-void OWActor::callMutators(const OWCollider* coll, const OWMeshComponentBase* mesh,
-	const OWPhysics* phys, OWTransform* trans, OWRenderer* rend)
+void OWActor::interpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
 {
-	for (auto& cb : mMutatorCallbacks)
-	{
-		cb(coll, mesh, phys, trans, rend);
-	}
+#ifdef _DEBUG
+	if (!debugInclude())
+		return;
+#endif
+	doInterpolatePhysics(totalTime, alpha, fixedTimeStep);
 }
-*/
 
 void OWActor::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos)
 {
+#ifdef _DEBUG
+	if (!debugInclude())
+		return;
+#endif
 	if (mSetup && active())
 	{
 		doRender(proj, view, cameraPos);
@@ -204,7 +222,8 @@ void OWActorDiscrete::doRender(const glm::mat4& proj,
 {
 	for (auto& elm: mElements)
 	{
-		elm.rend->render(proj, view, cameraPos);
+		if (elm.mesh->active())
+			elm.rend->render(proj, view, cameraPos);
 	}
 }
 
@@ -216,6 +235,27 @@ void OWActorDiscrete::doGetScriptingComponents(int ndx, OWScriptComponent::Requi
 		required.phys = elm.physics;
 		required.mesh = elm.mesh;
 		required.sound = elm.sound;
+	}
+}
+
+void OWActorDiscrete::doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
+{
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		DiscreteEntity& elm = mElements[i];
+		elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
+		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
+		{
+			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
+			float* f = glm::value_ptr(m);
+			elm.rend->mSSBO.updateSplicedData(f, GPUBufferObject::Model, 0);
+		}
+		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
+		{
+			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
+			float* f = glm::value_ptr(m);
+			elm.rend->mSSBO.updateSplicedData(f, GPUBufferObject::Position, 0);
+		}
 	}
 }
 
@@ -261,7 +301,6 @@ void OWActorNCom1Ren::doSetupActor()
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
 			mRenderer->mSSBO.append(elm.physics->transform()->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
-
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
 		{
@@ -295,6 +334,33 @@ void OWActorNCom1Ren::doGetScriptingComponents(int ndx, OWScriptComponent::Requi
 		required.phys = elm.physics;
 		required.mesh = elm.mesh;
 		required.sound = elm.sound;
+	}
+}
+
+void OWActorNCom1Ren::doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
+{
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		NCom1RenElement& elm = mElements[i];
+		elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
+		{
+			glm::vec4 m = glm::vec4(elm.physics->transform()->drawSize(elm.mesh->drawType()), 0, 0);
+			float* f = glm::value_ptr(m);
+			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::BillboardSize, i);
+		}
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
+		{
+			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
+			float* f = glm::value_ptr(m);
+			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Model, i);
+		}
+		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
+		{
+			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
+			float* f = glm::value_ptr(m);
+			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Position, i);
+		}
 	}
 }
 
@@ -398,7 +464,7 @@ void OWActorMutableParticle::doInterpolatePhysics(float totalTime, float alpha, 
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
-			glm::vec3 m = elm.physics->renderTransform()->localPosition();
+			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
 			float* f = glm::value_ptr(m);
 			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Position, i);
 		}
@@ -458,6 +524,6 @@ void OWActorImmutableParticle::doGetScriptingComponents(int ndx, OWScriptCompone
 
 void OWActorImmutableParticle::doCollided(const OWCollider& component, const OWCollider& otherComponent)
 {
-	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
+	throw NMSLogicException("OWActorImmutableParticle::doCollided() should not collide with anything.");
 }
 

@@ -69,9 +69,14 @@ void OWModelRenderer::continueSetup()
 		glNamedBufferStorage(mSbo,
 			sz,
 			(const void*)mSSBO.splicedData.data(),
-			GL_DYNAMIC_STORAGE_BIT);
-		// Note the 1 matches our binding = 1 in the vertex shader
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+			GL_MAP_WRITE_BIT);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, mSSBO.shaderBinding(), mSbo);
+		void* buf = glMapNamedBuffer(mSbo, GL_WRITE_ONLY);
+		if (buf == nullptr)
+		{
+			throw NMSException("OWMeshRenderer.glMapNamedBuffer returned null. Unknown error.\n");
+		}
+		mSSBO.setWriteBuffer(buf);
 	}
 	else if (mSSBO.dataExists(GPUBufferObject::BufferStyle::Uniform))
 	{
@@ -146,8 +151,7 @@ void OWModelRenderer::doRender()
 	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
 	{
 		// Does not appear to impact performance at all
-		// Note the 1 matches our binding = 1 in the vertex shader
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mSbo);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, mSSBO.shaderBinding(), mSbo);
 	}
 
 	if (mData.textures.size())

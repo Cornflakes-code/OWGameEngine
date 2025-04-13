@@ -301,15 +301,16 @@ void NoMansSky::loadStars(const std::string& fileName,
 	}
 }
 
-std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
+std::vector<glm::vec4> NoMansSky::createRandomVectors(const AABB& nmsSpace,
 					unsigned int count, float scaleToWorld)
 {
-	std::vector<glm::vec3> retval;
+	std::vector<glm::vec4> retval;
 	std::default_random_engine generator;
 	// 3 times std dev either side of mean.
 	float xstddev = nmsSpace.size().x * scaleToWorld / 6.0f;
 	float ystddev = nmsSpace.size().y * scaleToWorld / 6.0f;
 	float zstddev = nmsSpace.size().z * scaleToWorld / 6.0f;
+	float w = 0.0f;
 
 	std::normal_distribution<float> xdistribution(0.0f, xstddev);
 	std::normal_distribution<float> ydistribution(0.0f, ystddev);
@@ -327,7 +328,7 @@ std::vector<glm::vec3> NoMansSky::createRandomVectors(const AABB& nmsSpace,
 
 	for (unsigned int i = 0; i < count; i++)
 	{
-		retval.push_back({ x[i], y[i], z[i] });
+		retval.push_back({ x[i], y[i], z[i], w });
 	}
 	return retval;
 }

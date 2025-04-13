@@ -7,7 +7,7 @@ struct SSBO
 {
 	vec4 pos;
 	vec4 colour;
-	vec4 bbSize;
+	vec2 bbSize;
 };
 
 layout(binding = 1, std430) readonly buffer SSBOBuffer {
@@ -20,6 +20,7 @@ int SSBOIndex()
 }
 
 // Output data ; will be interpolated for each fragment.
+out int jfw_ndx;
 out vec2 uv;
 out vec3 jfw_CameraRight_worldspace;
 out vec3 jfw_CameraUp_worldspace;
@@ -27,6 +28,7 @@ out mat4 jfw_pv;
 out vec3 jfw_BillboardPos;
 out vec2 jfw_BillboardSize;
 out vec4 ssb_colour;
+out vec4 jfw_pos;
 
 // Values that stay constant for the whole mesh.
 uniform vec3 CameraRight_worldspace;
@@ -46,6 +48,8 @@ void main()
 	jfw_CameraRight_worldspace = CameraRight_worldspace;
 	jfw_CameraUp_worldspace = CameraUp_worldspace;
 	jfw_pv = pv;
+	jfw_ndx = ndx;
+	jfw_pos = ssbo[ndx].pos;
 	jfw_BillboardSize = BillboardSize;
 
 	gl_Position = pv * vec4(BillboardPos, 1.0f);
