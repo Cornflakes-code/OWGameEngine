@@ -3,15 +3,15 @@
 OWGameEngine began as a project to learn OpenGL and it is still performing that role. At it's heart it is a simple and understandable set of classes which can be inherited off to leverage core functionality. The design of the main Game Loop lends itself to efficient multi threading (hopefully]). The engine:
  - Focusses on the higher level objects. 
  - Uses a Movie Based paradigm (Movie/Scenes/Actors/Scenery)
- - Is based on modern C++/OpenGL 3.3/Windows (Visual Studio 2017)/GLFW/GLM
+ - Is based on modern C++/OpenGL 4.5/Windows (Visual Studio 2017)/GLFW/GLM
  - The nature of the main game loop favours multi-threading
  - Is a work in progress
 
 ## The functionality currently existing or 'will be completed soon' includes:
  - ResourceManager. Singleton resource cache
+ - Uses fixed timestep with 'catch up' integration prior to rendering
  - UserInput. Wraps physical implementation of Keyboard and pointing device and emits logical commands via callbacks
- - Scene. The const implementation of a screen in a game. Examples of a scene include Main (where all the gameplay is), Welcome screen or Key mapping screen. Provides access to the Render functionality. Heavy on objects but contains no (?) state information. Apart from setup code is pretty empty. Closely bound to ScenePhysicsState.
- - ScenePhysicsState. Contains the non const aspects of a scene. Heavy on code but light on state data. Think of it as Cookies of a Webpage. Closely coupled to a Scene.
+ - Scene. Examples of a scene include Main (where all the gameplay is), Welcome screen or Key mapping screen. Provides access to the Render functionality. Apart from setup code is pretty empty. 
  - Movie. Provides a fixed timestep physics step and a variable time step render step inside a Game Loop. Swaps Scenes in and out
  - SafeAndRestore. Like the name says.
  - MacroRecorder. Provides the ability to replay game events. Must be deterministic. Only possible with fixed physics timesteps.
@@ -33,6 +33,8 @@ OWGameEngine began as a project to learn OpenGL and it is still performing that 
   - Decentralised Scene Switching Logic
   - Mouse/Keyboard callback Messaging
   - User Input Abstraction
+  - A mongrelled Actor/Component Architecture (hopefully best of both worlds)
+  - No smart pointers (Ownership is striclty defined)
 
 
 ## This is still a learning activity and there are many things to do including (but not limited to):
