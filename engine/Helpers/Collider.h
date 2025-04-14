@@ -20,7 +20,7 @@ public:
 		return mColliderType;
 	}
 
-	glm::vec2 bounds(bool min) const;
+	glm::vec3 bounds(bool min) const;
 	bool collides(const OWCollider& other) const;
 	const OWActor* actor() const { return mActor; }
 	OWActor* actor() { return mActor; }

@@ -52,17 +52,23 @@ void Scene::setup()
 
 void Scene::timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep)
 {
-	CollisionSystem::testCollide();
 	traverseSceneGraph([](OWActor* a)
 		{
 			a->preTick();
 		}
 	);
+	CollisionSystem::preTick();
 
 	float timeStep = std::chrono::duration<float>(fixedStep).count();
 	traverseSceneGraph([timeStep](OWActor* a)
 		{
 			a->tick(timeStep);
+		}
+	);
+	CollisionSystem::postTick();
+	traverseSceneGraph([timeStep](OWActor* a)
+		{
+			a->postTick();
 		}
 	);
 }

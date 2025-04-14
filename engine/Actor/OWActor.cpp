@@ -77,6 +77,33 @@ void OWActor::setup()
 	}
 }
 
+void OWActor::preTick()
+{
+	copyCurrentToPrevious();
+	doPreTick();
+	// Placeholder called on the main thread. OWActor should quickly 
+	// create a background thread to do stuff while render is happenening.
+}
+
+void OWActor::tick(float dt) 
+{
+	mScriptor.tick(dt);
+	doTick(dt);
+}
+
+void OWActor::postTick()
+{
+	doPostTick();
+}
+
+void OWActor::preRender()
+{
+	copyCurrentToPrevious();
+	doPreRender();
+	// Placeholder called on the main thread. OWActor should quickly 
+	// create a background thread to do stuff while render is happenening.
+}
+
 void OWActor::interpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
 {
 #ifdef _DEBUG
@@ -217,6 +244,31 @@ void OWActorDiscrete::doSetupActor()
 	bounds(b);
 }
 
+void OWActorDiscrete::doPreTick()
+{
+}
+
+void OWActorDiscrete::doTick(float dt)
+{
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		DiscreteEntity& elm = mElements[i];
+		elm.physics->tick(dt);
+	}
+}
+
+void OWActorDiscrete::doPostTick()
+{
+}
+
+void OWActorDiscrete::doPreRender()
+{
+}
+
+void OWActorDiscrete::doPostRender()
+{
+}
+
 void OWActorDiscrete::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos) 
 {
@@ -248,13 +300,13 @@ void OWActorDiscrete::doInterpolatePhysics(float totalTime, float alpha, float f
 		{
 			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
 			float* f = glm::value_ptr(m);
-			elm.rend->mSSBO.updateSplicedData(f, GPUBufferObject::Model, 0);
+			elm.rend->mSSBO.updateData(f, GPUBufferObject::Model, 0);
 		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
 		{
 			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
 			float* f = glm::value_ptr(m);
-			elm.rend->mSSBO.updateSplicedData(f, GPUBufferObject::Position, 0);
+			elm.rend->mSSBO.updateData(f, GPUBufferObject::Position, 0);
 		}
 	}
 }
@@ -320,6 +372,31 @@ void OWActorNCom1Ren::doSetupActor()
 	bounds(b);
 }
 
+void OWActorNCom1Ren::doPreTick()
+{
+}
+
+void OWActorNCom1Ren::doTick(float dt)
+{
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		NCom1RenElement& elm = mElements[i];
+		elm.physics->tick(dt);
+	}
+}
+
+void OWActorNCom1Ren::doPostTick()
+{
+}
+
+void OWActorNCom1Ren::doPreRender()
+{
+}
+
+void OWActorNCom1Ren::doPostRender()
+{
+}
+
 void OWActorNCom1Ren::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos) 
 {
@@ -347,19 +424,19 @@ void OWActorNCom1Ren::doInterpolatePhysics(float totalTime, float alpha, float f
 		{
 			glm::vec4 m = glm::vec4(elm.physics->transform()->drawSize(elm.mesh->drawType()), 0, 0);
 			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::BillboardSize, i);
+			mRenderer->mSSBO.updateData(f, GPUBufferObject::BillboardSize, i);
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
 		{
 			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
 			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Model, i);
+			mRenderer->mSSBO.updateData(f, GPUBufferObject::Model, i);
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
 			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
 			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Position, i);
+			mRenderer->mSSBO.updateData(f, GPUBufferObject::Position, i);
 		}
 	}
 }
@@ -423,6 +500,31 @@ void OWActorMutableParticle::doSetupActor()
 	bounds(b);
 }
 
+void OWActorMutableParticle::doPreTick()
+{
+}
+
+void OWActorMutableParticle::doTick(float dt)
+{
+	for (int i = 0; i < mElements.size(); i++)
+	{
+		MutableParticleElement& elm = mElements[i];
+		elm.physics->tick(dt);
+	}
+}
+
+void OWActorMutableParticle::doPostTick()
+{
+}
+
+void OWActorMutableParticle::doPreRender()
+{
+}
+
+void OWActorMutableParticle::doPostRender()
+{
+}
+
 void OWActorMutableParticle::doRender(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos)
 {
@@ -460,13 +562,13 @@ void OWActorMutableParticle::doInterpolatePhysics(float totalTime, float alpha, 
 		{
 			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
 			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Model, i);
+			mRenderer->mSSBO.updateData(f, GPUBufferObject::Model, i);
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
 			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
 			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateSplicedData(f, GPUBufferObject::Position, i);
+			mRenderer->mSSBO.updateData(f, GPUBufferObject::Position, i);
 		}
 	}
 }
@@ -494,6 +596,27 @@ void OWActorImmutableParticle::doSetupActor()
 	OWRenderData rd = mMeshTemplate->renderData(b);
 	mRenderer->setup(rd);
 	bounds(b);
+}
+
+void OWActorImmutableParticle::doPreTick()
+{
+}
+
+void OWActorImmutableParticle::doTick(float dt)
+{
+	// Nothing changes, do nothing
+}
+
+void OWActorImmutableParticle::doPostTick()
+{
+}
+
+void OWActorImmutableParticle::doPreRender()
+{
+}
+
+void OWActorImmutableParticle::doPostRender()
+{
 }
 
 void OWActorImmutableParticle::doRender(const glm::mat4& proj,

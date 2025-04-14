@@ -51,7 +51,7 @@ struct GPUBufferObject
 	void bufferStyle(BufferStyle newValue) { mBufferStyle = newValue; }
 	BufferStyle bufferStyle() const { return mBufferStyle; }
 	bool dataExists(BufferStyle bs) const;
-	void updateSplicedData(float* data, BufferType bt, unsigned int ndx);
+	void updateData(float* data, BufferType bt, unsigned int ndx);
 	void setWriteBuffer(void* buf)
 	{
 		mWriteBuffer = static_cast<char8_t*>(buf);
@@ -69,6 +69,8 @@ struct GPUBufferObject
 		return mShaderBinding;
 	}
 private:
+	void updateSplicedData(float* data, BufferType bt, unsigned int ndx);
+	void updateUnsplicedData(float* data, BufferType bt, unsigned int ndx);
 	unsigned int mShaderBinding = 1;
 	char8_t* mWriteBuffer = nullptr;
 	bool mLocked = false;
@@ -83,7 +85,6 @@ private:
 	};
 	unsigned int typeSize(BufferType t) const;
 	UnSplicedData& findUnspliced(BufferType t);
-	void updateUnsplicedData(float* data, BufferType bt, unsigned int ndx);
 public:
 	std::vector<UnSplicedData> unsplicedData;
 	std::vector<float> splicedData;

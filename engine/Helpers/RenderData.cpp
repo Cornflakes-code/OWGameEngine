@@ -150,6 +150,14 @@ void GPUBufferObject::updateUnsplicedData(float* data, BufferType bt, unsigned i
 	throw NMSNotYetImplementedException("GPUBufferObject::updateUnsplicedData()");
 }
 
+void GPUBufferObject::updateData(float* data, BufferType bt, unsigned int ndx)
+{
+	if (bufferStyle() == BufferStyle::SSBO)
+		updateSplicedData(data, bt, ndx);
+	else if (bufferStyle() == BufferStyle::Uniform)
+		updateUnsplicedData(data, bt, ndx);
+}
+
 void GPUBufferObject::append(const std::vector<glm::mat4>& _data, BufferType t)
 {
 	if (splicedData.size())

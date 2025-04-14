@@ -1,6 +1,6 @@
 #include "Collider.h"
 
-glm::vec2 OWCollider::bounds(bool min) const
+glm::vec3 OWCollider::bounds(bool min) const
 {
 	// jfw todo
 	//throw NMSNotYetImplementedException("CollionSystem::preTick()");

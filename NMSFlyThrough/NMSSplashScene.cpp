@@ -37,15 +37,15 @@
 
 //#define INCLUDE_RAY
 //#define INCLUDE_BUTTONS
-#define INCLUDE_PLANES
+//#define INCLUDE_PLANES
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
 #define INCLUDE_BOXES
 #ifdef _DEBUG
-int GDEBUG_PICKING = 5;
+int GDEBUG_PICKING = 2;
 #else
-int GDEBUG_PICKING = 10000;
+int GDEBUG_PICKING = 50;
 #endif
 //#define BOXES_CENTERED
 #define INCLUDE_XYZ_AXIS
@@ -62,7 +62,7 @@ OWActorDiscrete* gRay = nullptr;
 
 static constexpr float off = 500;
 
-OWActorMutableParticle::MutableParticleElement createBox(const std::string& _name, const glm::vec4& colour,
+OWActorMutableParticle::MutableParticleElement createBox(const std::string& _name, const glm::vec4& colour,	
 	const glm::vec3& origin, const glm::vec3& direction, float speed, const glm::vec3& scale)
 {
 	OWActorMutableParticle::MutableParticleElement elm;
@@ -101,6 +101,23 @@ OWActorMutableParticle::MutableParticleElement createBumperPlane(const std::stri
 NMSSplashScene::NMSSplashScene(const Movie* movie)
 	: NMSScene(movie)
 {
+}
+
+glm::vec3 randomOrigin(int denom, int offset)
+{
+#ifdef BOXES_CENTERED
+	glm::vec3 pos = glm::vec3(0, 0, 0);
+	if (offset >= 0)
+		pos[offset] = 100.0f;
+	return pos;
+#else
+	return { rand() % denom, rand() % denom, rand() % denom };
+#endif
+}
+
+glm::vec3 randomDirection(int denom)
+{
+	return { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 }
 
 void NMSSplashScene::doSetupScene()
@@ -229,72 +246,33 @@ void NMSSplashScene::doSetupScene()
 	int denom = 10;
 	for (int i = 0; i < GDEBUG_PICKING; i++)
 	{
-		glm::vec3 ro = { rand() % denom, rand() % denom, rand() % denom }; // random origin
-		glm::vec3 rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f }; // random speed
-#ifdef BOXES_CENTERED
-		ro = glm::vec3(100, 0, 0);
-#endif
 		boxActor->addComponents(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED),
-			ro, rs, mSpeed * 0.1f, scale2));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-#ifdef BOXES_CENTERED
-		ro = glm::vec3(0, 100, 0);
-#endif
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.1f, scale2));
 		boxActor->addComponents(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE),
-			ro, rs, mSpeed * 0.8f, scale1));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-#ifdef BOXES_CENTERED
-		ro = glm::vec3(0, 0, 100);
-#endif
+			randomOrigin(denom, 1), randomDirection(denom), mSpeed * 0.8f, scale1));
 		boxActor->addComponents(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE),
-			ro, rs, mSpeed * 0.8f, scale1));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
-#ifdef BOXES_CENTERED
-		ro = glm::vec3(0, 0, 0);
-#endif
+			randomOrigin(denom, 2), randomDirection(denom), mSpeed * 0.8f, scale1));
 		boxActor->addComponents(createBox("box4", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN),
-			ro, rs, mSpeed * 0.8f, scale1));
+			randomOrigin(denom, -1), randomDirection(denom), mSpeed * 0.8f, scale1));
 #ifdef BOXES_CENTERED
 		break;
 #endif
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
 		boxActor->addComponents(createBox("box5", OWUtils::colour(OWUtils::SolidColours::MAGENTA),
-			ro, rs, mSpeed * 0.8f, scale1));
-
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.8f, scale1));
 		boxActor->addComponents(createBox("box6", OWUtils::colour(OWUtils::SolidColours::YELLOW),
-			ro, rs, mSpeed * 0.8f, scale1));
-
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.8f, scale1));
 		boxActor->addComponents(createBox("box7", OWUtils::colour(OWUtils::SolidColours::RED),
-			ro, { rs }, mSpeed * 1.8f, scale2));
-
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 1.8f, scale2));
 		boxActor->addComponents(createBox("box8", OWUtils::colour(OWUtils::SolidColours::BLUE),
-			ro, { rs }, mSpeed * 3.8f, scale2));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 3.8f, scale2));
 		boxActor->addComponents(createBox("box9", OWUtils::colour(OWUtils::SolidColours::WHITE),
-			ro, { rs }, mSpeed * 0.1f, scale3));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.1f, scale3));
 		boxActor->addComponents(createBox("box10", OWUtils::colour(OWUtils::SolidColours::BRIGHT_CYAN),
-			ro, { rs }, mSpeed * 0.3f, scale3));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.3f, scale3));
 		boxActor->addComponents(createBox("box11", OWUtils::colour(OWUtils::SolidColours::MAGENTA),
-			ro, { rs }, mSpeed * 0.5f, scale3));
-		ro = { rand() % denom, rand() % denom , rand() % denom };
-		rs = { rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f };
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.5f, scale3));
 		boxActor->addComponents(createBox("box12", OWUtils::colour(OWUtils::SolidColours::YELLOW),
-			ro, { rs }, mSpeed * 0.8f, scale2));
+			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.8f, scale2));
 	}
 #endif
 

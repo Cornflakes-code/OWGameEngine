@@ -112,6 +112,8 @@ public:
 					 bool useShader = false) const;
 	void setMatrix4(const std::string& name, const glm::mat4 &matrix, 
 					 bool useShader = false) const;
+	void reload();
+	bool reloaded() const { return mReloaded; }
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
@@ -121,6 +123,8 @@ private:
 		std::vector<std::string> name;
 	};
 
+	std::string mVertexFileName, mFragFileName, mGeomFileName;
+	mutable bool mReloaded = false;
 	std::vector<json> uniforms;
 	int mShaderProgram = 0;
 	void processUniforms();

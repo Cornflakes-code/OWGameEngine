@@ -90,11 +90,11 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 
 	// http://gameprogrammingpatterns.com/game-loop.html
 	// https://docs.unity3d.com/Manual/ExecutionOrder.html
-	int hz = 1000 / 60;
+	int hz = 1000.0 / 60.0;
 
-	// Need to code some feedback to ensure that logic.fixedUpdate does not take longer than dt.
+	// Need to code some feedback to ensure that scene->timeStep does not take longer than dt.
 	// Or is this already handled by the loop?
-	const OWUtils::Time::duration dt = std::chrono::milliseconds(hz/2);
+	const OWUtils::Time::duration dt = std::chrono::milliseconds(hz);
 	const OWUtils::Time::duration clamp = dt * 8;
 
 	OWUtils::Time::duration t = std::chrono::seconds(0);
@@ -104,25 +104,41 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 	//processTimeStep(lcs, currentScene()->logic()->current, t, std::chrono::milliseconds(0));
 	std::string nextSceneName;
 	const float fixedTimeStep = std::chrono::duration<float>(dt).count();
-//#define DEBUG_RUN_LOOP
+#define DEBUG_RUN_LOOP
 	while (!glfwWindowShouldClose(glfwWindow))
 	{
 #ifdef DEBUG_RUN_LOOP
-		LogStream(LogStreamLevel::ImportantInfo) << "!glfwWindowShouldClose(glfwWindow)\n";
+		LogStream(LogStreamLevel::ImportantInfo) << "Start loop\n";
 #endif
 		mLogger->update_fps_counter(glfwWindow);
 
 		OWUtils::Time::time_point newTime = OWUtils::Time::now();
 		OWUtils::Time::duration frameTime = newTime - currentTime;
+#ifdef DEBUG_RUN_LOOP
+		if (frameTime > dt)
+		{
+			// https://www.reddit.com/r/gamedev/comments/uyc21o/how_should_you_fix_your_timestep_for_physics/
+			float frameTimeSecs = std::chrono::duration<float>(frameTime).count();
+			LogStream(LogStreamLevel::ImportantInfo) << "\t        frameTime[" << frameTimeSecs << "] > dt ********** \n";
+		}
+		else
+		{
+			LogStream(LogStreamLevel::ImportantInfo) << "\t* \n";
+		}
+#endif
 		currentTime = newTime;
 		if (frameTime > clamp)
+		{
 			frameTime = clamp;
+			LogStream(LogStreamLevel::ImportantInfo) << "\t clamp\n";
+		}
 		accumulator += frameTime;
 		globals->application()->clearBuffers();
 		while (accumulator >= dt)
 		{
 #ifdef DEBUG_RUN_LOOP
-			LogStream(LogStreamLevel::ImportantInfo) << "while (accumulator >= dt)\n";
+			float dtSecs = std::chrono::duration<float>(dt).count();
+			LogStream(LogStreamLevel::ImportantInfo) << "\t while (accumulator >= " << dtSecs << ")\n";
 #endif
 			t += dt;
 			processUserInput(nextSceneName, dt); 
@@ -138,14 +154,14 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 				t = mCurrent->scene->cumulativeTime();
 				nextSceneName = "";
 #ifdef DEBUG_RUN_LOOP
-				LogStream(LogStreamLevel::ImportantInfo) << "processTimeStep++\n";
+				LogStream(LogStreamLevel::ImportantInfo) << "\t change scene\n";
 #endif
 				mCurrent->scene->timeStep(nextSceneName, dt);
 			}
 			accumulator -= dt;
 		}
 		float totalTime = std::chrono::duration<float>(t).count();
-		float alpha = accumulator / dt;
+		float alpha = (1.0f * accumulator) / dt;
 
 		mCurrent->scene->preRender(totalTime, alpha, fixedTimeStep);
 		//OWUtils::Time::time_point beforeRender = OWUtils::HighTime::now();
@@ -172,7 +188,8 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 			if (globals->minimised())
 				std::this_thread::sleep_for(clamp);
 #ifdef DEBUG_RUN_LOOP
-			LogStream(LogStreamLevel::ImportantInfo) << "while (globals->minimised())\n";
+			//float frameTimeSecs = std::chrono::duration<float>(frameTime).count();
+			//LogStream(LogStreamLevel::ImportantInfo) << "End Loop alpha[" << std::to_string(alpha) << "] prev Frame Time[" << frameTimeSecs << "]\n\n";
 #endif
 		} while (globals->minimised());
 		if (!mIsRunning)

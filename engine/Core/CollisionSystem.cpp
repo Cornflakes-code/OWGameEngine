@@ -116,20 +116,25 @@ namespace CollisionSystem
 		}
 	}
 
-	void doSweepAndPrune(EdgeCollection& edges, OverlappingEdges& overlapping, unsigned int dimension)
+    void sweepAndPruneSort(EdgeCollection& edges, unsigned int dimension)
     {
-        // Insertion sort
-        for (int i = 1; i < edges.size(); i++) 
+        for (int i = 1; i < edges.size(); i++)
         {
-            for (int j = i - 1; j >= 0; j--) 
+            for (int j = i - 1; j >= 0; j--)
             {
                 if (edges[j].position(dimension) < edges[j + 1].position(dimension))
                     break;
                 std::swap(edges[j], edges[j + 1]);
-
-                // --- Code up until this point is plain insertion sort ---
-
-                // These two edges have just swapped places, process it...
+            }
+        }
+    }
+    
+    void doSweepAndPrune(EdgeCollection& edges, OverlappingEdges& overlapping, unsigned int dimension)
+    {
+        for (int i = 1; i < edges.size(); i++) 
+        {
+            for (int j = i - 1; j >= 0; j--) 
+            {
                 const Edge& edge1 = edges[j];
                 const Edge& edge2 = edges[j + 1];
 
@@ -137,13 +142,18 @@ namespace CollisionSystem
                     // Mark as overlapping
                     overlapping.insert(EdgePair(edge1, edge2));
                 }
-                else if (!edge1.isLeft && edge2.isLeft) { // case L-R → R-L
-                    // Unmark as overlapping
-                    overlapping.erase(EdgePair(edge1, edge2));
+                else if (dimension != 0 && overlapping.size() > 0)
+                {
+                    if (!edge1.isLeft && edge2.isLeft) // case L-R → R-L
+                    { 
+                        // Unmark as overlapping
+                        overlapping.erase(EdgePair(edge1, edge2));
+                    }
                 }
             }
         }
     }
+
 	void buildSweepAndPrune()
 	{
 		std::sort(gEdgesX.begin(), gEdgesX.end());
@@ -153,8 +163,6 @@ namespace CollisionSystem
 
 	void collideSweepAndPrune()
 	{
-        // jfw fix me
-        return;
 		OverlappingEdges colliding;
 		doSweepAndPrune(gEdgesX, colliding, 0);
 		doSweepAndPrune(gEdgesY, colliding, 1);
@@ -289,94 +297,6 @@ namespace CollisionSystem
 	}
 
 #endif
-    void addCollider(OWCollider* coll, OWActor* a, int componentId)
-    {
-#ifdef BASIC_COLLISIONS
-#endif
-
-#ifdef SWEEP_AND_PRUNE
-        gEdgesX.push_back(Edge(*coll, true));
-        gEdgesX.push_back(Edge(*coll, false));
-
-        gEdgesY.push_back(Edge(*coll, true));
-        gEdgesY.push_back(Edge(*coll, false));
-
-        gEdgesY.push_back(Edge(*coll, true));
-        gEdgesY.push_back(Edge(*coll, false));
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-#endif
-    }
-
-    void addRay(OWCollider* coll, OWActor* a, int componentId)
-    {
-#ifdef BASIC_COLLISIONS
-#endif
-#ifdef SWEEP_AND_PRUNE
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-#endif
-    }
-
-    void deleteRay(OWActor* r)
-    {
-#ifdef BASIC_COLLISIONS
-#endif
-#ifdef SWEEP_AND_PRUNE
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-#endif
-    }
-
-	void testCollide()
-	{
-#ifdef BASIC_COLLISIONS
-		collidBasic();
-#endif
-#ifdef SWEEP_AND_PRUNE
-		collideSweepAndPrune();
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-		collideSweepAndPruneEx();
-#endif
-	}
-    void OWENGINE_API preTick()
-    {
-#ifdef BASIC_COLLISIONS
-        throw NMSNotYetImplementedException("CollionSystem::preTick()");
-#endif
-#ifdef SWEEP_AND_PRUNE
-        throw NMSNotYetImplementedException("CollionSystem::preTick()");
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-        throw NMSNotYetImplementedException("CollionSystem::preTick()");
-#endif
-    }
-    void OWENGINE_API postTick()
-    {
-#ifdef BASIC_COLLISIONS
-        throw NMSNotYetImplementedException("CollionSystem::postTick()");
-#endif
-#ifdef SWEEP_AND_PRUNE
-        throw NMSNotYetImplementedException("CollionSystem::postTick()");
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-        throw NMSNotYetImplementedException("CollionSystem::postTick()");
-#endif
-    }
-    void OWENGINE_API tick()
-    {
-#ifdef BASIC_COLLISIONS
-        throw NMSNotYetImplementedException("CollionSystem::tick()");
-#endif
-#ifdef SWEEP_AND_PRUNE
-        throw NMSNotYetImplementedException("CollionSystem::tick()");
-#endif
-#ifdef SWEEP_AND_PRUNE_EX
-        throw NMSNotYetImplementedException("CollionSystem::tick()");
-#endif
-    }
-}
 
 #ifdef FIXED_SIZED_VOLUMES
 // Seriously good post about fixed sized grids
@@ -1983,3 +1903,77 @@ void lgrid_optimize(LGrid* grid)
         }
     }
 #endif
+
+    void addCollider(OWCollider * coll, OWActor * a, int componentId)
+    {
+#ifdef BASIC_COLLISIONS
+#endif
+
+#ifdef SWEEP_AND_PRUNE
+        gEdgesX.push_back(Edge(*coll, true));
+        gEdgesX.push_back(Edge(*coll, false));
+
+        gEdgesY.push_back(Edge(*coll, true));
+        gEdgesY.push_back(Edge(*coll, false));
+
+        gEdgesZ.push_back(Edge(*coll, true));
+        gEdgesZ.push_back(Edge(*coll, false));
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+#endif
+    }
+
+    void addRay(OWCollider * coll, OWActor * a, int componentId)
+    {
+#ifdef BASIC_COLLISIONS
+#endif
+#ifdef SWEEP_AND_PRUNE
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+#endif
+    }
+
+    void deleteRay(OWActor * r)
+    {
+#ifdef BASIC_COLLISIONS
+#endif
+#ifdef SWEEP_AND_PRUNE
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+#endif
+    }
+//#define DISABLE_COLLISIONS
+    void OWENGINE_API preTick()
+    {
+#ifdef DISABLE_COLLISIONS
+        return;
+#endif
+#ifdef BASIC_COLLISIONS
+        throw NMSNotYetImplementedException("CollionSystem::preTick()");
+#endif
+#ifdef SWEEP_AND_PRUNE
+        // These can be done in parallel
+        sweepAndPruneSort(gEdgesX, 0);
+        sweepAndPruneSort(gEdgesY, 1);
+        sweepAndPruneSort(gEdgesZ, 2);
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+        throw NMSNotYetImplementedException("CollionSystem::preTick()");
+#endif
+    }
+    void OWENGINE_API postTick()
+    {
+#ifdef DISABLE_COLLISIONS
+        return;
+#endif
+#ifdef BASIC_COLLISIONS
+        collidBasic();
+#endif
+#ifdef SWEEP_AND_PRUNE
+        collideSweepAndPrune();
+#endif
+#ifdef SWEEP_AND_PRUNE_EX
+        collideSweepAndPruneEx();
+#endif
+    }
+}

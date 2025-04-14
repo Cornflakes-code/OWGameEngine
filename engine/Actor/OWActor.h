@@ -28,22 +28,16 @@ public:
 		mScriptor = newValue;
 	}
 	void setup();
-	virtual void preTick()
-	{
-		copyCurrentToPrevious();
-		// Placeholder called on the main thread. OWActor should quickly 
-		// create a background thread to do stuff while render is happenening.
-	}
-	virtual void preRender()
-	{
-		// Placeholder called on the main thread. OWActor should quickly 
-		// create a background thread to do stuff while render is happenening.
-	}
+	virtual void preTick();
+	void tick(float dt);
+	virtual void postTick();
+	virtual void preRender();
 	void render(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos);
 
 	virtual void postRender()
 	{
+		doPostRender();
 		// Placeholder called on the main thread. OWActor should quickly tidy
 		// up whatever prePender() did.
 	}
@@ -70,25 +64,22 @@ public:
 	{
 		doCollided(component, otherComponent);
 	}
-	void copyCurrentToPrevious() {
-		doCopyCurrentToPrevious();
-	}
-	void tick(float dt) {
-		mScriptor.tick(dt);
-	}
 	void interpolatePhysics(float totalTime, float alpha, float fixedTimeStep);
 #ifdef _DEBUG
 	bool debugInclude() const;
 #endif
-	//void appendMutator(OWRenderTypes::ActorSetupMutator pfunc) { mMutatorCallbacks.push_back(pfunc); }
 protected:
 	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) = 0;
-	virtual void doCopyCurrentToPrevious() = 0;
+	virtual void copyCurrentToPrevious() = 0;
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) = 0;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) = 0;
 	virtual void doSetupActor() = 0;
-	virtual void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::vec3& cameraPos) = 0;
+	virtual void doRender(const glm::mat4& proj, const glm::mat4& view, const glm::vec3& cameraPos) = 0;
+	virtual void doPreTick() = 0;
+	virtual void doTick(float dt) = 0;
+	virtual void doPostTick() = 0;
+	virtual void doPreRender() = 0;
+	virtual void doPostRender() = 0;
 private:
 	//std::vector<OWRenderTypes::ActorSetupMutator> mMutatorCallbacks;
 	std::string mName;
@@ -120,7 +111,7 @@ public:
 	size_t addComponents(const DiscreteEntity& newElement);
 protected:
 	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void doCopyCurrentToPrevious() override final
+	virtual void copyCurrentToPrevious() override final
 	{
 		for (auto& elm : mElements)
 		{
@@ -130,6 +121,11 @@ protected:
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
+	virtual void doPreTick() override;
+	virtual void doTick(float dt) override;
+	virtual void doPostTick() override;
+	virtual void doPreRender() override;
+	virtual void doPostRender() override;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
 	std::vector<DiscreteEntity> mElements;
@@ -158,7 +154,7 @@ public:
 	}
 protected:
 	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void doCopyCurrentToPrevious() override final
+	virtual void copyCurrentToPrevious() override final
 	{
 		for (auto& elm : mElements)
 		{
@@ -168,6 +164,11 @@ protected:
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
+	virtual void doPreTick() override;
+	virtual void doTick(float dt) override;
+	virtual void doPostTick() override;
+	virtual void doPreRender() override;
+	virtual void doPostRender() override;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
@@ -197,7 +198,7 @@ public:
 
 protected:
 	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void doCopyCurrentToPrevious() override final
+	virtual void copyCurrentToPrevious() override final
 	{
 		for (auto& elm : mElements)
 		{
@@ -207,6 +208,11 @@ protected:
 	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
+	virtual void doPreTick() override;
+	virtual void doTick(float dt) override;
+	virtual void doPostTick() override;
+	virtual void doPreRender() override;
+	virtual void doPostRender() override;
 	virtual void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
@@ -229,7 +235,7 @@ public:
 	}
 protected:
 	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void doCopyCurrentToPrevious() override final
+	virtual void copyCurrentToPrevious() override final
 	{
 		// Nothing changes, do nothing
 	}
@@ -239,6 +245,11 @@ protected:
 	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
+	virtual void doPreTick() override;
+	virtual void doTick(float dt) override;
+	virtual void doPostTick() override;
+	virtual void doPreRender() override;
+	virtual void doPostRender() override;
 	void doRender(const glm::mat4& proj,
 		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:

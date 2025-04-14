@@ -158,6 +158,7 @@ void OWMeshRenderer::add(const Texture& texture)
 
 void OWMeshRenderer::add(const MeshData& md)
 {
+	//	https://www.khronos.org/opengl/wiki/vertex_Rendering#Direct_rendering
 	if (!md.v4.empty())
 	{
 		mMultiArrayStartIndexes.push_back(static_cast<GLsizei>(mData.v4.size()));
@@ -177,6 +178,10 @@ void OWMeshRenderer::add(const MeshData& md)
 void OWMeshRenderer::doRender() 
 {
 	glBindVertexArray(mVao);
+	if (shader()->reloaded())
+	{
+		shader()->use();
+	}
 	if (mSSBO.dataExists(GPUBufferObject::BufferStyle::SSBO))
 	{
 		// Does not appear to impact performance at all

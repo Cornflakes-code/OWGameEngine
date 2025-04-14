@@ -96,7 +96,7 @@ void repairUniforms(std::vector<ShaderDataUniforms>& uniforms)
 	}
 }
 Shader::Shader(const std::string& vertexPath, const std::string& fragPath,
-	const std::string& geometryPath)
+			const std::string& geometryPath)
 {
 	create(vertexPath, fragPath, geometryPath);
 }
@@ -231,6 +231,7 @@ void Shader::use() const
 		{
 			glUseProgram(mShaderProgram);
 			mUseCalled = true;
+			mReloaded = false;
 		}
 	}
 }
@@ -390,10 +391,25 @@ void Shader::setStandardUniformValues(const glm::mat4& proj,
 		setVector3f(mUniforms[StandardUniforms::CameraPosition], cameraPos);
 }
 
+void Shader::reload()
+{
+	// https://antongerdelan.net/opengl/shader_hot_reload.html
+	if (mVertexFileName.empty() && mFragFileName.empty() && mGeomFileName.empty())
+		return;
+	int oldProgram = mShaderProgram;
+	glDeleteProgram(oldProgram);
+	create(mVertexFileName, mFragFileName, mGeomFileName);
+	mReloaded = true;
+}
+
 void Shader::create(const std::string& vertexPath,
 					   const std::string& fragPath,
 					   const std::string& geometryPath)
 {
+	mVertexFileName = vertexPath;
+	mFragFileName = fragPath;
+	mGeomFileName = geometryPath;
+
 	try
 	{
 		loadShaders(getShaderCode(vertexPath),
