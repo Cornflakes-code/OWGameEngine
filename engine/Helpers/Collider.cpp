@@ -16,7 +16,7 @@ glm::vec3 OWCollider::left() const
 		return mPt1 - (mPt2 / 2.0f);
 		break;
 	case OWCollider::CollisionType::Plane:
-		return mPt1;
+		return mPt1 - mPt2;
 		break;
 	case OWCollider::CollisionType::Point:
 		return mPt1;
@@ -41,7 +41,7 @@ glm::vec3 OWCollider::right() const
 		return mPt1 + (mPt2 / 2.0f);
 		break;
 	case OWCollider::CollisionType::Plane:
-		return mPt2;
+		return mPt1 + mPt3;
 		break;
 	case OWCollider::CollisionType::Point:
 		return mPt1;

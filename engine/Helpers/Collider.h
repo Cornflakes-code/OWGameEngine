@@ -38,17 +38,14 @@ public:
 	/*
 	* If Ovoid then p1 is center, p2 is radius
 	* If Box then p1 is center and p2 is span
-	* If Point then p1 is the point and p2 is a constant radius
-	* If plane then p1 is minPoint and p2 is maxPoint and p3 
-	is a constant distance from the plane
+	* If Point then p1 is the position and p2 is a constant radius
+	* If plane then p1 is a point on the plane, and p2 is minPoint corner relative to 
+		p1 and p3 is maxpoint corner relative to p1
 	* If Ray then mPt1 is origin, mPt2 is direction, mPt3 is end of ray??
 	*/
 	void points(const AABB& bounds);
-	void position(const glm::vec3& pos) {
-		if (mColliderType == CollisionType::Plane)
-		{
-			throw NMSLogicException("Error: position(Plane) position has no meaning for plane.");
-		}
+	void position(const glm::vec3& pos) 
+	{
 		mPt1 = pos;
 	}
 	void points(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3)
