@@ -2,9 +2,57 @@
 
 glm::vec3 OWCollider::bounds(bool min) const
 {
-	// jfw todo
-	//throw NMSNotYetImplementedException("CollionSystem::preTick()");
-	return glm::vec3(0);
+	return min ? mPt1 : mPt2;
+}
+
+glm::vec3 OWCollider::left() const
+{
+	switch (mColliderType)
+	{
+	case OWCollider::CollisionType::Ovoid:
+		throw NMSLogicException("Error: OWCollider(Ovoid)::left not implemented.");
+		break;
+	case OWCollider::CollisionType::Box:
+		return mPt1 - (mPt2 / 2.0f);
+		break;
+	case OWCollider::CollisionType::Plane:
+		return mPt1;
+		break;
+	case OWCollider::CollisionType::Point:
+		return mPt1;
+		break;
+	case OWCollider::CollisionType::Ray:
+		return glm::min(mPt1, mPt1 + mPt2);
+		break;
+	default:
+		throw NMSLogicException("Error: OWCollider(Ovoid)::left unknown collider type.");
+		break;
+	}
+}
+
+glm::vec3 OWCollider::right() const
+{
+	switch (mColliderType)
+	{
+	case OWCollider::CollisionType::Ovoid:
+		throw NMSLogicException("Error: OWCollider(Ovoid)::right not implemented.");
+		break;
+	case OWCollider::CollisionType::Box:
+		return mPt1 + (mPt2 / 2.0f);
+		break;
+	case OWCollider::CollisionType::Plane:
+		return mPt2;
+		break;
+	case OWCollider::CollisionType::Point:
+		return mPt1;
+		break;
+	case OWCollider::CollisionType::Ray:
+		return glm::max(mPt1, mPt1 + mPt2);
+		break;
+	default:
+		throw NMSLogicException("Error: OWCollider(Ovoid)::right unknown collider type.");
+		break;
+	}
 }
 
 bool OWCollider::collides(const OWCollider& other) const

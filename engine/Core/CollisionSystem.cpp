@@ -18,8 +18,8 @@
 // Runge - Kutta 4
 
 
-#define SWEEP_AND_PRUNE
-//#define SWEEP_AND_PRUNE_EX
+//#define SWEEP_AND_PRUNE
+#define SWEEP_AND_PRUNE_EX
 //#define BASIC_COLLISIONS
 //#define FIXED_SIZED_VOLUMES //  this was a misplaced post by the authot
 //#define BETTER_FIXED_SIZED_VOLUMES
@@ -39,15 +39,12 @@ namespace CollisionSystem
     // http://www.codercorner.com/SAP.pdf
 	struct Edge
 	{
-		Edge(const OWCollider& _o, bool _isLeft)
-			:o(_o), isLeft(_isLeft)
+		Edge(const OWCollider& _o, bool _isLeft, unsigned int dim)
+			:o(_o), isLeft(_isLeft), pos(_o.bounds(isLeft)[dim])
 		{ }
         OWCollider o;
 		bool isLeft;
-		float position(int dim) const
-		{
-			return o.bounds(isLeft)[dim];
-		}
+        float pos;
         /*
         * also need to define operator==
         * see https://stackoverflow.com/questions/47466358/what-is-the-spaceship-three-way-comparison-operator-in-c
@@ -64,13 +61,17 @@ namespace CollisionSystem
 */
         friend bool operator==(const Edge& lhs, const Edge& rhs)
         {
-            return lhs.o.actor() == rhs.o.actor() && lhs.o.componentIndex() == rhs.o.componentIndex();
+            return OWUtils::isEqual(lhs.pos, rhs.pos);
+            //return lhs.o.actor() == rhs.o.actor() && lhs.o.componentIndex() == rhs.o.componentIndex();
         }
         friend bool operator<(const Edge& lhs, const Edge& rhs)
         {
-            if (lhs.o.actor() == rhs.o.actor())
-                return lhs.o.componentIndex() < rhs.o.componentIndex();
-            return lhs.o.actor() < rhs.o.actor();
+            if (lhs == rhs)
+                return lhs.isLeft < lhs.isLeft;
+            return lhs.pos < rhs.pos;
+            //if (lhs.o.actor() == rhs.o.actor())
+            //    return lhs.o.componentIndex() < rhs.o.componentIndex();
+            //return lhs.o.actor() < rhs.o.actor();
         }
     };
 
@@ -107,7 +108,7 @@ namespace CollisionSystem
 		{
 			for (int j = i - 1; j >= 0; j--)
 			{
-				if (edges[j].position(dimension) <= edges[j + 1].position(dimension))
+				if (edges[j] < edges[j + 1])
 					break;
 
 				// Swap
@@ -116,13 +117,13 @@ namespace CollisionSystem
 		}
 	}
 
-    void sweepAndPruneSort(EdgeCollection& edges, unsigned int dimension)
+    void sweepAndPruneSort(EdgeCollection& edges)
     {
         for (int i = 1; i < edges.size(); i++)
         {
             for (int j = i - 1; j >= 0; j--)
             {
-                if (edges[j].position(dimension) < edges[j + 1].position(dimension))
+                if (edges[j].pos < edges[j + 1].pos)
                     break;
                 std::swap(edges[j], edges[j + 1]);
             }
@@ -135,6 +136,11 @@ namespace CollisionSystem
         {
             for (int j = i - 1; j >= 0; j--) 
             {
+                if (edges[j].pos < edges[j + 1].pos)
+                    break;
+                std::swap(edges[j], edges[j + 1]);
+                // --- Code up until this point is plain insertion sort ---
+                // These two edges have just swapped places, process it...
                 const Edge& edge1 = edges[j];
                 const Edge& edge2 = edges[j + 1];
 
@@ -142,7 +148,7 @@ namespace CollisionSystem
                     // Mark as overlapping
                     overlapping.insert(EdgePair(edge1, edge2));
                 }
-                else if (dimension != 0 && overlapping.size() > 0)
+                else if (!overlapping.empty())
                 {
                     if (!edge1.isLeft && edge2.isLeft) // case L-R → R-L
                     { 
@@ -287,13 +293,198 @@ namespace CollisionSystem
 #endif
 
 #ifdef SWEEP_AND_PRUNE_EX
+    // https://www.youtube.com/watch?v=MKeWXBgEGxQ
 
 
-	void buildSweepAndPruneEx(std::vector<OLDMovableComponent*>& objects)
+    glm::uvec3 gPriorityAxis = {0,1,2};
+    class Body
+    {
+    public:
+        std::string id;
+        Body(const OWCollider* _o, unsigned int _dim)
+            :o(_o), dim(_dim) {
+        }
+        const OWCollider* o;
+        unsigned int dim;
+        float left() const {
+            return o->left()[dim];
+        }
+        float right() const {
+            return o->right()[dim];
+        }
+    };
+
+    class BodyEx
+    {
+    public:
+        std::string id;
+        BodyEx(const OWCollider* _o)
+            :o(_o)
+        {
+        }
+        const OWCollider* o;
+        const glm::vec3& left() const {
+            return o->left();
+        }
+        const glm::vec3& right() const {
+            return o->right();
+        }
+    };
+
+    bool sortfunctionX(Body i, Body j) { return (i.o->left()[0] < j.o->left()[0]); }
+    bool sortfunctionY(Body i, Body j) { return (i.o->left()[1] < j.o->left()[1]); }
+    bool sortfunctionZ(Body i, Body j) { return (i.o->left()[2] < j.o->left()[2]); }
+
+    struct BodyPair
+    {
+        Body b1;
+        Body b2;
+        friend auto operator<=>(const BodyPair& lhs, const BodyPair& rhs)
+        {
+            if (lhs.b1.o == rhs.b1.o)
+            {
+                if (lhs.b2.o == rhs.b2.o)
+                    return 0;
+                return lhs.b2.o->componentIndex() < rhs.b2.o->componentIndex() ? -1 : 1;
+            }
+            return lhs.b1.o->componentIndex() < rhs.b1.o->componentIndex() ? -1 : 1;
+        }
+    };
+
+    struct BodyPairEx
+    {
+        BodyEx b1;
+        BodyEx b2;
+        friend auto operator<=>(const BodyPairEx& lhs, const BodyPairEx& rhs)
+        {
+            if (lhs.b1.o == rhs.b1.o)
+            {
+                if (lhs.b2.o == rhs.b2.o)
+                    return 0;
+                return lhs.b2.o->componentIndex() < rhs.b2.o->componentIndex() ? -1 : 1;
+            }
+            return lhs.b1.o->componentIndex() < rhs.b1.o->componentIndex() ? -1 : 1;
+        }
+    };
+
+    typedef std::vector<Body> SortedBodies;
+    typedef std::vector<BodyEx> SortedBodiesEx;
+    typedef std::set<BodyPair> BodyCollisions;
+    typedef std::set<BodyPairEx> BodyCollisionsEx;
+
+    SortedBodies bodiesX, bodiesY, bodiesZ;
+    SortedBodiesEx bodies;
+
+    void doInsertionSortEx(SortedBodiesEx& edges, unsigned int primAxis)
+    {
+        // Plain Insertion sort
+        for (int i = 1; i < edges.size(); i++)
+        {
+            for (int j = i - 1; j >= 0; j--)
+            {
+                if (edges[j].left()[primAxis] < edges[j + 1].left()[primAxis])
+                    break;
+
+                // Swap
+                std::swap(edges[j], edges[j + 1]);
+            }
+        }
+    }
+    
+    void doInsertionSort(SortedBodies& edges)
+    {
+        // Plain Insertion sort
+        for (int i = 1; i < edges.size(); i++)
+        {
+            for (int j = i - 1; j >= 0; j--)
+            {
+                if (edges[j].left() < edges[j + 1].left())
+                    break;
+
+                // Swap
+                std::swap(edges[j], edges[j + 1]);
+            }
+        }
+    }
+
+    void buildSweepAndPrune(OWCollider* o)
 	{
-	}
-	void collideSweepAndPruneEx()
+        bodies.push_back(BodyEx(o));
+
+        bodiesX.push_back(Body(o, 0));
+        bodiesX.back().id = "x" + std::to_string(bodiesX.size());
+        bodiesY.push_back(Body(o, 1));
+        bodiesY.back().id = "y" + std::to_string(bodiesY.size());
+        bodiesZ.push_back(Body(o, 2));
+        bodiesZ.back().id = "z" + std::to_string(bodiesZ.size());
+    }
+
+    void collideSweepAndPruneEx(std::vector<BodyEx>& sortedBodies, const glm::uvec3& priAxis, BodyCollisionsEx& collisions)
+    {
+        unsigned int primary = priAxis[0];
+        unsigned int secondary = priAxis[1];
+        unsigned int tertiary = priAxis[2];
+        for (int i = 0; i < sortedBodies.size(); i++)
+        {
+            const BodyEx& b1 = sortedBodies[i];
+            float b1l = b1.left()[primary];
+            float b1r = b1.right()[primary];
+            for (int j = i + 1; j < sortedBodies.size(); j++)
+            {
+                const BodyEx& b2 = sortedBodies[j];
+                float b2l = b2.left()[primary];
+                float b2r = b2.right()[primary];
+                if (b2.left()[primary] > b1.right()[primary])
+                    break;
+                if (b2.left()[primary] > b1.left()[primary])
+                {
+                    // Overlaps in the primary axis ...
+                    if ((b2.left()[secondary] > b1.right()[secondary]) ||
+                        (b2.right()[secondary] < b1.left()[secondary]))
+                        break;
+                    // ... and Overlaps in the secondary axis ...
+                    if ((b2.left()[tertiary] > b1.right()[tertiary]) ||
+                        (b2.right()[tertiary] < b1.left()[tertiary]))
+                        break;
+                    // ... and Overlaps in the tertiary axis
+                    collisions.insert({ b1, b2 });
+                }
+            }
+        }
+    }
+    
+    void collideSweepAndPrune(std::vector<Body>& sortedBodies, unsigned int callCount, BodyCollisions& collisions1, BodyCollisions& collisions2)
 	{
+        for (int i = 0; i < sortedBodies.size(); i++)
+        {
+            const Body& b1 = sortedBodies[i];
+            float b1l = b1.left();
+            float b1r = b1.right();
+            for (int j = i + 1; j < sortedBodies.size(); j++)
+            {
+                const Body& b2 = sortedBodies[j];
+                float b2l = b2.left();
+                float b2r = b2.right();
+                if (b2.left() > b1.right())
+                    break;
+                if (b2.left() > b1.left())
+                {
+                    if (callCount == 0)
+                    {
+                        collisions1.insert({ b1, b2 });
+                    }
+                    else
+                    {
+                        if (collisions1.find({ b1, b2 }) != collisions1.end())
+                            collisions2.insert({ b1, b2 });
+                    }
+                }
+                else
+                {
+                    
+                }
+            }
+        }
 	}
 
 #endif
@@ -1910,16 +2101,17 @@ void lgrid_optimize(LGrid* grid)
 #endif
 
 #ifdef SWEEP_AND_PRUNE
-        gEdgesX.push_back(Edge(*coll, true));
-        gEdgesX.push_back(Edge(*coll, false));
+        gEdgesX.push_back(Edge(*coll, true, 0));
+        gEdgesX.push_back(Edge(*coll, false, 0));
 
-        gEdgesY.push_back(Edge(*coll, true));
-        gEdgesY.push_back(Edge(*coll, false));
+        gEdgesY.push_back(Edge(*coll, true, 1));
+        gEdgesY.push_back(Edge(*coll, false, 1));
 
-        gEdgesZ.push_back(Edge(*coll, true));
-        gEdgesZ.push_back(Edge(*coll, false));
+        gEdgesZ.push_back(Edge(*coll, true, 2));
+        gEdgesZ.push_back(Edge(*coll, false, 2));
 #endif
 #ifdef SWEEP_AND_PRUNE_EX
+        buildSweepAndPrune(coll);
 #endif
     }
 
@@ -1953,12 +2145,24 @@ void lgrid_optimize(LGrid* grid)
 #endif
 #ifdef SWEEP_AND_PRUNE
         // These can be done in parallel
-        sweepAndPruneSort(gEdgesX, 0);
-        sweepAndPruneSort(gEdgesY, 1);
-        sweepAndPruneSort(gEdgesZ, 2);
+        sweepAndPruneSort(gEdgesX);
+        sweepAndPruneSort(gEdgesY);
+        sweepAndPruneSort(gEdgesZ);
 #endif
 #ifdef SWEEP_AND_PRUNE_EX
-        throw NMSNotYetImplementedException("CollionSystem::preTick()");
+        static bool once = true;
+        if (true)
+        {
+            once = false;
+            //std::sort(bodiesX.begin(), bodiesX.end(), sortfunctionX);
+            //std::sort(bodiesY.begin(), bodiesY.end(), sortfunctionY);
+            //std::sort(bodiesZ.begin(), bodiesZ.end(), sortfunctionZ);
+            //doInsertionSort(bodiesX);
+            //doInsertionSort(bodiesY);
+            //doInsertionSort(bodiesZ);
+
+            doInsertionSortEx(bodies, gPriorityAxis[0]);
+        }
 #endif
     }
     void OWENGINE_API postTick()
@@ -1973,7 +2177,21 @@ void lgrid_optimize(LGrid* grid)
         collideSweepAndPrune();
 #endif
 #ifdef SWEEP_AND_PRUNE_EX
-        collideSweepAndPruneEx();
+/*
+
+        BodyCollisions collisions1, collisions2, collisions3;
+        collideSweepAndPrune(bodiesX, 0, collisions1, collisions2);
+        if (collisions1.empty())
+            return;
+        collideSweepAndPrune(bodiesY, 1, collisions1, collisions2);
+        if (collisions2.empty())
+            return;
+        collideSweepAndPrune(bodiesZ, 2, collisions2, collisions3);
+        if (collisions3.empty())
+            return;
+*/
+        BodyCollisionsEx collisions;
+        collideSweepAndPruneEx(bodies, gPriorityAxis, collisions);
 #endif
     }
 }

@@ -20,6 +20,8 @@ public:
 		return mColliderType;
 	}
 
+	glm::vec3 left() const;
+	glm::vec3 right() const;
 	glm::vec3 bounds(bool min) const;
 	bool collides(const OWCollider& other) const;
 	const OWActor* actor() const { return mActor; }
@@ -35,26 +37,31 @@ public:
 	}
 	/*
 	* If Ovoid then p1 is center, p2 is radius
-	* If Box then p1 is minPoint and p2 is maxPoint
+	* If Box then p1 is center and p2 is span
 	* If Point then p1 is the point and p2 is a constant radius
 	* If plane then p1 is minPoint and p2 is maxPoint and p3 
 	is a constant distance from the plane
+	* If Ray then mPt1 is origin, mPt2 is direction, mPt3 is end of ray??
 	*/
 	void points(const AABB& bounds);
+	void position(const glm::vec3& pos) {
+		if (mColliderType == CollisionType::Plane)
+		{
+			throw NMSLogicException("Error: position(Plane) position has no meaning for plane.");
+		}
+		mPt1 = pos;
+	}
 	void points(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3)
 	{
 		mPt1 = p1;
 		mPt2 = p2;
 		mPt3 = p3;
 	}
+	friend bool operator==(const OWCollider& lhs, const OWCollider& rhs)
+	{
+		return lhs.mActor == rhs.mActor && lhs.mComponentIndex == rhs.mComponentIndex;
+	}
 private:
-	/*
-	* If Ovoid then p1 is center, p2 is radius
-	* If Box then p1 is minPoint and p2 is maxPoint
-	* If Point then p1 is the point
-	* If plane then p1, p2, p3 define the plane
-	* If Ray then mPt1 is origin, mPt2 is direction, mPt3 is end of ray??
-	*/
 	glm::vec3 mPt1 = glm::vec3(0);
 	glm::vec3 mPt2 = glm::vec3(0);
 	glm::vec3 mPt3 = glm::vec3(0);

@@ -37,15 +37,15 @@
 
 //#define INCLUDE_RAY
 //#define INCLUDE_BUTTONS
-//#define INCLUDE_PLANES
+#define INCLUDE_PLANES
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
 #define INCLUDE_BOXES
 #ifdef _DEBUG
-int GDEBUG_PICKING = 2;
+int GDEBUG_PICKING = 1;
 #else
-int GDEBUG_PICKING = 50;
+int GDEBUG_PICKING = 1000;
 #endif
 //#define BOXES_CENTERED
 #define INCLUDE_XYZ_AXIS
@@ -67,7 +67,7 @@ OWActorMutableParticle::MutableParticleElement createBox(const std::string& _nam
 {
 	OWActorMutableParticle::MutableParticleElement elm;
 	elm.colour = colour;
-	elm.coll = new OWCollider(nullptr, OWCollider::CollisionType::Ovoid);
+	elm.coll = new OWCollider(nullptr, OWCollider::CollisionType::Box);
 	OWPhysicsData pd;
 	pd.velocity = direction * speed;
 	OWTransform* trans = new OWTransform({ origin, scale });
@@ -243,7 +243,8 @@ void NMSSplashScene::doSetupScene()
 	glm::vec3 scale1 = { 10, 10, 10 };
 	glm::vec3 scale2 = { 3, 3, 3 };
 	glm::vec3 scale3 = { 20, 20, 20 };
-	int denom = 10;
+	scale2 = scale3 = scale1;
+	int denom = 100;
 	for (int i = 0; i < GDEBUG_PICKING; i++)
 	{
 		boxActor->addComponents(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED),

@@ -254,6 +254,7 @@ void OWActorDiscrete::doTick(float dt)
 	{
 		DiscreteEntity& elm = mElements[i];
 		elm.physics->tick(dt);
+		elm.coll->position(elm.physics->transform()->worldPosition());
 	}
 }
 
@@ -382,6 +383,7 @@ void OWActorNCom1Ren::doTick(float dt)
 	{
 		NCom1RenElement& elm = mElements[i];
 		elm.physics->tick(dt);
+		elm.coll->position(elm.physics->transform()->worldPosition());
 	}
 }
 
@@ -467,18 +469,20 @@ void OWActorMutableParticle::doSetupActor()
 	mMeshTemplate->setup();
 	AABB b = AABB(0);
 	OWRenderData rd = mMeshTemplate->renderData(b);
+	AABB cumulativeSize = b;
 	for (int i = 0; i < mElements.size(); i++)
 	{
 		MutableParticleElement& elm = mElements[i];
-		AABB b_moved = b;
-		const glm::vec4& p = glm::vec4(elm.physics->transform()->worldPosition(), 0);
-		b_moved.move(p);
-		elm.coll->points(b_moved);
+		
+		AABB elm_bounds = b;
+		elm_bounds.scale(elm.physics->transform()->scale());
+		const glm::vec3& p = elm.physics->transform()->worldPosition();
+		elm.coll->points(p, elm_bounds.size(), glm::vec3(0));
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
 			scene()->addCollider(elm.coll, this, i);
 		}
-		b = b | b_moved;
+		cumulativeSize = cumulativeSize | elm_bounds;
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
 			mRenderer->mSSBO.append(elm.physics->transform()->drawSize(mMeshTemplate->drawType()), GPUBufferObject::BillboardSize);
@@ -497,7 +501,7 @@ void OWActorMutableParticle::doSetupActor()
 		}
 	}
 	mRenderer->setup(rd);
-	bounds(b);
+	bounds(cumulativeSize);
 }
 
 void OWActorMutableParticle::doPreTick()
@@ -510,6 +514,7 @@ void OWActorMutableParticle::doTick(float dt)
 	{
 		MutableParticleElement& elm = mElements[i];
 		elm.physics->tick(dt);
+		elm.coll->position(elm.physics->transform()->worldPosition());
 	}
 }
 

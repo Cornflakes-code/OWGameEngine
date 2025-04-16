@@ -1,8 +1,11 @@
 #include "Scene.h"
 
+#include <chrono>
+
 #include "ErrorHandling.h"
 #include "../Actor/OWActor.h"
 #include "../Core/CollisionSystem.h"
+#include "LogStream.h"
 
 Scene::Scene(const Movie* movie)
 	: mMovie(movie)
@@ -49,7 +52,7 @@ void Scene::setup()
 		traverseSceneGraph(testFinished);
 	}
 }
-
+#define DEBUG_COLLISION
 void Scene::timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep)
 {
 	traverseSceneGraph([](OWActor* a)
@@ -65,7 +68,15 @@ void Scene::timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep)
 			a->tick(timeStep);
 		}
 	);
+#ifdef DEBUG_COLLISION
+	OWUtils::Time::time_point startTime = OWUtils::Time::now();
+#endif
 	CollisionSystem::postTick();
+#ifdef DEBUG_COLLISION
+	OWUtils::Time::duration duration = OWUtils::Time::now() - startTime;
+	float frameTimeSecs = std::chrono::duration<float>(duration).count();
+	LogStream(LogStreamLevel::ImportantInfo) << "\t        CollisionSystem::postTick()[" << frameTimeSecs << "] > dt ********** \n";
+	#endif
 	traverseSceneGraph([timeStep](OWActor* a)
 		{
 			a->postTick();
