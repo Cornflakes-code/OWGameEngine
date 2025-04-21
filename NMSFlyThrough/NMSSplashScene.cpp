@@ -35,22 +35,22 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-//#define INCLUDE_RAY
-//#define INCLUDE_BUTTONS
-#define INCLUDE_PLANES
+#define INCLUDE_RAY
+#define INCLUDE_BUTTONS
+//#define INCLUDE_PLANES
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
-#define INCLUDE_BOXES
+//#define INCLUDE_BOXES
 #ifdef _DEBUG
 int GDEBUG_PICKING = 1;
 #else
 int GDEBUG_PICKING = 1000;
 #endif
 //#define BOXES_CENTERED
-#define INCLUDE_XYZ_AXIS
+//#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
-#define INCLUDE_IMPORTED_MODEL
+//#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
 AABB NMSSplashScene::mWindowBounds;
 // We want the text to cross the screen (screenX = -1 -> screenX = 1) in 5 seconds. 
@@ -127,7 +127,9 @@ void NMSSplashScene::doSetupScene()
 	mSpeed = _world.size().x / 100.0f;
 #ifdef INCLUDE_BUTTONS
 	OWButton* button = new OWButton(this, "Button");
-	button->initialise();
+	OWButtonData bd;
+	bd.td.position = glm::vec3(50, 50, 0);
+	button->initialise(bd);
 #endif
 #ifdef INCLUDE_FULLSCREEN
 #endif
@@ -456,27 +458,32 @@ bool NMSSplashScene::processUserCommands(const UserInput::AnyInput& userInput, s
 			glm::vec3 cam_pos = camera->position();
 			glm::vec3 dir = cam_pos - mousePos;
 #ifdef INCLUDE_RAY
-			if (gRay != nullptr)
+			if (gRay == nullptr)
 			{
+				gRay = new OWActorDiscrete(this, "Ray Actor");
+				gRay->transform(new OWTransform());
+				OWActorDiscrete::DiscreteEntity sse;
+				sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
+				sse.coll = new OWCollider(gRay, OWCollider::CollisionType::Ray);
+				sse.mesh = (new OWMeshComponent(gRay, "Ray Component"))
+					->add(MeshData()
+						.addVertices(OWGeometricShapes::beam(cam_pos, dir, 1000))
+						.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL));
+				sse.rend = new OWMeshRenderer("",
+					{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
+					GPUBufferObject::BufferStyle::SSBO);
+				OWTransform* trans = new OWTransform(OWTransformData(cam_pos));
+				sse.physics = new OWPhysics(trans);
+				gRay->addComponents(sse);
+				gRay->setup();
 				// this will crash
 				// need to deactivate, remove from scene and remove from Collissions
-				delete gRay;
+				gRay->active(false);
 			}
-			gRay = new OWActorDiscrete(this, "Ray Actor");
-			gRay->transform(new OWTransform(nullptr));
-			OWActorDiscrete::DiscreteEntity sse;
-			sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
-			sse.coll = new OWCollider(gRay, OWCollider::CollisionType::Ray);
-			sse.mesh = (new OWMeshComponent(gRay, "Ray Component"))
-				->add(MeshData()
-					.addVertices(OWGeometricShapes::beam(cam_pos, dir, 1000)));
-			sse.rend = new OWMeshRenderer("",
-				{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
-				GPUBufferObject::BufferStyle::SSBO);
-			sse.trans = new OWTransform(gRay->transform(), cam_pos);
-			gRay->addComponents(sse);
-#endif
-			gRay->transform()->localPosition(cam_pos);
+			else
+			{
+				gRay->
+			}
 			//gRay->colour({ 0.7, 0.7, 0.0, 1.0f });
 			//gRay->direction(normMouse);
 			glm::vec3 normal;
@@ -511,6 +518,7 @@ bool NMSSplashScene::processUserCommands(const UserInput::AnyInput& userInput, s
 					<< bb.maxPoint() << " : " << bb.minPoint() << "] \n";
 			}
 			*/
+#endif
 		}
 	}
 	if (userInput.mouseInput.action == UserInput::PointingDeviceAction::RightMouseButtonClick)

@@ -73,56 +73,74 @@ void OWActor::setup()
 #ifdef _DEBUG
 		}
 #endif
-			mSetup = true;
+		mSetup = true;
 	}
 }
 
 void OWActor::preTick()
 {
-	copyCurrentToPrevious();
-	doPreTick();
-	// Placeholder called on the main thread. OWActor should quickly 
-	// create a background thread to do stuff while render is happenening.
+	if (active())
+	{
+		copyCurrentToPrevious();
+		doPreTick();
+		// Placeholder called on the main thread. OWActor should quickly 
+		// create a background thread to do stuff while render is happenening.
+	}
 }
 
 void OWActor::tick(float dt) 
 {
-	mScriptor.tick(dt);
-	doTick(dt);
+	if (active())
+	{
+		mScriptor.tick(dt);
+		doTick(dt);
+	}
 }
 
 void OWActor::postTick()
 {
-	doPostTick();
+	if (active())
+	{
+		doPostTick();
+	}
 }
 
 void OWActor::preRender()
 {
-	copyCurrentToPrevious();
-	doPreRender();
-	// Placeholder called on the main thread. OWActor should quickly 
-	// create a background thread to do stuff while render is happenening.
+	if (active())
+	{
+		copyCurrentToPrevious();
+		doPreRender();
+		// Placeholder called on the main thread. OWActor should quickly 
+		// create a background thread to do stuff while render is happenening.
+	}
 }
 
 void OWActor::interpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
 {
+	if (active())
+	{
 #ifdef _DEBUG
-	if (!debugInclude())
-		return;
+		if (!debugInclude())
+			return;
 #endif
-	doInterpolatePhysics(totalTime, alpha, fixedTimeStep);
+		doInterpolatePhysics(totalTime, alpha, fixedTimeStep);
+	}
 }
 
 void OWActor::render(const glm::mat4& proj,
 	const glm::mat4& view, const glm::vec3& cameraPos)
 {
-#ifdef _DEBUG
-	if (!debugInclude())
-		return;
-#endif
-	if (mSetup && active())
+	if (active())
 	{
-		doRender(proj, view, cameraPos);
+#ifdef _DEBUG
+		if (!debugInclude())
+			return;
+#endif
+		if (mSetup && active())
+		{
+			doRender(proj, view, cameraPos);
+		}
 	}
 }
 
@@ -215,11 +233,11 @@ void OWActorDiscrete::doSetupActor()
 	{
 		DiscreteEntity& elm = mElements[i];
 		elm.mesh->setup();
-		AABB b1;
-		elm.coll->points(b1);
 		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
 			scene()->addCollider(elm.coll, this, i);
+		AABB b1;
 		OWRenderData rd = elm.mesh->renderData(b1);
+		elm.coll->points(b1);
 		b = b | b1;
 
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::BillboardSize))
@@ -297,6 +315,12 @@ void OWActorDiscrete::doInterpolatePhysics(float totalTime, float alpha, float f
 	{
 		DiscreteEntity& elm = mElements[i];
 		elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
+		if (!elm.rend->mSSBO.locked(GPUBufferObject::BillboardSize))
+		{
+			glm::vec4 m = glm::vec4(elm.physics->transform()->drawSize(elm.mesh->drawType()), 0, 0);
+			float* f = glm::value_ptr(m);
+			elm.rend->mSSBO.updateData(f, GPUBufferObject::BillboardSize, i);
+		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
 		{
 			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
@@ -305,7 +329,7 @@ void OWActorDiscrete::doInterpolatePhysics(float totalTime, float alpha, float f
 		}
 		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
 		{
-			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
+			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->worldPosition(), 0);
 			float* f = glm::value_ptr(m);
 			elm.rend->mSSBO.updateData(f, GPUBufferObject::Position, 0);
 		}
@@ -436,7 +460,7 @@ void OWActorNCom1Ren::doInterpolatePhysics(float totalTime, float alpha, float f
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
-			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
+			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->worldPosition(), 0);
 			float* f = glm::value_ptr(m);
 			mRenderer->mSSBO.updateData(f, GPUBufferObject::Position, i);
 		}
@@ -571,7 +595,7 @@ void OWActorMutableParticle::doInterpolatePhysics(float totalTime, float alpha, 
 		}
 		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
 		{
-			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->localPosition(), 0);
+			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->worldPosition(), 0);
 			float* f = glm::value_ptr(m);
 			mRenderer->mSSBO.updateData(f, GPUBufferObject::Position, i);
 		}

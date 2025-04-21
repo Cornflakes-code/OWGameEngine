@@ -52,9 +52,14 @@ void Scene::setup()
 		traverseSceneGraph(testFinished);
 	}
 }
-#define DEBUG_COLLISION
+
+#include <algorithm>
+//#define DEBUG_COLLISION
 void Scene::timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep)
 {
+//	mRootNode.erase(std::remove(mRootNode.begin(), mRootNode.end(), 
+//		[](const OWActor* x) { return !x->active(); }), mRootNode.end());
+
 	traverseSceneGraph([](OWActor* a)
 		{
 			a->preTick();

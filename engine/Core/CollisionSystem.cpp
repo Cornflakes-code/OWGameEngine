@@ -323,10 +323,10 @@ namespace CollisionSystem
         {
         }
         const OWCollider* o;
-        const glm::vec3& left() const {
+        glm::vec3 left() const {
             return o->left();
         }
-        const glm::vec3& right() const {
+        glm::vec3 right() const {
             return o->right();
         }
     };

@@ -104,7 +104,7 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 	//processTimeStep(lcs, currentScene()->logic()->current, t, std::chrono::milliseconds(0));
 	std::string nextSceneName;
 	const float fixedTimeStep = std::chrono::duration<float>(dt).count();
-#define DEBUG_RUN_LOOP
+//#define DEBUG_RUN_LOOP
 	while (!glfwWindowShouldClose(glfwWindow))
 	{
 #ifdef DEBUG_RUN_LOOP

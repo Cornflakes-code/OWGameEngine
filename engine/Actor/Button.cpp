@@ -1,7 +1,5 @@
 #include "Button.h"
 
-#include <glm/gtx/transform.hpp>
-
 #include <Helpers/Shader.h>
 #include <Component/TextComponent.h>
 #include <Renderers/MeshRenderer.h>
@@ -35,8 +33,9 @@ OWActorDiscrete::DiscreteEntity OWButton::makeShape(const std::string& s, const 
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text_1.f.glsl", "");
 	shader->setStandardUniformNames("pv");
 	sse.rend = new OWMeshRenderer(shader,
-		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
-				GPUBufferObject::BufferType::BillboardSize },
+		{	GPUBufferObject::BufferType::Position, 
+			GPUBufferObject::BufferType::Colour,
+			GPUBufferObject::BufferType::BillboardSize },
 		GPUBufferObject::BufferStyle::SSBO);
 	sse.rend->drawModes(GL_TRIANGLES, GL_TRIANGLES);
 	OWTransform* trans = (new OWTransform({ glm::vec3(0), size }));
@@ -47,6 +46,9 @@ OWActorDiscrete::DiscreteEntity OWButton::makeShape(const std::string& s, const 
 
 void OWButton::initialise(const OWButtonData& _data)
 {
+	mData = _data; 
+	std::vector<glm::vec3> triangles = OWGeometricShapes::goldenRectangle();
+	/*
 	std::vector<glm::vec3> triangles = {
 		{ -0.5f, 0.5f, 0.0f },
 		{ 0.5f, 0.5f, 0.0f },
@@ -55,11 +57,12 @@ void OWButton::initialise(const OWButtonData& _data)
 		{ 0.5f, 0.5f, 0.0f },
 		{ 0.5f, -0.5f, 0.0f }
 	};
-	this->transform(new OWTransform()); // Always do this before creating child transforms
+	*/
+	this->transform(new OWTransform(mData.td)); // Always do this before creating child transforms
 
 	glm::vec3 sz = glm::vec3(0.4, 0.1, 0);
-	addComponents(makeShape("Unclicked Button", OWUtils::colour(OWUtils::SolidColours::BLUE), sz));
-	addComponents(makeShape("Clicked Button", OWUtils::colour(OWUtils::SolidColours::RED), sz * glm::vec3(0.7f, 0.7f, 1.0f)));
+	addComponents(makeShape("Unclicked Button", mData.innerColour, sz));
+	addComponents(makeShape("Clicked Button", mData.outerColour, sz * glm::vec3(0.7f, 0.7f, 1.0f)));
 
 	OWTextComponentData td;
 	td.tdt = OWRenderTypes::DrawType::TwoDStatic;;
@@ -68,17 +71,15 @@ void OWButton::initialise(const OWButtonData& _data)
 	shader->appendMutator(OWTextComponent::shaderMutator(td.tdt));
 	OWActorDiscrete::DiscreteEntity sse;
 	sse.rend = (new OWMeshRenderer(shader,
-		{ GPUBufferObject::BufferType::Position,
+		{	GPUBufferObject::BufferType::Position,
 			GPUBufferObject::BufferType::Colour,
 			GPUBufferObject::BufferType::BillboardSize },
 		GPUBufferObject::BufferStyle::SSBO));
-	td.text = "Click Me";
-	sse.mesh = new OWTextComponent(this, "Rope Banner", td);
+	td.text = mData.text;
+	sse.mesh = new OWTextComponent(this, td.text, td);
 	OWTransform* trans = new OWTransform(OWTransformData(glm::vec3(0, 0, 0), { 0.05f, 0.05f, 1.0f }));
 	trans->parentTransform(transform());
 	sse.physics = new OWPhysics(trans);
-
-	sse.physics = new OWPhysics(new OWTransform({ glm::vec3(0, 0, 0), { 0.05f, 0.05f, 1.0f } }));
 	sse.colour = OWUtils::colour(OWUtils::SolidColours::GREEN);
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
 	addComponents(sse);

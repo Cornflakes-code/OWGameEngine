@@ -7,7 +7,7 @@ struct SSBO
 {
 	vec4 pos;
 	vec4 colour;
-	vec2 bbSize;
+	vec4 bbSize;
 };
 
 layout(binding = 1, std430) readonly buffer SSBOBuffer {

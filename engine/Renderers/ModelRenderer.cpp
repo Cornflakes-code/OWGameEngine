@@ -6,6 +6,7 @@
 #include "../Helpers/Shader.h"
 void OWModelRenderer::add(const Texture& texture)
 {
+	mData.textures.push_back(texture);
 }
 
 void OWModelRenderer::add(const OWModelData& md)
@@ -46,6 +47,10 @@ void OWModelRenderer::doSetup(const OWRenderData& renderData)
 	for (const auto& m : renderData.models)
 	{
 		add(m);
+		for (int i = 0; i < m.textures.size(); i++)
+		{
+			add(m.textures[i]);
+		}
 	}
 	continueSetup();
 }
