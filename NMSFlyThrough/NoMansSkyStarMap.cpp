@@ -159,7 +159,7 @@ void NoMansSky::loadStars(const std::string& fileName,
 	shader->setStandardUniformNames("pv");
 	shader->appendMutator(OWTextComponent::shaderMutator(OWRenderTypes::DrawType::TwoDStatic));
 
-	starLabels->renderer(new OWMeshRenderer(shader, 
+	starLabels->addRenderer(new OWMeshRenderer(shader, 
 		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
 				GPUBufferObject::BufferType::BillboardSize },
 		GPUBufferObject::BufferStyle::SSBO));

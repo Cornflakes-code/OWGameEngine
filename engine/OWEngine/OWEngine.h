@@ -15,6 +15,8 @@
 //template <class T> void OW_UNUSED(const T&) { }
 #endif
 
+typedef size_t OWSize;
+
 #if _WIN32 || _WIN64
 #if _WIN64
 #else

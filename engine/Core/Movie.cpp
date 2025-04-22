@@ -90,7 +90,7 @@ void Movie::run(UserInput* OW_UNUSED(ui), GLFWwindow* glfwWindow)
 
 	// http://gameprogrammingpatterns.com/game-loop.html
 	// https://docs.unity3d.com/Manual/ExecutionOrder.html
-	int hz = 1000.0 / 60.0;
+	int hz = 1000.0f / (60.0f * 1.0f);
 
 	// Need to code some feedback to ensure that scene->timeStep does not take longer than dt.
 	// Or is this already handled by the loop?

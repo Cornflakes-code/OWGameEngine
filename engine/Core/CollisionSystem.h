@@ -9,8 +9,8 @@ class OWRay;
 class OWActor;
 namespace CollisionSystem
 {
-	void OWENGINE_API addCollider(OWCollider* coll, OWActor* a, int componentId);
-	void OWENGINE_API addRay(OWCollider* coll, OWActor* a, int componentId);
+	void OWENGINE_API addCollider(OWCollider* coll, OWActor* a, OWSize componentId);
+	void OWENGINE_API addRay(OWCollider* coll, OWActor* a, OWSize componentId);
 	void OWENGINE_API deleteRay(OWActor* r);
 
 	void OWENGINE_API preTick();

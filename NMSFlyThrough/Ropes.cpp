@@ -104,11 +104,11 @@ void Rope::initialise(const OWRopeData& _data)
 
 void Rope::makeVisible(bool _ends, bool _lines, bool _surfaces, bool _strandLabels, bool _bannerLabel)
 {
-	mElements[mRopeEndsElementIndex].mesh->active(_ends);
-	mElements[mRopeLinesElementIndex].mesh->active(_lines);
-	mElements[mRopeSurfacesElementIndex].mesh->active(_surfaces);
-	mElements[mRopeBannerElementIndex].mesh->active(_bannerLabel);
-	mElements[mRopeLabelsElementIndex].mesh->active(_strandLabels);
+	getMeshComponent(mRopeEndsElementIndex)->active(_ends);
+	getMeshComponent(mRopeLinesElementIndex)->active(_ends);
+	getMeshComponent(mRopeSurfacesElementIndex)->active(_ends);
+	getMeshComponent(mRopeBannerElementIndex)->active(_ends);
+	getMeshComponent(mRopeLabelsElementIndex)->active(_ends);
 }
 
 bool Rope::prepare()
@@ -150,7 +150,7 @@ void Rope::createBanner(const std::string& s, int height,
 	Shader* shader = new Shader("textStaticBillboard.v.glsl", "text.f.glsl", "");
 	shader->setStandardUniformNames("pv");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->renderer(new OWMeshRenderer(shader,
+	multipleTexts->addRenderer(new OWMeshRenderer(shader,
 			{ GPUBufferObject::BufferType::Position, 
 				GPUBufferObject::BufferType::Colour, 
 				GPUBufferObject::BufferType::BillboardSize },
@@ -191,7 +191,7 @@ void Rope::createLabels(const glm::vec2& textSpacing, const glm::vec2& textScale
 	multipleTexts->transform(trans);
 	Shader* shader = new Shader("DynamicText.json");
 	shader->appendMutator(OWTextComponent::shaderMutator(tdt));
-	multipleTexts->renderer(new OWMeshRenderer(shader,
+	multipleTexts->addRenderer(new OWMeshRenderer(shader,
 		{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour, GPUBufferObject::BufferType::BillboardSize },
 		GPUBufferObject::BufferStyle::SSBO)); 
 	for (int i = 0; i < mPolyBuilder->labels().size(); i++)

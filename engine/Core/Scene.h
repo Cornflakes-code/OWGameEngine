@@ -48,7 +48,7 @@ public:
 	void traverseSceneGraph(OWActorCallbackType cb) const;
 	void timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep);
 	void preRender(float totalTime, float alpha, float fixedTimeStep);
-	void addCollider(OWCollider* coll, OWActor* a, int componentId);
+	void addCollider(OWCollider* coll, OWActor* a, OWSize componentId);
 protected:
 	std::vector<OWActor*> mRootNode;
 	Scene(const Movie* movie);

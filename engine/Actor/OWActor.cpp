@@ -42,6 +42,14 @@ bool OWActor::debugInclude() const
 }
 #endif
 
+void OWActor::getScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
+{
+	return;
+	required.phys = mPhysics[ndx];
+	required.mesh = mMeshes[ndx > mMeshes.size() ? 0: ndx];
+	required.sound = mSounds[ndx > mSounds.size() ? 0 : ndx];
+}
+
 void OWActor::transform(OWTransform* newValue) 
 {
 	if (mActorTransform != nullptr)
@@ -77,6 +85,115 @@ void OWActor::setup()
 	}
 }
 
+void OWActor::collided(const OWCollider& component, const OWCollider& otherComponent)
+{
+	doCollided(component, otherComponent);
+}
+
+const glm::vec4& OWActor::getColour(OWSize ndx)
+{
+	return (ndx < mColours.size()) ? mColours[ndx] : mColours[0];
+}
+
+void OWActor::setColour(const glm::vec4& colour, OWSize ndx)
+{
+	mColours[ndx] = colour;
+}
+
+OWCollider* OWActor::getCollider(OWSize ndx)
+{
+	return (ndx < mColliders.size()) ? mColliders[ndx] : mColliders[0];
+}
+
+void OWActor::setCollider(OWCollider* coll, OWSize ndx)
+{
+	mColliders[ndx] = coll;
+}
+
+OWPhysics* OWActor::getPhysics(OWSize ndx)
+{
+	return (ndx < mPhysics.size()) ? mPhysics[ndx] : mPhysics[0];
+}
+
+void OWActor::setPhysics(OWPhysics* phys, OWSize ndx)
+{
+	mPhysics[ndx] = phys;
+}
+
+OWMeshComponentBase* OWActor::getMeshComponent(OWSize ndx)
+{
+	return (ndx < mMeshes.size()) ? mMeshes[ndx] : mMeshes[0];
+}
+
+void OWActor::setMeshComponent(OWMeshComponentBase* mesh, OWSize ndx)
+{
+	mMeshes[ndx] = mesh;
+}
+
+OWRenderer* OWActor::getRenderer(OWSize ndx)
+{
+	return (ndx < mRenderers.size()) ? mRenderers[ndx] : mRenderers[0];
+}
+
+void OWActor::setRenderer(OWRenderer* rend, OWSize ndx)
+{
+	mRenderers[ndx] = rend;
+}
+
+OWSoundComponent* OWActor::getSound(OWSize ndx)
+{
+	return (ndx < mSounds.size()) ? mSounds[ndx] : mSounds[0];
+}
+
+void OWActor::setSound(OWSoundComponent* sound, OWSize ndx)
+{
+	mSounds[ndx] = sound;
+}
+
+void OWActor::addColour(const glm::vec4& colour)
+{
+	mColours.push_back(colour);
+}
+
+void OWActor::addCollider(OWCollider* coll)
+{
+	mColliders.push_back(coll);
+}
+
+void OWActor::addPhysics(OWPhysics* phys)
+{
+	if (phys == nullptr)
+		mPhysics.push_back(new OWPhysics(this->transform()));
+	else
+		mPhysics.push_back(phys);
+}
+
+void OWActor::addMeshComponent(OWMeshComponentBase* mesh)
+{
+	mMeshes.push_back(mesh);
+}
+
+void OWActor::addRenderer(OWRenderer* rend)
+{
+	mRenderers.push_back(rend);
+}
+
+void OWActor::addSound(OWSoundComponent* sound)
+{
+	if (sound == nullptr)
+		mSounds.push_back(new OWSoundComponent());
+	else
+		mSounds.push_back(sound);
+}
+
+void OWActor::copyCurrentToPrevious()
+{
+	for (auto& elm : mPhysics)
+	{
+		elm->copyCurrentToPrevious();
+	}
+}
+
 void OWActor::preTick()
 {
 	if (active())
@@ -93,7 +210,13 @@ void OWActor::tick(float dt)
 	if (active())
 	{
 		mScriptor.tick(dt);
-		doTick(dt);
+		OWSize sz = physicsSize();
+		for (OWSize i = 0; i < sz; i++)
+		{
+			OWPhysics* physics = getPhysics(i);
+			physics->tick(dt);
+			getCollider(i)->position(physics->transform()->worldPosition());
+		}
 	}
 }
 
@@ -124,7 +247,33 @@ void OWActor::interpolatePhysics(float totalTime, float alpha, float fixedTimeSt
 		if (!debugInclude())
 			return;
 #endif
-		doInterpolatePhysics(totalTime, alpha, fixedTimeStep);
+		{
+			volatile OWSize sz = physicsSize();
+			for (OWSize i = 0; i < sz; i++)
+			{
+				OWPhysics* physics = getPhysics(i);// mPhysics[i];
+				OWRenderer* rend = getRenderer(i);// mRenderers[i];
+				physics->interpolate(totalTime, alpha, fixedTimeStep);
+				if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
+				{
+					glm::vec4 m = glm::vec4(physics->transform()->drawSize(getMeshComponent(i)->drawType()), 0, 0);
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::BillboardSize, i);
+				}
+				if (!rend->mSSBO.locked(GPUBufferObject::Model))
+				{
+					glm::mat4 m = physics->renderTransform()->modelMatrix();
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::Model, i);
+				}
+				if (!rend->mSSBO.locked(GPUBufferObject::Position))
+				{
+					glm::vec4 m = glm::vec4(physics->renderTransform()->worldPosition(), i);
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::Position, 0);
+				}
+			}
+		}
 	}
 }
 
@@ -139,9 +288,21 @@ void OWActor::render(const glm::mat4& proj,
 #endif
 		if (mSetup && active())
 		{
-			doRender(proj, view, cameraPos);
+			OWSize sz = renderersSize();
+			for (OWSize i = 0; i < sz; i++)
+			{
+				if (getMeshComponent(i)->active())
+					getRenderer(i)->render(proj, view, cameraPos);
+			}
 		}
 	}
+}
+
+void OWActor::postRender()
+{
+	doPostRender();
+	// Placeholder called on the main thread. OWActor should quickly tidy
+	// up whatever prePender() did.
 }
 
 static void validateCollider(OWActor* a, OWCollider* coll)
@@ -189,7 +350,7 @@ static void validateTransform(OWActor* a, OWTransform* trans)
 	}
 }
 
-static void validatePhysics(OWActor* a, OWPhysics*& phys)
+static void validatePhysics(OWActor* a, OWPhysics* phys)
 {
 	if (phys == nullptr)
 	{
@@ -198,10 +359,8 @@ static void validatePhysics(OWActor* a, OWPhysics*& phys)
 	validateTransform(a, phys->transform());
 }
 
-static void validateSound(OWActor* a, OWSoundComponent*& sound)
+static void validateSound(OWActor* a, OWSoundComponent* sound)
 {
-	if (sound == nullptr)
-		sound = new OWSoundComponent(); // Not all Actors have sound
 }
 
 static void validateRenderer(OWActor* a, const OWRenderer* rend)
@@ -212,128 +371,24 @@ static void validateRenderer(OWActor* a, const OWRenderer* rend)
 	}
 }
 
-size_t OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
+OWSize OWActorDiscrete::addComponents(const DiscreteEntity& newElement)
 {
-	mElements.push_back(newElement);
-	DiscreteEntity& elm = mElements.back();
-	validateCollider(this, elm.coll);
-	validatePhysics(this, elm.physics);
-	validateMeshComponent(this, elm.mesh);
-	validateRenderer(this, elm.rend);
-	validateSound(this, elm.sound);
-	size_t retval = mElements.size() - 1;
-	elm.coll->componentIndex(retval);
-	return retval;
-}
-
-void OWActorDiscrete::doSetupActor()
-{
-	AABB b;
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		DiscreteEntity& elm = mElements[i];
-		elm.mesh->setup();
-		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
-			scene()->addCollider(elm.coll, this, i);
-		AABB b1;
-		OWRenderData rd = elm.mesh->renderData(b1);
-		elm.coll->points(b1);
-		b = b | b1;
-
-		if (!elm.rend->mSSBO.locked(GPUBufferObject::BillboardSize))
-		{
-			elm.rend->mSSBO.append(elm.physics->transform()->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
-		}
-		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
-		{
-			elm.rend->mSSBO.append(elm.physics->transform()->modelMatrix(), GPUBufferObject::Model);
-		}
-		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
-		{
-			const glm::vec4& p = glm::vec4(elm.physics->transform()->worldPosition(), 0);
-			elm.rend->mSSBO.append(p, GPUBufferObject::Position);
-		}
-		if (!elm.rend->mSSBO.locked(GPUBufferObject::Colour))
-		{
-			elm.rend->mSSBO.append(elm.colour, GPUBufferObject::Colour);
-		}
-		elm.rend->setup(rd);
-	}
-	bounds(b);
-}
-
-void OWActorDiscrete::doPreTick()
-{
-}
-
-void OWActorDiscrete::doTick(float dt)
-{
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		DiscreteEntity& elm = mElements[i];
-		elm.physics->tick(dt);
-		elm.coll->position(elm.physics->transform()->worldPosition());
-	}
-}
-
-void OWActorDiscrete::doPostTick()
-{
-}
-
-void OWActorDiscrete::doPreRender()
-{
-}
-
-void OWActorDiscrete::doPostRender()
-{
-}
-
-void OWActorDiscrete::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::vec3& cameraPos) 
-{
-	for (auto& elm: mElements)
-	{
-		if (elm.mesh->active())
-			elm.rend->render(proj, view, cameraPos);
-	}
-}
-
-void OWActorDiscrete::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
-{
-	if (ndx < mElements.size())
-	{
-		DiscreteEntity& elm = mElements[ndx];
-		required.phys = elm.physics;
-		required.mesh = elm.mesh;
-		required.sound = elm.sound;
-	}
-}
-
-void OWActorDiscrete::doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
-{
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		DiscreteEntity& elm = mElements[i];
-		elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
-		if (!elm.rend->mSSBO.locked(GPUBufferObject::BillboardSize))
-		{
-			glm::vec4 m = glm::vec4(elm.physics->transform()->drawSize(elm.mesh->drawType()), 0, 0);
-			float* f = glm::value_ptr(m);
-			elm.rend->mSSBO.updateData(f, GPUBufferObject::BillboardSize, i);
-		}
-		if (!elm.rend->mSSBO.locked(GPUBufferObject::Model))
-		{
-			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
-			float* f = glm::value_ptr(m);
-			elm.rend->mSSBO.updateData(f, GPUBufferObject::Model, 0);
-		}
-		if (!elm.rend->mSSBO.locked(GPUBufferObject::Position))
-		{
-			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->worldPosition(), 0);
-			float* f = glm::value_ptr(m);
-			elm.rend->mSSBO.updateData(f, GPUBufferObject::Position, 0);
-		}
-	}
+	addColour(newElement.colour);
+	addCollider(newElement.coll);
+	addPhysics(newElement.physics);
+	addMeshComponent(newElement.mesh);
+	addRenderer(newElement.rend);
+	addSound(newElement.sound);
+	
+	OWSize back = static_cast<OWSize>(meshesSize()) - 1;
+	OWCollider* coll = getCollider(back);
+	validateCollider(this, coll);
+	validatePhysics(this, getPhysics(back));
+	validateMeshComponent(this, getMeshComponent(back));
+	validateRenderer(this, getRenderer(back));
+	validateSound(this, getSound(back));
+	coll->componentIndex(back);
+	return back;
 }
 
 void OWActorDiscrete::doCollided(const OWCollider& component, const OWCollider& otherComponent)
@@ -341,265 +396,190 @@ void OWActorDiscrete::doCollided(const OWCollider& component, const OWCollider& 
 	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
 }
 
-size_t OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
+void OWActorDiscrete::doSetupActor()
 {
-	mElements.push_back(newElement);
-	NCom1RenElement& elm = mElements.back();
-	validateCollider(this, elm.coll);
-	validatePhysics(this, elm.physics);
-	validateMeshComponent(this, elm.mesh);
-	validateSound(this, elm.sound);
-	size_t retval = mElements.size() - 1;
-	elm.coll->componentIndex(retval);
-	return retval;
+	OWSize sz = static_cast<OWSize>(meshesSize());
+	AABB b;
+	for (OWSize i = 0; i < sz; i++)
+	{
+		OWMeshComponentBase* mesh = getMeshComponent(i);
+		OWRenderer* rend = getRenderer(i);
+		OWPhysics* physics = getPhysics(i);
+		mesh->setup();
+		if (getCollider(i)->collisionType() != OWCollider::CollisionType::Permeable)
+			scene()->addCollider(getCollider(i), this, i);
+		AABB b1;
+		OWRenderData rd = getMeshComponent(i)->renderData(b1);
+		getCollider(i)->points(b1);
+		b = b | b1;
+		if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
+		{
+			rend->mSSBO.append(physics->transform()->drawSize(mesh->drawType()), GPUBufferObject::BillboardSize);
+		}
+		if (!rend->mSSBO.locked(GPUBufferObject::Model))
+		{
+			rend->mSSBO.append(physics->transform()->modelMatrix(), GPUBufferObject::Model);
+		}
+		if (!rend->mSSBO.locked(GPUBufferObject::Position))
+		{
+			const glm::vec4& p = glm::vec4(physics->transform()->worldPosition(), 0);
+			rend->mSSBO.append(p, GPUBufferObject::Position);
+		}
+		if (!rend->mSSBO.locked(GPUBufferObject::Colour))
+		{
+			rend->mSSBO.append(getColour(i), GPUBufferObject::Colour);
+		}
+		rend->setup(rd);
+	}
+	bounds(b);
+}
+
+OWSize OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
+{
+	addColour(newElement.colour);
+	addCollider(newElement.coll);
+	addMeshComponent(newElement.mesh);
+	addPhysics(newElement.physics);
+	addSound(newElement.sound);
+
+	OWSize back = static_cast<OWSize>(meshesSize()) - 1;
+	OWCollider* coll = getCollider(back);
+	validateCollider(this, coll);
+	validatePhysics(this, getPhysics(back));
+	validateMeshComponent(this, getMeshComponent(back));
+	validateSound(this, getSound(back));
+
+	coll->componentIndex(back);
+	return back;
 }
 
 void OWActorNCom1Ren::doSetupActor()
 {
-	validateRenderer(this, mRenderer);
+	if (renderersSize() != 1)
+		throw NMSLogicException("OWActorNCom1Ren::doSetupActor(). Must have exactly one renderer.\n");
+	validateRenderer(this, getRenderer(0));
+	OWSize sz = static_cast<OWSize>(meshesSize());
+	OWRenderer* rend = getRenderer(0);
 
 	OWRenderData rd;
 	AABB b;
-	for (int i = 0; i < mElements.size(); i++)
+	for (OWSize i = 0; i < sz; i++)
 	{
-		const NCom1RenElement& elm = mElements[i];
-		elm.mesh->setup();
+		OWMeshComponentBase* mesh = getMeshComponent(i);
+		OWCollider* coll = getCollider(i);
+		OWPhysics* physics = getPhysics(i);
+		mesh->setup();
 		AABB b1;
-		OWRenderData rd_elm = elm.mesh->renderData(b1);
+		OWRenderData rd_elm = mesh->renderData(b1);
 		rd.add(rd_elm, true);
-		elm.coll->points(b1);
-		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
+		coll->points(b1);
+		if (coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
-			scene()->addCollider(elm.coll, this, i);
+			scene()->addCollider(coll, this, i);
 		}
 		b = b | b1;
-		glm::vec3 jfw3 = elm.physics->transform()->worldPosition();
-		glm::mat4 jfw4 = elm.physics->transform()->modelMatrix();
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
+		glm::vec3 jfw3 = physics->transform()->worldPosition();
+		glm::mat4 jfw4 = physics->transform()->modelMatrix();
+		if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
-			mRenderer->mSSBO.append(elm.physics->transform()->drawSize(elm.mesh->drawType()), GPUBufferObject::BillboardSize);
+			rend->mSSBO.append(physics->transform()->drawSize(mesh->drawType()), GPUBufferObject::BillboardSize);
 		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
+		if (!rend->mSSBO.locked(GPUBufferObject::Model))
 		{
-			mRenderer->mSSBO.append(elm.physics->transform()->modelMatrix(), GPUBufferObject::Model);
+			rend->mSSBO.append(physics->transform()->modelMatrix(), GPUBufferObject::Model);
 		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
+		if (!rend->mSSBO.locked(GPUBufferObject::Position))
 		{
-			const glm::vec4& p = glm::vec4(elm.physics->transform()->worldPosition(), 0);
-			mRenderer->mSSBO.append(p, GPUBufferObject::Position);
+			const glm::vec4& p = glm::vec4(physics->transform()->worldPosition(), 0);
+			rend->mSSBO.append(p, GPUBufferObject::Position);
 		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Colour))
+		if (!rend->mSSBO.locked(GPUBufferObject::Colour))
 		{
-			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
+			rend->mSSBO.append(getColour(i), GPUBufferObject::Colour);
 		}
 	}
-	mRenderer->setup(rd);
+	rend->setup(rd);
 	bounds(b);
-}
-
-void OWActorNCom1Ren::doPreTick()
-{
-}
-
-void OWActorNCom1Ren::doTick(float dt)
-{
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		NCom1RenElement& elm = mElements[i];
-		elm.physics->tick(dt);
-		elm.coll->position(elm.physics->transform()->worldPosition());
-	}
-}
-
-void OWActorNCom1Ren::doPostTick()
-{
-}
-
-void OWActorNCom1Ren::doPreRender()
-{
-}
-
-void OWActorNCom1Ren::doPostRender()
-{
-}
-
-void OWActorNCom1Ren::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::vec3& cameraPos) 
-{
-	mRenderer->render(proj, view, cameraPos);
-}
-
-void OWActorNCom1Ren::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
-{
-	if (ndx < mElements.size())
-	{
-		NCom1RenElement& elm = mElements[ndx];
-		required.phys = elm.physics;
-		required.mesh = elm.mesh;
-		required.sound = elm.sound;
-	}
-}
-
-void OWActorNCom1Ren::doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
-{
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		NCom1RenElement& elm = mElements[i];
-		elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
-		{
-			glm::vec4 m = glm::vec4(elm.physics->transform()->drawSize(elm.mesh->drawType()), 0, 0);
-			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateData(f, GPUBufferObject::BillboardSize, i);
-		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
-		{
-			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
-			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateData(f, GPUBufferObject::Model, i);
-		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
-		{
-			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->worldPosition(), 0);
-			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateData(f, GPUBufferObject::Position, i);
-		}
-	}
 }
 
 void OWActorNCom1Ren::doCollided(const OWCollider& component, const OWCollider& otherComponent)
 {
-	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
+	throw NMSNotYetImplementedException("OWActorNCom1Ren::doCollided() not yet implemented.");
 }
 
-size_t OWActorMutableParticle::addComponents(const MutableParticleElement& newElement)
+OWSize OWActorMutableParticle::addComponents(const MutableParticleElement& newElement)
 {
-	mElements.push_back(newElement);
-	MutableParticleElement& elm = mElements.back();
-	validateCollider(this, elm.coll);
-	validatePhysics(this, elm.physics);
-	size_t retval = mElements.size() - 1;
-	elm.coll->componentIndex(retval);
-	return retval;
+	addColour(newElement.colour);
+	addCollider(newElement.coll);
+	addPhysics(newElement.physics);
+
+	OWSize back = physicsSize() - 1;
+	OWCollider* coll = getCollider(back);
+	validateCollider(this, coll);
+	validatePhysics(this, getPhysics(back));
+	coll->componentIndex(back);
+	return back;
 }
 
 void OWActorMutableParticle::doSetupActor()
 {
-	validateRenderer(this, mRenderer);
-	if (mRenderer->mSSBO.bufferStyle() == GPUBufferObject::BufferStyle::Uniform)
+	if (soundsSize() == 0)
+		addSound(new OWSoundComponent());
+	if (soundsSize() != 1)
+		throw NMSLogicException("OWActorMutableParticle::doSetupActor(). Must have exactly one sound.\n");
+	validateSound(this, getSound(0));
+
+	if (renderersSize() != 1)
+		throw NMSLogicException("OWActorMutableParticle::doSetupActor(). Must have exactly one renderer.\n");
+	OWRenderer* rend = getRenderer(0);
+	if (rend->mSSBO.bufferStyle() == GPUBufferObject::BufferStyle::Uniform)
 		throw NMSLogicException("OWActorMutableParticle::doSetupActor(). Renderer BufferStyle must be SSBO.\n");
-	validateMeshComponent(this, mMeshTemplate);
-	validateSound(this, mSound);
-	mMeshTemplate->setup();
+	validateRenderer(this, rend);
+
+	if (meshesSize() != 1)
+		throw NMSLogicException("OWActorMutableParticle::doSetupActor(). Must have exactly one mesh.\n");
+
+	OWMeshComponentBase* mesh = getMeshComponent(0);
+	validateMeshComponent(this, mesh);
+	validateSound(this, getSound(0));
+	mesh->setup();
 	AABB b = AABB(0);
-	OWRenderData rd = mMeshTemplate->renderData(b);
+	OWRenderData rd = mesh->renderData(b);
 	AABB cumulativeSize = b;
-	for (int i = 0; i < mElements.size(); i++)
+	OWSize num = static_cast<OWSize>(physicsSize());
+	for (OWSize i = 0; i < num; i++)
 	{
-		MutableParticleElement& elm = mElements[i];
-		
+		OWCollider* coll = getCollider(i);
+		OWPhysics* physics = getPhysics(i);
+
 		AABB elm_bounds = b;
-		elm_bounds.scale(elm.physics->transform()->scale());
-		const glm::vec3& p = elm.physics->transform()->worldPosition();
-		elm.coll->points(p, elm_bounds.size(), glm::vec3(0));
-		if (elm.coll->collisionType() != OWCollider::CollisionType::Permeable)
+		elm_bounds.scale(physics->transform()->scale());
+		const glm::vec3& p = physics->transform()->worldPosition();
+		coll->points(p, elm_bounds.size(), glm::vec3(0));
+		if (coll->collisionType() != OWCollider::CollisionType::Permeable)
 		{
-			scene()->addCollider(elm.coll, this, i);
+			scene()->addCollider(coll, this, i);
 		}
 		cumulativeSize = cumulativeSize | elm_bounds;
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::BillboardSize))
+		if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
-			mRenderer->mSSBO.append(elm.physics->transform()->drawSize(mMeshTemplate->drawType()), GPUBufferObject::BillboardSize);
+			rend->mSSBO.append(physics->transform()->drawSize(mesh->drawType()), GPUBufferObject::BillboardSize);
 		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
+		if (!rend->mSSBO.locked(GPUBufferObject::Model))
 		{
-			mRenderer->mSSBO.append(elm.physics->transform()->modelMatrix(), GPUBufferObject::Model);
+			rend->mSSBO.append(physics->transform()->modelMatrix(), GPUBufferObject::Model);
 		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
+		if (!rend->mSSBO.locked(GPUBufferObject::Position))
 		{
-			mRenderer->mSSBO.append(p, GPUBufferObject::Position);
+			rend->mSSBO.append(p, GPUBufferObject::Position);
 		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Colour))
+		if (!rend->mSSBO.locked(GPUBufferObject::Colour))
 		{
-			mRenderer->mSSBO.append(elm.colour, GPUBufferObject::Colour);
+			rend->mSSBO.append(getColour(i), GPUBufferObject::Colour);
 		}
 	}
-	mRenderer->setup(rd);
+	rend->setup(rd);
 	bounds(cumulativeSize);
-}
-
-void OWActorMutableParticle::doPreTick()
-{
-}
-
-void OWActorMutableParticle::doTick(float dt)
-{
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		MutableParticleElement& elm = mElements[i];
-		elm.physics->tick(dt);
-		elm.coll->position(elm.physics->transform()->worldPosition());
-	}
-}
-
-void OWActorMutableParticle::doPostTick()
-{
-}
-
-void OWActorMutableParticle::doPreRender()
-{
-}
-
-void OWActorMutableParticle::doPostRender()
-{
-}
-
-void OWActorMutableParticle::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::vec3& cameraPos)
-{
-	mRenderer->render(proj, view, cameraPos);
-}
-
-void OWActorMutableParticle::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
-{
-	if (ndx < mElements.size())
-	{
-		MutableParticleElement& elm = mElements[ndx];
-		required.phys = elm.physics;
-		required.mesh = mMeshTemplate;
-		required.sound = mSound;
-	}
-}
-
-void OWActorMutableParticle::renderer(OWRenderer* newValue)
-{
-	mRenderer = newValue;
-}
-
-void OWActorMutableParticle::sound(OWSoundComponent* newValue)
-{
-	mSound = newValue;
-}
-
-void OWActorMutableParticle::doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) 
-{
-	for (int i = 0; i < mElements.size(); i++)
-	{
-		MutableParticleElement& elm = mElements[i];
-		elm.physics->interpolate(totalTime, alpha, fixedTimeStep);
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Model))
-		{
-			glm::mat4 m = elm.physics->renderTransform()->modelMatrix();
-			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateData(f, GPUBufferObject::Model, i);
-		}
-		if (!mRenderer->mSSBO.locked(GPUBufferObject::Position))
-		{
-			glm::vec4 m = glm::vec4(elm.physics->renderTransform()->worldPosition(), 0);
-			float* f = glm::value_ptr(m);
-			mRenderer->mSSBO.updateData(f, GPUBufferObject::Position, i);
-		}
-	}
 }
 
 void OWActorMutableParticle::doCollided(const OWCollider& component, const OWCollider& otherComponent)
@@ -611,71 +591,46 @@ OWActorImmutableParticle::OWActorImmutableParticle(Scene* _scene,
 	const std::string& _name, OWActor* _hostActor)
 : OWActor(_scene, _name, _hostActor) 
 {
-
+	// The concept of OWActorImmutableParticle needs looking at
 }
 
-void OWActorImmutableParticle::doSetupActor()
+OWSize OWActorImmutableParticle::addComponents(const ImmutableParticleElement& newElement)
 {
-	validateRenderer(this, mRenderer);
-	validateMeshComponent(this, mMeshTemplate);
-	validatePhysics(this, mPhysics);
-	validateSound(this, mSound);
-	mMeshTemplate->setup();
-	AABB b;
-	OWRenderData rd = mMeshTemplate->renderData(b);
-	mRenderer->setup(rd);
-	bounds(b);
-}
-
-void OWActorImmutableParticle::doPreTick()
-{
-}
-
-void OWActorImmutableParticle::doTick(float dt)
-{
-	// Nothing changes, do nothing
-}
-
-void OWActorImmutableParticle::doPostTick()
-{
-}
-
-void OWActorImmutableParticle::doPreRender()
-{
-}
-
-void OWActorImmutableParticle::doPostRender()
-{
-}
-
-void OWActorImmutableParticle::doRender(const glm::mat4& proj,
-	const glm::mat4& view, const glm::vec3& cameraPos)
-{
-	mRenderer->render(proj, view, cameraPos);
-}
-
-void OWActorImmutableParticle::renderer(OWRenderer* newValue)
-{
-	mRenderer = newValue;
-}
-
-void OWActorImmutableParticle::sound(OWSoundComponent* newValue)
-{
-	mSound = newValue;
-}
-
-void OWActorImmutableParticle::doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
-{
-	if (ndx == 0)
-	{
-		required.mesh = mMeshTemplate;
-		required.phys = mPhysics;
-		required.sound = mSound;
-	}
+	addColour(newElement.colour);
+	addMeshComponent(newElement.mesh);
+	addRenderer(newElement.rend);
+	addSound(newElement.sound);
+	OWSize back = static_cast<OWSize>(meshesSize()) - 1;
+	return back;
 }
 
 void OWActorImmutableParticle::doCollided(const OWCollider& component, const OWCollider& otherComponent)
 {
-	throw NMSLogicException("OWActorImmutableParticle::doCollided() should not collide with anything.");
 }
 
+void OWActorImmutableParticle::doSetupActor()
+{
+	if (collidersSize() != 0)
+		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Cannot have colliders.\n");
+	if (physicsSize() != 0)
+		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Cannot have physics.\n");
+
+	if (coloursSize() != 1)
+		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Must have exactly one colour.\n");
+	if (meshesSize() != 1)
+		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Must have exactly one mesh.\n");
+	if (renderersSize() != 1)
+		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Must have exactly one renderer.\n");
+	if (soundsSize() != 1)
+		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Must have exactly one sound.\n");
+	OWRenderer* rend = getRenderer(0);
+	validateRenderer(this, rend);
+	OWMeshComponentBase* mesh = getMeshComponent(0);
+	validateMeshComponent(this, mesh);
+	validateSound(this, getSound(0));
+	mesh->setup();
+	AABB b;
+	OWRenderData rd = mesh->renderData(b);
+	rend->setup(rd);
+	bounds(b);
+}

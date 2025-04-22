@@ -2095,7 +2095,7 @@ void lgrid_optimize(LGrid* grid)
     }
 #endif
 
-    void addCollider(OWCollider * coll, OWActor * a, int componentId)
+    void addCollider(OWCollider * coll, OWActor * a, OWSize componentId)
     {
 #ifdef BASIC_COLLISIONS
 #endif
@@ -2115,7 +2115,7 @@ void lgrid_optimize(LGrid* grid)
 #endif
     }
 
-    void addRay(OWCollider * coll, OWActor * a, int componentId)
+    void addRay(OWCollider * coll, OWActor * a, OWSize componentId)
     {
 #ifdef BASIC_COLLISIONS
 #endif

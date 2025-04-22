@@ -35,13 +35,13 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-#define INCLUDE_RAY
-#define INCLUDE_BUTTONS
+//#define INCLUDE_RAY
+//#define INCLUDE_BUTTONS
 //#define INCLUDE_PLANES
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
-//#define INCLUDE_BOXES
+#define INCLUDE_BOXES
 #ifdef _DEBUG
 int GDEBUG_PICKING = 1;
 #else
@@ -191,7 +191,7 @@ void NMSSplashScene::doSetupScene()
 			GPUBufferObject::BufferType::BillboardSize },
 			GPUBufferObject::BufferStyle::SSBO);
 		r->shader()->appendMutator(OWTextComponent::shaderMutator(welcomeData.tdt));
-		dynamicTextActor->renderer(r);
+		dynamicTextActor->addRenderer(r);
 		dynamicTextActor->addComponents(elm);
 	}
 
@@ -223,7 +223,7 @@ void NMSSplashScene::doSetupScene()
 			GPUBufferObject::BufferType::BillboardSize },
 			GPUBufferObject::BufferStyle::SSBO);
 		r->shader()->appendMutator(OWTextComponent::shaderMutator(enjoyData.tdt));
-		staticTextActor->renderer(r);
+		staticTextActor->addRenderer(r);
 
 		staticTextActor->addComponents(elm);
 	}
@@ -231,14 +231,14 @@ void NMSSplashScene::doSetupScene()
 #ifdef INCLUDE_BOXES
 	OWActorMutableParticle* boxActor = new OWActorMutableParticle(this, "All Boxes");
 	boxActor->transform(new OWTransform());
-	boxActor->sound(new OWSoundComponent());
-	boxActor->meshComponent(
+	boxActor->addSound(new OWSoundComponent());
+	boxActor->addMeshComponent(
 		(new OWMeshComponent(boxActor, "Box Template"))
 		->add(MeshData()
 			.addVertices(OWGeometricShapes::cube())
 			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)));
 
-	boxActor->renderer(new OWMeshRenderer("BoxShader.json",
+	boxActor->addRenderer(new OWMeshRenderer("BoxShader.json",
 		{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO));
 
@@ -285,10 +285,10 @@ void NMSSplashScene::doSetupScene()
 
 	OWActorMutableParticle* diceActor = new OWActorMutableParticle(this, "All Dice");
 	diceActor->transform(new OWTransform());
-	diceActor->sound(new OWSoundComponent());
-	diceActor->meshComponent(new OWModelComponent(diceActor, "Dice Component", "Dice2.obj"));
+	diceActor->addSound(new OWSoundComponent());
+	diceActor->addMeshComponent(new OWModelComponent(diceActor, "Dice Component", "Dice2.obj"));
 
-	diceActor->renderer(new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model },
+	diceActor->addRenderer(new OWModelRenderer("DiceShader.json", { GPUBufferObject::BufferType::Model },
 		GPUBufferObject::BufferStyle::SSBO));
 
 	glm::vec3 position = glm::vec3(50, 50, 50);
@@ -338,15 +338,15 @@ void NMSSplashScene::doSetupScene()
 #ifdef INCLUDE_PLANES
 	OWActorMutableParticle* planeActor = new OWActorMutableParticle(this, "All Planes");
 	planeActor->transform(new OWTransform());
-	planeActor->sound(new OWSoundComponent());
+	planeActor->addSound(new OWSoundComponent());
 	std::vector<glm::vec3> v3 = OWGeometricShapes::rectangle(glm::vec2(1));
 	v3[0].z -= 0.01f;
 	v3[1].z += 0.01f;
-	planeActor->meshComponent((new OWMeshComponent(planeActor, "Plane Template"))
+	planeActor->addMeshComponent((new OWMeshComponent(planeActor, "Plane Template"))
 		->add(MeshData()
 			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)
 			.addVertices(v3)));
-	planeActor->renderer(new OWMeshRenderer("PlaneShader.json",
+	planeActor->addRenderer(new OWMeshRenderer("PlaneShader.json",
 		{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO));
 
@@ -482,7 +482,7 @@ bool NMSSplashScene::processUserCommands(const UserInput::AnyInput& userInput, s
 			}
 			else
 			{
-				gRay->
+				// need to replace gRay->mesh
 			}
 			//gRay->colour({ 0.7, 0.7, 0.0, 1.0f });
 			//gRay->direction(normMouse);

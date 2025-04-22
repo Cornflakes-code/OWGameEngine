@@ -44,11 +44,11 @@ private:
 	OWRopeData mData;
 	AABB mBounds;
 	PolygonBuilder* mPolyBuilder = nullptr;
-	size_t mRopeEndsElementIndex = 0;
-	size_t mRopeLinesElementIndex = 0;
-	size_t mRopeSurfacesElementIndex = 0;
-	size_t mRopeBannerElementIndex = 0;
-	size_t mRopeLabelsElementIndex = 0;
+	OWSize mRopeEndsElementIndex = 0;
+	OWSize mRopeLinesElementIndex = 0;
+	OWSize mRopeSurfacesElementIndex = 0;
+	OWSize mRopeBannerElementIndex = 0;
+	OWSize mRopeLabelsElementIndex = 0;
 	bool mStrandLabels = false;
 	bool mBannerLabel = false;
 

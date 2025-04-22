@@ -27,7 +27,7 @@ void Scene::traverseSceneGraph(OWActorCallbackType cb) const
 }
 
 
-void Scene::addCollider(OWCollider* coll, OWActor* a, int componentId)
+void Scene::addCollider(OWCollider* coll, OWActor* a, OWSize componentId)
 {
 	CollisionSystem::addCollider(coll, a, componentId);
 }

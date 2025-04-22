@@ -20,10 +20,7 @@ public:
 	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
 
-	void getScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required)
-	{
-		doGetScriptingComponents(ndx, required);
-	}
+	void getScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required);
 	void scriptor(const OWScriptComponent& newValue) {
 		mScriptor = newValue;
 	}
@@ -32,15 +29,8 @@ public:
 	void tick(float dt);
 	virtual void postTick();
 	virtual void preRender();
-	void render(const glm::mat4& proj,
-		const glm::mat4& view, const glm::vec3& cameraPos);
-
-	virtual void postRender()
-	{
-		doPostRender();
-		// Placeholder called on the main thread. OWActor should quickly tidy
-		// up whatever prePender() did.
-	}
+	void render(const glm::mat4& proj, const glm::mat4& view, const glm::vec3& cameraPos);
+	void postRender();
 
 	// Getters/Setters
 	void active(bool newValue) {
@@ -60,28 +50,55 @@ public:
 	}
 	void transform(OWTransform* newValue);
 	bool setupCompleted() const { return mSetup; }
-	void collided(const OWCollider& component, const OWCollider& otherComponent)
-	{
-		doCollided(component, otherComponent);
-	}
+	void collided(const OWCollider& component, const OWCollider& otherComponent);
 	void interpolatePhysics(float totalTime, float alpha, float fixedTimeStep);
 #ifdef _DEBUG
 	bool debugInclude() const;
 #endif
+	void addRenderer(OWRenderer* rend);
+	void addSound(OWSoundComponent* sound);
+	void addMeshComponent(OWMeshComponentBase* mesh);
 protected:
-	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) = 0;
-	virtual void copyCurrentToPrevious() = 0;
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) = 0;
+	// Component accessors
+	const glm::vec4& getColour(OWSize ndx);
+	void setColour(const glm::vec4& colour, OWSize ndx);
+	OWCollider* getCollider(OWSize ndx);
+	void setCollider(OWCollider* coll, OWSize ndx);
+	OWPhysics* getPhysics(OWSize ndx);
+	void setPhysics(OWPhysics* phys, OWSize ndx);
+	OWMeshComponentBase* getMeshComponent(OWSize ndx);
+	void setMeshComponent(OWMeshComponentBase* mesh, OWSize ndx);
+	OWRenderer* getRenderer(OWSize ndx);
+	void setRenderer(OWRenderer* rend, OWSize ndx);
+	OWSoundComponent* getSound(OWSize ndx);
+	void setSound(OWSoundComponent* sound, OWSize ndx);
+
+	void copyCurrentToPrevious();
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) = 0;
 	virtual void doSetupActor() = 0;
-	virtual void doRender(const glm::mat4& proj, const glm::mat4& view, const glm::vec3& cameraPos) = 0;
-	virtual void doPreTick() = 0;
-	virtual void doTick(float dt) = 0;
-	virtual void doPostTick() = 0;
-	virtual void doPreRender() = 0;
-	virtual void doPostRender() = 0;
+	virtual void doPreTick() {}
+	virtual void doTick(float dt) {}
+	virtual void doPostTick() {}
+	virtual void doPreRender() {}
+	virtual void doPostRender() {}
+	
+	void addColour(const glm::vec4& colour);
+	void addCollider(OWCollider* coll);
+	void addPhysics(OWPhysics* phys);
+	OWSize coloursSize() const { return static_cast<OWSize>(mColours.size()); }
+	OWSize collidersSize() const { return static_cast<OWSize>(mColliders.size()); }
+	OWSize physicsSize() const { return static_cast<OWSize>(mPhysics.size()); }
+	OWSize meshesSize() const { return static_cast<OWSize>(mMeshes.size()); }
+	OWSize renderersSize() const { return static_cast<OWSize>(mRenderers.size()); }
+	OWSize soundsSize() const { return static_cast<OWSize>(mSounds.size()); }
 private:
-	//std::vector<OWRenderTypes::ActorSetupMutator> mMutatorCallbacks;
+	std::vector<glm::vec4> mColours;
+	std::vector<OWCollider*> mColliders;
+	std::vector<OWPhysics*> mPhysics;
+	std::vector<OWMeshComponentBase*> mMeshes;
+	std::vector<OWRenderer*> mRenderers;
+	std::vector<OWSoundComponent*> mSounds;
+
 	std::string mName;
 	AABB mBounds;
 	Scene* mScene;
@@ -108,27 +125,10 @@ public:
 	OWActorDiscrete(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
 		: OWActor(_scene, _name, _hostActor) {
 	}
-	size_t addComponents(const DiscreteEntity& newElement);
+	OWSize addComponents(const DiscreteEntity& newElement);
 protected:
-	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void copyCurrentToPrevious() override final
-	{
-		for (auto& elm : mElements)
-		{
-			elm.physics->copyCurrentToPrevious();
-		}
-	}
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
-	virtual void doPreTick() override;
-	virtual void doTick(float dt) override;
-	virtual void doPostTick() override;
-	virtual void doPreRender() override;
-	virtual void doPostRender() override;
-	void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::vec3& cameraPos) override;
-	std::vector<DiscreteEntity> mElements;
 };
 
 // Use this class for aggregating N distinct meshes that share 
@@ -148,35 +148,15 @@ public:
 	OWActorNCom1Ren(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
 		: OWActor(_scene, _name, _hostActor) {
 	}
-	size_t addComponents(const NCom1RenElement& newElement);
-	void renderer(OWRenderer* newValue) { 
-		mRenderer = newValue; 
-	}
+	OWSize addComponents(const NCom1RenElement& newElement);
 protected:
-	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void copyCurrentToPrevious() override final
-	{
-		for (auto& elm : mElements)
-		{
-			elm.physics->copyCurrentToPrevious();
-		}
-	}
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
-	virtual void doPreTick() override;
-	virtual void doTick(float dt) override;
-	virtual void doPostTick() override;
-	virtual void doPreRender() override;
-	virtual void doPostRender() override;
-	void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
-	std::vector<NCom1RenElement> mElements;
-	OWRenderer* mRenderer = nullptr;
 };
 
-// Use this class for aggregating mutable Particles (one Mesh, one Renderer, independant movement)
+// Use this class for aggregating mutable, Identical Particles.
+// one Mesh, one Renderer, one Sound, independant movement and colour)
 class OWENGINE_API OWActorMutableParticle: public OWActor
 {
 public:
@@ -189,74 +169,33 @@ public:
 	OWActorMutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr)
 		: OWActor(_scene, _name, _hostActor) {
 	}
-	size_t addComponents(const MutableParticleElement& newElement);
-	void renderer(OWRenderer* newValue);
-	void sound(OWSoundComponent* newValue);
-	void meshComponent(OWMeshComponentBase* mc) {
-		mMeshTemplate = mc;
-	}
+	OWSize addComponents(const MutableParticleElement& newElement);
 
 protected:
-	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void copyCurrentToPrevious() override final
-	{
-		for (auto& elm : mElements)
-		{
-			elm.physics->copyCurrentToPrevious();
-		}
-	}
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override;
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
-	virtual void doPreTick() override;
-	virtual void doTick(float dt) override;
-	virtual void doPostTick() override;
-	virtual void doPreRender() override;
-	virtual void doPostRender() override;
-	virtual void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
-	std::vector<MutableParticleElement> mElements;
-	OWMeshComponentBase* mMeshTemplate = nullptr;
-	OWRenderer* mRenderer = nullptr;
-	OWSoundComponent* mSound = nullptr;
 };
 
 // Use this class for aggregating immutable Particles 
-// (one Mesh, one Renderer, no movement, fixed positions, no interaction with anything)
+// (one Mesh, one Renderer, one sound, no movement, fixed positions, no interaction with anything)
 class OWENGINE_API OWActorImmutableParticle: public OWActor
 {
 public:
+	struct ImmutableParticleElement
+	{
+		glm::vec4 colour = { 0,0,0,0 };
+		OWRenderer* rend = nullptr;
+		OWMeshComponent* mesh = nullptr;
+		OWSoundComponent* sound = nullptr;
+	};
+
 	OWActorImmutableParticle(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
-	void sound(OWSoundComponent* newValue);
-	void renderer(OWRenderer* newValue);
-	void meshComponent(OWMeshComponentBase* mc) {
-		mMeshTemplate = mc;
-	}
+	OWSize addComponents(const ImmutableParticleElement& newElement);
 protected:
-	virtual void doGetScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required) override final;
-	virtual void copyCurrentToPrevious() override final
-	{
-		// Nothing changes, do nothing
-	}
-	virtual void doInterpolatePhysics(float totalTime, float alpha, float fixedTimeStep) override
-	{
-		// Nothing changes, do nothing
-	}
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
 	void doSetupActor() override final;
-	virtual void doPreTick() override;
-	virtual void doTick(float dt) override;
-	virtual void doPostTick() override;
-	virtual void doPreRender() override;
-	virtual void doPostRender() override;
-	void doRender(const glm::mat4& proj,
-		const glm::mat4& view, const glm::vec3& cameraPos) override;
 private:
-	OWMeshComponentBase* mMeshTemplate = nullptr;
-	OWPhysics* mPhysics = nullptr;
-	OWRenderer* mRenderer = nullptr;
-	OWSoundComponent* mSound = nullptr;
 };
 
 /*
