@@ -11,7 +11,8 @@ OWButton::OWButton(Scene* _scene, const std::string& _name)
 {
 }
 
-OWActorDiscrete::DiscreteEntity OWButton::makeShape(const std::string& s, const glm::vec4& colour, const glm::vec3& size)
+OWActorDiscrete::DiscreteEntity OWButton::makeShape(const std::string& s, const glm::vec4& colour, 
+	const glm::vec3& size, OWCollider::CollisionType collType)
 {
 	std::vector<glm::vec3> rectCoords = {
 		{ -0.5f, 0.5f, 0.0f },
@@ -21,9 +22,9 @@ OWActorDiscrete::DiscreteEntity OWButton::makeShape(const std::string& s, const 
 	};
 	OWActorDiscrete::DiscreteEntity sse;
 	sse.colour = colour;
-	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
+	sse.coll = new OWCollider(this, collType);
 	sse.mesh = (new OWMeshComponent(this, s))
-		->add(MeshData()
+		->setData(MeshData()
 			//.addVertices(triangles)
 			.addVertices(OWGeometricShapes::goldenRectangle())
 			.addIndices({ 0, 1, 2, 2, 3, 0 })
@@ -61,8 +62,10 @@ void OWButton::initialise(const OWButtonData& _data)
 	this->transform(new OWTransform(mData.td)); // Always do this before creating child transforms
 
 	glm::vec3 sz = glm::vec3(0.4, 0.1, 0);
-	addComponents(makeShape("Unclicked Button", mData.innerColour, sz));
-	addComponents(makeShape("Clicked Button", mData.outerColour, sz * glm::vec3(0.7f, 0.7f, 1.0f)));
+	addComponents(makeShape("Unclicked Button", mData.innerColour, 
+						sz, OWCollider::CollisionType::Permeable));
+	addComponents(makeShape("Clicked Button", mData.outerColour, 
+						sz * glm::vec3(0.7f, 0.7f, 1.0f), OWCollider::CollisionType::Box));
 
 	OWTextComponentData td;
 	td.tdt = OWRenderTypes::DrawType::TwoDStatic;;
@@ -81,6 +84,6 @@ void OWButton::initialise(const OWButtonData& _data)
 	trans->parentTransform(transform());
 	sse.physics = new OWPhysics(trans);
 	sse.colour = OWUtils::colour(OWUtils::SolidColours::GREEN);
-	sse.coll = new OWCollider(this, OWCollider::CollisionType::Box);
+	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
 	addComponents(sse);
 }

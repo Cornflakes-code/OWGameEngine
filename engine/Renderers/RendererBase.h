@@ -14,7 +14,6 @@ class Shader;
 
 class OWENGINE_API OWRenderer
 {
-	bool mSetup = false;
 public:
 	enum RenderType { DRAW_NONE, DRAW_MULTI, DRAW_PRIMITIVE };
 	OWRenderer(const std::string& shaderFileName, const std::vector<GPUBufferObject::BufferType>& orderedTypes);
@@ -53,6 +52,8 @@ public:
 	virtual ~OWRenderer() {}
 	Shader* shader() { return mShader; }
 	GPUBufferObject mSSBO;
+	bool setupCompleted() const { return mSetup; }
+	void setupCompleted(bool newValue) { mSetup = newValue; }
 protected:
 	virtual void doSetup(const OWRenderData& renderData) = 0;
 	virtual void doRender() = 0;
@@ -60,6 +61,7 @@ protected:
 	unsigned int indicesMode() const { return mIndicesMode; }
 	unsigned int vertexMode() const { return mVertexMode; }
 private:
+	bool mSetup = false;
 	Shader* mShader = nullptr;
 
 	// OpenGL state variables. The default values are used as flags 

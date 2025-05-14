@@ -21,6 +21,7 @@ public:
 	}
 	//void actor(OWActor* newValue) { mOwner = newValue; }
 	const OWActor* actor() const { return mOwner; }
+	OWActor* actor() { return mOwner; }
 	bool active() const { return mActive; }
 	void active(bool newValue) { mActive = newValue; }
 	std::string name() const { return mName; }
@@ -35,6 +36,8 @@ public:
 	}
 	void drawType(OWRenderTypes::DrawType _drawType) { mDrawType = _drawType; }
 	OWRenderTypes::DrawType drawType() const { return mDrawType; }
+	bool retainMesh() const { return mRetainMesh; }
+	void retainMesh(bool newValue) { mRetainMesh = newValue; }
 protected:
 	virtual void doSetup() = 0;
 private:
@@ -43,17 +46,20 @@ private:
 	bool mSetup = false;
 	bool mActive = true;
 	std::string mName;
+
+	// Maintain a copy of the mesh once copied to the RenderData.
+	bool mRetainMesh = false;
 };
 
 struct OWModelData;
 
-class OWENGINE_API OWMeshComponentBase : public OWComponent
+class OWENGINE_API OWMeshComponentBase: public OWComponent
 {
 public:
 	OWMeshComponentBase(OWActor* _owner, const std::string& _name, OWRenderTypes::DrawType _drawType)
 		: OWComponent(_owner, _name, _drawType) {
 	}
-	virtual const OWRenderData renderData(AABB& bounds) const = 0;
+	virtual const OWRenderData renderData(AABB& bounds) = 0;
 protected:
 	static bool validMode(GLenum mode);
 	static bool validLocation(int location);

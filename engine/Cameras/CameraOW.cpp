@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../Core/GlobalSettings.h"
+#include "../Core/ErrorHandling.h"
 #include "../Core/Logger.h"
 #include "../Core/LogStream.h"
 
@@ -200,6 +201,18 @@ void CameraOW::doProcessKeyboardInput(int userCommand, float seconds)
 			<< "Invalid keyboard Input ["
 			<< userCommand << "] stored in Camera.\n");
 	}
+}
+
+void CameraOW::mouseScale(float OW_UNUSED(newValue)) 
+{
+	throw NMSException("Not implemented");
+	//mCurrent->cameraScale(newValue);
+}
+
+float CameraOW::mouseScale() const 
+{
+	throw NMSException("Not implemented");
+	return 0.0;// mCurrent->cameraScale();
 }
 
 BoundingFrustum CameraOW::createFrustum(float aspect, float fovY,

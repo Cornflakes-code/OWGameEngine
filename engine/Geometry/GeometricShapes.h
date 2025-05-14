@@ -20,9 +20,11 @@ public:
 
 	static std::vector<glm::vec3> fibonacciSphere(int numPoints, float TAU);
 	static std::vector<glm::vec3> cube();
+	static std::vector<glm::vec3> tetrahedron();
 	static std::vector<glm::vec3> line(float thickness = 1);
-	static std::vector<glm::vec3> beam(const glm::vec3& beamStart, const glm::vec3& beamEnd);
-	static std::vector<glm::vec3> beam(const glm::vec3& beamStart, const glm::vec3& direction, float length);
+	// return a beam from beamEnd/2.0 to -beamEnd/2.0
+	static std::vector<glm::vec3> beam(const glm::vec3& beamEnd);
+	static std::vector<glm::vec3> beam(const glm::vec3& direction, float length);
 	static std::vector<glm::vec3> star(
 		float innerRadius, float outerRadius,
 		unsigned int numPoints);

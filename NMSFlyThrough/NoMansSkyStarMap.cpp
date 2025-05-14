@@ -55,7 +55,7 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 		sse.colour = glm::vec4(0.90f, 0.91f, 0.98f, 1.0f); // silver;
 		sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
 		sse.mesh = (new OWMeshComponent(this, "Grid"))
-			->add(MeshData()
+			->setData(MeshData()
 			.addVertices(createGrid(NMSSize, gridSizes, scaleNMStoWorld))
 			.setModes(GL_LINES, GL_LINES, GL_FILL));
 		sse.rend = new OWMeshRenderer(shader, { GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
@@ -98,7 +98,7 @@ void NoMansSky::initialise(const NoMansSkyData& _data)
 	OWActorDiscrete::DiscreteEntity sse1;
 	sse1.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
 	sse1.mesh = (new OWMeshComponent(this, "Star Template"))
-		->add(MeshData()
+		->setData(MeshData()
 		.addVertices(squareVertices)
 		.setModes(GL_TRIANGLES));
 

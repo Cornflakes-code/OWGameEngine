@@ -1,5 +1,6 @@
 #include "OWActor.h"
 #include "../Core/Scene.h"
+#include "../Core/ErrorHandling.h"
 #include "../Renderers/MeshRenderer.h"
 
 static std::string getActorDesc(OWActor* a)
@@ -63,6 +64,16 @@ void OWActor::transform(OWTransform* newValue)
 	}
 }
 
+void OWActor::preModifyMesh(OWMeshComponent* existingMesh)
+{
+	// reduce bounds by the size of existingMesh
+}
+
+void OWActor::postModifyMesh(OWMeshComponent* modifiedMesh)
+{
+	doSetupActor(modifiedMesh);
+}
+
 void OWActor::setup()
 {
 	if (!mSetup)
@@ -77,12 +88,146 @@ void OWActor::setup()
 		if (debugInclude())
 		{
 #endif
-			doSetupActor();
+			doSetupActor(nullptr);
 #ifdef _DEBUG
 		}
 #endif
 		mSetup = true;
 	}
+}
+
+
+void OWActor::preTick()
+{
+	if (active())
+	{
+		copyCurrentToPrevious();
+		doPreTick();
+		// Placeholder called on the main thread. OWActor should quickly 
+		// create a background thread to do stuff while render is happenening.
+	}
+}
+
+void OWActor::tick(float dt)
+{
+	if (active())
+	{
+		mScriptor.tick(dt);
+		OWSize sz = physicsSize();
+		for (OWSize i = 0; i < sz; i++)
+		{
+			OWPhysics* physics = getPhysics(i);
+			physics->tick(dt);
+			getCollider(i)->position(physics->transform()->worldPosition());
+		}
+	}
+}
+
+void OWActor::postTick()
+{
+	if (active())
+	{
+		doPostTick();
+	}
+}
+
+void OWActor::preRender()
+{
+	if (active())
+	{
+		copyCurrentToPrevious();
+		doPreRender();
+		// Placeholder called on the main thread. OWActor should quickly 
+		// create a background thread to do stuff while render is happenening.
+	}
+}
+
+void OWActor::interpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
+{
+	if (active())
+	{
+#ifdef _DEBUG
+		if (!debugInclude())
+			return;
+#endif
+		{
+			volatile OWSize sz = physicsSize();
+			for (OWSize i = 0; i < sz; i++)
+			{
+				OWPhysics* physics = getPhysics(i);
+				OWRenderer* rend = getRenderer(i);
+				physics->interpolate(totalTime, alpha, fixedTimeStep);
+
+				// If each iteration of the loop uses a different renderer then we want to reset the index into the SSBO
+				OWSize ssboIndex = renderersSize() == 1 ? i : 0;
+
+				if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
+				{
+					glm::vec4 m = glm::vec4(physics->transform()->drawSize(getMeshComponent(i)->drawType()), 0, 0);
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::BillboardSize, ssboIndex);
+				}
+				if (!rend->mSSBO.locked(GPUBufferObject::Model))
+				{
+					glm::mat4 m = physics->renderTransform()->modelMatrix();
+					glm::mat4 jfw;
+					jfw[0] = { 10, 0, 0, 0 };
+					jfw[1] = { 0, 7.07107, 7.07107, 0 };
+					jfw[2] = { 0, -7.07107, 7.07107, 0 };
+					jfw[3] = { 0.001312, 69.0021, 24.0011, 1 };
+//					m = jfw;
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::Model, ssboIndex);
+				}
+				if (!rend->mSSBO.locked(GPUBufferObject::Position))
+				{
+					glm::vec4 m = glm::vec4(physics->renderTransform()->worldPosition(), 0);
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::Position, ssboIndex);
+				}
+				if (!rend->mSSBO.locked(GPUBufferObject::Colour))
+				{
+					glm::vec4 m = getColour(i);
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::Colour, ssboIndex);
+				}
+				if (!rend->mSSBO.locked(GPUBufferObject::Anything))
+				{
+					glm::vec4 m = glm::vec4(physics->renderTransform()->worldPosition(), 0);
+					float* f = glm::value_ptr(m);
+					rend->mSSBO.updateData(f, GPUBufferObject::Anything, ssboIndex);
+				}
+			}
+		}
+	}
+}
+
+void OWActor::render(const glm::mat4& proj,
+	const glm::mat4& view, const glm::vec3& cameraPos)
+{
+	if (active())
+	{
+#ifdef _DEBUG
+		if (!debugInclude())
+			return;
+#endif
+		if (mSetup && active())
+		{
+			OWSize sz = renderersSize();
+			for (OWSize i = 0; i < sz; i++)
+			{
+				if (getMeshComponent(i)->active())
+					getRenderer(i)->render(proj, view, cameraPos);
+			}
+		}
+	}
+}
+
+void OWActor::postRender()
+{
+	doPostRender();
+	// Placeholder called on the main thread. OWActor should quickly tidy
+	// up whatever prePender() did.
 }
 
 void OWActor::collided(const OWCollider& component, const OWCollider& otherComponent)
@@ -194,117 +339,6 @@ void OWActor::copyCurrentToPrevious()
 	}
 }
 
-void OWActor::preTick()
-{
-	if (active())
-	{
-		copyCurrentToPrevious();
-		doPreTick();
-		// Placeholder called on the main thread. OWActor should quickly 
-		// create a background thread to do stuff while render is happenening.
-	}
-}
-
-void OWActor::tick(float dt) 
-{
-	if (active())
-	{
-		mScriptor.tick(dt);
-		OWSize sz = physicsSize();
-		for (OWSize i = 0; i < sz; i++)
-		{
-			OWPhysics* physics = getPhysics(i);
-			physics->tick(dt);
-			getCollider(i)->position(physics->transform()->worldPosition());
-		}
-	}
-}
-
-void OWActor::postTick()
-{
-	if (active())
-	{
-		doPostTick();
-	}
-}
-
-void OWActor::preRender()
-{
-	if (active())
-	{
-		copyCurrentToPrevious();
-		doPreRender();
-		// Placeholder called on the main thread. OWActor should quickly 
-		// create a background thread to do stuff while render is happenening.
-	}
-}
-
-void OWActor::interpolatePhysics(float totalTime, float alpha, float fixedTimeStep)
-{
-	if (active())
-	{
-#ifdef _DEBUG
-		if (!debugInclude())
-			return;
-#endif
-		{
-			volatile OWSize sz = physicsSize();
-			for (OWSize i = 0; i < sz; i++)
-			{
-				OWPhysics* physics = getPhysics(i);// mPhysics[i];
-				OWRenderer* rend = getRenderer(i);// mRenderers[i];
-				physics->interpolate(totalTime, alpha, fixedTimeStep);
-				if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
-				{
-					glm::vec4 m = glm::vec4(physics->transform()->drawSize(getMeshComponent(i)->drawType()), 0, 0);
-					float* f = glm::value_ptr(m);
-					rend->mSSBO.updateData(f, GPUBufferObject::BillboardSize, i);
-				}
-				if (!rend->mSSBO.locked(GPUBufferObject::Model))
-				{
-					glm::mat4 m = physics->renderTransform()->modelMatrix();
-					float* f = glm::value_ptr(m);
-					rend->mSSBO.updateData(f, GPUBufferObject::Model, i);
-				}
-				if (!rend->mSSBO.locked(GPUBufferObject::Position))
-				{
-					glm::vec4 m = glm::vec4(physics->renderTransform()->worldPosition(), i);
-					float* f = glm::value_ptr(m);
-					rend->mSSBO.updateData(f, GPUBufferObject::Position, 0);
-				}
-			}
-		}
-	}
-}
-
-void OWActor::render(const glm::mat4& proj,
-	const glm::mat4& view, const glm::vec3& cameraPos)
-{
-	if (active())
-	{
-#ifdef _DEBUG
-		if (!debugInclude())
-			return;
-#endif
-		if (mSetup && active())
-		{
-			OWSize sz = renderersSize();
-			for (OWSize i = 0; i < sz; i++)
-			{
-				if (getMeshComponent(i)->active())
-					getRenderer(i)->render(proj, view, cameraPos);
-			}
-		}
-	}
-}
-
-void OWActor::postRender()
-{
-	doPostRender();
-	// Placeholder called on the main thread. OWActor should quickly tidy
-	// up whatever prePender() did.
-}
-
 static void validateCollider(OWActor* a, OWCollider* coll)
 {
 	if (coll == nullptr)
@@ -334,6 +368,10 @@ static void validateTransform(OWActor* a, OWTransform* trans)
 	if ((trans->parentTransform() != nullptr) && (trans->parentTransform() != a->transform()))
 	{
 		throw NMSLogicException(getActorDesc(a) + " transform mismatch. Cannot recover.");
+	}
+	if (trans->parentTransform() == nullptr)
+	{
+		trans->parentTransform(a->transform());
 	}
 	if (a->hostActor() != nullptr)
 	{
@@ -396,22 +434,43 @@ void OWActorDiscrete::doCollided(const OWCollider& component, const OWCollider& 
 	throw NMSNotYetImplementedException("OWActorDiscrete::doCollided() not yet implemented.");
 }
 
-void OWActorDiscrete::doSetupActor()
+void OWActorDiscrete::doSetupActor(OWMeshComponentBase* target)
 {
 	OWSize sz = static_cast<OWSize>(meshesSize());
-	AABB b;
+	AABB cumulativeSize = bounds();
 	for (OWSize i = 0; i < sz; i++)
 	{
 		OWMeshComponentBase* mesh = getMeshComponent(i);
 		OWRenderer* rend = getRenderer(i);
-		OWPhysics* physics = getPhysics(i);
+		OWCollider* coll = getCollider(i);
+		if (target != nullptr)
+		{
+			if (target == mesh)
+			{
+				mesh->setup();
+				AABB elm_bounds;
+				OWRenderData rd = getMeshComponent(i)->renderData(elm_bounds);
+				cumulativeSize |= elm_bounds;
+				coll->points(elm_bounds);
+				rend->setupCompleted(false);
+				rend->setup(rd);
+				bounds(cumulativeSize);
+				return;
+			}
+			else
+			{
+				continue;
+			}
+		}
 		mesh->setup();
-		if (getCollider(i)->collisionType() != OWCollider::CollisionType::Permeable)
-			scene()->addCollider(getCollider(i), this, i);
-		AABB b1;
-		OWRenderData rd = getMeshComponent(i)->renderData(b1);
-		getCollider(i)->points(b1);
-		b = b | b1;
+		AABB elm_bounds;
+		OWRenderData rd = getMeshComponent(i)->renderData(elm_bounds);
+		OWPhysics* physics = getPhysics(i);
+		elm_bounds.scale(physics->transform()->scale());
+		if (coll->collisionType() != OWCollider::CollisionType::Permeable)
+			scene()->addCollider(coll, this, i);
+		coll->points(elm_bounds);
+		cumulativeSize = cumulativeSize | elm_bounds;
 		if (!rend->mSSBO.locked(GPUBufferObject::BillboardSize))
 		{
 			rend->mSSBO.append(physics->transform()->drawSize(mesh->drawType()), GPUBufferObject::BillboardSize);
@@ -429,9 +488,13 @@ void OWActorDiscrete::doSetupActor()
 		{
 			rend->mSSBO.append(getColour(i), GPUBufferObject::Colour);
 		}
+		if (!rend->mSSBO.locked(GPUBufferObject::Anything))
+		{
+			rend->mSSBO.append(glm::vec4(0), GPUBufferObject::Anything);
+		}
 		rend->setup(rd);
 	}
-	bounds(b);
+	bounds(cumulativeSize);
 }
 
 OWSize OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
@@ -453,16 +516,21 @@ OWSize OWActorNCom1Ren::addComponents(const NCom1RenElement& newElement)
 	return back;
 }
 
-void OWActorNCom1Ren::doSetupActor()
+void OWActorNCom1Ren::doSetupActor(OWMeshComponentBase* target)
 {
 	if (renderersSize() != 1)
 		throw NMSLogicException("OWActorNCom1Ren::doSetupActor(). Must have exactly one renderer.\n");
-	validateRenderer(this, getRenderer(0));
-	OWSize sz = static_cast<OWSize>(meshesSize());
 	OWRenderer* rend = getRenderer(0);
-
+	if (target != nullptr)
+	{
+		// The mesh has changed and probably too hard to splice into existing meshes. Basically it is another doSetupActor()
+		bounds(AABB());// clear the bounds;
+		rend->mSSBO = GPUBufferObject();
+	}
+	validateRenderer(this, rend);
+	OWSize sz = static_cast<OWSize>(meshesSize());
 	OWRenderData rd;
-	AABB b;
+	AABB b = bounds();
 	for (OWSize i = 0; i < sz; i++)
 	{
 		OWMeshComponentBase* mesh = getMeshComponent(i);
@@ -497,6 +565,10 @@ void OWActorNCom1Ren::doSetupActor()
 		{
 			rend->mSSBO.append(getColour(i), GPUBufferObject::Colour);
 		}
+		if (!rend->mSSBO.locked(GPUBufferObject::Anything))
+		{
+			rend->mSSBO.append(glm::vec4(0), GPUBufferObject::Anything);
+		}
 	}
 	rend->setup(rd);
 	bounds(b);
@@ -521,7 +593,7 @@ OWSize OWActorMutableParticle::addComponents(const MutableParticleElement& newEl
 	return back;
 }
 
-void OWActorMutableParticle::doSetupActor()
+void OWActorMutableParticle::doSetupActor(OWMeshComponentBase* target)
 {
 	if (soundsSize() == 0)
 		addSound(new OWSoundComponent());
@@ -539,6 +611,12 @@ void OWActorMutableParticle::doSetupActor()
 	if (meshesSize() != 1)
 		throw NMSLogicException("OWActorMutableParticle::doSetupActor(). Must have exactly one mesh.\n");
 
+	if (target != nullptr)
+	{
+		// The mesh has changed. Basically it is another doSetupActor()
+		bounds(AABB());// clear the bounds;
+		rend->mSSBO = GPUBufferObject();
+	}
 	OWMeshComponentBase* mesh = getMeshComponent(0);
 	validateMeshComponent(this, mesh);
 	validateSound(this, getSound(0));
@@ -577,6 +655,10 @@ void OWActorMutableParticle::doSetupActor()
 		{
 			rend->mSSBO.append(getColour(i), GPUBufferObject::Colour);
 		}
+		if (!rend->mSSBO.locked(GPUBufferObject::Anything))
+		{
+			rend->mSSBO.append(glm::vec4(0), GPUBufferObject::Anything);
+		}
 	}
 	rend->setup(rd);
 	bounds(cumulativeSize);
@@ -608,7 +690,7 @@ void OWActorImmutableParticle::doCollided(const OWCollider& component, const OWC
 {
 }
 
-void OWActorImmutableParticle::doSetupActor()
+void OWActorImmutableParticle::doSetupActor(OWMeshComponentBase* target)
 {
 	if (collidersSize() != 0)
 		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Cannot have colliders.\n");
@@ -624,6 +706,12 @@ void OWActorImmutableParticle::doSetupActor()
 	if (soundsSize() != 1)
 		throw NMSLogicException("OWActorImmutableParticle::doSetupActor(). Must have exactly one sound.\n");
 	OWRenderer* rend = getRenderer(0);
+	if (target != nullptr)
+	{
+		// The mesh has changed and probably too hard to splice into existing meshes. Basically it is another doSetupActor()
+		bounds(AABB());// clear the bounds;
+		rend->mSSBO = GPUBufferObject();
+	}
 	validateRenderer(this, rend);
 	OWMeshComponentBase* mesh = getMeshComponent(0);
 	validateMeshComponent(this, mesh);

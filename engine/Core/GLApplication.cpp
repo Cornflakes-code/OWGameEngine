@@ -25,6 +25,39 @@ void GLAPIENTRY debugMessageCallback(GLenum source, GLenum type, GLuint id,
 						GLenum severity, GLsizei length, const GLchar *message, 
 						const void *userParam);
 
+static std::string sourceAsString(GLenum source)
+{
+	std::string retval;
+	switch (source)
+	{
+	case GL_DEBUG_SOURCE_API:             retval = "API"; break;
+	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   retval = "Window System"; break;
+	case GL_DEBUG_SOURCE_SHADER_COMPILER: retval = "Shader Compiler"; break;
+	case GL_DEBUG_SOURCE_THIRD_PARTY:     retval = "Third Party"; break;
+	case GL_DEBUG_SOURCE_APPLICATION:     retval = "Application"; break;
+	case GL_DEBUG_SOURCE_OTHER:           retval = "Other"; break;
+	}
+	return retval;
+}
+
+static std::string typeAsString(GLenum type)
+{
+	std::string retval;
+	switch (type)
+	{
+	case GL_DEBUG_TYPE_ERROR:               retval = "Error"; break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: retval = "Deprecated Behaviour"; break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  retval = "Undefined Behaviour"; break;
+	case GL_DEBUG_TYPE_PORTABILITY:         retval = "Portability"; break;
+	case GL_DEBUG_TYPE_PERFORMANCE:         retval = "Performance"; break;
+	case GL_DEBUG_TYPE_MARKER:              retval = "Marker"; break;
+	case GL_DEBUG_TYPE_PUSH_GROUP:          retval = "Push Group"; break;
+	case GL_DEBUG_TYPE_POP_GROUP:           retval = "Pop Group"; break;
+	case GL_DEBUG_TYPE_OTHER:               retval = "Other"; break;
+	}
+	return retval;
+}
+
 GLApplication::GLApplication(UserInput* ui)
 	:mUserInput(ui)
 	, mBackgroundColour({ 0.5, 0.5, 1, 1 })
@@ -48,7 +81,10 @@ void GLApplication::init(Movie* movie, UserInput* ui, MacroRecorder* recorder,
 		// https://antongerdelan.net/opengl/glcontext2.html
 		// You'll find a list of all the key codes and other input handling commands 
 		// at http://www.glfw.org/docs/latest/group__input.html. 
+#ifdef DEBUG
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#endif // DEBUG
+
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -130,7 +166,12 @@ void GLApplication::run(Movie* movie)
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
 	GLsizei length, const char *message, const void *userParam)
-{}
+{
+	std::string s = sourceAsString(source);
+	std::string t = typeAsString(type);
+	LogStream(LogStreamLevel::Info) << "glDebugOutput called: Source [" << s << "]" 
+		<< "Type [" << t << "] Message[" << message << "]\n";
+}
 
 void GLApplication::enableCallbacks()
 {
@@ -145,6 +186,7 @@ void GLApplication::enableCallbacks()
 	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
 	{
+		LogStream(LogStreamLevel::Info) << "Debug Context Created\n";
 		// https://www.seas.upenn.edu/~pcozzi/OpenGLInsights/OpenGLInsights-ARB_debug_output.pdf
 		// https://learnopengl.com/In-Practice/Debugging
 		// https://www.khronos.org/opengl/wiki/Debug_Output
@@ -152,10 +194,13 @@ void GLApplication::enableCallbacks()
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		GLuint ignore = { 131185 }; // NVidia telling us that a buffer was successfully created.
-		int count = 0;// sizeof(ignore) / sizeof(GLuint);
+		int count = 1;// sizeof(ignore) / sizeof(GLuint);
 		// Does not seem to be working
-		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
-				GL_DONT_CARE, count, &ignore, GL_TRUE);
+		glDebugMessageControl(
+			GL_DONT_CARE, // source
+			GL_DONT_CARE, // type
+			GL_DONT_CARE, // severity
+			count, &ignore, GL_TRUE);
 		checkGLError();
 		glDebugMessageCallback(debugMessageCallback, nullptr);
 		checkGLError();
@@ -281,39 +326,6 @@ void GLApplication::onKeyPressCallback(GLFWwindow* OW_UNUSED(window),
 void GLApplication::onCloseCallback(GLFWwindow* window)
 {
 	mUserInput->closeWindow(window);
-}
-
-static std::string sourceAsString(GLenum source)
-{
-	std::string retval;
-	switch (source)
-	{
-		case GL_DEBUG_SOURCE_API:             retval = "API"; break;
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   retval = "Window System"; break;
-		case GL_DEBUG_SOURCE_SHADER_COMPILER: retval = "Shader Compiler"; break;
-		case GL_DEBUG_SOURCE_THIRD_PARTY:     retval = "Third Party"; break;
-		case GL_DEBUG_SOURCE_APPLICATION:     retval = "Application"; break;
-		case GL_DEBUG_SOURCE_OTHER:           retval = "Other"; break;
-	}
-	return retval;
-}
-
-static std::string typeAsString(GLenum type)
-{
-	std::string retval;
-	switch (type)
-	{
-		case GL_DEBUG_TYPE_ERROR:               retval = "Error"; break;
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: retval = "Deprecated Behaviour"; break;
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  retval = "Undefined Behaviour"; break;
-		case GL_DEBUG_TYPE_PORTABILITY:         retval = "Portability"; break;
-		case GL_DEBUG_TYPE_PERFORMANCE:         retval = "Performance"; break;
-		case GL_DEBUG_TYPE_MARKER:              retval = "Marker"; break;
-		case GL_DEBUG_TYPE_PUSH_GROUP:          retval = "Push Group"; break;
-		case GL_DEBUG_TYPE_POP_GROUP:           retval = "Pop Group"; break;
-		case GL_DEBUG_TYPE_OTHER:               retval = "Other"; break;
-	}
-	return retval;
 }
 
 static std::string severityAsString(GLenum severity)

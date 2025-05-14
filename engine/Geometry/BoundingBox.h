@@ -10,7 +10,6 @@
 #endif
 
 #include "../OWEngine/OWEngine.h"
-#include "../Core/ErrorHandling.h"
 #include "../Core/CommonUtils.h"
 #include "OWBounding.h"
 
@@ -84,15 +83,13 @@ public:
 
 class OWENGINE_API AABB: public OWBounding
 {
-	static constexpr float _max = std::numeric_limits<float>::max();
 public:
-	AABB()
-		: mMinPoint(glm::vec3(_max)), mMaxPoint(glm::vec3(-_max))
-	{}
+	AABB();
 
 	AABB(float _value)
 		: mMinPoint(glm::vec3(_value)), mMaxPoint(glm::vec3(-_value))
 	{}
+
 	AABB(const glm::vec3& _minPoint, const glm::vec3& _maxPoint, bool validate = true)
 	: mMinPoint(_minPoint), mMaxPoint(_maxPoint)
 	{
@@ -157,11 +154,8 @@ public:
 
 	// 6 vectors of a surfaces four points. The points are clockwise as viewed from the center
 	std::vector<std::vector<glm::vec3>> surfaces() const;
-	void isValid() const
-	{
-		if (mMinPoint.x > mMaxPoint.x || mMinPoint.y > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)
-			throw NMSLogicException("Error: Invalid AABB size.");
-	}
+	void isValid() const;
+
 	bool operator==(const AABB& other) const
 	{
 		return glm::all(glm::epsilonEqual(mMinPoint, other.mMinPoint, OWUtils::epsilon()))
@@ -182,21 +176,14 @@ private:
 #pragma warning( pop )
 };
 
-inline AABB operator | (const AABB& x, const glm::vec3& point)
-{
-	return AABB(min(x.minPoint(), point), max(x.maxPoint(), point));
-}
+AABB operator | (const AABB& x, const glm::vec3& point);
+AABB operator | (const AABB& a, const AABB& b);
+
 // Union of a point with aabb
 inline AABB operator |= (AABB& x, const glm::vec3& point)
 {
 	x = x | point;
 	return x;
-}
-
-// Union of two aabb's
-inline AABB operator | (const AABB& a, const AABB& b)
-{
-	return (a | b.minPoint()) | b.maxPoint();
 }
 
 // Union of two aabb's
@@ -207,10 +194,7 @@ inline AABB operator |= (AABB& a, const AABB& b)
 }
 
 // Intersection of two aabb's
-inline AABB operator & (const AABB& a, const AABB& b)
-{
-	return AABB(max(a.minPoint(), b.minPoint()), min(a.maxPoint(), b.maxPoint()));
-}
+AABB operator & (const AABB& a, const AABB& b);
 
 // Intersection of two aabb's
 inline AABB operator &= (AABB& a, const AABB& b)

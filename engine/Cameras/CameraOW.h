@@ -3,7 +3,6 @@
 
 #include "Camera.h"
 #include "CameraOWImp.h"
-#include <Core/ErrorHandling.h>
 #include <Core/ListenerHelper.h>
 #include <Core/UserInput.h>
 
@@ -90,16 +89,8 @@ public:
 	{
 		return mCurrent->moveScale();
 	}
-	void mouseScale(float OW_UNUSED(newValue)) override
-	{
-		throw NMSException("Not implemented");
-		//mCurrent->cameraScale(newValue);
-	}
-	float mouseScale() const override
-	{
-		throw NMSException("Not implemented");
-		return 0.0;// mCurrent->cameraScale();
-	}
+	void mouseScale(float OW_UNUSED(newValue)) override;
+	float mouseScale() const override;
 	void pitch(float radians) override
 	{
 		mCurrent->pitch(radians);

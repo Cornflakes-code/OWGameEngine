@@ -1,5 +1,7 @@
 #include "Collider.h"
 
+#include "../Core/ErrorHandling.h"
+
 glm::vec3 OWCollider::bounds(bool min) const
 {
 	return min ? mPt1 : mPt2;
@@ -84,7 +86,8 @@ void OWCollider::points(const AABB& bounds)
 		mPt2 = glm::vec3(bounds.diagonal());
 		break;
 	case OWCollider::CollisionType::Ray:
-		throw NMSLogicException("Error: OWCollider(Ray) cannot infer pt3 from bounds.");
+		mPt1 = bounds.minPoint();
+		mPt2 = bounds.maxPoint();
 		break;
 	default:
 		break;

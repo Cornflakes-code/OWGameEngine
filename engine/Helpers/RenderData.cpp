@@ -1,12 +1,15 @@
 #include "RenderData.h"
 
+#include "../Core/ErrorHandling.h"
+
 void GPUBufferObject::splice()
 {
 	mSplicedCalled = true;
 	if (!unsplicedData.size())
 		return;
 	if (splicedData.size())
-		throw NMSLogicException("GPUBufferObject::splice splicedData should be empty.\n");
+		return;
+		//throw NMSLogicException("GPUBufferObject::splice splicedData should be empty.\n");
 	if (bufferStyle() == BufferStyle::Uniform)
 	{
 		return;
@@ -93,6 +96,8 @@ unsigned int GPUBufferObject::typeSize(BufferType t) const
 		return 4;
 	if (t == BufferType::BillboardSize)
 		return 4;
+	if (t == BufferType::Anything)
+		return 4;
 	else
 		throw NMSLogicException("GPUBufferObject::typeSize Error. Unknown type ["
 			+ std::to_string(static_cast<unsigned int>(t))
@@ -124,7 +129,7 @@ GPUBufferObject::UnSplicedData& GPUBufferObject::findUnspliced(BufferType t)
 		+ std::to_string(static_cast<int>(t)) + "].\n");
 }
 
-void GPUBufferObject::updateSplicedData(float* data, BufferType bt, unsigned int ndx)
+void GPUBufferObject::updateSplicedData(float* data, BufferType bt, OWSize ndx)
 {
 	// Find the start of the required datatype
 	unsigned int offset = 0;
@@ -137,7 +142,7 @@ void GPUBufferObject::updateSplicedData(float* data, BufferType bt, unsigned int
 	}
 	float* fpf = reinterpret_cast<float*>(mWriteBuffer);
 	unsigned int span = instanceSpan();
-	unsigned int pos = offset + span * ndx;
+	OWSize pos = offset + span * ndx;
 	unsigned int _typeSize = typeSize(bt);
 	for (unsigned int i = 0; i < _typeSize; i++)
 	{
@@ -145,12 +150,12 @@ void GPUBufferObject::updateSplicedData(float* data, BufferType bt, unsigned int
 	}
 }
 
-void GPUBufferObject::updateUnsplicedData(float* data, BufferType bt, unsigned int ndx)
+void GPUBufferObject::updateUnsplicedData(float* data, BufferType bt, OWSize ndx)
 {
 	throw NMSNotYetImplementedException("GPUBufferObject::updateUnsplicedData()");
 }
 
-void GPUBufferObject::updateData(float* data, BufferType bt, unsigned int ndx)
+void GPUBufferObject::updateData(float* data, BufferType bt, OWSize ndx)
 {
 	if (bufferStyle() == BufferStyle::SSBO)
 		updateSplicedData(data, bt, ndx);

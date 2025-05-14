@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "../Geometry/BoundingBox.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "../Core/ErrorHandling.h"
 
 MeshData& MeshData::addVertices(const std::vector<glm::vec3>& v)
 {

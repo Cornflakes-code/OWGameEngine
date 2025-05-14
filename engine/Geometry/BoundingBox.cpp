@@ -3,6 +3,8 @@
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../Core/ErrorHandling.h"
+
 
 namespace Compass
 {
@@ -39,6 +41,16 @@ namespace Compass
 // And the following is also good
 // https://github.com/iauns/cpm-glm-aabb/blob/master/glm-aabb/AABB.hpp
 // https://gist.github.com/yomotsu/d845f21e2e1eb49f647f
+
+static constexpr float _max = std::numeric_limits<float>::max();
+
+glm::vec3 gMaxPoint(_max);
+glm::vec3 gMinPoint(-_max);
+
+AABB::AABB()
+	: mMinPoint(gMaxPoint), mMaxPoint(gMinPoint)
+{
+}
 
 AABB::AABB(const glm::vec3& size)
 {
@@ -142,6 +154,48 @@ AABB AABB::findBoundsIfRotated(const glm::mat4& m) const
 	}
 	AABB b2(corners);
 	return b2;
+}
+
+void AABB::isValid() const
+{
+	if (mMinPoint.x > mMaxPoint.x || mMinPoint.y > mMaxPoint.y || mMinPoint.z > mMaxPoint.z)
+		throw NMSLogicException("Error: Invalid AABB size.");
+}
+
+
+AABB operator | (const AABB& x, const glm::vec3& point)
+{
+	return AABB(min(x.minPoint(), point), max(x.maxPoint(), point));
+}
+
+// Union of two aabb's
+AABB operator | (const AABB& a, const AABB& b)
+{
+	// Test for undefined AABB's
+	if (a.minPoint() == gMaxPoint && a.maxPoint() == gMinPoint)
+	{
+		return b;
+	}
+	if (b.minPoint() == gMaxPoint && b.maxPoint() == gMinPoint)
+	{
+		return a;
+	}
+
+	return (a | b.minPoint()) | b.maxPoint();
+}
+
+AABB operator & (const AABB& a, const AABB& b)
+{
+	// Test for undefined AABB's
+	if (a.minPoint() == gMaxPoint && a.maxPoint() == gMinPoint)
+	{
+		return b;
+	}
+	if (b.minPoint() == gMaxPoint && b.maxPoint() == gMinPoint)
+	{
+		return a;
+	}
+	return AABB(max(a.minPoint(), b.minPoint()), min(a.maxPoint(), b.maxPoint()));
 }
 
 std::vector<std::vector<glm::vec3>> AABB::surfaces() const

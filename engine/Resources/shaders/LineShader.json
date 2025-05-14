@@ -1,0 +1,26 @@
+{
+    "colourName": "",
+    "shaderV": "Lines.v.glsl",
+    "shaderF": "Lines.f.glsl",
+    "shaderG": "",
+    "PVMName": "pv",
+    "projectionName": "projection",
+    "viewName": "view",
+    "uniforms": [
+        {
+            "ut": 4,
+            "name": "lightColor",
+            "value": "WHITE"
+        },
+        {
+            "ut": 4,
+            "name": "objectColor",
+            "value": "?colour??"
+        },
+        {
+            "ut": 3,
+            "name": "viewLightPos",
+            "value": "160.0f, 60.0f, 50.0f"
+        }
+    ]
+}

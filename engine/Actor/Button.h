@@ -35,7 +35,8 @@ public:
 	//void textures();
 	//void text();
 protected:
-	OWActorDiscrete::DiscreteEntity makeShape(const std::string& s, const glm::vec4& colour, const glm::vec3& size);
+	OWActorDiscrete::DiscreteEntity makeShape(const std::string& s, const glm::vec4& colour, 
+			const glm::vec3& size, OWCollider::CollisionType collType);
 private:
 	OWButtonData mData;
 };

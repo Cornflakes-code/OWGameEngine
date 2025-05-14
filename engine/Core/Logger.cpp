@@ -10,6 +10,7 @@
 
 #include "CommonUtils.h"
 #include "LogStream.h"
+#include "ErrorHandling.h"
 
 OWUtils::Time::time_point Logger::previous_seconds;
 const static OWUtils::Time::duration gInterval = std::chrono::milliseconds(1000);
@@ -200,9 +201,9 @@ std::string Logger::versionString() const
 		std::string s = "OpenGL first program ";
 		GLenum e = glGetError();
 		if (e == GL_INVALID_ENUM)
-			s += "GL_INVALID_ENUM";
+			s += OWOpenglErrorToString(e);
 		else if (e == GL_INVALID_OPERATION)
-			s += "GL_INVALID_OPERATION";
+			s += OWOpenglErrorToString(e);
 		else s += "NULL";
 		return s;
 	}

@@ -2,7 +2,6 @@
 #include <set>
 
 #include "../Cameras/Camera.h"
-#include "../Core/ErrorHandling.h"
 
 #include "CameraMazharImp.h"
 
@@ -100,16 +99,8 @@ public:
 	{
 		return mCurrent->cameraScale();
 	}
-	void mouseScale(float OW_UNUSED(newValue)) override
-	{
-		throw NMSException("Not implemented");
-		//mCurrent->cameraScale(newValue);
-	}
-	float mouseScale() const override
-	{
-		throw NMSException("Not implemented");
-		return 0.0;// mCurrent->cameraScale();
-	}
+	void mouseScale(float OW_UNUSED(newValue)) override;
+	float mouseScale() const override;
 	void pitch(float radians) override
 	{
 		mCurrent->changePitch(radians);

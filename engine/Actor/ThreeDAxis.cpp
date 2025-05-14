@@ -30,7 +30,7 @@ void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 	sse.colour = mData.axisColour;
 	sse.coll = new OWCollider(this, OWCollider::CollisionType::Permeable);
 	sse.mesh = (new OWMeshComponent(this, "XYZ Axis"))
-		->add(MeshData()
+		->setData(MeshData()
 		.addVertices(axisCoords)
 		.addIndices({ 0,1, 0,2, 0,3 })
 		.setModes(GL_LINES, GL_LINES, GL_FILL)
@@ -42,7 +42,8 @@ void ThreeDAxis::initialise(const OWThreeDAxisData& _data)
 			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
 		GPUBufferObject::BufferStyle::SSBO);
 	sse.rend->drawModes(GL_LINES, GL_LINES);
-	OWTransform* trans = new OWTransform();
+	OWTransformData td(glm::vec3(100, 100, 0));
+	OWTransform* trans = new OWTransform(td);
 	trans->parentTransform(transform());
 	sse.physics = new OWPhysics(trans);
 	addComponents(sse);

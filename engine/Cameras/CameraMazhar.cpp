@@ -6,6 +6,7 @@
 
 #include "../Core/Logger.h"
 #include "../Core/LogStream.h"
+#include "../Core/ErrorHandling.h"
 #include "../Geometry/BoundingFrustum.h"
 #include "../Core/UserInput.h"
 
@@ -29,6 +30,18 @@ bool CameraMazhar::processInput(UserInput::AnyInput input, float seconds)
 		return processKeyboardInput(input.keyInput, seconds);
 	}
 	return false;
+}
+
+void CameraMazhar::mouseScale(float OW_UNUSED(newValue)) 
+{
+	throw NMSException("Not implemented");
+	//mCurrent->cameraScale(newValue);
+}
+
+float CameraMazhar::mouseScale() const 
+{
+	throw NMSException("Not implemented");
+	return 0.0;// mCurrent->cameraScale();
 }
 
 /*

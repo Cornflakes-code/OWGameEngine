@@ -84,7 +84,7 @@ OWRenderTypes::ShaderMutator OWTextComponent::shaderMutator(OWRenderTypes::DrawT
 	}
 }
 
-const OWRenderData OWTextComponent::renderData(AABB& bounds) const
+const OWRenderData OWTextComponent::renderData(AABB& bounds) 
 {
 	// Some good links to doing text better/faster
 	// https://www.reddit.com/r/opengl/comments/ga2o7a/so_im_new_to_opengl_but_is_it_just_me_or_does/

@@ -7,7 +7,7 @@
 #include "../Core/ErrorHandling.h"
 
 #include "../Helpers/Shader.h"
-
+#include "../Actor/OWActor.h"
 
 /*
 * Very Modern OpenGL
@@ -21,23 +21,41 @@ OWMeshComponent::OWMeshComponent(OWActor* _owner, const std::string& _name)
 {
 }
 
-const OWRenderData OWMeshComponent::renderData(AABB& bounds) const
+OWMeshComponent* OWMeshComponent::setData(const MeshData& mesh)
 {
-	AABB b;
-	for (const auto& m : mData)
+	if (this->actor()->setupCompleted())
 	{
-		b = b | m.bounds();
+		if (mData.v4.size() && (mData.v4.size() != mesh.v4.size()))
+			throw NMSLogicException("OWMeshComponent::replaceData mesh sizes must be the same.");
+		if (mData.indices.size() && (mData.indices.size() != mesh.indices.size()))
+			throw NMSLogicException("OWMeshComponent::replaceData indices sizes must be the same.");
+
+		this->actor()->preModifyMesh(this);
 	}
-	bounds = b;
+	mData = mesh;
+	if (this->actor()->setupCompleted())
+	{
+		mData.updateMeshOnly(true);
+		// We are updating the mesh after a prior setup
+		this->actor()->postModifyMesh(this);
+		mData.updateMeshOnly(false);
+	}
+	return this;
+}
+
+const OWRenderData OWMeshComponent::renderData(AABB& bounds)
+{
+	bounds = mData.bounds();
 	OWRenderData rd;
-	rd.meshes = mData;
+	rd.meshes.push_back(mData);
+	if (!retainMesh())
+	{
+		mData = MeshData();
+	}
 	return rd;
 }
 
 void OWMeshComponent::doSetup()
 {
-	for (const auto& m : mData)
-	{
-		validate(m);
-	}
+	validate(mData);
 }

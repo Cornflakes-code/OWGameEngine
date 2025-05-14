@@ -20,10 +20,6 @@ public:
 	OWActor(Scene* _scene, const std::string& _name, OWActor* _hostActor = nullptr);
 	virtual ~OWActor() {}
 
-	void getScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required);
-	void scriptor(const OWScriptComponent& newValue) {
-		mScriptor = newValue;
-	}
 	void setup();
 	virtual void preTick();
 	void tick(float dt);
@@ -36,12 +32,27 @@ public:
 	void active(bool newValue) {
 		mIsActive = newValue;
 	}
-	bool active() const { return mIsActive; }
-	const AABB& bounds() const { return mBounds; }
-	void bounds(const AABB& newValue) { mBounds = newValue; }
-	Scene* scene() { return mScene; }
-	const OWActor* hostActor() const { return mHostActor; }
-	std::string name() const { return mName; }
+	bool active() const { 
+		return mIsActive; 
+	}
+	const AABB& bounds() const { 
+		return mBounds; 
+	}
+	void bounds(const AABB& newValue) { 
+		mBounds = newValue; 
+	}
+	void scriptor(const OWScriptComponent& newValue) {
+		mScriptor = newValue;
+	}
+	Scene* scene() { 
+		return mScene; 
+	}
+	const OWActor* hostActor() const { 
+		return mHostActor; 
+	}
+	std::string name() const { 
+		return mName; 
+	}
 	const OWTransform* transform() const {
 		return mActorTransform;
 	}
@@ -49,7 +60,9 @@ public:
 		return mActorTransform;
 	}
 	void transform(OWTransform* newValue);
-	bool setupCompleted() const { return mSetup; }
+	bool setupCompleted() const { 
+		return mSetup; 
+	}
 	void collided(const OWCollider& component, const OWCollider& otherComponent);
 	void interpolatePhysics(float totalTime, float alpha, float fixedTimeStep);
 #ifdef _DEBUG
@@ -58,33 +71,42 @@ public:
 	void addRenderer(OWRenderer* rend);
 	void addSound(OWSoundComponent* sound);
 	void addMeshComponent(OWMeshComponentBase* mesh);
+	void getScriptingComponents(int ndx, OWScriptComponent::RequiredComponents& required);
+	void setMeshComponent(OWMeshComponentBase* mesh, OWSize ndx);
+	OWPhysics* getPhysics(OWSize ndx);
+	OWMeshComponentBase* getMeshComponent(OWSize ndx);
+	void preModifyMesh(OWMeshComponent* existingMesh);
+	void postModifyMesh(OWMeshComponent* modifiedMesh);
+
 protected:
 	// Component accessors
 	const glm::vec4& getColour(OWSize ndx);
 	void setColour(const glm::vec4& colour, OWSize ndx);
+	void addColour(const glm::vec4& colour);
+
 	OWCollider* getCollider(OWSize ndx);
 	void setCollider(OWCollider* coll, OWSize ndx);
-	OWPhysics* getPhysics(OWSize ndx);
+	void addCollider(OWCollider* coll);
+
 	void setPhysics(OWPhysics* phys, OWSize ndx);
-	OWMeshComponentBase* getMeshComponent(OWSize ndx);
-	void setMeshComponent(OWMeshComponentBase* mesh, OWSize ndx);
+	void addPhysics(OWPhysics* phys);
+
 	OWRenderer* getRenderer(OWSize ndx);
 	void setRenderer(OWRenderer* rend, OWSize ndx);
+	
 	OWSoundComponent* getSound(OWSize ndx);
 	void setSound(OWSoundComponent* sound, OWSize ndx);
 
 	void copyCurrentToPrevious();
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) = 0;
-	virtual void doSetupActor() = 0;
+	virtual void doSetupActor(OWMeshComponentBase* target) = 0;
 	virtual void doPreTick() {}
-	virtual void doTick(float dt) {}
+	virtual void doTick(float OW_UNUSED(dt)) {}
 	virtual void doPostTick() {}
 	virtual void doPreRender() {}
 	virtual void doPostRender() {}
-	
-	void addColour(const glm::vec4& colour);
-	void addCollider(OWCollider* coll);
-	void addPhysics(OWPhysics* phys);
+
+	// Array sizes.
 	OWSize coloursSize() const { return static_cast<OWSize>(mColours.size()); }
 	OWSize collidersSize() const { return static_cast<OWSize>(mColliders.size()); }
 	OWSize physicsSize() const { return static_cast<OWSize>(mPhysics.size()); }
@@ -128,11 +150,10 @@ public:
 	OWSize addComponents(const DiscreteEntity& newElement);
 protected:
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
-	void doSetupActor() override final;
+	void doSetupActor(OWMeshComponentBase* target) override final;
 };
 
-// Use this class for aggregating N distinct meshes that share 
-// a common Renderer and Texture
+// Use this class for aggregating meshes that share a common Renderer and Texture
 // Use this class to render Text
 class OWENGINE_API OWActorNCom1Ren: public OWActor
 {
@@ -151,7 +172,7 @@ public:
 	OWSize addComponents(const NCom1RenElement& newElement);
 protected:
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
-	void doSetupActor() override final;
+	void doSetupActor(OWMeshComponentBase* target) override final;
 private:
 };
 
@@ -173,7 +194,7 @@ public:
 
 protected:
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
-	void doSetupActor() override final;
+	void doSetupActor(OWMeshComponentBase* target) override final;
 private:
 };
 
@@ -194,7 +215,7 @@ public:
 	OWSize addComponents(const ImmutableParticleElement& newElement);
 protected:
 	virtual void doCollided(const OWCollider& component, const OWCollider& otherComponent) override;
-	void doSetupActor() override final;
+	void doSetupActor(OWMeshComponentBase* target) override final;
 private:
 };
 

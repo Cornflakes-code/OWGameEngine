@@ -19,24 +19,29 @@ void OWTransform::parentTransform(const OWTransform* newValue)
 
 void OWTransform::rotation(float radians, const glm::vec3& axis)
 {
-	mData.rotation = glm::angleAxis(radians, axis);
+	//mData.rotation = glm::angleAxis(radians, axis);
+	mData.rotation = axis * radians;
 }
 
 const glm::vec3 OWTransform::worldPosition() const
 {
 	// Order of transform calcs
 	// https://gamedev.stackexchange.com/questions/196745/keeping-two-triangles-with-different-scale-attached-during-rotation?noredirect=1&lq=1
-	const OWTransform* grandPa = mParent != nullptr ? mParent : nullptr;
+	const OWTransform* grandPa = mParent == nullptr ? nullptr : mParent->parentTransform();
 	if (grandPa == nullptr)
-		return mParent ? mParent->localPosition() + mData.position : mData.position;
+		return mParent ? mParent->localPosition() + localPosition()  : localPosition();
 	else
-		return grandPa->localPosition() + mParent->localPosition() + mData.position;
+		return grandPa->localPosition() + mParent->localPosition() + localPosition();
 }
 
 const glm::mat4 OWTransform::modelMatrix() const
 {
-	glm::mat4 local = glm::translate(glm::mat4(1.0f), mData.position) * glm::mat4(rotation()) * glm::scale(glm::mat4(1), scale());
-	const OWTransform* grandPa = mParent != nullptr ? mParent : nullptr;
+	glm::quat rotx = glm::angleAxis(rotation().x, glm::vec3(1, 0, 0));
+	glm::quat roty = glm::angleAxis(rotation().y, glm::vec3(0, 1, 0));
+	glm::quat rotz = glm::angleAxis(rotation().z, glm::vec3(0, 0, 1));
+	glm::quat rot = rotx * rotz * roty;
+	glm::mat4 local = glm::translate(glm::mat4(1.0f), localPosition()) * glm::mat4(glm::normalize(rot)) * glm::scale(glm::mat4(1.0f), scale());
+	const OWTransform* grandPa = mParent == nullptr ? nullptr : mParent->parentTransform();
 	if (grandPa == nullptr)
 	{
 		glm::mat4 m = mParent ? mParent->modelMatrix() * local : local;

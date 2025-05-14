@@ -15,7 +15,7 @@ void OWModelComponent::add(const OWModelData& md)
 	mData.push_back(md); 
 }
 
-const OWRenderData OWModelComponent::renderData(AABB& bounds) const
+const OWRenderData OWModelComponent::renderData(AABB& bounds) 
 {
 	OWRenderData rd;
 	for (const auto& elm : mData)

@@ -58,6 +58,9 @@ struct OWENGINE_API OWUtils
 		return 0.00001f;
 	} 
 
+	// returns a quat that rotates from start to dest
+	glm::quat rotationBetweenVectors(const glm::vec3& start, const glm::vec3& dest);
+
 	static OWUtils::SolidColours colour(const std::string& solidColourName);
 	static glm::vec4 colour(SolidColours colour);
 	// A quick and dirty random generator though

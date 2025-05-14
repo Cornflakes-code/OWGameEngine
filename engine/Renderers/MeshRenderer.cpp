@@ -24,6 +24,7 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 	{
 		add(renderData.textures[0]);
 	}
+	bool updateMeshOnly = renderData.meshes[0].updateMeshOnly();
 	if (renderData.meshes.size() > 0)
 	{
 		mData.vertexMode = renderData.meshes[0].vertexMode;
@@ -32,6 +33,10 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 #ifdef _DEBUG
 		for (int i = 1; i < renderData.meshes.size(); i++)
 		{
+			if (renderData.meshes[i].updateMeshOnly() != updateMeshOnly)
+				throw NMSLogicException(
+					"OWMeshRenderer::doSetup Error. Mesh Updates statuses of all meshes must be identical. \n");
+
 			if (renderData.meshes[i].vertexMode != renderData.meshes[i - 1].vertexMode)
 				throw NMSLogicException(
 					"OWMeshRenderer::doSetup Error. All meshes must have the same vertex mode. \n");
@@ -43,12 +48,23 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 					"OWMeshRenderer::doSetup Error. All meshes must have the same polygon mode. \n");
 		}
 #endif
+		mMultiArrayStartIndexes.clear();
+		mData.v4.clear();
+		mMultiArrayVertexCount.clear();
+
+		mMultiElementStartIndexes.clear();
+		mData.indices.clear();
+		mMultiElementIndicesCounts.clear();
 		for (const auto& m : renderData.meshes)
 		{
 			add(m);
 		}
+		if (updateMeshOnly)
+		{
+			modifyMesh();
+			return;
+		}
 	}
-
 	// https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices
 	if (mData.v4.size() == 0)
 	{
@@ -69,6 +85,20 @@ void OWMeshRenderer::doSetup(const OWRenderData& renderData)
 	if (mVao != std::numeric_limits<unsigned int>::max())
 		throw NMSLogicException("OWMeshRenderer::doSetup(). VAO should not be initialised.\n");
 	continueSetup();
+}
+
+void OWMeshRenderer::modifyMesh()
+{
+	if (!mData.indices.empty())
+	{
+		size_t sz = sizeof(unsigned int) * static_cast<GLsizei>(mData.indices.size());
+		glNamedBufferSubData(mEbo, 0, sz, mData.indices.data());
+	}
+	if (mData.v4.size())
+	{
+		size_t sz = mData.v4.size() * 4 * sizeof(float);
+		glNamedBufferSubData(mVbo[0], 0, sz, mData.v4.data());
+	}
 }
 
 void OWMeshRenderer::continueSetup()
@@ -159,6 +189,7 @@ void OWMeshRenderer::add(const Texture& texture)
 void OWMeshRenderer::add(const MeshData& md)
 {
 	//	https://www.khronos.org/opengl/wiki/vertex_Rendering#Direct_rendering
+
 	if (!md.v4.empty())
 	{
 		mMultiArrayStartIndexes.push_back(static_cast<GLsizei>(mData.v4.size()));

@@ -31,6 +31,7 @@ protected:
 	void add(const MeshData& md);
 	void add(const Texture& texture);
 	void doRender() override;
+	void modifyMesh();
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 

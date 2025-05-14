@@ -32,5 +32,13 @@ struct OWENGINE_API MeshData
 	unsigned int indicesMode = UINT_MAX;
 	unsigned int polygonMode_mode = UINT_MAX;
 	AABB bounds() const;
+	bool updateMeshOnly() const {
+		return mUpdateMeshOnly;
+	}
+	void updateMeshOnly(bool newValue) {
+		mUpdateMeshOnly = newValue;
+	}
+private:
+	bool mUpdateMeshOnly = false;
 };
 

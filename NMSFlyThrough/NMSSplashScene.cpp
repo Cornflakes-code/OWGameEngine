@@ -6,7 +6,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
-#include <Cameras/Camera.h>
 #include <Core/CommonUtils.h>
 #include <Core/ErrorHandling.h>
 #include <Core/GLApplication.h>
@@ -15,6 +14,7 @@
 #include <Core/SoundManager.h>
 #include <Core/ResourcePathFactory.h>
 #include <Core/LogStream.h>
+#include <Cameras/Camera.h>
 
 #include <Actor/ThreeDAxis.h>
 #include <Actor/Button.h>
@@ -35,20 +35,21 @@
 #include "NMSUserInput.h"
 #include "NMSRopeScene.h"
 
-//#define INCLUDE_RAY
-//#define INCLUDE_BUTTONS
+#define INCLUDE_RAY
+OWPhysics* gRayPhysics = nullptr;
+#define INCLUDE_BUTTONS
 //#define INCLUDE_PLANES
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
-#define INCLUDE_BOXES
+//#define INCLUDE_BOXES
 #ifdef _DEBUG
 int GDEBUG_PICKING = 1;
 #else
 int GDEBUG_PICKING = 1000;
 #endif
 //#define BOXES_CENTERED
-//#define INCLUDE_XYZ_AXIS
+#define INCLUDE_XYZ_AXIS
 //#define INCLUDE_STAR_RENDER
 //#define INCLUDE_IMPORTED_MODEL
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
@@ -57,8 +58,6 @@ AABB NMSSplashScene::mWindowBounds;
 // So 2 in 5 seconds 
 // is a velocity of 0.4 per second
 OWUtils::Float NMSSplashScene::mSpeed;
-OWActorDiscrete* gRay = nullptr;
-
 
 static constexpr float off = 500;
 
@@ -69,9 +68,11 @@ OWActorMutableParticle::MutableParticleElement createBox(const std::string& _nam
 	elm.colour = colour;
 	elm.coll = new OWCollider(nullptr, OWCollider::CollisionType::Box);
 	OWPhysicsData pd;
-	pd.velocity = direction * speed;
+	//pd.velocity = direction * speed;
+	//pd.rotationalAcceleration = glm::vec3(0.01f);
+	pd.rotationalVelocity = glm::vec3(glm::radians(1.0f), 0, 0);
 	OWTransform* trans = new OWTransform({ origin, scale });
-	trans->rotation(glm::radians(45.0f), glm::vec3(1, 0, 0));
+	trans->rotation(glm::radians(30.0f), glm::vec3(1, 1, 1));
 	elm.physics = new OWPhysics(trans, pd);
 	return elm;
 /*
@@ -169,9 +170,8 @@ void NMSSplashScene::doSetupScene()
 	dynamicTextActor->transform(new OWTransform());
 
 	OWPhysicsData pd1;
-	pd1.velocity = Compass::Rose[Compass::North] +
-		Compass::Rose[Compass::East] +
-		Compass::Rose[Compass::In] * mSpeed;
+	pd1.velocity = (Compass::Rose[Compass::North] +
+		Compass::Rose[Compass::In]) * mSpeed * 0.1f;
 
 	OWTextComponentData welcomeData;
 	welcomeData.tdt = OWRenderTypes::DrawType::TwoDDynamic;
@@ -187,8 +187,10 @@ void NMSSplashScene::doSetupScene()
 		elm.physics = new OWPhysics(new OWTransform({ glm::vec3(0), glm::vec3(scale, 2.0) }), pd1);
 		elm.sound = new OWSoundComponent();
 		OWMeshRenderer* r = new OWMeshRenderer("DynamicText.json",
-			{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour,
-			GPUBufferObject::BufferType::BillboardSize },
+			{	GPUBufferObject::BufferType::Position, 
+				GPUBufferObject::BufferType::Colour,
+				GPUBufferObject::BufferType::BillboardSize
+			},
 			GPUBufferObject::BufferStyle::SSBO);
 		r->shader()->appendMutator(OWTextComponent::shaderMutator(welcomeData.tdt));
 		dynamicTextActor->addRenderer(r);
@@ -196,15 +198,14 @@ void NMSSplashScene::doSetupScene()
 	}
 
 #endif
-	//Ray* r = new Ray(mScenery, { 20,20,20 }, { 1,1,1 });
-	//r->prepare({ 0.0, 1.0, 0.0, 1.0f });
+
 #ifdef INCLUDE_ENJOY
 	{
 		OWActorNCom1Ren* staticTextActor = new OWActorNCom1Ren(this, "Static Text Actor");
 		staticTextActor->transform(new OWTransform());
 		OWPhysicsData pd2;
-		pd2.velocity = Compass::Rose[Compass::South] +
-			Compass::Rose[Compass::West] * mSpeed / 20.0f;
+		pd2.velocity = (Compass::Rose[Compass::South] +
+			Compass::Rose[Compass::West]) * mSpeed / 20.0f;
 
 		OWTextComponentData enjoyData;
 		enjoyData.tdt = OWRenderTypes::DrawType::TwoDStatic;
@@ -234,9 +235,9 @@ void NMSSplashScene::doSetupScene()
 	boxActor->addSound(new OWSoundComponent());
 	boxActor->addMeshComponent(
 		(new OWMeshComponent(boxActor, "Box Template"))
-		->add(MeshData()
+		->setData(MeshData()
 			.addVertices(OWGeometricShapes::cube())
-			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)));
+			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_LINE)));
 
 	boxActor->addRenderer(new OWMeshRenderer("BoxShader.json",
 		{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },
@@ -251,6 +252,7 @@ void NMSSplashScene::doSetupScene()
 	{
 		boxActor->addComponents(createBox("box1", OWUtils::colour(OWUtils::SolidColours::RED),
 			randomOrigin(denom, 0), randomDirection(denom), mSpeed * 0.1f, scale2));
+		break;
 		boxActor->addComponents(createBox("box2", OWUtils::colour(OWUtils::SolidColours::BLUE),
 			randomOrigin(denom, 1), randomDirection(denom), mSpeed * 0.8f, scale1));
 		boxActor->addComponents(createBox("box3", OWUtils::colour(OWUtils::SolidColours::WHITE),
@@ -446,43 +448,77 @@ bool NMSSplashScene::processUserCommands(const UserInput::AnyInput& userInput, s
 {
 	if (userInput.inputType == UserInput::AnyInputType::Pointing)
 	{
-		//		glm::ivec2 v2 = 
-			//	glfwGetWindowSize(win, &screen_w, &screen_h); // better use the callback and cache the values 
-				//glfwGetFramebufferSize(win, &pixel_w, &pixel_h); // better use the callback and cache the values 
 		if (userInput.mouseInput.action == UserInput::PointingDeviceAction::LeftMouseButtonClick)
 		{
-			glm::vec3 mousePos = globals->mouseToWorld(userInput.mouseInput.pos, false);
+			glm::vec3 mouseRay = globals->rayFromMouse(userInput.mouseInput.pos);
+			AABB w = world();
 			LogStream(LogStreamLevel::Info) << "userInput.mouseInput Position " << userInput.mouseInput.pos << "\n";
-			LogStream(LogStreamLevel::Info) << "MouseToWorld Position " << mousePos << "\n";
-			glm::vec3 normMouse = glm::normalize(mousePos);
+			LogStream(LogStreamLevel::Info) << "rayFromMouse " << mouseRay << "\n";
 			glm::vec3 cam_pos = camera->position();
-			glm::vec3 dir = cam_pos - mousePos;
+			LogStream(LogStreamLevel::Info) << "cam_pos " << cam_pos << "\n";
 #ifdef INCLUDE_RAY
-			if (gRay == nullptr)
+			const glm::vec3 beamDir = glm::normalize(glm::vec3(0, 0, -1));
+			float dot = glm::dot(beamDir, mouseRay);
+			float angleRadians = glm::acos(dot);
+			glm::vec3 axis = glm::normalize(glm::cross(beamDir, mouseRay));
+			glm::vec3 newPos = cam_pos;// -mouseRay * 10.0f;
+			if (gRayPhysics == nullptr)
 			{
-				gRay = new OWActorDiscrete(this, "Ray Actor");
-				gRay->transform(new OWTransform());
-				OWActorDiscrete::DiscreteEntity sse;
-				sse.colour = OWUtils::colour(OWUtils::SolidColours::RED);
-				sse.coll = new OWCollider(gRay, OWCollider::CollisionType::Ray);
-				sse.mesh = (new OWMeshComponent(gRay, "Ray Component"))
-					->add(MeshData()
-						.addVertices(OWGeometricShapes::beam(cam_pos, dir, 1000))
-						.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL));
-				sse.rend = new OWMeshRenderer("",
-					{ GPUBufferObject::BufferType::Position, GPUBufferObject::BufferType::Colour },
-					GPUBufferObject::BufferStyle::SSBO);
-				OWTransform* trans = new OWTransform(OWTransformData(cam_pos));
-				sse.physics = new OWPhysics(trans);
-				gRay->addComponents(sse);
-				gRay->setup();
-				// this will crash
-				// need to deactivate, remove from scene and remove from Collissions
-				gRay->active(false);
+				OWActorDiscrete* rayActor = new OWActorDiscrete(this, "Ray Actor");
+				rayActor->transform(new OWTransform(glm::vec3(0,0,0)));
+				{
+					OWActorDiscrete::DiscreteEntity sse;
+					sse.colour = OWUtils::colour(OWUtils::SolidColours::BLUE);
+					sse.coll = new OWCollider(rayActor, OWCollider::CollisionType::Ray);
+					sse.mesh = (new OWMeshComponent(rayActor, "Ray Component"))
+						->setData(MeshData()
+							.addVertices(OWGeometricShapes::beam(beamDir, 1000))
+							.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL));
+					Shader* shader = new Shader("Lines.v.glsl", "Lines.f.glsl", "");
+					shader->setStandardUniformNames("pv");
+					sse.rend = new OWMeshRenderer(shader,
+						{ 
+							GPUBufferObject::BufferType::Model, 
+							GPUBufferObject::BufferType::Colour 
+						},
+						GPUBufferObject::BufferStyle::SSBO);
+					OWTransform* trans = new OWTransform();
+					trans->rotation(angleRadians, axis);
+					trans->localPosition(newPos);
+					gRayPhysics = new OWPhysics(trans);
+					sse.physics = gRayPhysics;
+					rayActor->addComponents(sse);
+				}
+				{
+					OWActorDiscrete::DiscreteEntity sse;
+					sse.colour = OWUtils::colour(OWUtils::SolidColours::BLUE);
+					sse.coll = new OWCollider(rayActor, OWCollider::CollisionType::Point);
+					sse.mesh = (new OWMeshComponent(rayActor, "Mouse Point Component"))
+						->setData(MeshData()
+							.addVertices(OWGeometricShapes::cube())
+							.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL));
+					Shader* shader = new Shader("Lines.v.glsl", "Lines.f.glsl", "");
+					shader->setStandardUniformNames("pv");
+					sse.rend = new OWMeshRenderer(shader,
+						{ 
+							GPUBufferObject::BufferType::Model
+							, GPUBufferObject::BufferType::Colour 
+						},
+						GPUBufferObject::BufferStyle::SSBO);
+					OWPhysicsData pd1;
+					pd1.velocity = (Compass::Rose[Compass::North] + Compass::Rose[Compass::In]) * mSpeed * 0.0f;
+					OWTransformData td(glm::vec3(100,0,0));
+					OWTransform* trans = new OWTransform(td);
+					trans->localPosition();
+					sse.physics = new OWPhysics(trans, pd1);
+					//rayActor->addComponents(sse);
+				}
+				rayActor->setup();
 			}
 			else
 			{
-				// need to replace gRay->mesh
+				gRayPhysics->transform()->rotation(angleRadians, axis);
+				gRayPhysics->transform()->localPosition(newPos);
 			}
 			//gRay->colour({ 0.7, 0.7, 0.0, 1.0f });
 			//gRay->direction(normMouse);

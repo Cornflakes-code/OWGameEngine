@@ -52,8 +52,8 @@ public:
 protected:
 	std::vector<OWActor*> mRootNode;
 	Scene(const Movie* movie);
-	virtual void doRenderScene(const glm::mat4& proj, const glm::mat4& view,
-		const glm::vec3& cameraPos) {
+	virtual void doRenderScene(const glm::mat4& OW_UNUSED(proj), const glm::mat4& OW_UNUSED(view),
+		const glm::vec3& OW_UNUSED(cameraPos)) {
 	}
 	virtual void doSetupScene() = 0;
 private:

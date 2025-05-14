@@ -9,7 +9,7 @@
 
 struct OWTransformData
 {
-	glm::quat rotation = {};
+	glm::vec3 rotation = {0, 0, 0};// glm::identity<glm::quat>();
 	glm::vec3 position = { 0, 0, 0 };
 	glm::vec3 scale = { 1,1,1 };
 	OWTransformData() {}
@@ -17,7 +17,7 @@ struct OWTransformData
 		: position(_position), scale(_scale)
 	{
 	}
-	OWTransformData(const glm::vec3& _position, const glm::vec3& _scale, const glm::quat& _rotation)
+	OWTransformData(const glm::vec3& _position, const glm::vec3& _scale, const glm::vec3& _rotation)
 		: position(_position), scale(_scale), rotation(_rotation)
 	{
 	}
@@ -25,10 +25,6 @@ struct OWTransformData
 
 class OWENGINE_API OWTransform final
 {
-	OWTransformData mData;
-
-	// The actor containing the entity that this transform is linked to
-	const OWTransform* mParent = nullptr;
 public:
 	OWTransform(const OWTransformData& _data = OWTransformData());
 	~OWTransform() {}
@@ -36,7 +32,10 @@ public:
 	const OWTransform* parentTransform() const { return mParent;  }
 	void parentTransform(const OWTransform* newValue);
 	void rotation(float radians, const glm::vec3& axis);
-	glm::quat rotation() const {
+	void rotation(const glm::vec3& newValue) {
+		mData.rotation = newValue;
+	}
+	glm::vec3 rotation() const {
 		return mData.rotation;
 	}
 	void scale(const glm::vec3& newValue){
@@ -58,4 +57,9 @@ public:
 	const glm::vec3 inward() const;
 	const glm::vec3 right() const;
 	glm::vec2 drawSize(OWRenderTypes::DrawType _drawType) const;
+private:
+	OWTransformData mData;
+
+	// The actor containing the entity that this transform is linked to
+	const OWTransform* mParent = nullptr;
 };

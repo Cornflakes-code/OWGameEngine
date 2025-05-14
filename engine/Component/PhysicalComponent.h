@@ -1,28 +1,20 @@
 #pragma once
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "../OWEngine/OWEngine.h"
 #include "Component.h"
 #include "../Geometry/BoundingBox.h"
 #include "../Helpers/Transform.h"
 
-struct OWENGINE_API OWPhysicalDataMaximums
-{
-	glm::vec3 gravity = glm::vec3(0.0f, 9.8f, 0.0f);
-	glm::vec3 velocity = glm::vec3(1000.0f);
-	glm::vec3 acceleration = glm::vec3(100.0f);
-	float mass = 1.0f;
-	float hardness = 1.0f;
-};
-
 struct OWENGINE_API OWPhysicsData
 {
-	glm::vec3 velocity = glm::vec3(0);
-	glm::vec3 rotationalVelocity = glm::vec3(0);
-	glm::vec3 rotationalAccelearation = glm::vec3(0);
+	glm::vec3 rotationalAcceleration = glm::vec3(0); // radians per second per second
+	glm::vec3 rotationalVelocity = glm::vec3(0); // radians per second
 	glm::vec3 acceleration = glm::vec3(0);
-//	glm::vec3 steerForce = glm::vec3(0); // These are all of the forces acting on the object's acceleration (thrust, gravity, drag, etc) 
+	glm::vec3 velocity = glm::vec3(0);
+	//	glm::vec3 steerForce = glm::vec3(0); // These are all of the forces acting on the object's acceleration (thrust, gravity, drag, etc) 
 };
 
 // See https://gafferongames.com/post/fix_your_timestep/
@@ -37,7 +29,6 @@ class OWENGINE_API OWPhysics
 		OWTransform* t;
 		OWPhysicsData pd;
 	};
-	OWPhysicalDataMaximums mMaximums;
 	OWPhysicsElement mPreviousData;
 	OWPhysicsElement mCurrentData;
 	OWPhysicsElement mScratchData;
@@ -75,4 +66,8 @@ public:
 			newValue = 1.0f;
 		mVisibility = newValue;
 	}
+private:
+	static void calcChanges(OWPhysicsElement& target, const OWPhysicsElement& alphaSource,
+		const OWPhysicsElement& otherSource, float alpha, float timeStep);
+
 };

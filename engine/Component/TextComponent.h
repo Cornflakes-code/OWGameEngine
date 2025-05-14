@@ -37,7 +37,7 @@ public:
 	OWTextComponent(OWActor* _owner, const std::string& _name,
 		const std::string& textFileName);
 	void doSetup() override;
-	const OWRenderData renderData(AABB& bounds) const override;
+	const OWRenderData renderData(AABB& bounds) override;
 	static OWRenderTypes::ShaderMutator shaderMutator(OWRenderTypes::DrawType _drawType);
 private:
 };

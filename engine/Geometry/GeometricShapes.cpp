@@ -1,6 +1,10 @@
 #include "GeometricShapes.h"
 #include <algorithm>
+
 #include <glm/gtc/constants.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+#include <Core/CommonUtils.h>
 
 std::pair<glm::vec3, glm::vec3> OWGeometricShapes::minMaxBox =
 {
@@ -147,6 +151,25 @@ std::vector<glm::vec3> OWGeometricShapes::star(float innerRadius, float outerRad
 	return retval;
 }
 
+
+std::vector<glm::vec3> OWGeometricShapes::tetrahedron()
+{
+	const float p = 1.0f;
+	const std::vector<glm::vec3> tetStart =
+	{
+		{ p, p, p }, { p, -p, -p }, { -p, p, -p }, { -p, -p, p }
+	};
+
+	std::vector<glm::vec3> tetTriangles =
+	{
+		tetStart[0], tetStart[1], tetStart[2],
+		tetStart[1], tetStart[2], tetStart[3],
+		tetStart[2], tetStart[3], tetStart[0],
+		tetStart[3], tetStart[0], tetStart[1]
+	};
+	return tetTriangles;
+}
+
 std::vector<glm::vec3> OWGeometricShapes::cube()
 {
 	const glm::vec3& scale = { 1.0f, 1.0f, 1.0f };
@@ -180,52 +203,72 @@ std::vector<glm::vec3> OWGeometricShapes::line(float thickness)
 	return { { -0.5f, 0, 0 }, { 0.5f, 0, 0 } };
 }
 
-std::vector<glm::vec3> OWGeometricShapes::beam(const glm::vec3& beamStart, const glm::vec3& direction, float length)
+std::vector<glm::vec3> OWGeometricShapes::beam(const glm::vec3& direction, float length)
 {
 	glm::vec3 beamEnd = glm::normalize(direction) * length;
-	return OWGeometricShapes::beam(beamStart, beamEnd);
-
+	return OWGeometricShapes::beam(beamEnd);
 }
 
-std::vector<glm::vec3> OWGeometricShapes::beam(const glm::vec3& beamStart, const glm::vec3& beamEnd)
+std::vector<glm::vec3> OWGeometricShapes::beam(const glm::vec3& beamEnd_)
 {
 	// https://github.com/atomic/OpenGL/blob/master/openGLexamples/tetrahedron.cpp
 
-	std::vector<glm::vec3> vertices;
-	const float p = 0.010f;
-	const std::vector<glm::vec3> tetStart =
-	{
-		{ p, p, p }, { p, -p, -p }, { -p, p, -p }, { -p, -p, p }
-	};
+	const glm::vec3 beamStart = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 beamEnd = beamEnd_;
+	//glm::vec3 beamEnd = beamEnd_ / 2.0f;
+	//const glm::vec3 beamStart = -beamEnd;
+	glm::vec3 lineDir = glm::normalize(beamStart - beamEnd);
+	glm::vec3 anotherDir = glm::vec3(1.0f, 0.0f, 0.0f);
+	if (OWUtils::isZero(lineDir - anotherDir))
+		anotherDir = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	const std::vector<glm::vec3> tetTriangles =
-	{
-		tetStart[0], tetStart[1], tetStart[2],
-		tetStart[1], tetStart[2], tetStart[3],
-		tetStart[2], tetStart[3], tetStart[0],
-		tetStart[3], tetStart[0], tetStart[1]
-	};
+	glm::vec3 orthogonalVector = glm::normalize(glm::cross(lineDir, anotherDir));
+	float mult = 1.1f;
+	glm::vec3 p1 = orthogonalVector * mult;
+	
+	glm::mat4 rot_mat = glm::rotate(glm::mat4(1.0f), glm::radians(120.0f), lineDir);
+	glm::vec3 p2 = glm::vec3(glm::vec4(p1, 1.0f) * rot_mat);
+
+	rot_mat = glm::rotate(glm::mat4(1.0f), glm::radians(240.0f), lineDir);
+	glm::vec3 p3 = glm::vec3(glm::vec4(p1, 1.0f) * rot_mat);
+
 	std::vector<glm::vec3> beam;
-	const glm::vec3 off = beamStart;
-	beam.push_back(tetStart[0]);
-	beam.push_back(beamEnd);
-	beam.push_back(tetStart[1]);
 
-	beam.push_back(tetStart[1]);
-	beam.push_back(beamEnd);
-	beam.push_back(tetStart[2]);
+	// Cover the end
+	beam.push_back(p1 + beamStart);
+	beam.push_back(p2 + beamStart);
+	beam.push_back(p3 + beamStart);
 
-	beam.push_back(tetStart[2]);
-	beam.push_back(beamEnd);
-	beam.push_back(tetStart[3]);
+// Two triangles for the first side
+	beam.push_back(p1 + beamStart);
+	beam.push_back(p2 + beamEnd);
+	beam.push_back(p3 + beamEnd);
 
-	beam.push_back(tetStart[3]);
-	beam.push_back(beamEnd);
-	beam.push_back(tetStart[0]);
+	beam.push_back(p2 + beamStart);
+	beam.push_back(p2 + beamEnd);
+	beam.push_back(p3 + beamEnd);
 
-	vertices.insert(vertices.end(), tetTriangles.begin(), tetTriangles.end());
-	vertices.insert(vertices.end(), beam.begin(), beam.end());
-	std::for_each(vertices.begin(), vertices.end(),
-		[off](glm::vec3& elm) { elm += off; });
-	return vertices;
+	// Two triangles for the second side
+	beam.push_back(p2 + beamStart);
+	beam.push_back(p3 + beamEnd);
+	beam.push_back(p1 + beamEnd);
+
+	beam.push_back(p3 + beamStart);
+	beam.push_back(p3 + beamEnd);
+	beam.push_back(p1 + beamEnd);
+
+	// Two triangles for the third side
+	beam.push_back(p3 + beamStart);
+	beam.push_back(p1 + beamEnd);
+	beam.push_back(p2 + beamEnd);
+
+	beam.push_back(p1 + beamStart);
+	beam.push_back(p1 + beamEnd);
+	beam.push_back(p2 + beamEnd);
+
+	// Cover the end
+	//beam.push_back(p1 + beamEnd);
+	//beam.push_back(p2 + beamEnd);
+	//beam.push_back(p3 + beamEnd);
+	return beam;
 }

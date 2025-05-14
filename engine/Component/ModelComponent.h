@@ -17,7 +17,7 @@ public:
 	OWModelComponent(OWActor* _owner,
 		const std::string& _name, const std::string& _modelName);
 	void add(const OWModelData& md);
-	const OWRenderData renderData(AABB& bounds) const override;
+	const OWRenderData renderData(AABB& bounds) override;
 protected:
 	virtual void doSetup() override;
 };

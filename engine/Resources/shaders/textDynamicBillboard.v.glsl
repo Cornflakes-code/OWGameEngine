@@ -8,6 +8,7 @@ struct SSBO
 	vec4 pos;
 	vec4 colour;
 	vec4 bbSize;
+	vec4 anything;
 };
 
 layout(binding = 1, std430) readonly buffer SSBOBuffer {
@@ -37,6 +38,8 @@ int SSBOIndex()
 void main()
 {
 	int ndx = SSBOIndex();
+	jfw_pos = ssbo[ndx].pos;
+	jfw_ndx = ndx + 42;
 
 	vec2 BillboardSize = ssbo[ndx].bbSize.xy; // Size of the billboard
 	ssb_colour = ssbo[ndx].colour;
@@ -50,14 +53,10 @@ void main()
 	// Output position of the vertex
 	gl_Position = pv * vec4(vertexPosition_worldspace, 1.0f);
 
-	jfw_pos = ssbo[ndx].pos;
-	jfw_ndx = ndx;
 	jfw_CameraRight_worldspace = CameraRight_worldspace;
 	jfw_CameraUp_worldspace = CameraUp_worldspace;
 	jfw_BillboardSize = BillboardSize;
 	jfw_pv = pv;
-
-
 
 	// Or, if BillboardSize is in percentage of the screen size (1,1 for fullscreen) :
 	//vertexPosition_worldspace = particleCenter_wordspace;
