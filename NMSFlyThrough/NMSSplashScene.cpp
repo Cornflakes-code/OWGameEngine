@@ -42,7 +42,7 @@ OWPhysics* gRayPhysics = nullptr;
 //#define INCLUDE_FULLSCREEN
 //#define INCLUDE_WELCOME
 //#define INCLUDE_ENJOY
-//#define INCLUDE_BOXES
+#define INCLUDE_BOXES
 #ifdef _DEBUG
 int GDEBUG_PICKING = 1;
 #else
@@ -237,7 +237,7 @@ void NMSSplashScene::doSetupScene()
 		(new OWMeshComponent(boxActor, "Box Template"))
 		->setData(MeshData()
 			.addVertices(OWGeometricShapes::cube())
-			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_LINE)));
+			.setModes(GL_TRIANGLES, GL_TRIANGLES, GL_FILL)));
 
 	boxActor->addRenderer(new OWMeshRenderer("BoxShader.json",
 		{ GPUBufferObject::BufferType::Model, GPUBufferObject::BufferType::Colour },

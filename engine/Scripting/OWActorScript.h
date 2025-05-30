@@ -20,13 +20,13 @@ class OWScriptCommmand
 {
 	enum class Subject
 	{
-		Position, Velocity, Acceleration, AngularVelocity, AngularAcceleration, Mass, Hardness, Visibility
+		Position, Velocity, Acceleration, AngularVelocity, AngularAcceleration, Mass, Hardness, Visibility, NoSubject
 	};
 	enum class Operation
 	{
 		Set, IncreaseTo,
 	};
-	Subject mNoun;
+	Subject mNoun = Subject::NoSubject;
 	Operation mOp = Operation::Set;
 	float* mValue = nullptr;
 	float* mConditionValue = nullptr;

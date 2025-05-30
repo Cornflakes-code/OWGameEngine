@@ -4,11 +4,14 @@
 
 #include "ErrorHandling.h"
 #include "../Actor/OWActor.h"
-#include "../Core/CollisionSystem.h"
+#include <Geometry/GeometricShapes.h>
+#include <Helpers/Shader.h>
+#include <Renderers/MeshRenderer.h>
+
 #include "LogStream.h"
 
 Scene::Scene(const Movie* movie)
-	: mMovie(movie)
+	: mMovie(movie), mBoundsActor(this, "Collider Bounds"), mColisionSystem(this)
 {
 }
 
@@ -26,10 +29,10 @@ void Scene::traverseSceneGraph(OWActorCallbackType cb) const
 	}
 }
 
-
 void Scene::addCollider(OWCollider* coll, OWActor* a, OWSize componentId)
 {
-	CollisionSystem::addCollider(coll, a, componentId);
+	mColisionSystem.addCollider(coll, a, componentId);
+	mBoundsActor.addCollider(coll, a, componentId);
 }
 
 void Scene::setup()
@@ -59,13 +62,13 @@ void Scene::timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep)
 {
 //	mRootNode.erase(std::remove(mRootNode.begin(), mRootNode.end(), 
 //		[](const OWActor* x) { return !x->active(); }), mRootNode.end());
+	mColisionSystem.sort();
 
 	traverseSceneGraph([](OWActor* a)
 		{
 			a->preTick();
 		}
 	);
-	CollisionSystem::preTick();
 
 	float timeStep = std::chrono::duration<float>(fixedStep).count();
 	traverseSceneGraph([timeStep](OWActor* a)
@@ -76,7 +79,7 @@ void Scene::timeStep(std::string& nextScene, OWUtils::Time::duration fixedStep)
 #ifdef DEBUG_COLLISION
 	OWUtils::Time::time_point startTime = OWUtils::Time::now();
 #endif
-	CollisionSystem::postTick();
+	mColisionSystem.collide();
 #ifdef DEBUG_COLLISION
 	OWUtils::Time::duration duration = OWUtils::Time::now() - startTime;
 	float frameTimeSecs = std::chrono::duration<float>(duration).count();

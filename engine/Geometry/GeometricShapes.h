@@ -9,7 +9,9 @@ class OWENGINE_API OWGeometricShapes
 {
 public:
 	static std::pair<glm::vec3, glm::vec3> minMaxBox;
-	static std::vector<glm::vec3> circle(float radius, float arcRadians);
+
+	// A circle with radius of 1.0 and two_pi/arcRadians lines drawing the circle
+	static std::vector<glm::vec3> circle(float arcRadians = 0.1);
 	static std::vector<glm::vec3> torus(float innerRadius, 
 									float outerRadius, 
 									float arcRadians);

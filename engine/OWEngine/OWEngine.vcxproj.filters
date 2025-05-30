@@ -216,6 +216,9 @@
     <ClInclude Include="..\Helpers\RenderData.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Actor\ColliderBounds.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Actor\Button.cpp">
@@ -391,6 +394,9 @@
     </ClCompile>
     <ClCompile Include="..\Helpers\RenderData.cpp">
       <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\ColliderBounds.cpp">
+      <Filter>Actor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

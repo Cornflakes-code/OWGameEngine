@@ -16,8 +16,9 @@ std::pair<glm::vec3, glm::vec3> OWGeometricShapes::minMaxBox =
 			std::numeric_limits<float>::max())
 };
 
-std::vector<glm::vec3> OWGeometricShapes::circle(float radius, float arcRadians)
+std::vector<glm::vec3> OWGeometricShapes::circle(float arcRadians)
 {
+	float radius = 1.0f;
 	std::vector<glm::vec3> retval;
 	for (float i = 0.0f; i < glm::two_pi<float>(); i += arcRadians)
 	{

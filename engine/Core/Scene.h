@@ -5,7 +5,8 @@
 #include <chrono>
 
 #include "../OWEngine/OWEngine.h"
-
+#include "../Core/CollisionSystem.h"
+#include "../Actor/ColliderBounds.h"
 #include "Movie.h"
 #include "UserInput.h"
 
@@ -59,8 +60,11 @@ protected:
 private:
 #pragma warning( push )
 #pragma warning( disable : 4251 )
+	OWColliderBounds mBoundsActor;
+	OWCollisionSystem mColisionSystem;
 	const Movie* mMovie = nullptr;
 	OWUtils::Time::duration mCumulativeTime = std::chrono::milliseconds(0);
 	bool mGetStateCalled = false;
+	
 #pragma warning( pop )
 };

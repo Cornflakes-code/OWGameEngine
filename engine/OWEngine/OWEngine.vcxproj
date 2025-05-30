@@ -193,6 +193,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Actor\Button.h" />
+    <ClInclude Include="..\Actor\ColliderBounds.h" />
     <ClInclude Include="..\Actor\OWActor.h" />
     <ClInclude Include="..\Actor\ThreeDAxis.h" />
     <ClInclude Include="..\Component\Component.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="..\..\..\..\OpenGL\Glitter\Glitter\Vendor\glad\src\glad.c" />
     <ClCompile Include="..\..\..\..\Sound\miniaudio\extras\miniaudio_split\miniaudio.c" />
     <ClCompile Include="..\Actor\Button.cpp" />
+    <ClCompile Include="..\Actor\ColliderBounds.cpp" />
     <ClCompile Include="..\Actor\OWActor.cpp" />
     <ClCompile Include="..\Actor\ThreeDAxis.cpp" />
     <ClCompile Include="..\Component\Component.cpp" />
